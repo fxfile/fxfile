@@ -237,6 +237,8 @@ void FolderView::createFolderPane(void)
     if (XPR_IS_NOT_NULL(mFolderPane))
     {
         mFolderPane->setObserver(dynamic_cast<FolderPaneObserver *>(this));
+        mFolderPane->setViewIndex(0);
+
         mFolderPane->Create(this, AFX_IDW_FOLDER_PANE, CRect(0,0,0,0));
     }
 }
