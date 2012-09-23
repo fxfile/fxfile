@@ -1,0 +1,10 @@
+; Override names for external functions
+EXPORTS
+
+	fxCrashHandler
+
+	fxGetAppName
+	fxSetAppName
+	fxGetAppVer
+	fxSetAppVer
+	fxSetDevelopInfo

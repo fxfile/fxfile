@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="WindowName" value="main">
+	<param name="Window Styles" value="0x800225">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="시작합시다!">
+		<param name="Local" value="html\start.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="새로운 점">
+		<param name="Local" value="html\whatsnews.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="사용자 인터페이스">
+		<param name="Local" value="html\ui\ui.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="단축키 활용">
+		<param name="Local" value="html\shortkey.htm">
+		<param name="Comment" value="5000">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="flyExplorer">
+		<param name="Local" value="html\flyExplorer\flyExplorer.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="대하여">
+			<param name="Local" value="html\flyExplorer\about.htm">
+			<param name="WindowName" value="main">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="특징 둘러보기">
+			<param name="Local" value="html\flyExplorer\overview.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="시스템 요구 사항">
+			<param name="Local" value="html\flyExplorer\requirements.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="메뉴 살펴보기">
+		<param name="Local" value="html\menu\menu.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="파일 메뉴">
+			<param name="Local" value="html\menu\file.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="편집 메뉴">
+			<param name="Local" value="html\menu\edit.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="이동 메뉴">
+			<param name="Local" value="html\menu\go.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="보기 메뉴">
+			<param name="Local" value="html\menu\view.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="도구 메뉴">
+			<param name="Local" value="html\menu\tool.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="창 메뉴">
+			<param name="Local" value="html\menu\window.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="도움말 메뉴">
+			<param name="Local" value="html\menu\help.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="특징적인 기능">
+		<param name="Local" value="html\function\function.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="기본 사용법">
+			<param name="Local" value="html\function\basic.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="공유 중인 프로세스 보기">
+			<param name="Local" value="html\function\process.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="검색하기">
+			<param name="Local" value="html\function\search.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="그림 보기">
+			<param name="Local" value="html\function\imgviewer.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="도스 명령 실행">
+			<param name="Local" value="html\function\doscmd.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="드라이브 도구">
+			<param name="Local" value="html\function\drive.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="파일 수집함">
+			<param name="Local" value="html\function\fileclt.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="연결 항목">
+			<param name="Local" value="html\function\link.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="일괄적 이름 바꾸기">
+			<param name="Local" value="html\function\rename.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="이미지 포멧 바꾸기">
+			<param name="Local" value="html\function\imgcvt.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="일괄적 새로 만들기">
+			<param name="Local" value="html\function\newitems.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="일괄적 날짜/속성 바꾸기">
+			<param name="Local" value="Html\function\datetime.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="필터링 기능">
+			<param name="Local" value="html\function\filtering.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="텍스트 문서로 내보내기">
+			<param name="Local" value="html\function\textout.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="텍스트 문서 합치기">
+			<param name="Local" value="html\function\textjoin.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CRC Checksum">
+			<param name="Local" value="html\function\crc.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="파일 분할/결합">
+			<param name="Local" value="Html\function\filesplit.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="폴더 비교/동기화">
+			<param name="Local" value="Html\function\sync.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="작업 폴더">
+			<param name="Local" value="Html\function\workingfolder.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="창 분할">
+			<param name="Local" value="html\function\split.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="스타일 옵션">
+			<param name="Local" value="html\function\style.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="인쇄하기">
+			<param name="Local" value="html\function\print.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="환경 변수 경로">
+			<param name="Local" value="html\function\envariable.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="환경 설정">
+		<param name="Local" value="html\config\config.htm">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="일반">
+			<param name="Local" value="html\config\general.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="폴더창">
+			<param name="Local" value="Html\config\folder.htm">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="창 #1">
+				<param name="Local" value="Html\config\folder_window1.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="창 #2">
+				<param name="Local" value="Html\config\folder_window2.htm">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="컨텐츠">
+			<param name="Local" value="html\config\contents.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="탐색창">
+			<param name="Local" value="html\config\explorer.htm">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="보기 설정">
+				<param name="Local" value="html\config\explorer_viewset.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="창 #1">
+				<param name="Local" value="html\config\explorer_window1.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="창 #2">
+				<param name="Local" value="html\config\explorer_window2.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="표시">
+				<param name="Local" value="html\config\explorer_display.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="필터링">
+				<param name="Local" value="html\config\explorer_filtering.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="썸네일">
+				<param name="Local" value="html\config\explorer_thumbnail.htm">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="표시">
+			<param name="Local" value="html\config\display.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="기능">
+			<param name="Local" value="html\config\function.htm">
+			<param name="ImageNumber" value="2">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="연결 항목">
+				<param name="Local" value="html\config\func_link.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="이름 바꾸기">
+				<param name="Local" value="html\config\func_rename.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="자동 갱신">
+				<param name="Local" value="html\config\func_refresh.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="드래그 드롭">
+				<param name="Local" value="html\config\func_dragdrop.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="분할 창">
+				<param name="Local" value="html\config\func_splitview.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="파일 수집">
+				<param name="Local" value="html\config\func_fileclt.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="히스토리">
+				<param name="Local" value="Html\config\func_history.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="파일 작업">
+				<param name="Local" value="Html\config\func_fileop.htm">
+				</OBJECT>
+		</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="창 스타일">
+			<param name="Local" value="html\config\style.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="고급">
+			<param name="Local" value="Html\config\advanced.htm">
+			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="설정 파일">
+				<param name="Local" value="Html\config\adv_settingfile.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="대화 상자">
+				<param name="Local" value="Html\config\adv_dialog.htm">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="전역 단축키">
+				<param name="Local" value="Html\config\adv_globalkey.htm">
+				</OBJECT>
+		</UL>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="저작권 안내">
+		<param name="Local" value="html\license.htm">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="문의 사항">
+		<param name="Local" value="html\support.htm">
+		</OBJECT>
+</UL>
+</BODY></HTML>
