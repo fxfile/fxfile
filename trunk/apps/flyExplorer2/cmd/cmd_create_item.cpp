@@ -189,7 +189,7 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
             sDlg.setExt(XPR_STRING_LITERAL("txt"));
             sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.exist")));
             sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.empty")));
-            sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.label.label.top_desc")));
+            sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.label.top_desc")));
             sDlg.setDescIcon(sIcon, XPR_TRUE);
 
             xpr_sintptr_t sId = sDlg.DoModal();
