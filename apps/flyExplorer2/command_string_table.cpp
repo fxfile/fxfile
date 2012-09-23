@@ -255,7 +255,7 @@ void CommandStringTable::load(void)
                                                       = XPR_STRING_LITERAL("cmd.window.tab.close_all_but_this");
     mCommandString[ID_WINDOW_TAB_CLOSE_ALL]           = XPR_STRING_LITERAL("cmd.window.tab.close_all");
     mCommandString[ID_WINDOW_NEXT]                    = XPR_STRING_LITERAL("cmd.window.next");
-    mCommandString[ID_WINDOW_PREV]                    = XPR_STRING_LITERAL("cmd.window.next");
+    mCommandString[ID_WINDOW_PREV]                    = XPR_STRING_LITERAL("cmd.window.previous");
     mCommandString[ID_WINDOW_SPLIT]                   = XPR_STRING_LITERAL("cmd.window.split");
     mCommandString[ID_WINDOW_SPLIT_SINGLE]            = XPR_STRING_LITERAL("cmd.window.split.single");
     mCommandString[ID_WINDOW_SPLIT_1x2]               = XPR_STRING_LITERAL("cmd.window.split.1x2");
