@@ -1,0 +1,18 @@
+[OPTIONS]
+Compatibility=1.1 or later
+Compiled file=flyExplorer.chm
+Contents file=flyExplorer.hhc
+Default Window=main
+Default topic=html\start.htm
+Display compile progress=No
+Full-text search=Yes
+Index file=flyExplorer.hhk
+Language=0x412 한국어
+Title=flyExplorer 도움말
+
+[WINDOWS]
+main="flyExplorer 도움말","flyExplorer.hhc","flyExplorer.hhk","html\start.htm","html\start.htm",,,,,0x22520,,0x387e,,,,,,,,0
+
+
+[INFOTYPES]
+

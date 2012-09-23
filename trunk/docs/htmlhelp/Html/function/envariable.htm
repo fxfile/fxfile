@@ -1,0 +1,516 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=euc-kr">
+        <title>텍스트 파일로 내보내기</title>
+        <meta name="generator" content="Namo WebEditor">
+        <link type="text/css" rel="stylesheet" href="../style.css">
+    </head>
+    <body bgcolor="white" text="black" link="blue" vlink="purple" alink="red">
+        <p class="title">
+            ■ <strong>환경 변수 경로</strong></p>
+        <hr size="1" noshade color="#666666">
+        <p>
+            &nbsp;&nbsp;환경 변수 경로를 이용해 경로를 상대적으로 설정할 수 있습니다.</p>
+<p>&nbsp;</p>
+        <p>
+            <b>1. 사용 방법</b>
+        </p>
+<p>
+            &nbsp;&nbsp;각 사용자 시스템마다 다른 시스템 폴더를 가질 수 있습니다. 이를 상대적으로 표현하기 위해서는 환경 변수를 이용해 경로를 표현해야 합니다. 이 환경 변수 이용해 경로를 표현할 수 있는 부분은 &quot;연결 항목 설정&quot;의 경로 부분, &quot;경로 이동&quot; 기능, 환경 설정의 &quot;초기 폴더 설정&quot; 등입니다. 예를 들어, A 컴퓨터의 윈도우 시스템&nbsp;폴더가 'C:\Windows\System32'이고, B 컴퓨터의 윈도우 시스템 폴더가 'D:\Windows\System32' 일 경우, 연결 항목 폴더 설정을 A 컴퓨터에서는 C:\Windows\System32라고 설정하고 B 컴퓨터는 D:\Windows\System32라고 설정해야 합니다. 여기에서 A 컴퓨터의 연결 항목 설정 파일을 B 컴퓨터로 가져갔을 경우에는 B 컴퓨터에 맞게 D:\Windows\System32라고 다시 설정해야 합니다. 이런 류의 폴더를 환경 변수를 이용해 상대적으로 표현하면 특정 컴퓨터에 맞게 다시 설정할 필요는 없습니다. 즉, '%Windows%\System32' 또는 '%System%' 으로 설정하면 상대적 경로로 동작됩니다. 경로 이동, 환경 설정의 초기 폴더 설정도 마찬가지로 설정할 수 있습니다.</p>
+<p>
+&nbsp;</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ex)</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'C:\Windows\System32' -&gt; '%Windows%\System32' 또는 '%System%'</p>
+<p>
+&nbsp;</p>
+        <p>
+            <b>2. 환경 변수</b></p>
+        <p>
+            &nbsp;&nbsp;다음과 같이 환경 변수를 이용해 경로를 표현할 수 있습니다.</p>
+<table bordercolor="#dddddd" cellspacing="0" bordercolordark="white" cellpadding="5" width="100%" bordercolorlight="#dddddd" border="1">
+    <tbody>
+    <tr>
+        <td width="140" bgcolor="#F9F9F9">
+            <p class="table_p">
+                            <b>환경 변수</b></p>
+        </td>
+        <td bgcolor="#F9F9F9">
+            <p class="table_p">
+                            <b>설명</b>
+                        </p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%flyExplorer%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">flyExplorer 설치 경로</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%fxDrive%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">flyExplorer 설치 드라이브</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%WinDrive%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">윈도우즈 설치 드라이브</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Desktop%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">바탕 화면 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Internet%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">인터넷 익스플로러</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Programs%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">시작 메뉴의 프로그램 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Controls%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">제어판 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Printers%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">제어판의 프린터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Personal%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 문서 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Favorites%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">즐겨찾기 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Startup%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">시작 메뉴의 시작 프로그램 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Recent%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 최근 문서 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%SendTo%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 보내기 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%BitBucket%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">휴지통 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%RecycledBin%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">휴지통 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%StartMenu%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">시작 메뉴 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyDocuments%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 문서 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyMusic%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 음악 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyVideo%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 비디오 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%DesktopDirectory%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">바탕 화면의 실제 경로</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyComputer%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 컴퓨터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Drives%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 컴퓨터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Network%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 네트워크 환경 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyNetwork%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 네트워크 환경 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%NetHood%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 네트워크 환경의&nbsp;실제 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Fonts%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">폰트 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Templates%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">임시 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonStartMenu%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 시작 메뉴 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonPrograms%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">시작 메뉴의 공용 프로그램 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonStartup%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">시작 메뉴의 공용 시작 프로그램 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonDesktopDirectory%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 바탕 화면 실제 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%AppData%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">응용 프로그램 데이터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%PrintHood%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">프린터의 실제 경로</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%LocalAppData%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">로컬 응용 프로그램 데이터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonFavorites%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 즐겨찾기 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%InternetCache%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">인터넷 익스플로러의 캐쉬 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Cookies%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">인터넷 익스플로러의 쿠키 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%History%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">인터넷 익스플로러의 히스트리 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonAppData%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 응용 프로그램 데이터 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Windows%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">윈도우즈 설치 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%System%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">윈도우즈 시스템 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%ProgramFiles%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">프로그램 파일 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%MyPictures%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">내 그림 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Profile%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">프로파일 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%SystemX86%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">64비트 윈도우즈에서 x86 시스템 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%ProgramFilesX86%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">64비트 윈도우즈에서 프로그램 파일 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%ProgramFilesCommon%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 프로그램 파일 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%ProgramFilesCommonX86%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">64비트 윈도우즈에서 공용 프로그램 파일 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonTemplates%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 임시 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonDocuments%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 내 문서 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonAdministrators%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 관리자 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Administrators%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">관리자 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Connections%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">네트워크 연결 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonMusic%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 음악 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonPictures%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 그림 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CommonVideo%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">공용 비디오 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%Resources%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">윈도우즈 리소스 폴더</p>
+        </td>
+    </tr>
+    <tr>
+        <td width="140">
+            <p style="margin-top:0; margin-bottom:0;">%CDBurnArea%</p>
+        </td>
+        <td>
+            <p style="margin-top:0; margin-bottom:0;">CD 굽기 전용 폴더</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+        <p>
+            &nbsp;        
+</p>
+    </body>
+</html>
+

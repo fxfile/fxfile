@@ -1,0 +1,224 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(949)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_BUG                 ICON                    "res\\Bug.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SEND_MAIL_DLG DIALOGEX 0, 0, 316, 170
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
+CAPTION "메일 보내기"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ | WS_GROUP,0,34,318,1
+    LTEXT           "",IDC_INTRO_BKGND,0,0,317,34,SS_NOPREFIX
+    LTEXT           "제목 (&S):",IDC_STATIC,15,44,31,8
+    EDITTEXT        IDC_SUBJECT,51,41,258,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BODY,15,68,294,76,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "보내기",IDOK,186,149,60,14,WS_GROUP
+    PUSHBUTTON      "닫기",IDCANCEL,249,149,60,14
+    LTEXT           "flyExplorer 개발자에게 오류 보고서 외에 추가적으로 전달하고자 하는 내용을 적어주십시오.",IDC_INTRO1,15,7,294,18
+    LTEXT           "내용 (&C):",IDC_STATIC,15,57,32,8
+END
+
+IDD_SIMPLE_DLG DIALOGEX 0, 0, 330, 135
+STYLE DS_SETFONT | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Crash Handler"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "",IDC_INTRO_BKGND,0,-2,330,34,SS_NOPREFIX
+    LTEXT           "flyExplorer 프로그램에 문제가 있어서 프로그램을 종료해야 합니다. 불편을 드려서 죄송합니다.",IDC_INTRO1,17,7,306,18
+    LTEXT           "어떤 작업 중이었다면, 작업 중이던 정보를 잃게 될 수도 있습니다.",IDC_INTRO2,17,41,232,8,SS_NOPREFIX
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ | WS_GROUP,0,32,335,1
+    DEFPUSHBUTTON   "오류 보고 보냄(&S)",IDC_SUBMIT_BUG,7,114,86,14,WS_GROUP
+    PUSHBUTTON      "보내지 않음(&D)",IDCANCEL,234,114,89,14
+    PUSHBUTTON      "보고서 저장(&R)",IDC_SAVE_REPORT,96,114,85,14
+    LTEXT           "Homepage :",IDC_URL_PREFIX,17,88,40,8
+    LTEXT           "",IDC_URL,58,88,228,10,WS_TABSTOP
+    LTEXT           "이 문제에 대해 오류 보고서가 작성되어 졌으며, flyExplorer 개발자에게 이 오류 보고서를 전달하고자 합니다. 전달된 오류 보고서는 flyExplorer의 품질을 향상시키는 데 도움이 됩니다. 보고서 내용은 기밀로 간주되며 익명으로 처리됩니다.",IDC_INTRO3,17,58,306,26,SS_NOPREFIX
+    LTEXT           "E-mail :",IDC_EMAIL_PREFIX,17,97,24,8
+    LTEXT           "",IDC_EMAIL,58,97,229,10,WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_SEND_MAIL_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        VERTGUIDE, 15
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 163
+        HORZGUIDE, 34
+    END
+
+    IDD_SIMPLE_DLG, DIALOG
+    BEGIN
+        VERTGUIDE, 7
+        VERTGUIDE, 17
+        VERTGUIDE, 323
+        BOTTOMMARGIN, 128
+        HORZGUIDE, 7
+        HORZGUIDE, 25
+        HORZGUIDE, 32
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "Comments", "Crash Handler"
+            VALUE "CompanyName", "flychk"
+            VALUE "FileDescription", "Crash Handler"
+            VALUE "FileVersion", "1.0"
+            VALUE "InternalName", "fxcrash"
+            VALUE "LegalCopyright", "Copyright (C) 2007 Chae-Kwang Lee. All rights reserved."
+            VALUE "OriginalFilename", "fxcrash.dll"
+            VALUE "ProductName", "fxcrash"
+            VALUE "ProductVersion", "1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_BUGTRAP_NAME        "flyExplorer"
+    IDS_EMAIL_LOGIN_FAILED  "메일 서버 접속에 실패하여 오류 보고서를 보낼 수 없습니다.\n오류 보고서를 파일로 저장하여 개발자에게 전달해 주십시오."
+    IDS_SAVE_REPORT_TIP     "오류 보고서를 파일로 저장합니다. 이 파일을 메일로 보내주시거나 홈페이지 올려 주시면 더욱더 품질 높은 S/W를 제공해 드릴 것입니다."
+    IDS_SUBMIT_BUG_TIP      "오류 보고서를 메일로 전송합니다."
+    IDS_PLEASE_WAIT         "Please wait..."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_TRANSFERFAILED "오류 보고서를 전송하는 데에 실패하였습니다."
+    IDS_ADDITIONAL_INFORMATION "\nAdditional information:\n"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_NOT_AVAILABLE "N/A (error)"
+    IDS_UNDEFINED_ERROR     "Undefined error"
+END
+
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

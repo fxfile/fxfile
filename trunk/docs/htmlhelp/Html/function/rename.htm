@@ -1,0 +1,821 @@
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=euc-kr">
+        <title>파일 이름 바꾸기</title>
+        <meta name="generator" content="Namo WebEditor v6.0">
+        <link type="text/css" rel="stylesheet" href="../style.css">
+    </head>
+    <body bgcolor="white" text="black" link="blue" vlink="purple" alink="red">
+        <p class="title">
+            ■ <strong>일괄적&nbsp;이름 바꾸기</strong>
+        </p>
+        <hr size="1" noshade color="#666666">
+        <p>
+             &nbsp;일괄적 이름 바꾸기는 여러 파일이나 폴더의 이름을 일괄적으로 바꿔 주는 기능입니다. 일괄적으로 바꿔주는 포멧 형태 바꿈, 특정 문자 바꿈, 특정 위치 삽입, 특정 위치 삭제, 대/소문자 바꿈 총 5종류로 사용자의 편리에 따라 선택하여 바꿀 수 있습니다. 또한 1.50 부터는 일괄적 포맷과 히스토리를 지원합니다.</p>
+<p>&nbsp;</p>
+<p align="center">
+            <img src="rename.gif" border="0" width="551" height="510"></p>
+<p align="center">
+<b>[ 그림 1. 일괄적 이름 바꾸기 ]</b></p>
+<p align="center">
+<img src="rename_edit.gif" border="0"></p>
+<p align="center">
+<b>[ 그림 2. 일괄적 이름 바꾸기의 직접 입력 ]</b></p>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            <b>1. 사용법</b>
+        </p>
+        <p>
+            &nbsp;&nbsp;탐색창에서 바꾸고자 하는 파일을 선택한 후, 메인
+            메뉴 &quot;파일&quot;의 &quot;이름 바꾸기&quot;를 선택하거나 단축키 F2를 통해 위와
+            같은 &quot;일괄적 이름 바꾸기&quot; 대화 상자를 띄워 해당 작업을 하면
+            됩니다.
+        폴더의 이름을 일괄적으로 바꾸고자 할 경우에는 탐색창에서 Shift 키와 함께 &quot;일괄적 이름 바꾸기&quot;&nbsp;대화 상자를 띄우면 됩니다. 1.60 이전 버전에는 바꿀 스타일을 모두 한 곳에 넣었는데 너무 복잡해 보이고, 인터페이스가 조잡해 보였는데, 버전 1.60 부터는 바꿀 스타일을 각 탭으로 구성하였습니다. 또한 옵션들이나 히스토리 기능은 툴바로 구성되었습니다.</p>
+<p>
+            &nbsp;        
+</p>
+<p>
+<b>2. 툴바</b></p>
+<p>
+&nbsp;&nbsp;&nbsp;최상위에 있는 툴바의 버튼 순서대로 기능이나 옵션을 소개하겠습니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) 처음 목록 : 대화 상자를 처음으로 띄울 때의 목록으로 초기화합니다.</p>
+<p>
+ &nbsp;&nbsp;&nbsp;&nbsp;2) 되돌리기 : 히스토리 기능으로써, 이전 변경 모드로 되돌리며, &quot;일괄적 포맷에 기록하기&quot; 옵션이 설정되어 있어야 합니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3) 되살리기 : 히스토리 기능으로써, 되돌린&nbsp;상태에서 다시 되살리며, &quot;일괄적 포맷에 기록하기&quot; 옵션이 설정되어 있어야 합니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4) 위로 이동&nbsp;: 파일 목록에서 선택된 항목을 한 단계 위로 이동합니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5) 아래로 이동&nbsp;: 파일 목록에서 선택된 항목을 한 단계 아래로 이동합니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6) 해당 위치로 이동&nbsp;: 파일 목록에서 선택된 항목을 해당 위치로 이동합니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7) 결과 내에서 바꾸기&nbsp;: 이 옵션이 설정될 경우에는 변경된 결과 목록에서 바뀌게 되고, 설정되지 않을 경우에는 초기 목록에서 바뀌게 됩니다.</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8) 확장자 변경 안함&nbsp;: 대상이 파일일 경우 확장를 변경시키 않습니다.</p>
+<p>
+ &nbsp;&nbsp;&nbsp;&nbsp;9) 일괄적 포맷에 기록하기 : 바뀌는 과정을 모두 일괄적 포맷에 기록하여 되돌리기, 되살리기 기능을 수행할 수 있습니다.</p>
+<p>
+&nbsp;</p>
+        <p>
+            <b>2. 형식으로 적용</b></p>
+        <p>
+            &nbsp;&nbsp;특정 포멧을 통해 파일 이름을 일괄적으로 바꿔주는
+            기능으로써, 포멧은 다음과 같습니다.        
+</p>
+        <table bordercolor="#dddddd" cellspacing="0" bordercolordark="white" cellpadding="5" width="100%" bordercolorlight="#dddddd" border="1">
+    <tbody>
+
+    <tr>
+        <td width="100" bgcolor="#F9F9F9">
+
+            <p class="table_p">
+                            <b>포멧</b>
+                        </p>
+                    </td>
+        <td bgcolor="#F9F9F9">
+
+            <p class="table_p">
+                            <b>설명</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/?</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>자동 숫자 증가의 자리수</b>
+                        <span class="table_p" style="font-family:Tahoma; font-size:9pt;"><b>(? = [0~9])</b></span></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/0?</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>자동 숫자 증가의 자리수(자리수에 맞추어 빈칸은 
+            '0'으로 
+            채움)</b>
+                        <span class="table_p" style="font-family:Tahoma; font-size:9pt;"><b>(? = [0~9])</b></span></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/*</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>원본&nbsp;이름의 전체 이름</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/n</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>원본 이름의 파일명</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/N(?-?)</b></p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>원본 이름에서 일부만 가져오기 (?=[0~99])</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/e</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>원본 이름의 확장자</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/D</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+<b>현재 날짜</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /y                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 년도                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /m                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 월                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /d                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 일                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/T</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+                            <b>현재 시간</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /h                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 시                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /i                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 분                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /s                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+현재 초                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/A</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+<b>파일 생성 날짜</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /a                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 년도                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /b                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 월                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /c                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 일                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/F</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+<b>파일 생성 시간</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /f                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 오전/오후                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /g                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 12시                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /k                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 24시                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /l                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 분                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /r                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 생성 초                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/O</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+<b>파일 수정&nbsp;날짜</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /o                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;년도                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /p                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;월                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /q                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;일                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            <b>/J</b>
+                        </p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+<b>파일 수정&nbsp;시간</b>
+                        </p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /j                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;오전/오후                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /u                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;12시                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /w                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;24시                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /v                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;분                        
+</p>
+                    </td>
+                </tr>
+                <tr>
+        <td width="100">
+
+            <p class="table_p">
+                            /z                        
+</p>
+                    </td>
+                    <td>
+            <p class="table_p">
+파일 수정&nbsp;초                        
+</p>
+                    </td>
+                </tr>
+            </tbody>        </table>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            &nbsp;&nbsp;위와 같은 포멧으로 설정한 후, &quot;적용&quot; 버튼을 누르면
+            이름이 포멧에 맞게 바뀝니다. 다음과 같이 예를 들을 수
+            있습니다.        
+</p>
+        <p>            ex) 적용할 형태: text_/05-[/D].txt        
+</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text_00000-[2003년
+            1월 1일].txt        
+</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text_00001-[2003년
+            1월 1일].txt        
+</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;text_00002-[2003년
+            1월 1일].txt        
+</p>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            <b>3. 특정 문자 바꿈</b></p>
+        <p>
+            &nbsp;&nbsp;원본 이름에서 특정 문자나 문자열을 새로운 문자열로
+            대치하는 기능입니다. 옵션은 &quot;반복&quot;과 &quot;대소 문자 구분없이 찾기&quot;을 설정할 수 있습니다. 다음과 같이 예를 들 수 있습니다.        
+</p>
+        <p>
+            &nbsp;&nbsp;ex) 원본 이름: text_text_.txt        
+</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;text&quot;
+            -&gt; &quot;텍스트 문서&quot; : 결과는 &quot;텍스트 문서_text_.txt&quot;입니다.
+            다시 한번 &quot;바꿈&quot; 버튼을 누른 후, 결과는 &quot;텍스트 문서_텍스트
+            문서_.txt&quot;입니다.        
+</p>
+        <p>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&quot;_&quot;
+            -&gt; &quot;&quot; : &quot;바꿈&quot; 버튼 누른 후, 결과는 &quot;texttext_.txt&quot;입니다.
+            다시 한번 &quot;바꿈&quot; 버튼을 누른 후, 결과는 &quot;texttext.txt&quot;입니다.        
+</p>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            <b>4. 특정 위치 삽입</b>
+        </p>
+        <p>
+            &nbsp;&nbsp;특정 위치에 문자열을 삽입하는 기능입니다. 위치와
+            삽입한 문자열을 입력한 후, &quot;삽입&quot; 버튼을 누르면 특정 위치에
+            해당 문자열이 삽입됩니다.        
+</p>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            <b>5. 특정 위치 삭제</b>
+        </p>
+        <p>
+            &nbsp;&nbsp;특정 위치에서 특정 길이만큼 삭제하는 기능입니다.
+            위치와 길이를 입력한 후, &quot;삭제&quot; 버튼을 누르면 특정 위치에 특정
+            길이만큼 삭제됩니다.        
+</p>
+        <p>
+            &nbsp;        
+</p>
+        <p>
+            <b>6. 대/소 문자 바꾸기</b>
+        </p>
+        <p>
+            &nbsp;&nbsp;모두 대문자나 소문자로 바꾸는 기능과 첫 문자만
+            대문자로 바꾸는 기능입니다.
+        전체 이름, 이름만, 확장자만을 선택할 수 있는 옵션도 제공합니다.</p>
+<p>&nbsp;</p>
+<p><b>7. 직접 새 이름 편집하기</b></p>
+<p>&nbsp;&nbsp;리스트에서 해당 파일 및 폴더를 마우스로 더블 클릭하면 새 이름을 
+편집할 수 있는 대화 상자가 띄워집니다. 새 이름을 입력한 후, 확인 버튼을 누르면 
+새 이름이 편집한 이름으로 바뀝니다.</p>
+<p>&nbsp;</p>
+<p><b>8. 불규칙적인 이름 편집하기</b></p>
+<p>&nbsp;&nbsp;&nbsp;위 그림 1에서 &quot;직접 입력&quot; 버튼을 누르면, 위 그림 2와 같이 직접 입력 대화 상자가 열려 불규칙적인 이름을 편집할 수 있습니다. &quot;수직 스크롤 동기화&quot; 옵션은 이전 파일과 새로운 파일의 스크롤 위치를 같게 하는 기능입니다.</p>
+<p>&nbsp;</p>
+<p><b>9. 히스토리</b></p>
+<p> &nbsp;&nbsp;&quot;일괄적 포맷에 기록하기&quot; 옵션을 설정하고, 위와 같이 UI로 이름 바꾸기를 수행하면 일괄적 포맷에 기록이 됩니다. 이 기록을 이용해 히스토리 기능을 수행할 수 있습니다. 뒤로 가기나 앞으로 가기가 가능합니다. 뒤로 가기 단축키는 Alt + &lt;- 이고, 앞으로 가기 단축키는 Alt + -&gt; 입니다.</p>
+<p>&nbsp;</p>
+<p><b>10. 일괄적 포맷으로 바꾸기</b></p>
+<p> &nbsp;&nbsp;위와 같이 UI를 설정하여 이름을 바꿀 수 있고, 다음과 같이 일괄적 포맷을 사용하여 이름을 바꿀 수도 있다.</p>
+<table bordercolor="#dddddd" cellspacing="0" bordercolordark="white" cellpadding="5" width="100%" bordercolorlight="#dddddd" border="1">
+    <tr>
+        <td width="1118" bgcolor="#F9F9F9" colspan="2">
+
+            <p class="table_p">                            <b>1) 형식으로 적용: &lt;1:F1:F2:F3&gt;</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F1</p>
+                    </td>
+        <td>
+            <p class="table_p">                            시작 번호</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F2</p>
+                    </td>
+        <td>
+            <p class="table_p">                            번호 증가</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F3</p>
+                    </td>
+        <td>
+            <p class="table_p">                            형식(위 2번 형태로 적용 참고)</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="1118" bgcolor="#F9F9F9" colspan="2">
+
+            <p class="table_p">                            <b>2) 특정 문자 바꿈: &lt;1:F1:F2:F3:F4&gt;</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F1</p>
+                    </td>
+        <td>
+            <p class="table_p">반복 횟수</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F2
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+찾을 문자
+</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F3
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+대소 문자 구분 없이 찾기(0 - 구분하지 않음, 1 - 구분함)</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F4
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+바꿀 문자
+</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="1118" bgcolor="#F9F9F9" colspan="2">
+
+            <p class="table_p">                            <b>3) 특정 문자 삽입: &lt;1:F1:F2:F3&gt;</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F1
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+삽입할 타입(0 - 맨 앞에, 1 - 맨 뒤에, 2 - 특정 위치에)</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F2
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+삽입할 위치</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F3
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+삽입할 문자</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="1118" bgcolor="#F9F9F9" colspan="2">
+
+            <p class="table_p">                            <b>4) 특정 위치&nbsp;삭제: &lt;1:F1:F2:F3:F4&gt;</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F1
+</p>
+                    </td>
+        <td>
+            <p class="table_p">삭제할 타입(0 - 맨 앞에, 1 - 맨 뒤에, 2 - 특정 위치에)</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F2
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+삭제할 위치</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F3
+</p>
+                    </td>
+        <td>
+
+            <p class="table_p">
+삭제할 길이</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="1118" bgcolor="#F9F9F9" colspan="2">
+
+            <p class="table_p">                            <b>5) 대/소문자 바꿈: &lt;1:F1:F2&gt;</b></p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F1
+</p>
+                    </td>
+        <td>
+            <p class="table_p">대/소문자로 바꿀 부분(0 - 이름만, 1 -&nbsp;확장자만, 2 - 전체 이름)</p>
+                    </td>
+                </tr>
+    <tr>
+        <td width="100">
+            <p class="table_p">                            F2
+</p>
+                    </td>
+        <td>
+            <p class="table_p">대/소문자로 바꿀 타입(0 - 모두 소문자로, 1 - 모두 대문자로, 2 - 첫 글자만 대문자로, 3 - 단어의 첫 글자만 대문자로)</p>
+                    </td>
+                </tr>
+        </table><p>&nbsp;</p>
+<p>예) 일괄적 포맷의 예는 다음과 같다.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;1:0:1:test_/05 [/D]&gt;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;2:1:0:윈도우즈 탐색기:flyExplorer&gt;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;3:0:0:[flyExplorer] -&gt;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;4:2:0:10&gt;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;5:2:3&gt;</p>
+    </body>
+</html>
+
