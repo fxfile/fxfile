@@ -2147,6 +2147,13 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
     // Fill in the Result Column Info
     if (XPR_IS_FALSE(sLoaded))
     {
+        xpr_sint_t sColumnCount = 0;
+        for (i = 0; i < aDefColumnCount; ++i)
+        {
+            if (XPR_IS_TRUE((*aDefColumnInfo)[i].mDefault))
+                ++sColumnCount;
+        }
+
         xpr_uint_t sDefaultViewStyle = LVS_REPORT;
         switch (gOpt->mExplorerDefaultViewStyle)
         {
@@ -2159,9 +2166,9 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
         default:                    sDefaultViewStyle = LVS_REPORT;    break;
         }
 
-        aFolderViewSet->mViewStyle  = sDefaultViewStyle;//getViewStyle();
-        aFolderViewSet->mColumnCount = aDefColumnCount;
-        aFolderViewSet->mColumnItem  = new ColumnItem[aDefColumnCount];
+        aFolderViewSet->mViewStyle   = sDefaultViewStyle;//getViewStyle();
+        aFolderViewSet->mColumnCount = sColumnCount;
+        aFolderViewSet->mColumnItem  = new ColumnItem[sColumnCount];
         aFolderViewSet->mAllSubApply = 0;
 
         aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
@@ -2193,7 +2200,10 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
     for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
     {
         if (aFolderViewSet->mColumnItem[i].mWidth < 0)
-            aFolderViewSet->mColumnItem[i].mWidth = (*aDefColumnInfo)[i].mWidth;
+        {
+            if (i < aDefColumnCount)
+                aFolderViewSet->mColumnItem[i].mWidth = (*aDefColumnInfo)[i].mWidth;
+        }
     }
 
     // column #0
