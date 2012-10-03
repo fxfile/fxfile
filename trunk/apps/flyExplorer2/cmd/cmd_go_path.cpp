@@ -375,6 +375,18 @@ void GoSystemRecentCommand::execute(CommandContext &aContext)
     goSystemFolder(*sMainFrame, CSIDL_RECENT);
 }
 
+xpr_sint_t GoSystemAppDataCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemAppDataCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    goSystemFolder(*sMainFrame, CSIDL_APPDATA);
+}
+
 xpr_sint_t GoSiblingUpCommand::canExecute(CommandContext &aContext)
 {
     xpr_bool_t sEnable = (gOpt->mSingleFolderPaneMode == XPR_FALSE) ? XPR_TRUE : XPR_FALSE;

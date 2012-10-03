@@ -2283,9 +2283,10 @@ BEGIN
             MENUITEM "C&ommon files",               ID_GO_COMMON
             MENUITEM "&Windows",                    ID_GO_WINDOWS
             MENUITEM "Windows &system",             ID_GO_SYSTEM
+            MENUITEM "&Application data",           ID_GO_APPDATA
             MENUITEM SEPARATOR
             MENUITEM "&Fonts",                      ID_GO_FONTS
-            MENUITEM "St&artup",                    ID_GO_STARTUP
+            MENUITEM "Start&up",                    ID_GO_STARTUP
             MENUITEM "Te&mp",                       ID_GO_TEMPORARY
             MENUITEM SEPARATOR
             MENUITEM "Fovor&ites",                  ID_GO_FAVORITES

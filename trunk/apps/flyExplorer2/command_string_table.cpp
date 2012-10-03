@@ -127,6 +127,7 @@ void CommandStringTable::load(void)
     mCommandString[ID_GO_COMMON]                      = XPR_STRING_LITERAL("cmd.go.system_folder.common");
     mCommandString[ID_GO_WINDOWS]                     = XPR_STRING_LITERAL("cmd.go.system_folder.windows");
     mCommandString[ID_GO_SYSTEM]                      = XPR_STRING_LITERAL("cmd.go.system_folder.system");
+    mCommandString[ID_GO_APPDATA]                     = XPR_STRING_LITERAL("cmd.go.system_folder.application_data");
     mCommandString[ID_GO_FONTS]                       = XPR_STRING_LITERAL("cmd.go.system_folder.fonts");
     mCommandString[ID_GO_STARTUP]                     = XPR_STRING_LITERAL("cmd.go.system_folder.startup");
     mCommandString[ID_GO_TEMPORARY]                   = XPR_STRING_LITERAL("cmd.go.system_folder.temporary");

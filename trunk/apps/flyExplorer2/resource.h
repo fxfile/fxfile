@@ -1484,6 +1484,7 @@
 #define ID_GO_FAVORITES                 34112
 #define ID_GO_INTERNETCOOKIE            34113
 #define ID_GO_HISTORY                   34114
+#define ID_GO_APPDATA                   34115
 #define ID_GO_INIT_FOLDER               34135
 #define ID_GO_INIT_FOLDER_1             34136
 #define ID_GO_INIT_FOLDER_2             34137

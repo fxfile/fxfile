@@ -208,6 +208,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_INTERNETCOOKIE,                new cmd::GoSystemInternetCookieCommand);
     aExecutor.bindCommand(ID_GO_SENDTO,                        new cmd::GoSystemSendToCommand);
     aExecutor.bindCommand(ID_GO_RECENT,                        new cmd::GoSystemRecentCommand);
+    aExecutor.bindCommand(ID_GO_APPDATA,                       new cmd::GoSystemAppDataCommand);
 
     aExecutor.bindCommand(ID_GO_BACK,                          new cmd::GoDirectBackwardCommand);
     aExecutor.bindCommand(ID_GO_FORWARD,                       new cmd::GoDirectForwardCommand);
