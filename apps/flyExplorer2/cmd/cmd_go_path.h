@@ -38,6 +38,7 @@ XPR_COMMAND_DECLARE_CLASS(GoSystemInternetCacheCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemInternetCookieCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemSendToCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemRecentCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemAppDataCommand);
 
 XPR_COMMAND_DECLARE_CLASS(GoSiblingUpCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSiblingDownCommand);
