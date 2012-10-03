@@ -1378,6 +1378,7 @@
 			<String ID="popup.cfg.tree.function.operation">파일 작업</String>
 			<String ID="popup.cfg.tree.advanced">고급</String>
 			<String ID="popup.cfg.tree.advanced.cfg_path">설정 파일</String>
+			<String ID="popup.cfg.tree.advanced.dialog_state">대화 상자</String>
 			<String ID="popup.cfg.tree.advanced.global_hotkey">전역 단축키</String>
 			<String ID="popup.cfg.msg.confirm_default">환경 설정을 모두 기본값으로 설정하시겠습니까?&#10;지금 기본값으로 설정되면 이전 설정값으로 되돌릴 수 없습니다.</String>
 			<String ID="popup.cfg.msg.default_ok">환경 설정의 모든 내용을 초기화하였습니다.</String>
@@ -1685,6 +1686,39 @@
 			<String ID="popup.cfg.body.advanced.cfg_path.type.thumbnail">썸네일 캐쉬</String>
 			<String ID="popup.cfg.body.advanced.cfg_path.type.recent">최근 실행 목록</String>
 			<String ID="popup.cfg.body.advanced.cfg_path.type.history">히스토리</String>
+			
+			<String ID="popup.cfg.body.advanced.dialog_state.label.path">저장 경로(&amp;P):</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.label.list">대화 상자 설정 항목 리스트(&amp;L):</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.list.column.item">항목</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.list.column.file">파일</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.button.initialize_all">모두 초기화(&amp;A)</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.button.initialize">초기화(&amp;I)</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.attr_time">속성/날짜</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.batch_create">일괄적 새로 만들기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.crc">CRC checksum 생성/검사</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.dos_cmd">도스 명령 실행</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.drive">드라이브 상자</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.file_scrap">파일 수집</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.file_combine">파일 결합</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.file_merge">파일 병합</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.file_split">파일 분할</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.history">히스토리 상자</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.go_path">경로 이동</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.bookmark_edit">북마크 편집</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.param_exec">파라미터 실행</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.pic_conv">이미지 포멧 바꾸기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.pic_viewer">그림 보기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.batch_rename">일괄적 이름 바꾸기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.search_bar">검색창</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.select_by_filter">필터링으로 선택/해제</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.select_by_name">이름으로 선택/해제</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.shared_process">공유 중인 프로세스 보기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.folder_sync">폴더 동기화</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.text_merge">텍스트 문서 병합</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.type.file_list">파일 목록 만들기</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.msg.select">초기화 하고자 하는 대화 상자 설정 항목을 선택하여 주십시오.</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.msg.confirm_init">선택하신 대화 상자 설정 항목을 정말로 초기화 하시겠습니까?</String>
+			<String ID="popup.cfg.body.advanced.dialog_state.msg.confirm_init_all">대화 상자 설정 항목에 대해 모두 초기화 하시겠습니까?</String>
 
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.enable">전역 단축키 실행(&amp;E)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.label.hotkey">단축키 변경(&amp;M):</String>
