@@ -76,17 +76,17 @@ protected:
     xpr_char_t  *mTextA; // for ANSICODE text search
     xpr_wchar_t *mTextW; // for UNICODE text search
 
-    typedef struct SchDir
+    typedef struct SearchDir
     {
         std::tstring mPath;
         xpr_bool_t   mSubFolder;
-    } SchDir;
+    } SearchDir;
 
     typedef std::deque<std::tstring> NameDeque;
-    typedef std::deque<SchDir *> SchDirDeque;
-    NameDeque   mNameDeque;
-    SchDirDeque mSchIncDirDeque;
-    SchDirDeque mSchExcDirDeque;
+    typedef std::deque<SearchDir *> SearchDirDeque;
+    NameDeque      mNameDeque;
+    SearchDirDeque mSearchIncDirDeque;
+    SearchDirDeque mSearchExcDirDeque;
 
     // search cache data
     xpr_byte_t      *mBuffer; // buffer for text search

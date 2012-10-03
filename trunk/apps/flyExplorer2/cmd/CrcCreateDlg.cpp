@@ -17,6 +17,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,6 +41,7 @@ CrcCreateDlg::CrcCreateDlg(void)
     : super(IDD_CRC_CREATE, XPR_NULL)
     , mCrcCreate(XPR_NULL)
     , mEnable(XPR_TRUE)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -147,20 +149,24 @@ xpr_bool_t CrcCreateDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                       theApp.loadString(XPR_STRING_LITERAL("popup.crc_create.button.create")));
     SetDlgItemText(IDCANCEL,                   theApp.loadString(XPR_STRING_LITERAL("popup.crc_create.button.close")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("CRC"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("CrcCreate"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
 
 xpr_bool_t CrcCreateDlg::DestroyWindow(void) 
 {
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

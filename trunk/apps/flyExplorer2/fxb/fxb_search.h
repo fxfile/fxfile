@@ -13,25 +13,25 @@
 
 namespace fxb
 {
-#define MAX_SCH_LOC 100
+#define MAX_SEARCH_LOC 100
 
-typedef struct SchUserLocItem
+typedef struct SearchUserLocItem
 {
     std::tstring mPath;
     xpr_bool_t   mInclude;
     xpr_bool_t   mSubFolder;
-} SchUserLocItem;
+} SearchUserLocItem;
 
-typedef std::deque<SchUserLocItem *> UserLocDeque;
+typedef std::deque<SearchUserLocItem *> UserLocDeque;
 
-typedef struct SchUserLoc
+typedef struct SearchUserLoc
 {
     std::tstring mName;
     UserLocDeque mUserLocDeque;
 
     void clear(void)
     {
-        SchUserLocItem *sItem;
+        SearchUserLocItem *sItem;
         UserLocDeque::iterator sIterator;
 
         sIterator = mUserLocDeque.begin();
@@ -44,12 +44,12 @@ typedef struct SchUserLoc
         mUserLocDeque.clear();
     }
 
-} SchUserLoc;
+} SearchUserLoc;
 
-typedef std::deque<SchUserLoc *> SchUserLocDeque;
+typedef std::deque<SearchUserLoc *> SearchUserLocDeque;
 
-typedef std::set<std::tstring> SchUserLocNameSet;
-typedef std::set<std::tstring> SchUserLocPathSet;
+typedef std::set<std::tstring> SearchUserLocNameSet;
+typedef std::set<std::tstring> SearchUserLocPathSet;
 } // namespace fxb
 
 #endif // __FXB_SEARCH_H__

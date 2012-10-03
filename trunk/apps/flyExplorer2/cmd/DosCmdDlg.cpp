@@ -11,6 +11,8 @@
 #include "DosCmdDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +24,7 @@ static char THIS_FILE[] = __FILE__;
 
 DosCmdDlg::DosCmdDlg(const xpr_tchar_t *aPath)
     : super(IDD_DOS_CMD, XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     if (aPath != XPR_NULL) _tcscpy(mPath, aPath);
     else                   _tcscpy(mPath, XPR_STRING_LITERAL("C:\\"));
@@ -33,6 +36,7 @@ DosCmdDlg::DosCmdDlg(const xpr_tchar_t *aPath)
 void DosCmdDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
+
     DDX_Control(pDX, IDC_DOS_COMMAND, mComboBox);
 }
 
@@ -43,13 +47,17 @@ xpr_bool_t DosCmdDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    // Load Flags
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("DosCmd"));
-    mState.setComboBoxList(XPR_STRING_LITERAL("Command"), mComboBox.GetDlgCtrlID());
-    mState.load();
+    xpr_bool_t sNoClose = XPR_TRUE;
 
-    xpr_bool_t sNoClose = mState.getStateB(XPR_STRING_LITERAL("No Close"), XPR_TRUE);
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("DosCmd"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Command"), mComboBox.GetDlgCtrlID());
+        mDlgState->load();
+
+        sNoClose = mDlgState->getStateB(XPR_STRING_LITERAL("No Close"), XPR_TRUE);
+    }
 
     if (mComboBox.GetCount() > 0)
         mComboBox.SetCurSel(0);
@@ -132,10 +140,12 @@ void DosCmdDlg::OnOK(void)
     // Save Command
     DlgState::insertComboEditString(&mComboBox);
 
-    // Save Flags
-    mState.reset();
-    mState.setStateB(XPR_STRING_LITERAL("No Close"), sNoClose);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->setStateB(XPR_STRING_LITERAL("No Close"), sNoClose);
+        mDlgState->save();
+    }
 
     super::OnOK();
 }

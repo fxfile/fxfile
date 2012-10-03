@@ -13,7 +13,8 @@
 
 #include "rgc/ResizingDialog.h"
 #include "rgc/EditScroll.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class RenameEditDlg : public CResizingDialog
 {
@@ -46,10 +47,10 @@ protected:
     xpr_sint_t mHeight1;
 
 protected:
-    HICON      mIcon;
-    DlgState   mState;
-    EditScroll mNewEditCtrl;
-    EditScroll mOldEditCtrl;
+    HICON       mIcon;
+    DlgState   *mDlgState;
+    EditScroll  mNewEditCtrl;
+    EditScroll  mOldEditCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

@@ -39,25 +39,25 @@ SearchFile::~SearchFile(void)
 {
     Stop();
 
-    SchDir *sSchDir;
-    SchDirDeque::iterator sIterator;
+    SearchDir *sSearchDir;
+    SearchDirDeque::iterator sIterator;
 
-    sIterator = mSchIncDirDeque.begin();
-    for (; sIterator != mSchIncDirDeque.end(); ++sIterator)
+    sIterator = mSearchIncDirDeque.begin();
+    for (; sIterator != mSearchIncDirDeque.end(); ++sIterator)
     {
-        sSchDir = *sIterator;
-        XPR_SAFE_DELETE(sSchDir);
+        sSearchDir = *sIterator;
+        XPR_SAFE_DELETE(sSearchDir);
     }
 
-    sIterator = mSchExcDirDeque.begin();
-    for (; sIterator != mSchExcDirDeque.end(); ++sIterator)
+    sIterator = mSearchExcDirDeque.begin();
+    for (; sIterator != mSearchExcDirDeque.end(); ++sIterator)
     {
-        sSchDir = *sIterator;
-        XPR_SAFE_DELETE(sSchDir);
+        sSearchDir = *sIterator;
+        XPR_SAFE_DELETE(sSearchDir);
     }
 
-    mSchIncDirDeque.clear();
-    mSchExcDirDeque.clear();
+    mSearchIncDirDeque.clear();
+    mSearchExcDirDeque.clear();
 
     XPR_SAFE_DELETE_ARRAY(mTextA);
     XPR_SAFE_DELETE_ARRAY(mTextW);
@@ -187,14 +187,14 @@ void SearchFile::addIncludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder)
     if (XPR_IS_NULL(aDir))
         return;
 
-    SchDir *sSchDir = new SchDir;
-    if (XPR_IS_NULL(sSchDir))
+    SearchDir *sSearchDir = new SearchDir;
+    if (XPR_IS_NULL(sSearchDir))
         return;
 
-    sSchDir->mPath      = aDir;
-    sSchDir->mSubFolder = aSubFolder;
+    sSearchDir->mPath      = aDir;
+    sSearchDir->mSubFolder = aSubFolder;
 
-    mSchIncDirDeque.push_back(sSchDir);
+    mSearchIncDirDeque.push_back(sSearchDir);
 }
 
 void SearchFile::addExcludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder)
@@ -202,14 +202,14 @@ void SearchFile::addExcludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder)
     if (XPR_IS_NULL(aDir))
         return;
 
-    SchDir *sSchDir = new SchDir;
-    if (XPR_IS_NULL(sSchDir))
+    SearchDir *sSearchDir = new SearchDir;
+    if (XPR_IS_NULL(sSearchDir))
         return;
 
-    sSchDir->mPath      = aDir;
-    sSchDir->mSubFolder = aSubFolder;
+    sSearchDir->mPath      = aDir;
+    sSearchDir->mSubFolder = aSubFolder;
 
-    mSchExcDirDeque.push_back(sSchDir);
+    mSearchExcDirDeque.push_back(sSearchDir);
 }
 
 xpr_bool_t SearchFile::OnPreEntry(void)
@@ -244,17 +244,17 @@ unsigned SearchFile::OnEntryProc(void)
     clock_t sStartClock, sStopClock;
     sStartClock = clock();
 
-    SchDir *sSchDir;
-    SchDirDeque::iterator sIterator;
+    SearchDir *sSearchDir;
+    SearchDirDeque::iterator sIterator;
 
-    sIterator = mSchIncDirDeque.begin();
-    for (; sIterator != mSchIncDirDeque.end(); ++sIterator)
+    sIterator = mSearchIncDirDeque.begin();
+    for (; sIterator != mSearchIncDirDeque.end(); ++sIterator)
     {
-        sSchDir = *sIterator;
-        if (XPR_IS_NULL(sSchDir))
+        sSearchDir = *sIterator;
+        if (XPR_IS_NULL(sSearchDir))
             continue;
 
-        searchRecursive(0, sSchDir->mPath.c_str(), sSchDir->mSubFolder);
+        searchRecursive(0, sSearchDir->mPath.c_str(), sSearchDir->mSubFolder);
     }
 
     sStopClock = clock();
@@ -275,19 +275,19 @@ void SearchFile::searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, 
     if (IsStop())
         return;
 
-    if (mSchExcDirDeque.empty() == false)
+    if (mSearchExcDirDeque.empty() == false)
     {
-        SchDir *sSchDir;
-        SchDirDeque::iterator sIterator;
+        SearchDir *sSearchDir;
+        SearchDirDeque::iterator sIterator;
 
-        sIterator = mSchExcDirDeque.begin();
-        for (; sIterator != mSchExcDirDeque.end(); ++sIterator)
+        sIterator = mSearchExcDirDeque.begin();
+        for (; sIterator != mSearchExcDirDeque.end(); ++sIterator)
         {
-            sSchDir = *sIterator;
-            if (XPR_IS_NULL(sSchDir))
+            sSearchDir = *sIterator;
+            if (XPR_IS_NULL(sSearchDir))
                 continue;
 
-            if (_tcsicmp(aFolder, sSchDir->mPath.c_str()) == 0)
+            if (_tcsicmp(aFolder, sSearchDir->mPath.c_str()) == 0)
                 return;
         }
     }

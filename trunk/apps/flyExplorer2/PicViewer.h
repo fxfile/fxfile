@@ -12,8 +12,9 @@
 #pragma once
 
 #include "rgc/BCMenu.h"
-#include "DlgState.h"
 #include "gfl/libgfl.h"
+
+class DlgState;
 
 class PicViewer : public CDialog
 {
@@ -113,10 +114,8 @@ protected:
     GFL_FILE_INFORMATION mGflFileInfo;
 
 protected:
-    BCMenu mMenu;
-
-protected:
-    DlgState mState;
+    BCMenu    mMenu;
+    DlgState *mDlgState;
 
 public:
     virtual xpr_bool_t Create(CWnd* pParentWnd);

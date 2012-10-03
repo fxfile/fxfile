@@ -8,13 +8,15 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "TextFileOutDlg.h"
+#include "FileListDlg.h"
 
 #include "fxb/fxb_file_list.h"
 
 #include "rgc/FileDialogST.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -30,31 +32,32 @@ enum
     WM_FINALIZE = WM_USER + 100,
 };
 
-TextFileOutDlg::TextFileOutDlg(void)
+FileListDlg::FileListDlg(void)
     : super(IDD_FILE_LIST)
-    , mTextFileOut(XPR_NULL)
+    , mFileList(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
 }
 
-TextFileOutDlg::~TextFileOutDlg(void)
+FileListDlg::~FileListDlg(void)
 {
-    XPR_SAFE_DELETE(mTextFileOut);
+    XPR_SAFE_DELETE(mFileList);
 
     mPathDeque.clear();
 }
 
-void TextFileOutDlg::DoDataExchange(CDataExchange* pDX)
+void FileListDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(TextFileOutDlg, super)
+BEGIN_MESSAGE_MAP(FileListDlg, super)
     ON_BN_CLICKED(IDC_FILE_LIST_PATH_BROWSE, OnPathBrowse)
     ON_BN_CLICKED(IDOK, OnOK)
     ON_MESSAGE(WM_FINALIZE, OnFinalize)
 END_MESSAGE_MAP()
 
-xpr_bool_t TextFileOutDlg::OnInitDialog(void) 
+xpr_bool_t FileListDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -84,46 +87,50 @@ xpr_bool_t TextFileOutDlg::OnInitDialog(void)
     SetDlgItemText(IDC_FILE_LIST_WITH_DIR,      theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_dir")));
     SetDlgItemText(IDC_FILE_LIST_SEPARATOR,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.separator")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("FileList"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setCheckBox(XPR_STRING_LITERAL("ByLine"),         IDC_FILE_LIST_BY_LINE);
-    mState.setCheckBox(XPR_STRING_LITERAL("OnlyFileName"),   IDC_FILE_LIST_ONLY_FILENAME);
-    mState.setCheckBox(XPR_STRING_LITERAL("WithExt"),        IDC_FILE_LIST_WITH_EXT);
-    mState.setCheckBox(XPR_STRING_LITERAL("WithDir"),        IDC_FILE_LIST_WITH_DIR);
-    mState.setCheckBox(XPR_STRING_LITERAL("WithInfo"),       IDC_FILE_LIST_WITH_INFO);
-    mState.setCheckBox(XPR_STRING_LITERAL("Seperator"),      IDC_FILE_LIST_SEPARATOR);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Seperator Text"), IDC_FILE_LIST_SEPARATOR_TEXT);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FileList"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("ByLine"),         IDC_FILE_LIST_BY_LINE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("OnlyFileName"),   IDC_FILE_LIST_ONLY_FILENAME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("WithExt"),        IDC_FILE_LIST_WITH_EXT);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("WithDir"),        IDC_FILE_LIST_WITH_DIR);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("WithInfo"),       IDC_FILE_LIST_WITH_INFO);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Seperator"),      IDC_FILE_LIST_SEPARATOR);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Seperator Text"), IDC_FILE_LIST_SEPARATOR_TEXT);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
 
-xpr_bool_t TextFileOutDlg::DestroyWindow(void)
+xpr_bool_t FileListDlg::DestroyWindow(void)
 {
-    if (mTextFileOut != XPR_NULL)
-        mTextFileOut->Stop();
+    if (mFileList != XPR_NULL)
+        mFileList->Stop();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }
 
-void TextFileOutDlg::setTextFile(const xpr_tchar_t *aTextFile)
+void FileListDlg::setTextFile(const xpr_tchar_t *aTextFile)
 {
     if (aTextFile != XPR_NULL)
         mTextFile = aTextFile;
 }
 
-void TextFileOutDlg::addPath(const xpr_tchar_t *aPath)
+void FileListDlg::addPath(const xpr_tchar_t *aPath)
 {
     if (aPath != XPR_NULL)
         mPathDeque.push_back(aPath);
 }
 
-void TextFileOutDlg::OnPathBrowse(void) 
+void FileListDlg::OnPathBrowse(void) 
 {
     xpr_tchar_t sFileType[0xff] = {0};
     _stprintf(sFileType, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.file_list.file_dialog.filter.text_file")));
@@ -133,7 +140,7 @@ void TextFileOutDlg::OnPathBrowse(void)
         SetDlgItemText(IDC_PATH, sFileDialog.GetPathName());
 }
 
-void TextFileOutDlg::enableWindow(xpr_bool_t aEnable)
+void FileListDlg::enableWindow(xpr_bool_t aEnable)
 {
     xpr_uint_t sIds[] = {
         IDC_FILE_LIST_PATH,
@@ -161,13 +168,13 @@ void TextFileOutDlg::enableWindow(xpr_bool_t aEnable)
     GetDlgItem(IDOK)->SetWindowText((aEnable == XPR_TRUE) ? theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : theApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.stop")));
 }
 
-void TextFileOutDlg::OnOK(void) 
+void FileListDlg::OnOK(void) 
 {
-    if (mTextFileOut != XPR_NULL)
+    if (mFileList != XPR_NULL)
     {
-        if (mTextFileOut->getStatus() == fxb::TextFileOut::StatusCreating)
+        if (mFileList->getStatus() == fxb::FileList::StatusCreating)
         {
-            mTextFileOut->Stop();
+            mFileList->Stop();
             return;
         }
     }
@@ -188,49 +195,49 @@ void TextFileOutDlg::OnOK(void)
     fxb::ConvertStringToFormat(sText, sDivText);
 
     xpr_uint_t sFlags = 0;
-    if (sByLine    == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsByLine;
-    if (sOnlyFile  == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsOnlyFile;
-    if (sFrontPath == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsWithDir;
-    if (sExtension == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsExtension;
-    if (sAttribute == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsAttribute;
-    if (sSplitChar == XPR_TRUE) sFlags |= fxb::TextFileOut::FlagsSplitChar;
+    if (sByLine    == XPR_TRUE) sFlags |= fxb::FileList::FlagsByLine;
+    if (sOnlyFile  == XPR_TRUE) sFlags |= fxb::FileList::FlagsOnlyFile;
+    if (sFrontPath == XPR_TRUE) sFlags |= fxb::FileList::FlagsWithDir;
+    if (sExtension == XPR_TRUE) sFlags |= fxb::FileList::FlagsExtension;
+    if (sAttribute == XPR_TRUE) sFlags |= fxb::FileList::FlagsAttribute;
+    if (sSplitChar == XPR_TRUE) sFlags |= fxb::FileList::FlagsSplitChar;
 
-    XPR_SAFE_DELETE(mTextFileOut);
+    XPR_SAFE_DELETE(mFileList);
 
-    mTextFileOut = new fxb::TextFileOut;
-    mTextFileOut->setOwner(m_hWnd, WM_FINALIZE);
+    mFileList = new fxb::FileList;
+    mFileList->setOwner(m_hWnd, WM_FINALIZE);
 
-    mTextFileOut->setTextFile(sTextFile);
-    mTextFileOut->setFlags(sFlags);
-    mTextFileOut->setSplitChar(sDivText);
+    mFileList->setTextFile(sTextFile);
+    mFileList->setFlags(sFlags);
+    mFileList->setSplitChar(sDivText);
 
     PathDeque::iterator sIterator = mPathDeque.begin();
     for (; sIterator != mPathDeque.end(); ++sIterator)
-        mTextFileOut->addPath(sIterator->c_str());
+        mFileList->addPath(sIterator->c_str());
 
-    if (mTextFileOut->Start())
+    if (mFileList->Start())
     {
         enableWindow(XPR_FALSE);
     }
 }
 
-LRESULT TextFileOutDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
+LRESULT FileListDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mTextFileOut->Stop();
+    mFileList->Stop();
 
-    fxb::TextFileOut::Status sStatus;
-    sStatus = mTextFileOut->getStatus();
+    fxb::FileList::Status sStatus;
+    sStatus = mFileList->getStatus();
 
     switch (sStatus)
     {
-    case fxb::TextFileOut::StatusFailed:
+    case fxb::FileList::StatusFailed:
         {
             const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_list.msg.not_created"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
 
-    case fxb::TextFileOut::StatusCreateCompleted:
+    case fxb::FileList::StatusCreateCompleted:
         {
             super::OnOK();
             break;

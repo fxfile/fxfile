@@ -15,6 +15,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +38,7 @@ enum
 FileCombineDlg::FileCombineDlg()
     : super(IDD_FILE_COMBINE, XPR_NULL)
     , mFileCombine(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -103,10 +105,12 @@ xpr_bool_t FileCombineDlg::OnInitDialog(void)
 
     setStatus(theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.ready")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("FileCombine"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FileCombine"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -128,9 +132,11 @@ xpr_bool_t FileCombineDlg::DestroyWindow(void)
     if (mFileCombine != XPR_NULL)
         mFileCombine->Stop();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

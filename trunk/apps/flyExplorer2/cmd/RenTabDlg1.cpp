@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 RenTabDlg1::RenTabDlg1(void)
     : super(IDD_RENAME_2)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -64,14 +66,16 @@ xpr_bool_t RenTabDlg1::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_NOCASE,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.check.no_case")));
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_APPLY,        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.button.apply")));
 
-    // Load Dialog State
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("Rename2"));
-    mState.setComboBoxList(XPR_STRING_LITERAL("Old"), IDC_BATCH_RENAME_REPLACE_OLD);
-    mState.setComboBoxList(XPR_STRING_LITERAL("New"), IDC_BATCH_RENAME_REPLACE_NEW);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Repeat"),  IDC_BATCH_RENAME_REPLACE_REPEAT);
-    mState.setCheckBox(XPR_STRING_LITERAL("No Case"), IDC_BATCH_RENAME_REPLACE_NOCASE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Rename2"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Old"), IDC_BATCH_RENAME_REPLACE_OLD);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("New"), IDC_BATCH_RENAME_REPLACE_NEW);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Repeat"),  IDC_BATCH_RENAME_REPLACE_REPEAT);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("No Case"), IDC_BATCH_RENAME_REPLACE_NOCASE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -120,7 +124,9 @@ void RenTabDlg1::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }

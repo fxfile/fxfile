@@ -11,7 +11,9 @@
 #include "HistoryDlg.h"
 
 #include "fxb/fxb_context_menu.h"
+
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "resource.h"
 
 #ifdef _DEBUG
@@ -26,6 +28,7 @@ HistoryDlg::HistoryDlg(xpr_size_t aHistory)
     : super(IDD_HISTORY)
     , mCurHistoryDisp(aHistory)
     , mIndex(0xffffffff)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -174,10 +177,12 @@ xpr_bool_t HistoryDlg::OnInitDialog(void)
     mTabCtrl.SetCurSel((xpr_sint_t)mCurHistoryDisp);
     showTab(mCurHistoryDisp);
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("History"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("History"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -214,9 +219,11 @@ void HistoryDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void HistoryDlg::getSelHistory(xpr_size_t &aHistory, xpr_uint_t &aIndex)

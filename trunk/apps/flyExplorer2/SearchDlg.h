@@ -16,7 +16,7 @@
 #include "rgc/ResizingDialog.h"
 #include "rgc/BtnST.h"
 
-#include "DlgState.h"
+class DlgState;
 
 namespace fxb
 {
@@ -39,10 +39,10 @@ public:
     void createAccelTable(void);
 
 public:
-    void loadUserLoc(fxb::SchUserLocDeque *aUserLocDeque);
-    void saveUserLoc(fxb::SchUserLocDeque *aUserLocDeque);
-    void getUserLoc(fxb::SchUserLocDeque *aUserLocDeque);
-    void updateUserLoc(fxb::SchUserLocDeque *aUserLocDeque);
+    void loadUserLoc(fxb::SearchUserLocDeque *aUserLocDeque);
+    void saveUserLoc(fxb::SearchUserLocDeque *aUserLocDeque);
+    void getUserLoc(fxb::SearchUserLocDeque *aUserLocDeque);
+    void updateUserLoc(fxb::SearchUserLocDeque *aUserLocDeque);
 
     void setNameFocus(void);
 
@@ -56,13 +56,13 @@ protected:
     fxb::SearchFile  *mSearchFile;
     SearchResultCtrl *mResultCtrl;
 
-    typedef struct tagSchDir
+    typedef struct tagSearchDir
     {
         std::tstring mPath;
         xpr_bool_t   mSubFolder;
-    } SchDir, FAR *LPSCHDIR;
+    } SearchDir;
 
-    typedef std::deque<LPSCHDIR> SchDirDeque;
+    typedef std::deque<SearchDir *> SearchDirDeque;
 
     xpr_bool_t   mAnimation;
     xpr_double_t mDegree;
@@ -74,10 +74,10 @@ protected:
     HACCEL     mAccelTable;
 
 protected:
-    DlgState     mState;
-    CAnimateCtrl mAnimateCtrl;
-    CComboBoxEx  mLocComboBox;
-    CButtonST    mCurLocButton;
+    DlgState     *mDlgState;
+    CAnimateCtrl  mAnimateCtrl;
+    CComboBoxEx   mLocComboBox;
+    CButtonST     mCurLocButton;
 
 public:
     virtual xpr_bool_t Create(CWnd* pParentWnd);

@@ -150,12 +150,13 @@ const xpr_byte_t   kbyte8max  = XPR_UINT8_LITERAL (0xff);
 #define XPR_IS_NULL(a) ((a) == XPR_NULL)
 #define XPR_IS_NOT_NULL(a) ((a) != XPR_NULL)
 
-#define XPR_SIZEOF sizeof
+#define XPR_SIZE_OF sizeof
+#define XPR_OFFSET_OF offsetof
 
 #ifndef countof
-#define XPR_COUNTOF(a) (sizeof(a) / sizeof(a[0]))
+#define XPR_COUNT_OF(a) (sizeof(a) / sizeof(a[0]))
 #else // countof
-#define XPR_COUNTOF countof
+#define XPR_COUNT_OF countof
 #endif
 
 #endif // __XPR_TYPES_H__

@@ -14,6 +14,8 @@
 
 #include "SystemInfo.h"
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,6 +25,7 @@ static char THIS_FILE[] = __FILE__;
 
 SharedProcDlg::SharedProcDlg(const xpr_tchar_t *aPath)
     : super(IDD_SHARED_PROC, XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -175,11 +178,13 @@ xpr_bool_t SharedProcDlg::OnInitDialog(void)
     SetDlgItemText(IDC_SHARED_PROC_PROPERTIES, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.button.properties")));
     SetDlgItemText(IDOK,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("SharedProc"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("SharedProc"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -196,9 +201,11 @@ void SharedProcDlg::OnDestroy(void)
 
     DESTROY_ICON(mIcon);
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 xpr_bool_t SharedProcDlg::DestroyWindow(void) 

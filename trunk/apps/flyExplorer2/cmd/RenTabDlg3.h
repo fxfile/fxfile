@@ -12,7 +12,8 @@
 #pragma once
 
 #include "RenTabDlg.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class RenTabDlg3 : public RenTabDlg
 {
@@ -25,7 +26,7 @@ public:
     void enableWindowDelete(void);
 
 protected:
-    DlgState mState;
+    DlgState *mDlgState;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);

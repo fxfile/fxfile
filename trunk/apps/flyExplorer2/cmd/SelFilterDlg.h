@@ -12,7 +12,8 @@
 #pragma once
 
 #include "fxb/fxb_filter.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class SelFilterDlg : public CDialog
 {
@@ -31,8 +32,8 @@ protected:
     fxb::FilterItem *mFilterItem;
 
 protected:
-    DlgState  mState;
-    CComboBox mComboBox;
+    DlgState  *mDlgState;
+    CComboBox  mComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

@@ -11,30 +11,28 @@
 #define __FX_DLG_STATE_H__
 #pragma once
 
-namespace fxb
-{
-class IniFile;
-} // namespace fxb
+class DlgStateMgr;
 
 class DlgState
 {
-public:
-    DlgState(const xpr_tchar_t *aSection = XPR_NULL);
+    friend class DlgStateMgr;
+
+protected:
+    DlgState(const xpr_tchar_t *aSection);
     virtual ~DlgState(void);
 
 public:
-    void setSection(const xpr_tchar_t *aSection);
-
     void setDialog(CDialog *aDlg, xpr_bool_t aPos = XPR_FALSE);
-    void setListCtrl(CWnd *aWnd);
-    void setEditCtrl(std::tstring aEntry, xpr_uint_t aId);
-    void setComboBox(std::tstring aEntry, xpr_uint_t aId);
-    void setComboBoxList(std::tstring aEntry, xpr_uint_t aId);
-    void setCheckBox(std::tstring aEntry, xpr_uint_t aId);
+    void setListCtrl(const xpr_tchar_t *aEntry, xpr_uint_t aId);
+    void setEditCtrl(const xpr_tchar_t *aEntry, xpr_uint_t aId);
+    void setComboBox(const xpr_tchar_t *aEntry, xpr_uint_t aId);
+    void setComboBoxList(const xpr_tchar_t *aEntry, xpr_uint_t aId);
+    void setCheckBox(const xpr_tchar_t *aEntry, xpr_uint_t aId);
 
-    xpr_sint_t         getStateB(const xpr_tchar_t *aEntry, xpr_bool_t aDefault = XPR_FALSE);
-    xpr_bool_t         getStateI(const xpr_tchar_t *aEntry, xpr_sint_t aDefault = 0);
-    const xpr_tchar_t *getStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aDefault = XPR_NULL);
+    xpr_bool_t         existState(const xpr_tchar_t *aEntry) const;
+    xpr_bool_t         getStateB(const xpr_tchar_t *aEntry, xpr_bool_t aDefault = XPR_FALSE) const;
+    xpr_sint_t         getStateI(const xpr_tchar_t *aEntry, xpr_sint_t aDefault = 0) const;
+    const xpr_tchar_t *getStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aDefault = XPR_NULL) const;
     xpr_bool_t         setStateB(const xpr_tchar_t *aEntry, xpr_bool_t aValue);
     xpr_bool_t         setStateI(const xpr_tchar_t *aEntry, xpr_sint_t aValue);
     xpr_bool_t         setStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aValue);
@@ -44,21 +42,32 @@ public:
 
     void reset(void);
 
+    void clear(void);
+
 public:
     static void insertComboEditString(CComboBox *aComboBox, xpr_bool_t aCase = XPR_TRUE);
 
 protected:
+    typedef std::tr1::unordered_map<std::tstring, std::tstring> ValueMap;
+
+    const std::tstring &getSection(void) const;
+    const ValueMap &getValueMap(void) const;
+    void setValueMap(const ValueMap &aValueMap);
+
+protected:
+    typedef std::tr1::unordered_map<std::tstring, xpr_uint_t> CtrlMap;
+
     CDialog   *mDlg;
-    CListCtrl *mListCtrl;
+    CtrlMap    mListCtrlMap;
+    CtrlMap    mEditMap;
+    CtrlMap    mComboBoxMap;
+    CtrlMap    mComboBoxListMap;
+    CtrlMap    mCheckBoxMap;
+    xpr_bool_t mPos;
 
-    std::map<std::tstring, xpr_uint_t> mEditMap;
-    std::map<std::tstring, xpr_uint_t> mComboBoxMap;
-    std::map<std::tstring, xpr_uint_t> mComboBoxListMap;
-    std::map<std::tstring, xpr_uint_t> mCheckBoxMap;
-
-    fxb::IniFile *mIniFile;
-    std::tstring  mSection;
-    xpr_bool_t    mPos;
+protected:
+    std::tstring mSection;
+    ValueMap     mValueMap;
 };
 
 #endif // __FX_DLG_STATE_H__

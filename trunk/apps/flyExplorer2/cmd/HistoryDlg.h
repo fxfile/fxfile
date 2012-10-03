@@ -13,7 +13,8 @@
 
 #include "fxb/fxb_history.h"
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class HistoryDlg : public CResizingDialog
 {
@@ -54,10 +55,10 @@ protected:
     xpr_uint_t mIndex;
 
 protected:
-    HICON     mIcon;
-    DlgState  mState;
-    CTreeCtrl mTreeCtrl;
-    CTabCtrl  mTabCtrl;
+    HICON      mIcon;
+    DlgState  *mDlgState;
+    CTreeCtrl  mTreeCtrl;
+    CTabCtrl   mTabCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

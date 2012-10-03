@@ -45,6 +45,7 @@
 #include "CfgPath.h"
 #include "PreviewViewEx.h"
 #include "CtrlId.h"
+#include "DlgStateMgr.h"
 
 #include "cfg/CfgMgrDlg.h"
 
@@ -597,6 +598,8 @@ void MainFrame::saveOption(void)
         ViewSet sViewSet;
         sViewSet.verify();
     }
+
+    DlgStateMgr::instance().save();
 
     saveControlBarState();
 

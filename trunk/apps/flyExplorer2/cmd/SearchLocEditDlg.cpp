@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "SchLocEditDlg.h"
+#include "SearchLocEditDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,30 +16,30 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SchLocEditDlg::SchLocEditDlg(void)
+SearchLocEditDlg::SearchLocEditDlg(void)
     : super(IDD_SEARCH_LOC_EDIT, XPR_NULL)
     , mInclude(XPR_TRUE)
     , mSubFolder(XPR_FALSE)
-    , mSchUserLocPathSet(XPR_NULL)
+    , mSearchUserLocPathSet(XPR_NULL)
 {
 }
 
-SchLocEditDlg::~SchLocEditDlg(void)
+SearchLocEditDlg::~SearchLocEditDlg(void)
 {
 }
 
-void SchLocEditDlg::DoDataExchange(CDataExchange* pDX)
+void SearchLocEditDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
 }
 
-BEGIN_MESSAGE_MAP(SchLocEditDlg, super)
+BEGIN_MESSAGE_MAP(SearchLocEditDlg, super)
     ON_BN_CLICKED(IDC_SEARCH_LOC_EDIT_INCLUDE, OnIncludeExclude)
     ON_BN_CLICKED(IDC_SEARCH_LOC_EDIT_EXCLUDE, OnIncludeExclude)
     ON_BN_CLICKED(IDC_SEARCH_LOC_EDIT_PATH_BROWSE, OnPathBrowse)
 END_MESSAGE_MAP()
 
-xpr_bool_t SchLocEditDlg::OnInitDialog(void) 
+xpr_bool_t SearchLocEditDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -66,7 +66,7 @@ xpr_bool_t SchLocEditDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void SchLocEditDlg::OnOK(void)
+void SearchLocEditDlg::OnOK(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     GetDlgItemText(IDC_SEARCH_LOC_EDIT_PATH, sPath, XPR_MAX_PATH);
@@ -74,13 +74,13 @@ void SchLocEditDlg::OnOK(void)
     if (_tcslen(sPath) == 2)
         _tcscat(sPath, XPR_STRING_LITERAL("\\"));
 
-    if (mSchUserLocPathSet != XPR_NULL)
+    if (mSearchUserLocPathSet != XPR_NULL)
     {
         xpr_tchar_t sPathUpper[XPR_MAX_PATH + 1] = {0};
         _tcscpy(sPathUpper, sPath);
         _tcsupr(sPathUpper);
 
-        if (mSchUserLocPathSet->find(sPathUpper) != mSchUserLocPathSet->end())
+        if (mSearchUserLocPathSet->find(sPathUpper) != mSearchUserLocPathSet->end())
         {
             const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.msg.duplicated_path"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
@@ -100,28 +100,28 @@ void SchLocEditDlg::OnOK(void)
     super::OnOK();
 }
 
-const xpr_tchar_t *SchLocEditDlg::getPath(void) const
+const xpr_tchar_t *SearchLocEditDlg::getPath(void) const
 {
     return mPath.c_str();
 }
 
-xpr_bool_t SchLocEditDlg::isInclude(void) const
+xpr_bool_t SearchLocEditDlg::isInclude(void) const
 {
     return mInclude;
 }
 
-xpr_bool_t SchLocEditDlg::isSubFolder(void) const
+xpr_bool_t SearchLocEditDlg::isSubFolder(void) const
 {
     return mSubFolder;
 }
 
-void SchLocEditDlg::setPath(const xpr_tchar_t *aPath)
+void SearchLocEditDlg::setPath(const xpr_tchar_t *aPath)
 {
     if (aPath != XPR_NULL)
         mPath = aPath;
 }
 
-void SchLocEditDlg::setPath(LPITEMIDLIST aFullPidl)
+void SearchLocEditDlg::setPath(LPITEMIDLIST aFullPidl)
 {
     if (aFullPidl == XPR_NULL)
         return;
@@ -132,22 +132,22 @@ void SchLocEditDlg::setPath(LPITEMIDLIST aFullPidl)
     mPath = sPath;
 }
 
-void SchLocEditDlg::setInclude(xpr_bool_t aInclude)
+void SearchLocEditDlg::setInclude(xpr_bool_t aInclude)
 {
     mInclude = aInclude;
 }
 
-void SchLocEditDlg::setSubFolder(xpr_bool_t aSubFolder)
+void SearchLocEditDlg::setSubFolder(xpr_bool_t aSubFolder)
 {
     mSubFolder = aSubFolder;
 }
 
-void SchLocEditDlg::setPathSet(fxb::SchUserLocPathSet *aSchUserLocPathSet)
+void SearchLocEditDlg::setPathSet(fxb::SearchUserLocPathSet *aSearchUserLocPathSet)
 {
-    mSchUserLocPathSet = aSchUserLocPathSet;
+    mSearchUserLocPathSet = aSearchUserLocPathSet;
 }
 
-void SchLocEditDlg::OnIncludeExclude(void)
+void SearchLocEditDlg::OnIncludeExclude(void)
 {
     xpr_bool_t sInclude = ((CButton *)GetDlgItem(IDC_SEARCH_LOC_EDIT_INCLUDE))->GetCheck();
     GetDlgItem(IDC_SEARCH_LOC_EDIT_SUBFOLDER)->EnableWindow(sInclude);
@@ -161,7 +161,7 @@ static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM
     return 0;
 }
 
-void SchLocEditDlg::OnPathBrowse(void)
+void SearchLocEditDlg::OnPathBrowse(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     GetDlgItemText(IDC_SEARCH_LOC_EDIT_PATH, sPath, XPR_MAX_PATH);

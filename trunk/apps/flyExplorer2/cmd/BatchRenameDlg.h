@@ -16,8 +16,7 @@
 #include "rgc/ResizingDialog.h"
 #include "rgc/DlgToolBar.h"
 
-#include "DlgState.h"
-
+class DlgState;
 class RenTabDlg;
 
 class BatchRenameDlg : public CResizingDialog
@@ -69,11 +68,11 @@ protected:
     TabDeque mTabDeque;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CTabCtrl      mTabCtrl;
-    CProgressCtrl mProgressCtrl;
-    CListCtrl     mListCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CTabCtrl       mTabCtrl;
+    CProgressCtrl  mProgressCtrl;
+    CListCtrl      mListCtrl;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);

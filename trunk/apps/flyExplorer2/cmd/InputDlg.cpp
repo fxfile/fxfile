@@ -11,6 +11,8 @@
 #include "InputDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -24,6 +26,7 @@ InputDlg::InputDlg(xpr_sint_t aDlgWidth)
     , mFileRename(XPR_FALSE)
     , mCheckEmpty(XPR_FALSE)
     , mLimitText(XPR_MAX_PATH)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     mText[0] = 0;
@@ -141,9 +144,12 @@ xpr_bool_t InputDlg::OnInitDialog(void)
     // Load Dialog State
     if (mProfile.empty() == XPR_FALSE)
     {
-        mState.setSection(mProfile.c_str());
-        mState.setDialog(this, XPR_TRUE);
-        mState.load();
+        mDlgState = DlgStateMgr::instance().getDlgState(mProfile.c_str());
+        if (XPR_IS_NOT_NULL(mDlgState))
+        {
+            mDlgState->setDialog(this, XPR_TRUE);
+            mDlgState->load();
+        }
     }
 
     return XPR_TRUE;
@@ -185,7 +191,10 @@ void InputDlg::OnDestroy(void)
     // Save Dialog State
     if (mProfile.empty() == XPR_FALSE)
     {
-        mState.reset();
-        mState.save();
+        if (XPR_IS_NOT_NULL(mDlgState))
+        {
+            mDlgState->reset();
+            mDlgState->save();
+        }
     }
 }

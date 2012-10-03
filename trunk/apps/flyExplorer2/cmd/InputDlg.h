@@ -12,7 +12,8 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class InputDlg : public CResizingDialog
 {
@@ -45,8 +46,8 @@ protected:
     xpr_sint_t mLimitText;
 
 protected:
-    HICON    mIcon;
-    DlgState mState;
+    HICON     mIcon;
+    DlgState *mDlgState;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

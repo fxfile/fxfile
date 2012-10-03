@@ -17,6 +17,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,6 +41,7 @@ CrcVerifyDlg::CrcVerifyDlg(const xpr_tchar_t *aDir)
     : super(IDD_CRC_VERIFY, XPR_NULL)
     , mCrcVerify(new fxb::CrcVerify)
     , mEnable(XPR_TRUE)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -194,11 +196,13 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                     theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.verify")));
     SetDlgItemText(IDCANCEL,                 theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.close")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("CRCCheck"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("CrcVerify"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -240,9 +244,11 @@ void CrcVerifyDlg::enableWindow(xpr_bool_t aEnable)
 
 xpr_bool_t CrcVerifyDlg::DestroyWindow(void) 
 {
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

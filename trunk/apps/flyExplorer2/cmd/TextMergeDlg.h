@@ -12,12 +12,13 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class TextMerge;
 } // namespace fxb
+
+class DlgState;
 
 class TextMergeDlg : public CResizingDialog
 {
@@ -40,11 +41,11 @@ protected:
     fxb::TextMerge *mTextMerge;
 
 protected:
-    HICON           mIcon;
-    DlgState        mState;
-    CProgressCtrl   mProgressCtrl;
-    CComboBox       mEncodingComboBox;
-    CListCtrl       mListCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CComboBox      mEncodingComboBox;
+    CListCtrl      mListCtrl;
 
 public:
     virtual xpr_bool_t DestroyWindow(void);

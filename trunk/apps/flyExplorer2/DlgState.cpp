@@ -10,9 +10,6 @@
 #include "stdafx.h"
 #include "DlgState.h"
 
-#include "fxb/fxb_ini_file.h"
-#include "CfgPath.h"
-
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -23,46 +20,25 @@ static char THIS_FILE[]=__FILE__;
 
 DlgState::DlgState(const xpr_tchar_t *aSection)
     : mDlg(XPR_NULL)
-    , mListCtrl(XPR_NULL)
-    , mIniFile(XPR_NULL)
     , mPos(XPR_FALSE)
 {
-    setSection(aSection);
+    if (XPR_IS_NOT_NULL(aSection))
+        mSection = aSection;
 }
 
 DlgState::~DlgState(void)
 {
+    clear();
+}
+
+void DlgState::clear(void)
+{
+    mListCtrlMap.clear();
     mEditMap.clear();
     mComboBoxMap.clear();
     mComboBoxListMap.clear();
     mCheckBoxMap.clear();
-
-    XPR_SAFE_DELETE(mIniFile);
-}
-
-void DlgState::setSection(const xpr_tchar_t *aSection)
-{
-    if (XPR_IS_NULL(aSection))
-        return;
-
-    if (XPR_IS_NOT_NULL(mIniFile))
-        return;
-
-    mSection = aSection;
-
-    std::tstring sOldSection = mSection;
-    std::tstring sNewSection = mSection;
-    sNewSection.insert(0, XPR_STRING_LITERAL("dlg"));
-
-    xpr_tchar_t sOldPath[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sNewPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeSettings, sOldPath, XPR_MAX_PATH, sOldSection.c_str());
-    CfgPath::instance().getSavePath(CfgPath::TypeSettings, sNewPath, XPR_MAX_PATH, sNewSection.c_str());
-
-    if (fxb::IsExistFile(sNewPath) == XPR_FALSE)
-        ::MoveFile(sOldPath, sNewPath);
-
-    mIniFile = new fxb::IniFile(sNewPath);
+    mValueMap.clear();
 }
 
 void DlgState::setDialog(CDialog *aDlg, xpr_bool_t aPos)
@@ -71,101 +47,150 @@ void DlgState::setDialog(CDialog *aDlg, xpr_bool_t aPos)
     mPos = aPos;
 }
 
-void DlgState::setListCtrl(CWnd *aWnd)
+void DlgState::setListCtrl(const xpr_tchar_t *aEntry, xpr_uint_t aId)
 {
-    mListCtrl = (CListCtrl *)aWnd;
+    if (XPR_IS_NOT_NULL(aEntry))
+        mListCtrlMap[aEntry] = aId;
 }
 
-void DlgState::setEditCtrl(std::tstring aEntry, xpr_uint_t aId)
+void DlgState::setEditCtrl(const xpr_tchar_t *aEntry, xpr_uint_t aId)
 {
-    mEditMap[aEntry] = aId;
+    if (XPR_IS_NOT_NULL(aEntry))
+        mEditMap[aEntry] = aId;
 }
 
-void DlgState::setComboBox(std::tstring aEntry, xpr_uint_t aId)
+void DlgState::setComboBox(const xpr_tchar_t *aEntry, xpr_uint_t aId)
 {
-    mComboBoxMap[aEntry] = aId;
+    if (XPR_IS_NOT_NULL(aEntry))
+        mComboBoxMap[aEntry] = aId;
 }
 
-void DlgState::setComboBoxList(std::tstring aEntry, xpr_uint_t aId)
+void DlgState::setComboBoxList(const xpr_tchar_t *aEntry, xpr_uint_t aId)
 {
-    mComboBoxListMap[aEntry] = aId;
+    if (XPR_IS_NOT_NULL(aEntry))
+        mComboBoxListMap[aEntry] = aId;
 }
 
-void DlgState::setCheckBox(std::tstring aEntry, xpr_uint_t aId)
+void DlgState::setCheckBox(const xpr_tchar_t *aEntry, xpr_uint_t aId)
 {
-    mCheckBoxMap[aEntry] = aId;
+    if (XPR_IS_NOT_NULL(aEntry))
+        mCheckBoxMap[aEntry] = aId;
 }
 
-xpr_sint_t DlgState::getStateB(const xpr_tchar_t *aEntry, xpr_bool_t aDefault)
+xpr_bool_t DlgState::existState(const xpr_tchar_t *aEntry) const
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(aEntry))
+        return XPR_FALSE;
+
+    ValueMap::const_iterator sIterator = mValueMap.find(aEntry);
+    if (sIterator == mValueMap.end())
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_sint_t DlgState::getStateB(const xpr_tchar_t *aEntry, xpr_bool_t aDefault) const
+{
+    if (XPR_IS_NULL(aEntry))
         return aDefault;
 
-    return mIniFile->getValueB(mSection.c_str(), aEntry, aDefault);
-}
-
-xpr_bool_t DlgState::getStateI(const xpr_tchar_t *aEntry, xpr_sint_t aDefault)
-{
-    if (XPR_IS_NULL(mIniFile))
+    ValueMap::const_iterator sIterator = mValueMap.find(aEntry);
+    if (sIterator == mValueMap.end())
         return aDefault;
 
-    return mIniFile->getValueI(mSection.c_str(), aEntry, aDefault);
+    const std::tstring &sValue = sIterator->second;
+
+    xpr_bool_t sBoolValue = aDefault;
+    _stscanf(sValue.c_str(), XPR_STRING_LITERAL("%d"), &sBoolValue);
+
+    if (XPR_IS_TRUE(sBoolValue))
+        sBoolValue = XPR_TRUE;
+
+    return sBoolValue;
 }
 
-const xpr_tchar_t *DlgState::getStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aDefault)
+xpr_bool_t DlgState::getStateI(const xpr_tchar_t *aEntry, xpr_sint_t aDefault) const
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(aEntry))
         return aDefault;
 
-    return mIniFile->getValueS(mSection.c_str(), aEntry, aDefault);
+    ValueMap::const_iterator sIterator = mValueMap.find(aEntry);
+    if (sIterator == mValueMap.end())
+        return aDefault;
+
+    const std::tstring &sValue = sIterator->second;
+
+    xpr_bool_t sIntValue = aDefault;
+    _stscanf(sValue.c_str(), XPR_STRING_LITERAL("%d"), &sIntValue);
+
+    return sIntValue;
+}
+
+const xpr_tchar_t *DlgState::getStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aDefault) const
+{
+    if (XPR_IS_NULL(aEntry))
+        return aDefault;
+
+    ValueMap::const_iterator sIterator = mValueMap.find(aEntry);
+    if (sIterator == mValueMap.end())
+        return aDefault;
+
+    const std::tstring &sValue = sIterator->second;
+
+    return sValue.c_str();
 }
 
 xpr_bool_t DlgState::setStateB(const xpr_tchar_t *aEntry, xpr_bool_t aValue)
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(aEntry))
         return XPR_FALSE;
 
-    return mIniFile->setValueB(mSection.c_str(), aEntry, aValue);
+    xpr_tchar_t sValue[0xff] = {0};
+    _stprintf(sValue, XPR_STRING_LITERAL("%d"), XPR_IS_TRUE(aValue) ? XPR_TRUE : XPR_FALSE);
+
+    mValueMap[aEntry] = sValue;
+
+    return XPR_TRUE;
 }
 
 xpr_bool_t DlgState::setStateI(const xpr_tchar_t *aEntry, xpr_sint_t aValue)
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(aEntry))
         return XPR_FALSE;
 
-    return mIniFile->setValueI(mSection.c_str(), aEntry, aValue);
+    xpr_tchar_t sValue[0xff] = {0};
+    _stprintf(sValue, XPR_STRING_LITERAL("%d"), aValue);
+
+    mValueMap[aEntry] = sValue;
+
+    return XPR_TRUE;
 }
 
 xpr_bool_t DlgState::setStateS(const xpr_tchar_t *aEntry, const xpr_tchar_t *aValue)
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(aEntry))
         return XPR_FALSE;
 
-    return mIniFile->setValueS(mSection.c_str(), aEntry, aValue);
+    if (XPR_IS_NULL(aValue))
+        aValue = XPR_STRING_LITERAL("");
+
+    mValueMap[aEntry] = aValue;
+
+    return XPR_TRUE;
 }
 
 xpr_bool_t DlgState::load(void)
 {
-    if (XPR_IS_NULL(mIniFile))
-        return XPR_FALSE;
-
-    if (mIniFile->readFileW() == XPR_FALSE)
+    if (XPR_IS_NULL(mDlg) || XPR_IS_NULL(mDlg->m_hWnd))
         return XPR_FALSE;
 
     xpr_sint_t i, sSel;
-    CString sText;
-    CString sEntry;
+    xpr_tchar_t sEntry[0xff];
 
-    CEdit *sEdit;
-    CComboBox *sComboBox;
-    CButton *sCheckBox;
-
-    // Dialog
-    if (XPR_IS_TRUE(mPos) && XPR_IS_NOT_NULL(mDlg) && XPR_IS_NOT_NULL(mDlg->m_hWnd))
+    if (XPR_IS_TRUE(mPos))
     {
-        CString sWndSize;
-        sWndSize = mIniFile->getValueS(mSection.c_str(), XPR_STRING_LITERAL("Window"), XPR_STRING_LITERAL(""));
-        if (sWndSize.GetLength() > 0)
+        const xpr_tchar_t *sWndSize = getStateS(XPR_STRING_LITERAL("Window"));
+        if (XPR_IS_NOT_NULL(sWndSize))
         {
             xpr_sint_t x = -1, y = -1, w = -1, h = -1;
             _stscanf(sWndSize, XPR_STRING_LITERAL("%d,%d,%d,%d"), &x, &y, &w, &h);
@@ -215,25 +240,39 @@ xpr_bool_t DlgState::load(void)
         }
     }
 
-    // ListCtrl
-    if (XPR_IS_NOT_NULL(mListCtrl) && XPR_IS_NOT_NULL(mListCtrl->m_hWnd))
+    if (mListCtrlMap.empty() == false)
     {
-        xpr_sint_t cx;
-        xpr_sint_t sCount = mListCtrl->GetHeaderCtrl()->GetItemCount();
-        for (i = 0; i < sCount; ++i)
-        {
-            sEntry.Format(XPR_STRING_LITERAL("Column%d"), i+1);
-            cx = mIniFile->getValueI(mSection.c_str(), sEntry, -1);
-            if (cx == -1)
-                break;
+        CtrlMap::iterator sIterator;
+        xpr_sint_t i, cx;
+        xpr_sint_t sColumnCount;
+        CListCtrl *sListCtrl;
 
-            mListCtrl->SetColumnWidth(i, cx);
+        sIterator = mListCtrlMap.begin();
+        for (; sIterator != mListCtrlMap.end(); ++sIterator)
+        {
+            sListCtrl = (CListCtrl *)mDlg->GetDlgItem(sIterator->second);
+            if (XPR_IS_NULL(sListCtrl))
+                continue;
+
+            sColumnCount = sListCtrl->GetHeaderCtrl()->GetItemCount();
+            for (i = 0; i < sColumnCount; ++i)
+            {
+                _stprintf(sEntry, XPR_STRING_LITERAL("%s_Column%02d"), sIterator->first.c_str(), i + 1);
+
+                cx = getStateI(sEntry, -1);
+                if (cx == -1)
+                    break;
+
+                sListCtrl->SetColumnWidth(i, cx);
+            }
         }
     }
 
-    // Edit
+    if (mEditMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        CtrlMap::iterator sIterator;
+        const xpr_tchar_t *sValue;
+        CEdit *sEdit;
 
         sIterator = mEditMap.begin();
         for (; sIterator != mEditMap.end(); ++sIterator)
@@ -242,17 +281,18 @@ xpr_bool_t DlgState::load(void)
             if (XPR_IS_NULL(sEdit) || XPR_IS_NULL(sEdit->m_hWnd))
                 continue;
 
-            if (mIniFile->findEntry(mSection.c_str(), sIterator->first.c_str()) == fxb::IniFile::InvalidIndex)
-                continue;
-
-            sText = mIniFile->getValueS(mSection.c_str(), sIterator->first.c_str(), XPR_STRING_LITERAL(""));
-            sEdit->SetWindowText(sText);
+            sValue = getStateS(sIterator->first.c_str());
+            if (XPR_IS_NOT_NULL(sValue))
+            {
+                sEdit->SetWindowText(sValue);
+            }
         }
     }
 
-    // ComboBox
+    if (mComboBoxMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        CtrlMap::iterator sIterator;
+        CComboBox *sComboBox;
 
         sIterator = mComboBoxMap.begin();
         for (; sIterator != mComboBoxMap.end(); ++sIterator)
@@ -261,10 +301,7 @@ xpr_bool_t DlgState::load(void)
             if (XPR_IS_NULL(sComboBox) || XPR_IS_NULL(sComboBox->m_hWnd))
                 continue;
 
-            if (mIniFile->findEntry(mSection.c_str(), sIterator->first.c_str()) == fxb::IniFile::InvalidIndex)
-                continue;
-
-            sSel = mIniFile->getValueI(mSection.c_str(), sIterator->first.c_str(), -1);
+            sSel = getStateI(sIterator->first.c_str(), -1);
             if (sSel < 0)
                 continue;
 
@@ -272,12 +309,14 @@ xpr_bool_t DlgState::load(void)
         }
     }
 
-    // ComboBoxList
+    if (mComboBoxListMap.empty() == false)
     {
         xpr_sint_t sIndex;
         xpr_sint_t sCurSel;
-        CString sWndText;
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        const xpr_tchar_t *sSelWndText;
+        const xpr_tchar_t *sItemText;
+        CtrlMap::iterator sIterator;
+        CComboBox *sComboBox;
 
         sIterator = mComboBoxListMap.begin();
         for (; sIterator != mComboBoxListMap.end(); ++sIterator)
@@ -287,29 +326,31 @@ xpr_bool_t DlgState::load(void)
                 continue;
 
             sCurSel = -1;
-            sWndText = mIniFile->getValueS(mSection.c_str(), sIterator->first.c_str(), XPR_STRING_LITERAL(""));
+            sSelWndText = getStateS(sIterator->first.c_str());
 
             for (i = 0; i < MAX_COMBOX_LIST; ++i)
             {
-                sEntry.Format(XPR_STRING_LITERAL("%s_List%02d"), sIterator->first.c_str(), i+1);
-                sText = mIniFile->getValueS(mSection.c_str(), sEntry, XPR_STRING_LITERAL(""));
-                if (sText.IsEmpty())
+                _stprintf(sEntry, XPR_STRING_LITERAL("%s_List%02d"), sIterator->first.c_str(), i + 1);
+
+                sItemText = getStateS(sEntry);
+                if (XPR_IS_NULL(sItemText))
                     continue;
 
-                sIndex = sComboBox->AddString(sText);
-                if (sCurSel != -1 && sWndText == sText)
+                sIndex = sComboBox->AddString(sItemText);
+                if (sCurSel != -1 && XPR_IS_NOT_NULL(sSelWndText) && _tcscmp(sSelWndText, sItemText) == 0)
                     sCurSel = sIndex;
             }
 
             sComboBox->SetCurSel(sCurSel);
             if (sCurSel == -1)
-                sComboBox->SetWindowText(sWndText);
+                sComboBox->SetWindowText(XPR_IS_NULL(sSelWndText) ? XPR_STRING_LITERAL("") : sSelWndText);
         }
     }
 
-    // CheckBox
+    if (mCheckBoxMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        CtrlMap::iterator sIterator;
+        CButton *sCheckBox;
 
         sIterator = mCheckBoxMap.begin();
         for (; sIterator != mCheckBoxMap.end(); ++sIterator)
@@ -318,10 +359,7 @@ xpr_bool_t DlgState::load(void)
             if (XPR_IS_NULL(sCheckBox) || XPR_IS_NULL(sCheckBox->m_hWnd))
                 continue;
 
-            if (mIniFile->findEntry(mSection.c_str(), sIterator->first.c_str()) == fxb::IniFile::InvalidIndex)
-                continue;
-
-            sSel = mIniFile->getValueI(mSection.c_str(), sIterator->first.c_str(), -1);
+            sSel = getStateI(sIterator->first.c_str(), -1);
             if (sSel < 0)
                 continue;
 
@@ -334,49 +372,54 @@ xpr_bool_t DlgState::load(void)
 
 xpr_bool_t DlgState::save(void)
 {
-    if (XPR_IS_NULL(mIniFile))
+    if (XPR_IS_NULL(mDlg) || XPR_IS_NULL(mDlg->m_hWnd))
         return XPR_FALSE;
-
-    xpr_tchar_t sComment[200] = {0};
-    _stprintf(sComment, XPR_STRING_LITERAL("flyExplorer %s File"), mSection.c_str());
-    mIniFile->setComment(sComment);
 
     xpr_sint_t i, sSel;
     xpr_sint_t sCount;
-    CString sText;
-    CString sEntry;
+    xpr_tchar_t sEntry[0xff];
 
-    CEdit *sEdit;
-    CComboBox *sComboBox;
-    CButton *sCheckBox;
-
-    // Dialog
-    if (XPR_IS_TRUE(mPos) && XPR_IS_NOT_NULL(mDlg) && XPR_IS_NOT_NULL(mDlg->m_hWnd))
+    if (XPR_IS_TRUE(mPos))
     {
         CRect sWindowRect;
         mDlg->GetWindowRect(sWindowRect);
 
-        CString sWndSize;
-        sWndSize.Format(XPR_STRING_LITERAL("%d,%d,%d,%d"), sWindowRect.left, sWindowRect.top, sWindowRect.Width(), sWindowRect.Height());
-        mIniFile->setValueS(mSection.c_str(), XPR_STRING_LITERAL("Window"), sWndSize);
+        xpr_tchar_t sValue[0xff] = {0};
+        _stprintf(sValue, XPR_STRING_LITERAL("%d,%d,%d,%d"), sWindowRect.left, sWindowRect.top, sWindowRect.Width(), sWindowRect.Height());
+        setStateS(XPR_STRING_LITERAL("Window"), sValue);
     }
 
-    // ListCtrl
-    if (XPR_IS_NOT_NULL(mListCtrl) && XPR_IS_NOT_NULL(mListCtrl->m_hWnd))
+    if (mListCtrlMap.empty() == false)
     {
-        xpr_sint_t cx;
-        xpr_sint_t sCount = mListCtrl->GetHeaderCtrl()->GetItemCount();
-        for (i = 0; i < sCount; ++i)
+        CtrlMap::iterator sIterator;
+        xpr_sint_t i, cx;
+        xpr_sint_t sColumnCount;
+        CListCtrl *sListCtrl;
+
+        sIterator = mListCtrlMap.begin();
+        for (; sIterator != mListCtrlMap.end(); ++sIterator)
         {
-            cx = mListCtrl->GetColumnWidth(i);
-            sEntry.Format(XPR_STRING_LITERAL("Column%d"), i+1);
-            mIniFile->setValueI(mSection.c_str(), sEntry, cx);
+            sListCtrl = (CListCtrl *)mDlg->GetDlgItem(sIterator->second);
+            if (XPR_IS_NULL(sListCtrl))
+                continue;
+
+            sColumnCount = sListCtrl->GetHeaderCtrl()->GetItemCount();
+            for (i = 0; i < sColumnCount; ++i)
+            {
+                cx = sListCtrl->GetColumnWidth(i);
+
+                _stprintf(sEntry, XPR_STRING_LITERAL("%s_Column%02d"), sIterator->first.c_str(), i + 1);
+                setStateI(sEntry, cx);
+            }
         }
     }
 
-    // Edit
+    if (mEditMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        xpr_sint_t sLen;
+        xpr_tchar_t *sValue;
+        CtrlMap::iterator sIterator;
+        CEdit *sEdit;
 
         sIterator = mEditMap.begin();
         for (; sIterator != mEditMap.end(); ++sIterator)
@@ -385,18 +428,20 @@ xpr_bool_t DlgState::save(void)
             if (XPR_IS_NULL(sEdit) || XPR_IS_NULL(sEdit->m_hWnd))
                 continue;
 
-            xpr_sint_t nLen = ::GetWindowTextLength(sEdit->m_hWnd);
-            ::GetWindowText(sEdit->m_hWnd, sText.GetBufferSetLength(nLen), nLen+1);
-            sText.ReleaseBuffer();
+            sLen = sEdit->GetWindowTextLength();
+            sValue = new xpr_tchar_t[sLen + 2];
+            sEdit->GetWindowText(sValue, sLen + 1);
 
-            //sEdit->GetWindowText(sText);
-            mIniFile->setValueS(mSection.c_str(), sIterator->first.c_str(), sText);
+            setStateS(sIterator->first.c_str(), sValue);
+
+            XPR_SAFE_DELETE_ARRAY(sValue);
         }
     }
 
-    // ComboBox
+    if (mComboBoxMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        CtrlMap::iterator sIterator;
+        CComboBox *sComboBox;
 
         sIterator = mComboBoxMap.begin();
         for (; sIterator != mComboBoxMap.end(); ++sIterator)
@@ -406,13 +451,16 @@ xpr_bool_t DlgState::save(void)
                 continue;
 
             sSel = sComboBox->GetCurSel();
-            mIniFile->setValueI(mSection.c_str(), sIterator->first.c_str(), sSel);
+            setStateI(sIterator->first.c_str(), sSel);
         }
     }
 
-    // ComboBoxList
+    if (mComboBoxListMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        xpr_sint_t sLen;
+        xpr_tchar_t *sValue;
+        CtrlMap::iterator sIterator;
+        CComboBox *sComboBox;
 
         sIterator = mComboBoxListMap.begin();
         for (; sIterator != mComboBoxListMap.end(); ++sIterator)
@@ -425,19 +473,30 @@ xpr_bool_t DlgState::save(void)
             sCount = min(sCount, MAX_COMBOX_LIST);
             for (i = 0; i < sCount; ++i)
             {
-                sComboBox->GetLBText(i, sText);
-                sEntry.Format(XPR_STRING_LITERAL("%s_List%02d"), sIterator->first.c_str(), i+1);
-                mIniFile->setValueS(mSection.c_str(), sEntry, sText);
+                sLen = sComboBox->GetLBTextLen(i);
+                sValue = new xpr_tchar_t[sLen + 1];
+                sComboBox->GetLBText(i, sValue);
+
+                _stprintf(sEntry, XPR_STRING_LITERAL("%s_List%02d"), sIterator->first.c_str(), i + 1);
+                setStateS(sEntry, sValue);
+
+                XPR_SAFE_DELETE_ARRAY(sValue);
             }
 
-            sComboBox->GetWindowText(sText);
-            mIniFile->setValueS(mSection.c_str(), sIterator->first.c_str(), sText);
+            sLen = sComboBox->GetWindowTextLength();
+            sValue = new xpr_tchar_t[sLen + 2];
+            sComboBox->GetWindowText(sValue, sLen + 1);
+
+            setStateS(sIterator->first.c_str(), sValue);
+
+            XPR_SAFE_DELETE_ARRAY(sValue);
         }
     }
 
-    // CheckBox
+    if (mCheckBoxMap.empty() == false)
     {
-        std::map<std::tstring, xpr_uint_t>::iterator sIterator;
+        CtrlMap::iterator sIterator;
+        CButton *sCheckBox;
 
         sIterator = mCheckBoxMap.begin();
         for (; sIterator != mCheckBoxMap.end(); ++sIterator)
@@ -447,23 +506,16 @@ xpr_bool_t DlgState::save(void)
                 continue;
 
             sSel = sCheckBox->GetCheck();
-            mIniFile->setValueI(mSection.c_str(), sIterator->first.c_str(), sSel);
+            setStateI(sIterator->first.c_str(), sSel);
         }
     }
-
-    mIniFile->writeFileW();
 
     return XPR_TRUE;
 }
 
 void DlgState::reset(void)
 {
-    XPR_SAFE_DELETE(mIniFile);
-
-    std::tstring sSection;
-    sSection = mSection;
-
-    setSection(sSection.c_str());
+    mValueMap.clear();
 }
 
 void DlgState::insertComboEditString(CComboBox *aComboBox, xpr_bool_t aCase)
@@ -513,4 +565,19 @@ void DlgState::insertComboEditString(CComboBox *aComboBox, xpr_bool_t aCase)
 
     aComboBox->InsertString(0, sText);
     aComboBox->SetCurSel(0);
+}
+
+const std::tstring &DlgState::getSection(void) const
+{
+    return mSection;
+}
+
+const DlgState::ValueMap &DlgState::getValueMap(void) const
+{
+    return mValueMap;
+}
+
+void DlgState::setValueMap(const ValueMap &aValueMap)
+{
+    mValueMap = aValueMap;
 }

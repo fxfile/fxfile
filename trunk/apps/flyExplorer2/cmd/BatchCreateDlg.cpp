@@ -13,6 +13,7 @@
 #include "fxb/fxb_batch_create.h"
 
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "BatchCreateFmtDlg.h"
 #include "BatchCreateTextDlg.h"
 #include "resource.h"
@@ -39,6 +40,7 @@ BatchCreateDlg::BatchCreateDlg(const xpr_tchar_t *aPath)
     : super(IDD_BATCH_CREATE, XPR_NULL)
     , mBatchCreate(new fxb::BatchCreate)
     , mOldShowDlg(-1)
+    , mDlgState(XPR_NULL)
 {
     if (aPath != XPR_NULL)
         mPath = aPath;
@@ -109,17 +111,21 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
     mProgressCtrl.SetRange32(0, 100);
     mProgressCtrl.SetPos(0);
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("BatchCreate"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setComboBox(XPR_STRING_LITERAL("Type"), IDC_CREATE_TYPE);
-    mState.load();
+    xpr_sint_t sActiveTab = 1;
 
-    xpr_sint_t sActiveTab = mState.getStateI(XPR_STRING_LITERAL("Active Tab"), 1); // one-based index
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("BatchCreate"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"), IDC_CREATE_TYPE);
+        mDlgState->load();
 
-    sActiveTab = sActiveTab - 1;
-    if (sActiveTab < 0 || mTabCtrl.GetItemCount() <= sActiveTab)
-        sActiveTab = 0;
+        sActiveTab = mDlgState->getStateI(XPR_STRING_LITERAL("Active Tab"), 1); // one-based index
+
+        sActiveTab = sActiveTab - 1;
+        if (sActiveTab < 0 || mTabCtrl.GetItemCount() <= sActiveTab)
+            sActiveTab = 0;
+    }
 
     showDialog(sActiveTab);
 
@@ -136,10 +142,12 @@ void BatchCreateDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.setStateI(XPR_STRING_LITERAL("Active Tab"), getCurTab() + 1);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->setStateI(XPR_STRING_LITERAL("Active Tab"), getCurTab() + 1);
+        mDlgState->save();
+    }
 
     XPR_SAFE_DELETE(mBatchCreate);
 

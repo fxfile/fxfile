@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 RenTabDlg3::RenTabDlg3(void)
     : super(IDD_RENAME_4)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -73,12 +75,15 @@ xpr_bool_t RenTabDlg3::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_DELETE_APPLY,        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.button.apply")));
 
     // Load Dialog State
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("Rename4"));
-    mState.setEditCtrl(XPR_STRING_LITERAL("Pos"),    IDC_BATCH_RENAME_DELETE_POS);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Length"), IDC_BATCH_RENAME_DELETE_LENGTH);
-    mState.setComboBox(XPR_STRING_LITERAL("Type"),   IDC_BATCH_RENAME_DELETE_TYPE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Rename4"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Pos"),    IDC_BATCH_RENAME_DELETE_POS);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Length"), IDC_BATCH_RENAME_DELETE_LENGTH);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"),   IDC_BATCH_RENAME_DELETE_TYPE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -125,11 +130,13 @@ xpr_bool_t RenTabDlg3::PreTranslateMessage(MSG* pMsg)
     return super::PreTranslateMessage(pMsg);
 }
 
-void RenTabDlg3::OnDestroy() 
+void RenTabDlg3::OnDestroy(void) 
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }

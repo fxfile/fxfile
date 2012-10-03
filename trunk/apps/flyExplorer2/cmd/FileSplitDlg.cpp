@@ -16,6 +16,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -40,6 +41,7 @@ FileSplitDlg::FileSplitDlg(void)
     , mFileSplit(XPR_NULL)
     , mSetSplitSizeMode(XPR_FALSE)
     , mSetSplitCoutMode(XPR_FALSE)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -152,15 +154,18 @@ xpr_bool_t FileSplitDlg::OnInitDialog(void)
     setStatus(theApp.loadString(XPR_STRING_LITERAL("popup.file_split.status.ready")));
 
     // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("FileSplit"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setComboBox(XPR_STRING_LITERAL("SplitSizeTemplate"),  IDC_FILE_SPLIT_SIZE_PRESET);
-    mState.setComboBox(XPR_STRING_LITERAL("SplitSizeUnit"),      IDC_FILE_SPLIT_SIZE_UNIT);
-    mState.setEditCtrl(XPR_STRING_LITERAL("SplitSize"),          IDC_FILE_SPLIT_SIZE);
-    mState.setCheckBox(XPR_STRING_LITERAL("CrcFile"),            IDC_FILE_SPLIT_WITH_CRC);
-    mState.setCheckBox(XPR_STRING_LITERAL("DeleteOrgignalFile"), IDC_FILE_SPLIT_DELETE_ORG);
-    mState.setCheckBox(XPR_STRING_LITERAL("BatchFile"),          IDC_FILE_SPLIT_CREATE_BATCH_FILE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FileSplit"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("SplitSizeTemplate"),  IDC_FILE_SPLIT_SIZE_PRESET);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("SplitSizeUnit"),      IDC_FILE_SPLIT_SIZE_UNIT);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("SplitSize"),          IDC_FILE_SPLIT_SIZE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("CrcFile"),            IDC_FILE_SPLIT_WITH_CRC);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("DeleteOrgignalFile"), IDC_FILE_SPLIT_DELETE_ORG);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("BatchFile"),          IDC_FILE_SPLIT_CREATE_BATCH_FILE);
+        mDlgState->load();
+    }
 
     OnOptionSplit();
     OnSelchangeSplitSizePreset();
@@ -185,9 +190,11 @@ xpr_bool_t FileSplitDlg::DestroyWindow(void)
     if (mFileSplit != XPR_NULL)
         mFileSplit->Stop();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

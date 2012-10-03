@@ -11,6 +11,8 @@
 #include "SelFilterDlg.h"
 
 #include "resource.h"
+#include "DlgStateMgr.h"
+#include "DlgState.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +24,7 @@ SelFilterDlg::SelFilterDlg(xpr_bool_t aSelect)
     : super(IDD_SEL_FILTER, XPR_NULL)
     , mSelect(aSelect)
     , mOnlySel(XPR_FALSE)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -62,17 +65,24 @@ xpr_bool_t SelFilterDlg::OnInitDialog(void)
     // dialog state
     const xpr_tchar_t *sSection = (mSelect == XPR_TRUE) ? XPR_STRING_LITERAL("SelFilter") : XPR_STRING_LITERAL("UnSelFilter"); 
 
-    mState.setDialog(this);
-    mState.setSection(sSection);
-    mState.load();
+    std::tstring sPrevFilter;
+    xpr_bool_t sOnlySel = XPR_FALSE;
 
-    std::tstring sPrevFilter = mState.getStateS(XPR_STRING_LITERAL("Filter"), XPR_STRING_LITERAL(""));
-
-    if (mSelect == XPR_TRUE)
+    mDlgState = DlgStateMgr::instance().getDlgState(sSection);
+    if (XPR_IS_NOT_NULL(mDlgState))
     {
-        xpr_bool_t sOnlySel = mState.getStateB(XPR_STRING_LITERAL("Only Sel"), XPR_FALSE);
-        ((CButton *)GetDlgItem(IDC_SEL_FILTER_SEL_ONLY))->SetCheck(sOnlySel);
+        mDlgState->setDialog(this);
+        mDlgState->load();
+
+        sPrevFilter = mDlgState->getStateS(XPR_STRING_LITERAL("Filter"), XPR_STRING_LITERAL(""));
+
+        if (mSelect == XPR_TRUE)
+        {
+            sOnlySel = mDlgState->getStateB(XPR_STRING_LITERAL("Only Sel"), XPR_FALSE);
+        }
     }
+
+    ((CButton *)GetDlgItem(IDC_SEL_FILTER_SEL_ONLY))->SetCheck(sOnlySel);
 
     fxb::FilterMgr &sFilterMgr = fxb::FilterMgr::instance();
 
@@ -128,12 +138,14 @@ void SelFilterDlg::OnOK(void)
 
     mFilterItem = (fxb::FilterItem *)mComboBox.GetItemData(sIndex);
 
-    // dialog state
-    mState.reset();
-    mState.setStateS(XPR_STRING_LITERAL("Filter"), mFilterItem->mName.c_str());
-    if (mSelect == XPR_TRUE)
-        mState.setStateB(XPR_STRING_LITERAL("Only Sel"), mOnlySel);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->setStateS(XPR_STRING_LITERAL("Filter"), mFilterItem->mName.c_str());
+        if (mSelect == XPR_TRUE)
+            mDlgState->setStateB(XPR_STRING_LITERAL("Only Sel"), mOnlySel);
+        mDlgState->save();
+    }
 
     super::OnOK();
 }

@@ -11,7 +11,7 @@
 #define __FX_PARAM_EXEC_DLG_H__
 #pragma once
 
-#include "DlgState.h"
+class DlgState;
 
 class ParamExecDlg : public CDialog
 {
@@ -28,8 +28,8 @@ protected:
     std::tstring mParameter;
 
 protected:
-    DlgState  mState;
-    CComboBox mComboBox;
+    DlgState  *mDlgState;
+    CComboBox  mComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

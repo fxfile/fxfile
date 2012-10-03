@@ -12,12 +12,13 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class CrcVerify;
 } // namespace fxb
+
+class DlgState;
 
 class CrcVerifyDlg : public CResizingDialog
 {
@@ -44,10 +45,10 @@ protected:
     fxb::CrcVerify *mCrcVerify;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
-    CListCtrl     mListCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CListCtrl      mListCtrl;
 
 public:
     virtual xpr_bool_t DestroyWindow(void);

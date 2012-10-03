@@ -11,7 +11,10 @@
 #include "AttrTimeDlg.h"
 
 #include "fxb/fxb_attr_time.h"
+
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +40,7 @@ enum
 AttrTimeDlg::AttrTimeDlg(void)
     : super(IDD_ATTRIBUTE, XPR_NULL)
     , mAttrTime(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -204,15 +208,18 @@ xpr_bool_t AttrTimeDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                 theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.apply")));
     SetDlgItemText(IDCANCEL,             theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.close")));
 
-    mState.setSection(XPR_STRING_LITERAL("AttrTime"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.setCheckBox(XPR_STRING_LITERAL("Attribute"),  IDC_ATTR_ATTRIBUTE);
-    mState.setCheckBox(XPR_STRING_LITERAL("Time"),       IDC_ATTR_TIME);
-    mState.setCheckBox(XPR_STRING_LITERAL("Sub Folder"), IDC_ATTR_SUBFOLDER);
-    mState.setComboBox(XPR_STRING_LITERAL("Type"),       IDC_ATTR_TYPE);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Level"),      IDC_ATTR_DEPTH);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("AttrTime"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"),       mListCtrl.GetDlgCtrlID());
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Attribute"),  IDC_ATTR_ATTRIBUTE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Time"),       IDC_ATTR_TIME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Sub Folder"), IDC_ATTR_SUBFOLDER);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"),       IDC_ATTR_TYPE);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Level"),      IDC_ATTR_DEPTH);
+        mDlgState->load();
+    }
 
     OnAttribute();
     OnTime();
@@ -229,8 +236,11 @@ void AttrTimeDlg::OnDestroy(void)
         mAttrTime->Stop();
     }
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void AttrTimeDlg::setStatus(const xpr_tchar_t *aStatus)

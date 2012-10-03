@@ -13,12 +13,13 @@
 
 #include "fxb/fxb_bookmark.h"
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class ShellIcon;
 } // namespace fxb
+
+class DlgState;
 
 class BookmarkEditDlg : public CResizingDialog
 {
@@ -47,9 +48,9 @@ protected:
     fxb::ShellIcon *mShellIcon;
 
 protected:
-    HICON     mIcon;
-    DlgState  mState;
-    CListCtrl mListCtrl;
+    HICON      mIcon;
+    DlgState  *mDlgState;
+    CListCtrl  mListCtrl;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);

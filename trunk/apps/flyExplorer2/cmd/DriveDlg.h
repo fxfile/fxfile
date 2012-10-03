@@ -12,7 +12,8 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class DriveDlg : public CResizingDialog
 {
@@ -34,8 +35,8 @@ protected:
     xpr_tchar_t mDrive;
 
 protected:
-    DlgState mState;
-    CTreeCtrl mTreeCtrl;
+    DlgState  *mDlgState;
+    CTreeCtrl  mTreeCtrl;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);

@@ -114,7 +114,7 @@ void FilterSetDlg::OnApplyColorCode(void)
     if (sText[0] == '#')
         sWebColor = XPR_TRUE;
 
-    if (_tcschr(sText, ','))
+    if (_tcschr(sText, ',') != XPR_NULL)
         sWebColor = XPR_FALSE;
 
     xpr_sint_t sR = 0, sG = 0, sB = 0;

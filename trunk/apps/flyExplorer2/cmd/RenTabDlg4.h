@@ -12,7 +12,8 @@
 #pragma once
 
 #include "RenTabDlg.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class RenTabDlg4 : public RenTabDlg
 {
@@ -22,7 +23,7 @@ public:
     RenTabDlg4(void);
 
 protected:
-    DlgState mState;
+    DlgState *mDlgState;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG *aMsg);

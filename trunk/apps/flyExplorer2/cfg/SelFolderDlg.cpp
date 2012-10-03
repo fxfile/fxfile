@@ -11,6 +11,7 @@
 #include "SelFolderDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

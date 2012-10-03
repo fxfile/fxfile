@@ -8,12 +8,13 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "SchLocDlg.h"
+#include "SearchLocDlg.h"
 
 #include "resource.h"
-#include "SchLocEditDlg.h"
+#include "SearchLocEditDlg.h"
 #include "InputDlg.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #include "command_string_table.h"
 
@@ -23,39 +24,40 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SchLocDlg::SchLocDlg(void)
+SearchLocDlg::SearchLocDlg(void)
     : super(IDD_SEARCH_LOC, XPR_NULL)
-    , mSchUserLoc(XPR_NULL)
+    , mSearchUserLoc(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-SchLocDlg::~SchLocDlg(void)
+SearchLocDlg::~SearchLocDlg(void)
 {
-    if (mSchUserLoc != XPR_NULL)
+    if (mSearchUserLoc != XPR_NULL)
     {
-        fxb::SchUserLoc *sSchUserLoc;
-        fxb::SchUserLocDeque::iterator sIterator;
+        fxb::SearchUserLoc *sSearchUserLoc;
+        fxb::SearchUserLocDeque::iterator sIterator;
 
-        sIterator = mSchUserLoc->begin();
-        for (; sIterator != mSchUserLoc->end(); ++sIterator)
+        sIterator = mSearchUserLoc->begin();
+        for (; sIterator != mSearchUserLoc->end(); ++sIterator)
         {
-            sSchUserLoc = *sIterator;
-            if (sSchUserLoc == XPR_NULL)
+            sSearchUserLoc = *sIterator;
+            if (sSearchUserLoc == XPR_NULL)
                 continue;
 
-            sSchUserLoc->clear();
-            XPR_SAFE_DELETE(sSchUserLoc);
+            sSearchUserLoc->clear();
+            XPR_SAFE_DELETE(sSearchUserLoc);
         }
 
-        mSchUserLoc->clear();
-        XPR_SAFE_DELETE(mSchUserLoc);
+        mSearchUserLoc->clear();
+        XPR_SAFE_DELETE(mSearchUserLoc);
     }
 
     DESTROY_ICON(mIcon);
 }
 
-void SchLocDlg::DoDataExchange(CDataExchange* pDX)
+void SearchLocDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_SEARCH_LOC_ITEM_LIST, mListCtrl);
@@ -63,7 +65,7 @@ void SchLocDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_SEARCH_LOC_LIST_NEW,  mNewDropButton);
 }
 
-BEGIN_MESSAGE_MAP(SchLocDlg, super)
+BEGIN_MESSAGE_MAP(SearchLocDlg, super)
     ON_WM_DESTROY()
     ON_WM_SETFOCUS()
     ON_WM_TIMER()
@@ -87,7 +89,7 @@ BEGIN_MESSAGE_MAP(SchLocDlg, super)
     ON_NOTIFY(LVN_DELETEITEM, IDC_SEARCH_LOC_ITEM_LIST, OnDeleteitemItemList)
 END_MESSAGE_MAP()
 
-xpr_bool_t SchLocDlg::OnInitDialog(void) 
+xpr_bool_t SearchLocDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -128,8 +130,8 @@ xpr_bool_t SchLocDlg::OnInitDialog(void)
     mLocComboBox.SetImageList(&mLocImgList);
 
     xpr_uint_t sIconIds[] = {
-        IDI_SCH_INC,
-        IDI_SCH_EXC,
+        IDI_SEARCH_INC,
+        IDI_SEARCH_EXC,
         IDI_NOT,
         0};
 
@@ -148,25 +150,25 @@ xpr_bool_t SchLocDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.location")),   LVCFMT_LEFT,   200);
     mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.sub-folder")), LVCFMT_CENTER,  70);
 
-    mNewDropButton.LoadMenu(IDR_SCH_LOC, 0);
+    mNewDropButton.LoadMenu(IDR_SEARCH_LOC, 0);
 
-    if (mSchUserLoc != XPR_NULL)
+    if (mSearchUserLoc != XPR_NULL)
     {
-        fxb::SchUserLoc *sSchUserLoc;
-        fxb::SchUserLocDeque::iterator sIterator;
+        fxb::SearchUserLoc *sSearchUserLoc;
+        fxb::SearchUserLocDeque::iterator sIterator;
 
-        sIterator = mSchUserLoc->begin();
-        for (; sIterator != mSchUserLoc->end(); ++sIterator)
+        sIterator = mSearchUserLoc->begin();
+        for (; sIterator != mSearchUserLoc->end(); ++sIterator)
         {
-            sSchUserLoc = *sIterator;
-            if (sSchUserLoc == XPR_NULL)
+            sSearchUserLoc = *sIterator;
+            if (sSearchUserLoc == XPR_NULL)
                 continue;
 
-            addLoc(sSchUserLoc);
+            addLoc(sSearchUserLoc);
         }
 
-        mSchUserLoc->clear();
-        XPR_SAFE_DELETE(mSchUserLoc);
+        mSearchUserLoc->clear();
+        XPR_SAFE_DELETE(mSearchUserLoc);
     }
 
     if (mLocComboBox.GetCount() > 0)
@@ -190,90 +192,93 @@ xpr_bool_t SchLocDlg::OnInitDialog(void)
     SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("SchLoc"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("SearchLoc"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
 
-fxb::SchUserLocDeque *SchLocDlg::getSchLoc(xpr_bool_t aNull) const
+fxb::SearchUserLocDeque *SearchLocDlg::getSearchLoc(xpr_bool_t aNull) const
 {
-    fxb::SchUserLocDeque *sSchUserLoc = mSchUserLoc;
+    fxb::SearchUserLocDeque *sSearchUserLoc = mSearchUserLoc;
 
     if (aNull == XPR_TRUE)
-        sSchUserLoc = XPR_NULL;
+        sSearchUserLoc = XPR_NULL;
 
-    return sSchUserLoc;
+    return sSearchUserLoc;
 }
 
-void SchLocDlg::setSchLoc(fxb::SchUserLocDeque *aSchUserLoc)
+void SearchLocDlg::setSearchLoc(fxb::SearchUserLocDeque *aSearchUserLoc)
 {
-    fxb::SchUserLoc *sSchUserLoc;
-    fxb::SchUserLoc *sSchUserLoc2;
-    fxb::SchUserLocDeque::iterator sIterator;
+    fxb::SearchUserLoc *sSearchUserLoc;
+    fxb::SearchUserLoc *sSearchUserLoc2;
+    fxb::SearchUserLocDeque::iterator sIterator;
     fxb::UserLocDeque::iterator sUserLocIterator;
-    fxb::SchUserLocItem *sSchUserLocItem;
-    fxb::SchUserLocItem *sSchUserLocItem2;
+    fxb::SearchUserLocItem *sSearchUserLocItem;
+    fxb::SearchUserLocItem *sSearchUserLocItem2;
 
-    if (mSchUserLoc != XPR_NULL)
+    if (mSearchUserLoc != XPR_NULL)
     {
-        sIterator = mSchUserLoc->begin();
-        for (; sIterator != mSchUserLoc->end(); ++sIterator)
+        sIterator = mSearchUserLoc->begin();
+        for (; sIterator != mSearchUserLoc->end(); ++sIterator)
         {
-            sSchUserLoc = *sIterator;
-            if (sSchUserLoc == XPR_NULL)
+            sSearchUserLoc = *sIterator;
+            if (sSearchUserLoc == XPR_NULL)
                 continue;
 
-            sSchUserLoc->clear();
-            XPR_SAFE_DELETE(sSchUserLoc);
+            sSearchUserLoc->clear();
+            XPR_SAFE_DELETE(sSearchUserLoc);
         }
 
-        mSchUserLoc->clear();
-        XPR_SAFE_DELETE(mSchUserLoc);
+        mSearchUserLoc->clear();
+        XPR_SAFE_DELETE(mSearchUserLoc);
     }
 
-    if (aSchUserLoc == XPR_NULL)
+    if (aSearchUserLoc == XPR_NULL)
         return;
 
-    mSchUserLoc = new fxb::SchUserLocDeque;
+    mSearchUserLoc = new fxb::SearchUserLocDeque;
 
-    sIterator = aSchUserLoc->begin();
-    for (; sIterator != aSchUserLoc->end(); ++sIterator)
+    sIterator = aSearchUserLoc->begin();
+    for (; sIterator != aSearchUserLoc->end(); ++sIterator)
     {
-        sSchUserLoc = *sIterator;
-        if (sSchUserLoc == XPR_NULL)
+        sSearchUserLoc = *sIterator;
+        if (sSearchUserLoc == XPR_NULL)
             continue;
 
-        sSchUserLoc2 = new fxb::SchUserLoc;
-        if (sSchUserLoc2 == XPR_NULL)
+        sSearchUserLoc2 = new fxb::SearchUserLoc;
+        if (sSearchUserLoc2 == XPR_NULL)
             continue;
 
-        sSchUserLoc2->mName = sSchUserLoc->mName;
+        sSearchUserLoc2->mName = sSearchUserLoc->mName;
 
-        sUserLocIterator = sSchUserLoc->mUserLocDeque.begin();
-        for (; sUserLocIterator != sSchUserLoc->mUserLocDeque.end(); ++sUserLocIterator)
+        sUserLocIterator = sSearchUserLoc->mUserLocDeque.begin();
+        for (; sUserLocIterator != sSearchUserLoc->mUserLocDeque.end(); ++sUserLocIterator)
         {
-            sSchUserLocItem = *sUserLocIterator;
-            if (sSchUserLocItem == XPR_NULL)
+            sSearchUserLocItem = *sUserLocIterator;
+            if (sSearchUserLocItem == XPR_NULL)
                 continue;
 
-            sSchUserLocItem2 = new fxb::SchUserLocItem;
-            sSchUserLocItem2->mPath      = sSchUserLocItem->mPath;
-            sSchUserLocItem2->mInclude   = sSchUserLocItem->mInclude;
-            sSchUserLocItem2->mSubFolder = sSchUserLocItem->mSubFolder;
+            sSearchUserLocItem2 = new fxb::SearchUserLocItem;
+            sSearchUserLocItem2->mPath      = sSearchUserLocItem->mPath;
+            sSearchUserLocItem2->mInclude   = sSearchUserLocItem->mInclude;
+            sSearchUserLocItem2->mSubFolder = sSearchUserLocItem->mSubFolder;
 
-            sSchUserLoc2->mUserLocDeque.push_back(sSchUserLocItem2);
+            sSearchUserLoc2->mUserLocDeque.push_back(sSearchUserLocItem2);
         }
 
-        mSchUserLoc->push_back(sSchUserLoc2);
+        mSearchUserLoc->push_back(sSearchUserLoc2);
     }
 }
 
-void SchLocDlg::addLoc(fxb::SchUserLoc *aSchUserLoc, xpr_sint_t aIndex)
+void SearchLocDlg::addLoc(fxb::SearchUserLoc *aSearchUserLoc, xpr_sint_t aIndex)
 {
-    if (aSchUserLoc == XPR_NULL)
+    if (aSearchUserLoc == XPR_NULL)
         return;
 
     COMBOBOXEXITEM sComboBoxExItem = {0};
@@ -281,24 +286,24 @@ void SchLocDlg::addLoc(fxb::SchUserLoc *aSchUserLoc, xpr_sint_t aIndex)
     sComboBoxExItem.iItem          = (aIndex == -1) ? mLocComboBox.GetCount() : aIndex;
     sComboBoxExItem.iImage         = 0;
     sComboBoxExItem.iSelectedImage = 0;
-    sComboBoxExItem.pszText        = (xpr_tchar_t *)aSchUserLoc->mName.c_str();
-    sComboBoxExItem.lParam         = (LPARAM)aSchUserLoc;
+    sComboBoxExItem.pszText        = (xpr_tchar_t *)aSearchUserLoc->mName.c_str();
+    sComboBoxExItem.lParam         = (LPARAM)aSearchUserLoc;
     mLocComboBox.InsertItem(&sComboBoxExItem);
 }
 
-xpr_sint_t SchLocDlg::addLocPath(fxb::SchUserLocItem *aSchUserLocItem, xpr_sint_t aIndex)
+xpr_sint_t SearchLocDlg::addLocPath(fxb::SearchUserLocItem *aSearchUserLocItem, xpr_sint_t aIndex)
 {
-    if (aSchUserLocItem == XPR_NULL)
+    if (aSearchUserLocItem == XPR_NULL)
         return -1;
 
-    fxb::SchUserLocItem *sSchUserLocItem = new fxb::SchUserLocItem;
-    sSchUserLocItem->mPath      = aSchUserLocItem->mPath;
-    sSchUserLocItem->mInclude   = aSchUserLocItem->mInclude;
-    sSchUserLocItem->mSubFolder = aSchUserLocItem->mSubFolder;
+    fxb::SearchUserLocItem *sSearchUserLocItem = new fxb::SearchUserLocItem;
+    sSearchUserLocItem->mPath      = aSearchUserLocItem->mPath;
+    sSearchUserLocItem->mInclude   = aSearchUserLocItem->mInclude;
+    sSearchUserLocItem->mSubFolder = aSearchUserLocItem->mSubFolder;
 
     xpr_sint_t sImage = 2;
 
-    LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sSchUserLocItem->mPath.c_str());
+    LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sSearchUserLocItem->mPath.c_str());
     if (sFullPidl != XPR_NULL)
     {
         HICON sIcon = fxb::GetItemIcon(sFullPidl);
@@ -309,7 +314,7 @@ xpr_sint_t SchLocDlg::addLocPath(fxb::SchUserLocItem *aSchUserLocItem, xpr_sint_
     }
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    _tcscpy(sPath, sSchUserLocItem->mPath.c_str());
+    _tcscpy(sPath, sSearchUserLocItem->mPath.c_str());
 
     LVITEM sLvItem = {0};
     sLvItem.mask      = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
@@ -317,11 +322,11 @@ xpr_sint_t SchLocDlg::addLocPath(fxb::SchUserLocItem *aSchUserLocItem, xpr_sint_
     sLvItem.iSubItem  = 0;
     sLvItem.iImage    = sImage;
     sLvItem.pszText   = sPath;
-    sLvItem.lParam    = (LPARAM)sSchUserLocItem;
+    sLvItem.lParam    = (LPARAM)sSearchUserLocItem;
 
     {
         sLvItem.mask      |= LVIF_STATE;
-        sLvItem.state      = INDEXTOOVERLAYMASK(sSchUserLocItem->mInclude ? 1 : 2);
+        sLvItem.state      = INDEXTOOVERLAYMASK(sSearchUserLocItem->mInclude ? 1 : 2);
         sLvItem.stateMask  = LVIS_OVERLAYMASK;
     }
 
@@ -329,13 +334,13 @@ xpr_sint_t SchLocDlg::addLocPath(fxb::SchUserLocItem *aSchUserLocItem, xpr_sint_
 
     sLvItem.mask      = LVIF_TEXT;
     sLvItem.iSubItem  = 1;
-    sLvItem.pszText   = sSchUserLocItem->mSubFolder ? XPR_STRING_LITERAL("O") : XPR_STRING_LITERAL("");
+    sLvItem.pszText   = sSearchUserLocItem->mSubFolder ? XPR_STRING_LITERAL("O") : XPR_STRING_LITERAL("");
     mListCtrl.SetItem(&sLvItem);
 
     return aIndex;
 }
 
-void SchLocDlg::updateStatus(void)
+void SearchLocDlg::updateStatus(void)
 {
     xpr_sint_t sCount = mListCtrl.GetItemCount();
 
@@ -344,7 +349,7 @@ void SchLocDlg::updateStatus(void)
     SetDlgItemText(IDC_SEARCH_LOC_STATUS, sStatusText);
 }
 
-void SchLocDlg::OnDestroy(void)
+void SearchLocDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
@@ -363,12 +368,14 @@ void SchLocDlg::OnDestroy(void)
     mListImgList.DeleteImageList();
     DESTROY_ICON(mIcon);
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
-xpr_bool_t SchLocDlg::PreTranslateMessage(MSG* pMsg) 
+xpr_bool_t SearchLocDlg::PreTranslateMessage(MSG* pMsg) 
 {
     if (pMsg->message == WM_KEYDOWN && pMsg->hwnd == mListCtrl.m_hWnd)
     {
@@ -419,48 +426,48 @@ static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM
     return 0;
 }
 
-void SchLocDlg::setLocPath(void)
+void SearchLocDlg::setLocPath(void)
 {
     xpr_sint_t sCurSel = mLocComboBox.GetCurSel();
     if (sCurSel < 0)
         return;
 
-    fxb::SchUserLoc *sSchUserLoc = (fxb::SchUserLoc *)mLocComboBox.GetItemData(sCurSel);
-    if (sSchUserLoc == XPR_NULL)
+    fxb::SearchUserLoc *sSearchUserLoc = (fxb::SearchUserLoc *)mLocComboBox.GetItemData(sCurSel);
+    if (sSearchUserLoc == XPR_NULL)
         return;
 
-    sSchUserLoc->clear();
+    sSearchUserLoc->clear();
 
     xpr_sint_t i;
     xpr_sint_t sCount;
-    fxb::SchUserLocItem *sSchUserLocItem;
+    fxb::SearchUserLocItem *sSearchUserLocItem;
 
     sCount = mListCtrl.GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSchUserLocItem = new fxb::SchUserLocItem;
-        sSchUserLocItem->mPath      = mListCtrl.GetItemText(i, 0);
-        sSchUserLocItem->mSubFolder = mListCtrl.GetItemText(i, 1) == XPR_STRING_LITERAL("O");
-        sSchUserLocItem->mInclude   = mListCtrl.GetItemState(i, LVIS_OVERLAYMASK) == INDEXTOOVERLAYMASK(1);
+        sSearchUserLocItem = new fxb::SearchUserLocItem;
+        sSearchUserLocItem->mPath      = mListCtrl.GetItemText(i, 0);
+        sSearchUserLocItem->mSubFolder = mListCtrl.GetItemText(i, 1) == XPR_STRING_LITERAL("O");
+        sSearchUserLocItem->mInclude   = mListCtrl.GetItemState(i, LVIS_OVERLAYMASK) == INDEXTOOVERLAYMASK(1);
 
-        sSchUserLoc->mUserLocDeque.push_back(sSchUserLocItem);
+        sSearchUserLoc->mUserLocDeque.push_back(sSearchUserLocItem);
     }
 }
 
-void SchLocDlg::OnItemAdd(void) 
+void SearchLocDlg::OnItemAdd(void) 
 {
     xpr_sint_t sCount = mListCtrl.GetItemCount();
-    if (sCount >= MAX_SCH_LOC)
+    if (sCount >= MAX_SEARCH_LOC)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SCH_LOC);
+        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
     xpr_sint_t i;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-    fxb::SchUserLocPathSet sUserLocPathSet;
+    fxb::SearchUserLocPathSet sUserLocPathSet;
 
     for (i = 0; i < sCount; ++i)
     {
@@ -470,16 +477,16 @@ void SchLocDlg::OnItemAdd(void)
         sUserLocPathSet.insert(sPath);
     }
 
-    SchLocEditDlg sDlg;
+    SearchLocEditDlg sDlg;
     sDlg.setPathSet(&sUserLocPathSet);
     if (sDlg.DoModal() == IDOK)
     {
-        fxb::SchUserLocItem sSchUserLocItem;
-        sSchUserLocItem.mPath      = sDlg.getPath();
-        sSchUserLocItem.mInclude   = sDlg.isInclude();
-        sSchUserLocItem.mSubFolder = sDlg.isSubFolder();
+        fxb::SearchUserLocItem sSearchUserLocItem;
+        sSearchUserLocItem.mPath      = sDlg.getPath();
+        sSearchUserLocItem.mInclude   = sDlg.isInclude();
+        sSearchUserLocItem.mSubFolder = sDlg.isSubFolder();
 
-        xpr_sint_t sIndex = addLocPath(&sSchUserLocItem);
+        xpr_sint_t sIndex = addLocPath(&sSearchUserLocItem);
         setItemFocus(sIndex);
 
         setLocPath();
@@ -490,19 +497,19 @@ void SchLocDlg::OnItemAdd(void)
     updateStatus();
 }
 
-void SchLocDlg::OnItemModify(void) 
+void SearchLocDlg::OnItemModify(void) 
 {
     xpr_sint_t sIndex = mListCtrl.GetSelectionMark();
     if (sIndex < 0)
         return;
 
-    fxb::SchUserLocItem *sSchUserLocItem = (fxb::SchUserLocItem *)mListCtrl.GetItemData(sIndex);
-    if (sSchUserLocItem == XPR_NULL)
+    fxb::SearchUserLocItem *sSearchUserLocItem = (fxb::SearchUserLocItem *)mListCtrl.GetItemData(sIndex);
+    if (sSearchUserLocItem == XPR_NULL)
         return;
 
     xpr_sint_t i, sCount;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-    fxb::SchUserLocPathSet sUserLocPathSet;
+    fxb::SearchUserLocPathSet sUserLocPathSet;
 
     sCount = mListCtrl.GetItemCount();
     for (i = 0; i < sCount; ++i)
@@ -516,20 +523,20 @@ void SchLocDlg::OnItemModify(void)
         sUserLocPathSet.insert(sPath);
     }
 
-    SchLocEditDlg sDlg;
+    SearchLocEditDlg sDlg;
     sDlg.setPathSet(&sUserLocPathSet);
-    sDlg.setPath(sSchUserLocItem->mPath.c_str());
-    sDlg.setInclude(sSchUserLocItem->mInclude);
-    sDlg.setSubFolder(sSchUserLocItem->mSubFolder);
+    sDlg.setPath(sSearchUserLocItem->mPath.c_str());
+    sDlg.setInclude(sSearchUserLocItem->mInclude);
+    sDlg.setSubFolder(sSearchUserLocItem->mSubFolder);
     if (sDlg.DoModal() == IDOK)
     {
-        sSchUserLocItem->mPath      = sDlg.getPath();
-        sSchUserLocItem->mInclude   = sDlg.isInclude();
-        sSchUserLocItem->mSubFolder = sDlg.isSubFolder();
+        sSearchUserLocItem->mPath      = sDlg.getPath();
+        sSearchUserLocItem->mInclude   = sDlg.isInclude();
+        sSearchUserLocItem->mSubFolder = sDlg.isSubFolder();
 
-        mListCtrl.SetItemText(sIndex, 0, sSchUserLocItem->mPath.c_str());
-        mListCtrl.SetItemText(sIndex, 1, sSchUserLocItem->mSubFolder ? XPR_STRING_LITERAL("O") : XPR_STRING_LITERAL(""));
-        mListCtrl.SetItemState(sIndex, INDEXTOOVERLAYMASK(sSchUserLocItem->mInclude ? 1 : 2), LVIS_OVERLAYMASK);
+        mListCtrl.SetItemText(sIndex, 0, sSearchUserLocItem->mPath.c_str());
+        mListCtrl.SetItemText(sIndex, 1, sSearchUserLocItem->mSubFolder ? XPR_STRING_LITERAL("O") : XPR_STRING_LITERAL(""));
+        mListCtrl.SetItemState(sIndex, INDEXTOOVERLAYMASK(sSearchUserLocItem->mInclude ? 1 : 2), LVIS_OVERLAYMASK);
 
         setLocPath();
 
@@ -539,7 +546,7 @@ void SchLocDlg::OnItemModify(void)
     sUserLocPathSet.clear();
 }
 
-void SchLocDlg::OnItemDelete(void) 
+void SearchLocDlg::OnItemDelete(void) 
 {
     xpr_sint_t sSelCount = mListCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -562,7 +569,7 @@ void SchLocDlg::OnItemDelete(void)
     updateStatus();
 }
 
-void SchLocDlg::OnItemMoveUp(void) 
+void SearchLocDlg::OnItemMoveUp(void) 
 {
     xpr_sint_t sSelCount = mListCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -572,16 +579,16 @@ void SchLocDlg::OnItemMoveUp(void)
     if (sIndex == 0)
         return;
 
-    fxb::SchUserLocItem *sSchUserLocItem = (fxb::SchUserLocItem *)mListCtrl.GetItemData(sIndex);
+    fxb::SearchUserLocItem *sSearchUserLocItem = (fxb::SearchUserLocItem *)mListCtrl.GetItemData(sIndex);
     mListCtrl.SetItemData(sIndex, XPR_NULL);
     mListCtrl.DeleteItem(sIndex--);
 
-    addLocPath(sSchUserLocItem, sIndex);
+    addLocPath(sSearchUserLocItem, sIndex);
 
     setItemFocus(sIndex);
 }
 
-void SchLocDlg::OnItemMoveDown(void) 
+void SearchLocDlg::OnItemMoveDown(void) 
 {
     xpr_sint_t sSelCount = mListCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -591,63 +598,63 @@ void SchLocDlg::OnItemMoveDown(void)
     if (sIndex == (mListCtrl.GetItemCount()-1))
         return;
 
-    fxb::SchUserLocItem *sSchUserLocItem = (fxb::SchUserLocItem *)mListCtrl.GetItemData(sIndex);
+    fxb::SearchUserLocItem *sSearchUserLocItem = (fxb::SearchUserLocItem *)mListCtrl.GetItemData(sIndex);
     mListCtrl.SetItemData(sIndex, XPR_NULL);
     mListCtrl.DeleteItem(sIndex++);
 
-    addLocPath(sSchUserLocItem, sIndex);
+    addLocPath(sSearchUserLocItem, sIndex);
 
     setItemFocus(sIndex);
 }
 
-void SchLocDlg::OnDeleteitemItemList(NMHDR* pNMHDR, LRESULT* pResult) 
+void SearchLocDlg::OnDeleteitemItemList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
     NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
     *pResult = 0;
 
-    fxb::SchUserLocItem *sSchUserLocItem = (fxb::SchUserLocItem *)pNMListView->lParam;
-    if (sSchUserLocItem == XPR_NULL)
+    fxb::SearchUserLocItem *sSearchUserLocItem = (fxb::SearchUserLocItem *)pNMListView->lParam;
+    if (sSearchUserLocItem == XPR_NULL)
         return;
 
-    XPR_SAFE_DELETE(sSchUserLocItem);
+    XPR_SAFE_DELETE(sSearchUserLocItem);
 }
 
-void SchLocDlg::OnDblclkItemList(NMHDR* pNMHDR, LRESULT* pResult) 
+void SearchLocDlg::OnDblclkItemList(NMHDR* pNMHDR, LRESULT* pResult) 
 {
     OnItemModify();
     *pResult = 0;
 }
 
-void SchLocDlg::OnSetFocus(CWnd* pOldWnd) 
+void SearchLocDlg::OnSetFocus(CWnd* pOldWnd) 
 {
     super::OnSetFocus(pOldWnd);
     mListCtrl.SetFocus();
 }
 
-void SchLocDlg::OnOK(void) 
+void SearchLocDlg::OnOK(void) 
 {
-    if (mListCtrl.GetItemCount() >= MAX_SCH_LOC)
+    if (mListCtrl.GetItemCount() >= MAX_SEARCH_LOC)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SCH_LOC);
+        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
-    mSchUserLoc = new fxb::SchUserLocDeque;
+    mSearchUserLoc = new fxb::SearchUserLocDeque;
 
     xpr_sint_t i;
     xpr_sint_t sCount;
-    fxb::SchUserLoc *sSchUserLoc;
+    fxb::SearchUserLoc *sSearchUserLoc;
 
     sCount = mLocComboBox.GetCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSchUserLoc = (fxb::SchUserLoc *)mLocComboBox.GetItemData(i);
-        if (sSchUserLoc == XPR_NULL)
+        sSearchUserLoc = (fxb::SearchUserLoc *)mLocComboBox.GetItemData(i);
+        if (sSearchUserLoc == XPR_NULL)
             continue;
 
-        mSchUserLoc->push_back(sSchUserLoc);
+        mSearchUserLoc->push_back(sSearchUserLoc);
 
         mLocComboBox.SetItemData(i, XPR_NULL);
     }
@@ -655,7 +662,7 @@ void SchLocDlg::OnOK(void)
     super::OnOK();
 }
 
-xpr_sint_t SchLocDlg::findLoc(LPITEMIDLIST aFullPidl)
+xpr_sint_t SearchLocDlg::findLoc(LPITEMIDLIST aFullPidl)
 {
     if (aFullPidl == XPR_NULL)
         return -1;
@@ -666,7 +673,7 @@ xpr_sint_t SchLocDlg::findLoc(LPITEMIDLIST aFullPidl)
     return findLoc(sPath);
 }
 
-xpr_sint_t SchLocDlg::findLoc(const xpr_tchar_t *aPath)
+xpr_sint_t SearchLocDlg::findLoc(const xpr_tchar_t *aPath)
 {
     if (aPath == XPR_NULL)
         return -1;
@@ -686,30 +693,30 @@ xpr_sint_t SchLocDlg::findLoc(const xpr_tchar_t *aPath)
     return -1;
 }
 
-xpr_sint_t SchLocDlg::findLocName(const xpr_tchar_t *aName)
+xpr_sint_t SearchLocDlg::findLocName(const xpr_tchar_t *aName)
 {
     if (aName == XPR_NULL)
         return -1;
 
     xpr_sint_t i;
     xpr_sint_t sCount;
-    fxb::SchUserLoc *sSchUserLoc;
+    fxb::SearchUserLoc *sSearchUserLoc;
 
     sCount = mLocComboBox.GetCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSchUserLoc = (fxb::SchUserLoc *)mLocComboBox.GetItemData(i);
-        if (sSchUserLoc == XPR_NULL)
+        sSearchUserLoc = (fxb::SearchUserLoc *)mLocComboBox.GetItemData(i);
+        if (sSearchUserLoc == XPR_NULL)
             continue;
 
-        if (_tcsicmp(sSchUserLoc->mName.c_str(), aName) == 0)
+        if (_tcsicmp(sSearchUserLoc->mName.c_str(), aName) == 0)
             return i;
     }
 
     return -1;
 }
 
-void SchLocDlg::setItemFocus(xpr_sint_t aIndex)
+void SearchLocDlg::setItemFocus(xpr_sint_t aIndex)
 {
     mListCtrl.EnsureVisible(aIndex, XPR_TRUE);
 
@@ -718,7 +725,7 @@ void SchLocDlg::setItemFocus(xpr_sint_t aIndex)
     mListCtrl.SetItemState(aIndex, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 }
 
-void SchLocDlg::OnPaint(void)
+void SearchLocDlg::OnPaint(void)
 {
     CPaintDC sPaintDc(this);
 
@@ -754,7 +761,7 @@ void SchLocDlg::OnPaint(void)
     sPaintDc.FillSolidRect(&sRect, sBkgndColor);
 }
 
-HBRUSH SchLocDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor)
+HBRUSH SearchLocDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor)
 {
     HBRUSH sBrush = super::OnCtlColor(pDC, pWnd, nCtlColor);
 
@@ -780,39 +787,39 @@ HBRUSH SchLocDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor)
     return sBrush;
 }
 
-void SchLocDlg::OnCbnSelchangeList(void)
+void SearchLocDlg::OnCbnSelchangeList(void)
 {
     xpr_sint_t sCurSel = mLocComboBox.GetCurSel();
     if (sCurSel < 0)
         return;
 
-    fxb::SchUserLoc *sSchUserLoc = (fxb::SchUserLoc *)mLocComboBox.GetItemData(sCurSel);
-    if (sSchUserLoc == XPR_NULL)
+    fxb::SearchUserLoc *sSearchUserLoc = (fxb::SearchUserLoc *)mLocComboBox.GetItemData(sCurSel);
+    if (sSearchUserLoc == XPR_NULL)
         return;
 
     mListCtrl.DeleteAllItems();
 
-    fxb::UserLocDeque::iterator sIterator = sSchUserLoc->mUserLocDeque.begin();
-    for (; sIterator != sSchUserLoc->mUserLocDeque.end(); ++sIterator)
+    fxb::UserLocDeque::iterator sIterator = sSearchUserLoc->mUserLocDeque.begin();
+    for (; sIterator != sSearchUserLoc->mUserLocDeque.end(); ++sIterator)
         addLocPath(*sIterator);
 
     updateStatus();
 }
 
-void SchLocDlg::OnCbenDeleteitemList(NMHDR *pNMHDR, LRESULT *pResult)
+void SearchLocDlg::OnCbenDeleteitemList(NMHDR *pNMHDR, LRESULT *pResult)
 {
     PNMCOMBOBOXEX pCBEx = reinterpret_cast<PNMCOMBOBOXEX>(pNMHDR);
     *pResult = 0;
 
-    fxb::SchUserLoc *sSchUserLoc = (fxb::SchUserLoc *)pCBEx->ceItem.lParam;
-    if (sSchUserLoc == XPR_NULL)
+    fxb::SearchUserLoc *sSearchUserLoc = (fxb::SearchUserLoc *)pCBEx->ceItem.lParam;
+    if (sSearchUserLoc == XPR_NULL)
         return;
 
-    sSchUserLoc->clear();
-    XPR_SAFE_DELETE(sSchUserLoc);
+    sSearchUserLoc->clear();
+    XPR_SAFE_DELETE(sSearchUserLoc);
 }
 
-void SchLocDlg::OnListNew(void)
+void SearchLocDlg::OnListNew(void)
 {
     InputDlg sDlg;
     sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.new.title")));
@@ -838,35 +845,35 @@ void SchLocDlg::OnListNew(void)
     if (sText == XPR_NULL)
         return;
 
-    fxb::SchUserLoc *sSchUserLoc = new fxb::SchUserLoc;
-    if (sSchUserLoc == XPR_NULL)
+    fxb::SearchUserLoc *sSearchUserLoc = new fxb::SearchUserLoc;
+    if (sSearchUserLoc == XPR_NULL)
         return;
 
-    sSchUserLoc->mName = sText;
+    sSearchUserLoc->mName = sText;
 
     mListCtrl.DeleteAllItems();
 
-    addLoc(sSchUserLoc);
+    addLoc(sSearchUserLoc);
 
     mLocComboBox.SetCurSel(mLocComboBox.GetCount()-1);
 
     updateStatus();
 }
 
-void SchLocDlg::OnListModify(void)
+void SearchLocDlg::OnListModify(void)
 {
     xpr_sint_t sCurSel = mLocComboBox.GetCurSel();
     if (sCurSel < 0)
         return;
 
-    fxb::SchUserLoc *sSchUserLoc = (fxb::SchUserLoc *)mLocComboBox.GetItemData(sCurSel);
-    if (sSchUserLoc == XPR_NULL)
+    fxb::SearchUserLoc *sSearchUserLoc = (fxb::SearchUserLoc *)mLocComboBox.GetItemData(sCurSel);
+    if (sSearchUserLoc == XPR_NULL)
         return;
 
     InputDlg sDlg;
     sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.title")));
     sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.desc")));
-    sDlg.setText(sSchUserLoc->mName.c_str());
+    sDlg.setText(sSearchUserLoc->mName.c_str());
     sDlg.setCheckEmpty();
 
     const xpr_tchar_t *sText = XPR_NULL;
@@ -878,7 +885,7 @@ void SchLocDlg::OnListModify(void)
 
         sText = sDlg.getText();
 
-        if (_tcsicmp(sText, sSchUserLoc->mName.c_str()) == 0)
+        if (_tcsicmp(sText, sSearchUserLoc->mName.c_str()) == 0)
             return;
 
         if (findLocName(sText) == -1)
@@ -891,18 +898,18 @@ void SchLocDlg::OnListModify(void)
     if (sText == XPR_NULL)
         return;
 
-    sSchUserLoc->mName = sText;
+    sSearchUserLoc->mName = sText;
 
     COMBOBOXEXITEM sComboBoxExItem = {0};
     sComboBoxExItem.mask    = CBEIF_TEXT;
     sComboBoxExItem.iItem   = sCurSel;
-    sComboBoxExItem.pszText = (xpr_tchar_t *)sSchUserLoc->mName.c_str();
+    sComboBoxExItem.pszText = (xpr_tchar_t *)sSearchUserLoc->mName.c_str();
     mLocComboBox.SetItem(&sComboBoxExItem);
 
     mLocComboBox.Invalidate();
 }
 
-void SchLocDlg::OnListDelete(void)
+void SearchLocDlg::OnListDelete(void)
 {
     xpr_sint_t sCurSel = mLocComboBox.GetCurSel();
     if (sCurSel < 0)
@@ -933,7 +940,7 @@ void SchLocDlg::OnListDelete(void)
     updateStatus();
 }
 
-LRESULT SchLocDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu) 
+LRESULT SearchLocDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu) 
 {
     LRESULT sResult;
 
@@ -945,7 +952,7 @@ LRESULT SchLocDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu)
     return sResult;
 }
 
-void SchLocDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t aIndex, xpr_bool_t bSysMenu) 
+void SearchLocDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t aIndex, xpr_bool_t bSysMenu) 
 {
     //CDialog::OnInitMenuPopup(pPopupMenu, aIndex, bSysMenu);
     ASSERT(pPopupMenu != XPR_NULL);
@@ -1068,7 +1075,7 @@ void SchLocDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t aIndex, xpr_bool_t
     }
 }
 
-void SchLocDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
+void SearchLocDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
 {
     xpr_bool_t sSetFlag = XPR_FALSE;
     if (lpMeasureItemStruct->CtlType == ODT_MENU)

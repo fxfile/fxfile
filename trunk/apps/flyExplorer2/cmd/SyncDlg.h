@@ -14,7 +14,7 @@
 #include "rgc/ResizingDialog.h"
 #include "rgc/BCMenu.h"
 
-#include "DlgState.h"
+class DlgState;
 
 namespace fxb
 {
@@ -66,10 +66,10 @@ protected:
     xpr_sint_t     mPathBrowseWidth;
 
 protected:
-    HICON     mIcon;
-    DlgState  mState;
-    CComboBox mPathComboBox[2];
-    CListCtrl mListCtrl;
+    HICON      mIcon;
+    DlgState  *mDlgState;
+    CComboBox  mPathComboBox[2];
+    CListCtrl  mListCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

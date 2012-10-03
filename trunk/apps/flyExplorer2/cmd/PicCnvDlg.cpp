@@ -14,6 +14,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "PicCnvOptDlg.h"
 #include "PicCnvClrDlg.h"
 
@@ -42,6 +43,7 @@ PicCnvDlg::PicCnvDlg(void)
     , mGflSaveParams(XPR_NULL)
     , mLossless(XPR_FALSE)
     , mPaletteTransparent(-1)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -192,11 +194,13 @@ xpr_bool_t PicCnvDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                      theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.convert")));
     SetDlgItemText(IDCANCEL,                  theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.close")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("PicConv"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("PicConv"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -214,9 +218,11 @@ void PicCnvDlg::OnDestroy(void)
 
     DESTROY_ICON(mIcon);
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 xpr_bool_t PicCnvDlg::addPath(const std::tstring &aPath)

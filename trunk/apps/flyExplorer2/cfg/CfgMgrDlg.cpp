@@ -36,7 +36,6 @@
 #include "CfgFuncFileOpDlg.h"
 #include "CfgAdvDlg.h"
 #include "CfgAdvPathDlg.h"
-#include "CfgAdvStateDlg.h"
 #include "CfgAdvHotKeyDlg.h"
 
 #ifdef _DEBUG
@@ -123,7 +122,6 @@ xpr_bool_t CfgMgrDlg::OnInitDialog(void)
     /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.operation")));
     sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
     /*    */ addCfgItem(23, sIndex, new CfgAdvPathDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.cfg_path")));
-    /*    */ addCfgItem(23, sIndex, new CfgAdvStateDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.dialog_state")));
     /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
 
     if (!XPR_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))

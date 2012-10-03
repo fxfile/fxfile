@@ -11,7 +11,7 @@
 #define __FX_SEL_NAME_DLG_H__
 #pragma once
 
-#include "DlgState.h"
+class DlgState;
 
 class SelNameDlg : public CDialog
 {
@@ -30,8 +30,8 @@ protected:
     xpr_tchar_t mName[XPR_MAX_PATH + 1];
 
 protected:
-    DlgState  mState;
-    CComboBox mComboBox;
+    DlgState  *mDlgState;
+    CComboBox  mComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

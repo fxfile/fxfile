@@ -11,7 +11,7 @@
 #define __FX_SEL_FOLDER_DLG_H__
 #pragma once
 
-#include "DlgState.h"
+class DlgState;
 
 class SelFolderDlg : public CDialog
 {
