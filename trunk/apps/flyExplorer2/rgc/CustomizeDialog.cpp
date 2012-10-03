@@ -277,7 +277,11 @@ LRESULT CCustomizeDialog::OnInitDialog( WPARAM /*wParam*/, LPARAM /*lParam*/ )
     VERIFY( SetWindowPos( 0, 0, 0, rcWindow.Width(), rcWindow.Height(),
         SWP_NOZORDER | SWP_NOMOVE ) );
 
-    return Default();
+    LRESULT sResult = Default();
+
+    RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+
+    return sResult;
 }
 
 void CCustomizeDialog::OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct )
