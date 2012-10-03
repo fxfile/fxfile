@@ -13,13 +13,13 @@
 
 #include "fxb/fxb_batch_create.h"
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class BatchCreate;
 } // namespace fxb
 
+class DlgState;
 class BatchCreateTabDlg;
 
 class BatchCreateDlg : public CResizingDialog
@@ -55,11 +55,11 @@ protected:
     xpr_sint_t mOldShowDlg;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CComboBox     mTypeWnd;
-    CTabCtrl      mTabCtrl;
-    CProgressCtrl mProgressCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CComboBox      mTypeWnd;
+    CTabCtrl       mTabCtrl;
+    CProgressCtrl  mProgressCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

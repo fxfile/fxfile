@@ -15,6 +15,8 @@
 #include "rgc/FileDialogST.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -37,6 +39,7 @@ enum
 TextMergeDlg::TextMergeDlg(void)
     : super(IDD_TEXT_MERGE, XPR_NULL)
     , mTextMerge(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -121,11 +124,13 @@ xpr_bool_t TextMergeDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                          theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.merge")));
     SetDlgItemText(IDCANCEL,                      theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.close")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("TextMerge"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("TextMerge"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -141,9 +146,11 @@ xpr_bool_t TextMergeDlg::DestroyWindow(void)
     if (mTextMerge != XPR_NULL)
         mTextMerge->Stop();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

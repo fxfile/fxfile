@@ -7,25 +7,26 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_TEXT_FILE_OUT_DLG_H__
-#define __FX_TEXT_FILE_OUT_DLG_H__
+#ifndef __FX_FILE_LIST_DLG_H__
+#define __FX_FILE_LIST_DLG_H__
 #pragma once
 
 #include "TitleDlg.h"
-#include "DlgState.h"
 
 namespace fxb
 {
-class TextFileOut;
+class FileList;
 } // namespace fxb
 
-class TextFileOutDlg : public TitleDlg
+class DlgState;
+
+class FileListDlg : public TitleDlg
 {
     typedef TitleDlg super;
 
 public:
-    TextFileOutDlg(void);
-    virtual ~TextFileOutDlg(void);
+    FileListDlg(void);
+    virtual ~FileListDlg(void);
 
 public:
     void addPath(const xpr_tchar_t *aPath);
@@ -40,10 +41,10 @@ protected:
 
     std::tstring mTextFile;
 
-    fxb::TextFileOut *mTextFileOut;
+    fxb::FileList *mFileList;
 
 protected:
-    DlgState mState;
+    DlgState *mDlgState;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -59,4 +60,4 @@ public:
     virtual xpr_bool_t DestroyWindow();
 };
 
-#endif // __FX_TEXT_FILE_OUT_DLG_H__
+#endif // __FX_FILE_LIST_DLG_H__

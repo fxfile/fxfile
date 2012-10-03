@@ -39,7 +39,7 @@ xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t  aInputBytes,  CodePa
         return XPR_RCODE_SUCCESS;
     }
 
-    static const xpr_size_t sCodePageCount = XPR_COUNTOF(kCodePage);
+    static const xpr_size_t sCodePageCount = XPR_COUNT_OF(kCodePage);
     if (!XPR_IS_RANGE(0, (xpr_size_t)aInputCodePage,  sCodePageCount-1) ||
         !XPR_IS_RANGE(0, (xpr_size_t)aOutputCodePage, sCodePageCount-1))
     {

@@ -14,6 +14,8 @@
 #include "rgc/BCMenu.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "BatchCreateDlg.h"
 
 #include "command_string_table.h"
@@ -26,6 +28,7 @@ static char THIS_FILE[] = __FILE__;
 
 BatchCreateFmtDlg::BatchCreateFmtDlg(void)
     : super(IDD_BATCH_CREATE_FMT)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -74,17 +77,20 @@ xpr_bool_t BatchCreateFmtDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_CREATE_FORMAT))->LimitText(XPR_MAX_PATH);
     ((CButton *)GetDlgItem(IDC_CREATE_IS_NUMBER_END))->SetCheck(1);
 
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("BatchCreateFormat"));
-    mState.setCheckBox(XPR_STRING_LITERAL("Zero"),       IDC_CREATE_NUMBER_ZERO);
-    mState.setCheckBox(XPR_STRING_LITERAL("EndOrCount"), IDC_CREATE_IS_NUMBER_END);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Format"),     IDC_CREATE_FORMAT);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Start"),      IDC_CREATE_NUMBER_START);
-    mState.setEditCtrl(XPR_STRING_LITERAL("End"),        IDC_CREATE_NUMBER_END);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Count"),      IDC_CREATE_NUMBER_COUNT);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Increase"),   IDC_CREATE_NUMBER_INCREASE);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Length"),     IDC_CREATE_NUMBER_LENGTH);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("BatchCreateFormat"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Zero"),       IDC_CREATE_NUMBER_ZERO);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("EndOrCount"), IDC_CREATE_IS_NUMBER_END);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Format"),     IDC_CREATE_FORMAT);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Start"),      IDC_CREATE_NUMBER_START);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("End"),        IDC_CREATE_NUMBER_END);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Count"),      IDC_CREATE_NUMBER_COUNT);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Increase"),   IDC_CREATE_NUMBER_INCREASE);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Length"),     IDC_CREATE_NUMBER_LENGTH);
+        mDlgState->load();
+    }
 
     xpr_bool_t sEnd = ((CButton *)GetDlgItem(IDC_CREATE_IS_NUMBER_END))->GetCheck();
     ((CButton *)GetDlgItem((sEnd == XPR_TRUE) ? IDC_CREATE_IS_NUMBER_END : IDC_CREATE_IS_NUMBER_COUNT))->SetCheck(1);
@@ -97,9 +103,11 @@ void BatchCreateFmtDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void BatchCreateFmtDlg::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t aSysMenu)

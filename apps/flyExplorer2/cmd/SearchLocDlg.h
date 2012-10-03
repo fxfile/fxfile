@@ -7,31 +7,32 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_SCH_LOC_DLG_H__
-#define __FX_SCH_LOC_DLG_H__
+#ifndef __FX_SEARCH_LOC_DLG_H__
+#define __FX_SEARCH_LOC_DLG_H__
 #pragma once
 
 #include "fxb/fxb_search.h"
 #include "rgc/ResizingDialog.h"
 #include "rgc/DropMenuButton.h"
 #include "rgc/BCMenu.h"
-#include "DlgState.h"
 
-class SchLocDlg : public CResizingDialog
+class DlgState;
+
+class SearchLocDlg : public CResizingDialog
 {
     typedef CResizingDialog super;
 
 public:
-    SchLocDlg(void);
-    virtual ~SchLocDlg(void);
+    SearchLocDlg(void);
+    virtual ~SearchLocDlg(void);
 
 public:
-    fxb::SchUserLocDeque *getSchLoc(xpr_bool_t aNull = XPR_FALSE) const;
-    void setSchLoc(fxb::SchUserLocDeque *aSchLocDeque);
+    fxb::SearchUserLocDeque *getSearchLoc(xpr_bool_t aNull = XPR_FALSE) const;
+    void setSearchLoc(fxb::SearchUserLocDeque *aSearchLocDeque);
 
 protected:
-    void addLoc(fxb::SchUserLoc *aSchLoc, xpr_sint_t aIndex = -1);
-    xpr_sint_t addLocPath(fxb::SchUserLocItem *aItem, xpr_sint_t aIndex = -1);
+    void addLoc(fxb::SearchUserLoc *aSearchLoc, xpr_sint_t aIndex = -1);
+    xpr_sint_t addLocPath(fxb::SearchUserLocItem *aItem, xpr_sint_t aIndex = -1);
     xpr_sint_t findLoc(LPITEMIDLIST sFullPidl);
     xpr_sint_t findLoc(const xpr_tchar_t *aPath);
     xpr_sint_t findLocName(const xpr_tchar_t *aName);
@@ -44,14 +45,14 @@ protected:
     CImageList mListImgList;
     CBrush mBrush;
 
-    fxb::SchUserLocDeque *mSchUserLoc;
+    fxb::SearchUserLocDeque *mSearchUserLoc;
 
 protected:
-    HICON           mIcon;
-    DlgState        mState;
-    CListCtrl       mListCtrl;
-    CComboBoxEx     mLocComboBox;
-    CDropMenuButton mNewDropButton;
+    HICON            mIcon;
+    DlgState        *mDlgState;
+    CListCtrl        mListCtrl;
+    CComboBoxEx      mLocComboBox;
+    CDropMenuButton  mNewDropButton;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);
@@ -84,4 +85,4 @@ protected:
     afx_msg void OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
 };
 
-#endif // __FX_SCH_LOC_DLG_H__
+#endif // __FX_SEARCH_LOC_DLG_H__

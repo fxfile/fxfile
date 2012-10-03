@@ -13,7 +13,7 @@
 
 namespace fxb
 {
-class TextFileOut : public fxb::Thread
+class FileList : public fxb::Thread
 {
 public:
     enum Status
@@ -37,8 +37,8 @@ public:
     };
 
 public:
-    TextFileOut(void);
-    virtual ~TextFileOut(void);
+    FileList(void);
+    virtual ~FileList(void);
 
 public:
     void setOwner(HWND aHwnd, xpr_uint_t aMsg);

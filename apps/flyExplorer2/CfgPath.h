@@ -35,7 +35,7 @@ public:
         TypeSearchDir,
         TypeSizeFmt,
         TypeViewSet,
-        TypeSettings,
+        TypeDlgState,
         TypeAccel,
         TypeCoolBar,
         TypeToolBar,

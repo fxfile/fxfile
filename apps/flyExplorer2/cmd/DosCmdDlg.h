@@ -11,7 +11,7 @@
 #define __FX_DOS_CMD_DLG_H__
 #pragma once
 
-#include "DlgState.h"
+class DlgState;
 
 class DosCmdDlg : public CDialog
 {
@@ -24,8 +24,8 @@ protected:
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
 
 protected:
-    DlgState  mState;
-    CComboBox mComboBox;
+    DlgState  *mDlgState;
+    CComboBox  mComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

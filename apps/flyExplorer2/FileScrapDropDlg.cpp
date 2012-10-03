@@ -19,6 +19,7 @@
 #include "MainFrame.h"
 #include "ExplorerCtrl.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #include "command_string_table.h"
 #include "cmd/FileScrapGrpDlg.h"
@@ -48,6 +49,7 @@ FileScrapDropDlg::FileScrapDropDlg(void)
     , mTransparentPercentage(60)
     , mTransparent(XPR_FALSE)
     , mAlwaysTopMost(XPR_FALSE)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -106,16 +108,20 @@ xpr_bool_t FileScrapDropDlg::OnInitDialog(void)
     mDropTarget.registerObserver(this);
     mDropTarget.Register(this);
 
-    mState.setSection(XPR_STRING_LITERAL("FileScrapDrop"));
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FileScrapDrop"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->load();
 
-    mAlwaysTopMost         = mState.getStateB(XPR_STRING_LITERAL("Always Top Most"), XPR_FALSE);
-    mTransparent           = mState.getStateB(XPR_STRING_LITERAL("Transparent"), XPR_FALSE);
-    mTransparentPercentage = mState.getStateI(XPR_STRING_LITERAL("Transparent Percentage"), 60);
-    xpr_sint_t x           = mState.getStateI(XPR_STRING_LITERAL("left"), 0);
-    xpr_sint_t y           = mState.getStateI(XPR_STRING_LITERAL("top"), 0);
+        xpr_sint_t x, y;
+        mAlwaysTopMost         = mDlgState->getStateB(XPR_STRING_LITERAL("Always Top Most"), XPR_FALSE);
+        mTransparent           = mDlgState->getStateB(XPR_STRING_LITERAL("Transparent"), XPR_FALSE);
+        mTransparentPercentage = mDlgState->getStateI(XPR_STRING_LITERAL("Transparent Percentage"), 60);
+        x                      = mDlgState->getStateI(XPR_STRING_LITERAL("left"), 0);
+        y                      = mDlgState->getStateI(XPR_STRING_LITERAL("top"), 0);
 
-    SetWindowPos(XPR_NULL, x, y, 26, 24, SWP_NOZORDER | SWP_NOSIZE);
+        SetWindowPos(XPR_NULL, x, y, 26, 24, SWP_NOZORDER | SWP_NOSIZE);
+    }
 
     if (XPR_IS_TRUE(mAlwaysTopMost)) setAlwaysTopMost(mAlwaysTopMost);
     if (XPR_IS_TRUE(mTransparent  )) setTransparent(mTransparent, mTransparentPercentage);
@@ -128,13 +134,16 @@ xpr_bool_t FileScrapDropDlg::DestroyWindow(void)
     CRect sRect;
     GetWindowRect(&sRect);
 
-    mState.reset();
-    mState.setStateB(XPR_STRING_LITERAL("Always Top Most"),     mAlwaysTopMost);
-    mState.setStateB(XPR_STRING_LITERAL("Transparent"),         mTransparent);
-    mState.setStateI(XPR_STRING_LITERAL("Transparent Percent"), mTransparentPercentage);
-    mState.setStateI(XPR_STRING_LITERAL("left"),                sRect.left);
-    mState.setStateI(XPR_STRING_LITERAL("top"),                 sRect.top);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->setStateB(XPR_STRING_LITERAL("Always Top Most"),     mAlwaysTopMost);
+        mDlgState->setStateB(XPR_STRING_LITERAL("Transparent"),         mTransparent);
+        mDlgState->setStateI(XPR_STRING_LITERAL("Transparent Percent"), mTransparentPercentage);
+        mDlgState->setStateI(XPR_STRING_LITERAL("left"),                sRect.left);
+        mDlgState->setStateI(XPR_STRING_LITERAL("top"),                 sRect.top);
+        mDlgState->save();
+    }
 
     return super::DestroyWindow();
 }

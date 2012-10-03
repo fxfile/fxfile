@@ -11,6 +11,8 @@
 #include "ParamExecDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 ParamExecDlg::ParamExecDlg(void)
     : super(IDD_PARAM_EXEC, XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mPath[0] = 0;
 }
@@ -47,10 +50,13 @@ xpr_bool_t ParamExecDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("ParamExec"));
-    mState.setComboBoxList(XPR_STRING_LITERAL("Param"), mComboBox.GetDlgCtrlID());
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("ParamExec"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Param"), mComboBox.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     if (mComboBox.GetCount() > 0)
         mComboBox.SetCurSel(0);
@@ -68,7 +74,7 @@ xpr_bool_t ParamExecDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void ParamExecDlg::OnOK(void) 
+void ParamExecDlg::OnOK(void)
 {
     xpr_tchar_t sParameter[XPR_MAX_PARAM + 1] = {0};
     mComboBox.GetWindowText(sParameter, XPR_MAX_PARAM);
@@ -78,8 +84,11 @@ void ParamExecDlg::OnOK(void)
     // Save Command
     DlgState::insertComboEditString(&mComboBox, XPR_FALSE);
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     super::OnOK();
 }

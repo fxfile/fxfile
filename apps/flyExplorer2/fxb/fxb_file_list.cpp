@@ -18,7 +18,7 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-TextFileOut::TextFileOut(void)
+FileList::FileList(void)
     : mHwnd(XPR_NULL), mMsg(XPR_NULL)
     , mPathMaxLen(-1)
     , mFileMaxLen(-1)
@@ -27,42 +27,42 @@ TextFileOut::TextFileOut(void)
 {
 }
 
-TextFileOut::~TextFileOut(void)
+FileList::~FileList(void)
 {
     Stop();
 
     mPathDeque.clear();
 }
 
-void TextFileOut::setOwner(HWND aHwnd, xpr_uint_t aMsg)
+void FileList::setOwner(HWND aHwnd, xpr_uint_t aMsg)
 {
     mHwnd = aHwnd;
     mMsg  = aMsg;
 }
 
-xpr_uint_t TextFileOut::getFlags(void)
+xpr_uint_t FileList::getFlags(void)
 {
     return mFlags;
 }
 
-void TextFileOut::setFlags(xpr_uint_t aFlags)
+void FileList::setFlags(xpr_uint_t aFlags)
 {
     mFlags = aFlags;
 }
 
-void TextFileOut::setSplitChar(const xpr_tchar_t *aSplitChar)
+void FileList::setSplitChar(const xpr_tchar_t *aSplitChar)
 {
     if (XPR_IS_NOT_NULL(aSplitChar))
         mSplitChar = aSplitChar;
 }
 
-void TextFileOut::setTextFile(const xpr_tchar_t *aTextFile)
+void FileList::setTextFile(const xpr_tchar_t *aTextFile)
 {
     if (XPR_IS_NOT_NULL(aTextFile))
         mTextFilePath = aTextFile;
 }
 
-void TextFileOut::addPath(const xpr_tchar_t *aPath)
+void FileList::addPath(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NULL(aPath))
         return;
@@ -82,14 +82,14 @@ void TextFileOut::addPath(const xpr_tchar_t *aPath)
     mPathDeque.push_back(aPath);
 }
 
-xpr_bool_t TextFileOut::OnPreEntry(void)
+xpr_bool_t FileList::OnPreEntry(void)
 {
     mStatus = StatusCreating;
 
     return XPR_TRUE;
 }
 
-unsigned TextFileOut::OnEntryProc(void)
+unsigned FileList::OnEntryProc(void)
 {
     xpr_bool_t sByLine    = XPR_TEST_BITS(mFlags, FlagsByLine);
     xpr_bool_t sOnlyFile  = XPR_TEST_BITS(mFlags, FlagsOnlyFile);
@@ -192,7 +192,7 @@ unsigned TextFileOut::OnEntryProc(void)
     return 0;
 }
 
-TextFileOut::Status TextFileOut::getStatus(void)
+FileList::Status FileList::getStatus(void)
 {
     CsLocker sLocker(mCs);
 

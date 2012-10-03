@@ -16,6 +16,8 @@
 #include "rgc/BCMenu.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "RenTabDlg.h"
 #include "RenTabDlg0.h"
 #include "RenTabDlg1.h"
@@ -49,6 +51,7 @@ BatchRenameDlg::BatchRenameDlg(void)
     , mBatchRename(new fxb::BatchRename)
     , mRenaming(XPR_FALSE)
     , mOldShowDlg(-1)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -246,23 +249,30 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                                theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDCANCEL,                            theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("Rename"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Backup"),       IDC_BATCH_RENAME_BACKUP);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Batch Format"), IDC_BATCH_RENAME_BATCH_FORMAT);
-    mState.load();
+    xpr_bool_t sNoChangeExt        = XPR_TRUE;
+    xpr_bool_t sResultApply        = XPR_TRUE;
+    xpr_bool_t sBatchFormatArchive = XPR_TRUE;
+    xpr_sint_t sActiveTab          = 1;
+
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("BatchRename"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"),         mListCtrl.GetDlgCtrlID());
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Backup"),       IDC_BATCH_RENAME_BACKUP);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Batch Format"), IDC_BATCH_RENAME_BATCH_FORMAT);
+        mDlgState->load();
+
+        sNoChangeExt        = mDlgState->getStateB(XPR_STRING_LITERAL("No Change Extension"),   XPR_TRUE);
+        sResultApply        = mDlgState->getStateB(XPR_STRING_LITERAL("Result Apply"),          XPR_TRUE);
+        sBatchFormatArchive = mDlgState->getStateB(XPR_STRING_LITERAL("Batch Format Archive"),  XPR_TRUE);
+        sActiveTab          = mDlgState->getStateI(XPR_STRING_LITERAL("Active Tab"), 1); // one-based index
+    }
 
     xpr_tchar_t sBatchFormat[MAX_BATCH_FORMAT + 1] = {0};
     GetDlgItemText(IDC_BATCH_RENAME_BATCH_FORMAT, sBatchFormat, MAX_BATCH_FORMAT);
 
     mBatchRename->setBatchFormat(sBatchFormat, XPR_FALSE);
-
-    xpr_bool_t sNoChangeExt        = mState.getStateB(XPR_STRING_LITERAL("No Change Extension"),   XPR_TRUE);
-    xpr_bool_t sResultApply        = mState.getStateB(XPR_STRING_LITERAL("Result Apply"),          XPR_TRUE);
-    xpr_bool_t sBatchFormatArchive = mState.getStateB(XPR_STRING_LITERAL("Batch Format Archive"),  XPR_TRUE);
-    xpr_sint_t sActiveTab          = mState.getStateI(XPR_STRING_LITERAL("Active Tab"), 1); // one-based index
 
     xpr_uint_t sFlags = 0;
     if (sNoChangeExt        == XPR_TRUE) sFlags |= fxb::BatchRename::FlagsNoChangeExt;
@@ -299,13 +309,15 @@ void BatchRenameDlg::OnDestroy(void)
     xpr_uint_t sFlags;
     sFlags = mBatchRename->getFlags();
 
-    // Save Dialog State
-    mState.reset();
-    mState.setStateB(XPR_STRING_LITERAL("Not Replace Extension"), XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsNoChangeExt));
-    mState.setStateB(XPR_STRING_LITERAL("Result Apply"),          XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsResultRename));
-    mState.setStateB(XPR_STRING_LITERAL("Batch Format Archive"),  XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsBatchFormatArchive));
-    mState.setStateI(XPR_STRING_LITERAL("Active Tab"),            mTabCtrl.GetCurSel() + 1);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->setStateB(XPR_STRING_LITERAL("Not Replace Extension"), XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsNoChangeExt));
+        mDlgState->setStateB(XPR_STRING_LITERAL("Result Apply"),          XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsResultRename));
+        mDlgState->setStateB(XPR_STRING_LITERAL("Batch Format Archive"),  XPR_TEST_BITS(sFlags, fxb::BatchRename::FlagsBatchFormatArchive));
+        mDlgState->setStateI(XPR_STRING_LITERAL("Active Tab"),            mTabCtrl.GetCurSel() + 1);
+        mDlgState->save();
+    }
 
     XPR_SAFE_DELETE(mBatchRename);
 

@@ -11,6 +11,8 @@
 #include "SelNameDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,6 +24,7 @@ SelNameDlg::SelNameDlg(xpr_bool_t aSelect)
     : super(IDD_SEL_NAME, XPR_NULL)
     , mSelect(aSelect)
     , mOnlySel(XPR_FALSE)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -61,15 +64,19 @@ xpr_bool_t SelNameDlg::OnInitDialog(void)
     // dialog state
     const xpr_tchar_t *sSection = (mSelect == XPR_TRUE) ? XPR_STRING_LITERAL("SelName") : XPR_STRING_LITERAL("UnSelName"); 
 
-    mState.setDialog(this);
-    mState.setSection(sSection);
-    mState.setComboBoxList(XPR_STRING_LITERAL("Name"), mComboBox.GetDlgCtrlID());
-    mState.load();
+    xpr_bool_t sOnlySel = XPR_FALSE;
+
+    mDlgState = DlgStateMgr::instance().getDlgState(sSection);
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Name"), mComboBox.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     if (mSelect == XPR_TRUE)
     {
-        xpr_bool_t bOnlySel = mState.getStateB(XPR_STRING_LITERAL("Only Sel"), XPR_FALSE);
-        ((CButton *)GetDlgItem(IDC_SEL_NAME_SEL_ONLY))->SetCheck(bOnlySel);
+        ((CButton *)GetDlgItem(IDC_SEL_NAME_SEL_ONLY))->SetCheck(sOnlySel);
     }
 
     if (mComboBox.GetCount() > 0)
@@ -104,10 +111,13 @@ void SelNameDlg::OnOK(void)
     // dialog state
     DlgState::insertComboEditString(&mComboBox, XPR_FALSE);
 
-    mState.reset();
-    if (mSelect == XPR_TRUE)
-        mState.setStateB(XPR_STRING_LITERAL("Only Sel"), mOnlySel);
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        if (mSelect == XPR_TRUE)
+            mDlgState->setStateB(XPR_STRING_LITERAL("Only Sel"), mOnlySel);
+        mDlgState->save();
+    }
 
     super::OnOK();
 }

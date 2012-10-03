@@ -13,12 +13,13 @@
 
 #include "fxb/fxb_attr_time.h"
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class AttrTime;
 } // namespace fxb
+
+class DlgState;
 
 class AttrTimeDlg : public CResizingDialog
 {
@@ -46,16 +47,16 @@ protected:
     PathList mList;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
-    CDateTimeCtrl mCreatedDateCtrl;
-    CDateTimeCtrl mCreatedTimeCtrl;
-    CDateTimeCtrl mModifiedDateCtrl;
-    CDateTimeCtrl mModifiedTimeCtrl;
-    CDateTimeCtrl mAccessDateCtrl;
-    CDateTimeCtrl mAccessTimeCtrl;
-    CListCtrl     mListCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CDateTimeCtrl  mCreatedDateCtrl;
+    CDateTimeCtrl  mCreatedTimeCtrl;
+    CDateTimeCtrl  mModifiedDateCtrl;
+    CDateTimeCtrl  mModifiedTimeCtrl;
+    CDateTimeCtrl  mAccessDateCtrl;
+    CDateTimeCtrl  mAccessTimeCtrl;
+    CListCtrl      mListCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

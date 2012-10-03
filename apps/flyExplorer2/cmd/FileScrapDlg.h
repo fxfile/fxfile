@@ -17,8 +17,7 @@
 #include "rgc/DropMenuButton.h"
 #include "rgc/BCMenu.h"
 
-#include "DlgState.h"
-#include "resource.h"
+class DlgState;
 
 class FileScrapDlg : public CResizingDialog
 {
@@ -44,11 +43,11 @@ protected:
     BCMenu     mMenu;
 
 protected:
-    HICON           mIcon;
-    DlgState        mState;
-    CListCtrl       mListCtrl;
-    CComboBoxEx     mGroupWnd;
-    CDropMenuButton mNewButton;
+    HICON            mIcon;
+    DlgState        *mDlgState;
+    CListCtrl        mListCtrl;
+    CComboBoxEx      mGroupWnd;
+    CDropMenuButton  mNewButton;
 
 protected:
     virtual void DoDataExchange(CDataExchange *aDX);

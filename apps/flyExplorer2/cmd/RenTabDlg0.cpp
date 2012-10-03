@@ -14,6 +14,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #include "command_string_table.h"
 
@@ -26,6 +27,7 @@ static char THIS_FILE[] = __FILE__;
 RenTabDlg0::RenTabDlg0(void)
     : super(IDD_RENAME_1)
     , mTipDlg(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -108,14 +110,17 @@ xpr_bool_t RenTabDlg0::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_APPLY,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.apply")));
 
     // Load Dialog State
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("Rename1"));
-    mState.setComboBoxList(XPR_STRING_LITERAL("Format"), IDC_BATCH_RENAME_FORMAT);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Start"),      IDC_BATCH_RENAME_FORMAT_NUMBER);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Increase"),   IDC_BATCH_RENAME_FORMAT_INCREASE);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Length"),     IDC_BATCH_RENAME_FORMAT_LENGTH);
-    mState.setCheckBox(XPR_STRING_LITERAL("Zero"),       IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Rename1"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Format"), IDC_BATCH_RENAME_FORMAT);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Start"),      IDC_BATCH_RENAME_FORMAT_NUMBER);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Increase"),   IDC_BATCH_RENAME_FORMAT_INCREASE);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Length"),     IDC_BATCH_RENAME_FORMAT_LENGTH);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Zero"),       IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -344,9 +349,11 @@ void RenTabDlg0::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void RenTabDlg0::OnFormatMenu(void) 

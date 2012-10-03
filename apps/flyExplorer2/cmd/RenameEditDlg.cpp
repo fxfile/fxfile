@@ -11,6 +11,8 @@
 #include "RenameEditDlg.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -20,6 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 RenameEditDlg::RenameEditDlg(void)
     : super(IDD_RENAME_EDIT, XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -168,10 +171,13 @@ xpr_bool_t RenameEditDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
-    mState.setSection(XPR_STRING_LITERAL("RenameEdit"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setCheckBox(XPR_STRING_LITERAL("Sync Scroll"), IDC_RENAME_EDIT_SYNC_SCROLL);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("RenameEdit"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Sync Scroll"), IDC_RENAME_EDIT_SYNC_SCROLL);
+        mDlgState->load();
+    }
 
     OnSyncScroll();
 
@@ -365,8 +371,11 @@ void RenameEditDlg::OnDestroy(void)
 
     DESTROY_ICON(mIcon);
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void RenameEditDlg::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy) 

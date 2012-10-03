@@ -11,9 +11,10 @@
 #include "FileAssDlg.h"
 
 #include "fxb/fxb_context_menu.h"
-#include "DlgState.h"
 
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -24,6 +25,7 @@ static char THIS_FILE[] = __FILE__;
 FileAssDlg::FileAssDlg(void)
     : super(IDD_FILE_ASS)
     , mFileAssItem(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -140,16 +142,19 @@ xpr_bool_t FileAssDlg::OnInitDialog(void)
     SetDlgItemText(IDC_FILEASS_LABEL_FILE, theApp.loadString(XPR_STRING_LITERAL("popup.file_ass.label.file")));
 
     // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("FileAss"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FileAss"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
 
-void FileAssDlg::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy)
+void FileAssDlg::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
 {
-    super::OnSize(nType, cx, cy);
+    super::OnSize(aType, cx, cy);
 
     CWnd *sWnd = GetDlgItem(IDC_FILEASS_STATUS);
     if (sWnd != XPR_NULL && sWnd->m_hWnd != XPR_NULL)
@@ -160,9 +165,11 @@ void FileAssDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void FileAssDlg::setPath(const std::tstring &aPath)

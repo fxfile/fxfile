@@ -11,7 +11,7 @@
 #define __FX_GO_PATH_DLG_H__
 #pragma once
 
-#include "DlgState.h"
+class DlgState;
 
 class GoPathDlg : public CDialog
 {
@@ -34,8 +34,8 @@ protected:
     LPITEMIDLIST mPidl2;
 
 protected:
-    DlgState  mState;
-    CComboBox mComboBox;
+    DlgState  *mDlgState;
+    CComboBox  mComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

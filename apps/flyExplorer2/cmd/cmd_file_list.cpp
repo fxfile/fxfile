@@ -11,7 +11,7 @@
 #include "cmd_file_list.h"
 
 #include "Option.h"
-#include "TextFileOutDlg.h"
+#include "FileListDlg.h"
 #include "ExplorerCtrl.h"
 
 #include "rgc/FileDialogST.h"
@@ -54,7 +54,7 @@ void FileListCommand::execute(CommandContext &aContext)
         if (sFileDialog.DoModal() != IDOK)
             return;
 
-        TextFileOutDlg sDlg;
+        FileListDlg sDlg;
         sDlg.setTextFile(sFileDialog.GetPathName());
 
         xpr_sint_t sIndex;

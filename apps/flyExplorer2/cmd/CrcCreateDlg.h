@@ -12,12 +12,13 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class CrcCreate;
 } // namespace fxb
+
+class DlgState;
 
 class CrcCreateDlg : public CResizingDialog
 {
@@ -47,11 +48,11 @@ protected:
     PathDeque mListDeque;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
-    CListCtrl     mListCtrl;
-    CComboBox     mMethodWnd;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CListCtrl      mListCtrl;
+    CComboBox      mMethodWnd;
 
 public:
     virtual xpr_bool_t DestroyWindow(void);

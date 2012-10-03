@@ -158,10 +158,9 @@
 #define IDR_GO_HISTORY                  401
 #define IDD_CFG_FUNC_RENAME             401
 #define IDD_COMPARE                     402
-#define IDR_SCH_LOC                     402
+#define IDR_SEARCH_LOC                  402
 #define IDD_SYNC                        402
 #define IDD_FOLDER_SYNC                 402
-#define IDD_SCH_LOC                     403
 #define IDR_SYNC                        403
 #define IDD_SEARCH_LOC                  403
 #define IDD_HISTORY                     404
@@ -170,9 +169,9 @@
 #define IDD_SEARCH_LOC_EDIT             405
 #define IDD_SYNC_OPTION                 406
 #define IDD_FOLDER_SYNC_OPTION          406
-#define IDI_SCH_EXC                     407
+#define IDI_SEARCH_EXC                  407
 #define IDD_WAIT                        407
-#define IDI_SCH_INC                     408
+#define IDI_SEARCH_INC                  408
 #define IDD_FILE_SPLIT                  408
 #define IDI_EXPAND                      409
 #define IDD_FILE_COMBINE                409
@@ -193,7 +192,6 @@
 #define IDR_FILE_EDIT                   417
 #define IDD_CFG_ADV_PATH                418
 #define IDD_SEL_FOLDER                  419
-#define IDD_CFG_ADV_STATE               420
 #define IDI_PENDING                     420
 #define IDD_CFG_FLD_WND                 421
 #define IDD_BATCH_CREATE_FMT            422
@@ -1060,7 +1058,6 @@
 #define IDC_CFGPATH_APPDATA             1489
 #define IDC_ALL_INIT                    1489
 #define IDC_CFG_ADV_PATH_APPDATA        1489
-#define IDC_CFG_ADV_STATE_INIT_ALL      1489
 #define IDC_CFGPATH_CUSTOM_PATH         1490
 #define IDC_CFG_ADV_PATH_CUSTOM_PATH    1490
 #define IDC_CFGPATH_CUSTOM_PATH_BROWSE  1491
@@ -1070,7 +1067,6 @@
 #define IDC_CUSTOM_FOLDER_HILIGHT_COLOR 1496
 #define IDC_CFG_FLD_WND_INACTIVE_HIGHLIGHT_COLOR 1496
 #define IDC_INIT                        1497
-#define IDC_CFG_ADV_STATE_INIT          1497
 #define IDC_EDIT                        1498
 #define IDC_CREATE_EDIT                 1498
 #define IDC_CFG_EXP_DISP_SHOW_GRID_LINES 1499
@@ -1298,10 +1294,6 @@
 #define IDC_CFG_ADV_HOTKEY_LABEL_WINDOW_KEY 1704
 #define IDC_CFG_ADV_HOTKEY_LABEL_HOTKEY 1705
 #define IDC_CFG_ADV_PATH_LIST           1706
-#define IDC_CFG_ADV_STATE_PATH          1707
-#define IDC_CFG_ADV_STATE_LABEL_PATH    1708
-#define IDC_CFG_ADV_STATE_LABEL_LIST    1709
-#define IDC_CFG_ADV_STATE_LIST          1710
 #define IDC_CFG_CONTENTS_GROUP_OPTION   1711
 #define IDC_CFG_CONTENTS_GROUP_BOOKMARK 1712
 #define IDC_CFG_CONTENTS_LABEL_BOOKMARK_COLOR 1713

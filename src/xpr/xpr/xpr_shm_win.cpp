@@ -43,7 +43,7 @@ xpr_rcode_t Shm::create(xpr_key_t aKey, xpr_size_t aReqSize, xpr_mode_t aPermiss
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
     xpr_tchar_t sName[0xff] = {0};
-    generateShmName(aKey, sName, XPR_COUNTOF(sName));
+    generateShmName(aKey, sName, XPR_COUNT_OF(sName));
 
     mHandle.mHandle = ::CreateFileMapping(INVALID_HANDLE_VALUE,
                                           XPR_NULL,
@@ -63,7 +63,7 @@ xpr_rcode_t Shm::open(xpr_key_t aKey)
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
     xpr_tchar_t sName[0xff] = {0};
-    generateShmName(aKey, sName, XPR_COUNTOF(sName));
+    generateShmName(aKey, sName, XPR_COUNT_OF(sName));
 
     mHandle.mHandle = ::OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, sName);
 

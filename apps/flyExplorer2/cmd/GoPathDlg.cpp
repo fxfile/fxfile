@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -23,6 +24,7 @@ GoPathDlg::GoPathDlg(void)
     : super(IDD_GO_PATH, XPR_NULL)
     , mUrl(XPR_FALSE)
     , mPidl1(XPR_NULL), mPidl2(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
     mPath[0] = 0;
 }
@@ -49,11 +51,14 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("GoPath"));
-    mState.setComboBoxList(XPR_STRING_LITERAL("Path"), mComboBox.GetDlgCtrlID());
-    mState.setCheckBox(XPR_STRING_LITERAL("URL"), IDC_GO_PATH_URL);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("GoPath"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Path"), mComboBox.GetDlgCtrlID());
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("URL"), IDC_GO_PATH_URL);
+        mDlgState->load();
+    }
 
     if (mComboBox.GetCount() > 0)
         mComboBox.SetCurSel(0);
@@ -93,8 +98,11 @@ void GoPathDlg::OnOK(void)
     _tcscpy(mPath, sPath);
     mUrl = ((CButton *)GetDlgItem(IDC_GO_PATH_URL))->GetCheck();
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 
     super::OnOK();
 }

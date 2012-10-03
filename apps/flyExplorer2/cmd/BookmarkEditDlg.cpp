@@ -14,6 +14,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "MainFrame.h"
 #include "BookmarkItemEditDlg.h"
 
@@ -34,6 +35,7 @@ BookmarkEditDlg::BookmarkEditDlg(void)
     : super(IDD_BOOKMARK_EDIT, XPR_NULL)
     , mIcon(AfxGetApp()->LoadIcon(IDR_MAINFRAME))
     , mShellIcon(XPR_NULL)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -140,11 +142,13 @@ xpr_bool_t BookmarkEditDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
-    // Load Dialog State
-    mState.setSection(XPR_STRING_LITERAL("Bookmark"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("BookmarkEdit"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"), mListCtrl.GetDlgCtrlID());
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -168,9 +172,11 @@ void BookmarkEditDlg::OnDestroy(void)
     mImgList.DeleteImageList();
     DESTROY_ICON(mIcon);
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void BookmarkEditDlg::addBookmark(fxb::BookmarkItem *aBookmarkItem, IconReq aIconReq, xpr_sint_t aIndex, xpr_sint_t aBookmarkIndex)

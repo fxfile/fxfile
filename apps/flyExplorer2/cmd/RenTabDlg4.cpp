@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +22,7 @@ static char THIS_FILE[] = __FILE__;
 
 RenTabDlg4::RenTabDlg4(void)
     : super(IDD_RENAME_5)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -71,13 +73,15 @@ xpr_bool_t RenTabDlg4::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_SKIP_SPEC_CHAR, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.skip_special_characters")));
     SetDlgItemText(IDC_BATCH_RENAME_CASE_APPLY,                theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.button.apply")));
 
-    // Load Dialog State
-    mState.setDialog(this);
-    mState.setSection(XPR_STRING_LITERAL("Rename5"));
-    mState.setComboBox(XPR_STRING_LITERAL("Type"),         IDC_BATCH_RENAME_CASE_TYPE);
-    mState.setComboBox(XPR_STRING_LITERAL("Case"),         IDC_BATCH_RENAME_CASE);
-    mState.setEditCtrl(XPR_STRING_LITERAL("SkipSpecChar"), IDC_BATCH_RENAME_SKIP_SPEC_CHAR);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Rename5"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"),         IDC_BATCH_RENAME_CASE_TYPE);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Case"),         IDC_BATCH_RENAME_CASE);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("SkipSpecChar"), IDC_BATCH_RENAME_SKIP_SPEC_CHAR);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -111,7 +115,9 @@ void RenTabDlg4::OnDestroy(void)
 {
     super::OnDestroy();
 
-    // Save Dialog State
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }

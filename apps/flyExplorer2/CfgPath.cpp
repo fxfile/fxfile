@@ -320,7 +320,7 @@ const xpr_tchar_t *CfgPath::getDispName(xpr_sint_t aType)
     case TypeSearchDir: return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.search_dir"));
     case TypeSizeFmt:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.size_format"));
     case TypeViewSet:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.view_set"));
-    case TypeSettings:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.dialog"));
+    case TypeDlgState:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.dialog"));
     case TypeAccel:     return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.accel"));
     case TypeCoolBar:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.coolbar"));
     case TypeToolBar:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.toolbar"));
@@ -346,7 +346,7 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
     case TypeSearchDir: return XPR_STRING_LITERAL("searchdir.ini");
     case TypeSizeFmt:   return XPR_STRING_LITERAL("sizefmt.ini");
     case TypeViewSet:   return XPR_STRING_LITERAL("*.ini");
-    case TypeSettings:  return XPR_STRING_LITERAL("*.ini");
+    case TypeDlgState:  return XPR_STRING_LITERAL("dlgstate.ini");
     case TypeAccel:     return XPR_STRING_LITERAL("accel.dat");
     case TypeCoolBar:   return XPR_STRING_LITERAL("coolbar.dat");
     case TypeToolBar:   return XPR_STRING_LITERAL("toolbar.dat");
@@ -369,7 +369,6 @@ const xpr_tchar_t *CfgPath::getDefSubPath(xpr_sint_t aType)
     switch (aType)
     {
     case TypeViewSet:  return XPR_STRING_LITERAL("Settings\\ViewSet");
-    case TypeSettings: return XPR_STRING_LITERAL("Settings");
     }
 
     return XPR_NULL;
@@ -388,8 +387,8 @@ const xpr_tchar_t *CfgPath::getEntry(xpr_sint_t aType)
     case TypeFilter:    return XPR_STRING_LITERAL("filter");
     case TypeSearchDir: return XPR_STRING_LITERAL("searchdir");
     case TypeSizeFmt:   return XPR_STRING_LITERAL("sizefmt");
-    case TypeViewSet:   return XPR_STRING_LITERAL("ViewSet");
-    case TypeSettings:  return XPR_STRING_LITERAL("Settings");
+    case TypeViewSet:   return XPR_STRING_LITERAL("viewset");
+    case TypeDlgState:  return XPR_STRING_LITERAL("dlgstate");
     case TypeAccel:     return XPR_STRING_LITERAL("accel");
     case TypeCoolBar:   return XPR_STRING_LITERAL("coolbar");
     case TypeToolBar:   return XPR_STRING_LITERAL("toolbar");

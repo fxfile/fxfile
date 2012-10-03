@@ -10,17 +10,19 @@
 #include "stdafx.h"
 #include "PicViewer.h"
 
+#include "fxb/fxb_string_table.h"
+
 #include "rgc/BCMenu.h"
 
 #include "resource.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "ExplorerCtrl.h"
+#include "DlgStateMgr.h"
 #include "DlgState.h"
 
 #include "command_string_table.h"
 #include "desktop_background.h"
-#include "fxb/fxb_string_table.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -98,6 +100,7 @@ PicViewer::PicViewer(void)
     mThreadId    = 0;
 
     mBitmap      = XPR_NULL;
+    mDlgState    = XPR_NULL;
 
     mGflFileInfo.Type = 0;
 }
@@ -193,29 +196,32 @@ xpr_bool_t PicViewer::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    mState.setSection(XPR_STRING_LITERAL("PicViewer"));
-    mState.load();
-
-    mDocking     = mState.getStateB(XPR_STRING_LITERAL("Docking"),        XPR_FALSE);
-    mRatio       = mState.getStateB(XPR_STRING_LITERAL("Ratio"),          XPR_FALSE);
-    mLock        = mState.getStateI(XPR_STRING_LITERAL("Lock"),           LOCK_WINDOW);
-    mAutoHide    = mState.getStateB(XPR_STRING_LITERAL("Auto Hide"),      XPR_FALSE);
-    mFileName    = mState.getStateB(XPR_STRING_LITERAL("Show File Name"), XPR_TRUE);
-    CString sPos = mState.getStateS(XPR_STRING_LITERAL("Window"),         XPR_STRING_LITERAL(""));
-
-    CRect sRect(mPopupRect);
-    if (sPos.IsEmpty() == XPR_TRUE)
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("PicViewer"));
+    if (XPR_IS_NOT_NULL(mDlgState))
     {
-        CRect sWindowRect;
-        gFrame->GetWindowRect(&sWindowRect);
-        mPopupRect.left    = sWindowRect.left + 20;
-        mPopupRect.top     = sWindowRect.top  + 20;
-        mPopupRect.right  += sWindowRect.left + 20;
-        mPopupRect.bottom += sWindowRect.top  + 20;
-        sRect = mPopupRect;
+        mDlgState->load();
+
+        mDocking     = mDlgState->getStateB(XPR_STRING_LITERAL("Docking"),        XPR_FALSE);
+        mRatio       = mDlgState->getStateB(XPR_STRING_LITERAL("Ratio"),          XPR_FALSE);
+        mLock        = mDlgState->getStateI(XPR_STRING_LITERAL("Lock"),           LOCK_WINDOW);
+        mAutoHide    = mDlgState->getStateB(XPR_STRING_LITERAL("Auto Hide"),      XPR_FALSE);
+        mFileName    = mDlgState->getStateB(XPR_STRING_LITERAL("Show File Name"), XPR_TRUE);
+        CString sPos = mDlgState->getStateS(XPR_STRING_LITERAL("Window"),         XPR_STRING_LITERAL(""));
+
+        CRect sRect(mPopupRect);
+        if (sPos.IsEmpty() == XPR_TRUE)
+        {
+            CRect sWindowRect;
+            gFrame->GetWindowRect(&sWindowRect);
+            mPopupRect.left    = sWindowRect.left + 20;
+            mPopupRect.top     = sWindowRect.top  + 20;
+            mPopupRect.right  += sWindowRect.left + 20;
+            mPopupRect.bottom += sWindowRect.top  + 20;
+            sRect = mPopupRect;
+        }
+        _stscanf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), &sRect.left, &sRect.top, &sRect.right, &sRect.bottom);
+        SetWindowPos(XPR_NULL, sRect.left, sRect.top, sRect.Width(), sRect.Height(), SWP_NOZORDER);
     }
-    _stscanf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), &sRect.left, &sRect.top, &sRect.right, &sRect.bottom);
-    SetWindowPos(XPR_NULL, sRect.left, sRect.top, sRect.Width(), sRect.Height(), SWP_NOZORDER);
 
     if (mDocking == XPR_TRUE)
     {
@@ -267,21 +273,24 @@ xpr_bool_t PicViewer::DestroyWindow(void)
         mBitmap->DeleteObject();
     XPR_SAFE_DELETE(mBitmap);
 
-    CRect sRect(mPopupRect);
-    if (mDocking == XPR_FALSE)
-        GetWindowRect(sRect);
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        CRect sRect(mPopupRect);
+        if (mDocking == XPR_FALSE)
+            GetWindowRect(sRect);
 
-    xpr_tchar_t sPos[0xff] = {0};
-    _stprintf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), sRect.left, sRect.top, sRect.right, sRect.bottom);
+        xpr_tchar_t sPos[0xff] = {0};
+        _stprintf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), sRect.left, sRect.top, sRect.right, sRect.bottom);
 
-    mState.reset();
-    mState.setStateB(XPR_STRING_LITERAL("Docking"),        mDocking);
-    mState.setStateB(XPR_STRING_LITERAL("Ratio"),          mRatio);
-    mState.setStateI(XPR_STRING_LITERAL("Lock"),           mLock);
-    mState.setStateB(XPR_STRING_LITERAL("Auto Hide"),      mAutoHide);
-    mState.setStateB(XPR_STRING_LITERAL("Show File Name"), mFileName);
-    mState.setStateS(XPR_STRING_LITERAL("Window"),         sPos);
-    mState.save();
+        mDlgState->reset();
+        mDlgState->setStateB(XPR_STRING_LITERAL("Docking"),        mDocking);
+        mDlgState->setStateB(XPR_STRING_LITERAL("Ratio"),          mRatio);
+        mDlgState->setStateI(XPR_STRING_LITERAL("Lock"),           mLock);
+        mDlgState->setStateB(XPR_STRING_LITERAL("Auto Hide"),      mAutoHide);
+        mDlgState->setStateB(XPR_STRING_LITERAL("Show File Name"), mFileName);
+        mDlgState->setStateS(XPR_STRING_LITERAL("Window"),         sPos);
+        mDlgState->save();
+    }
 
     if (mThread != XPR_NULL)
     {

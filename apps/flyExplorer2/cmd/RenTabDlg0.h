@@ -15,7 +15,8 @@
 
 #include "RenameTipDlg.h"
 #include "RenTabDlg.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class RenTabDlg0 : public RenTabDlg
 {
@@ -31,9 +32,9 @@ public:
     RenameTipDlg *mTipDlg;
 
 protected:
-    DlgState     mState;
-    BCMenu       mMenu;
-    CToolTipCtrl mToolTipCtrl;
+    DlgState     *mDlgState;
+    BCMenu        mMenu;
+    CToolTipCtrl  mToolTipCtrl;
 
 public:
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);

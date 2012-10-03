@@ -12,7 +12,8 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class SharedProcDlg : public CResizingDialog
 {
@@ -30,9 +31,9 @@ protected:
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
 
 protected:
-    HICON     mIcon;
-    DlgState  mState;
-    CListCtrl mListCtrl;
+    HICON      mIcon;
+    DlgState  *mDlgState;
+    CListCtrl  mListCtrl;
 
 public:
     virtual xpr_bool_t DestroyWindow(void);

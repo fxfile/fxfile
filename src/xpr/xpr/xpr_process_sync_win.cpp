@@ -39,7 +39,7 @@ xpr_rcode_t ProcessMutex::create(xpr_key_t aKey)
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
     xpr_tchar_t sName[0xff] = {0};
-    generateMutexName(aKey, sName, XPR_COUNTOF(sName));
+    generateMutexName(aKey, sName, XPR_COUNT_OF(sName));
 
     mHandle.mHandle = ::CreateMutex(XPR_NULL, XPR_FALSE, sName);
     if (mHandle.mHandle == XPR_NULL)
@@ -60,7 +60,7 @@ xpr_rcode_t ProcessMutex::open(xpr_key_t aKey)
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
     xpr_tchar_t sName[0xff] = {0};
-    generateMutexName(aKey, sName, XPR_COUNTOF(sName));
+    generateMutexName(aKey, sName, XPR_COUNT_OF(sName));
 
     mHandle.mHandle = ::OpenMutex(XPR_NULL, XPR_FALSE, sName);
     if (mHandle.mHandle == XPR_NULL)

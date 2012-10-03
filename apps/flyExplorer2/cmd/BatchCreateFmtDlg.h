@@ -12,7 +12,8 @@
 #pragma once
 
 #include "BatchCreateTabDlg.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class BatchCreateFmtDlg : public BatchCreateTabDlg
 {
@@ -35,7 +36,7 @@ protected:
     void enableWindow(xpr_bool_t aEnd = XPR_TRUE);
 
 protected:
-    DlgState mState;
+    DlgState *mDlgState;
 
 protected:
     virtual void DoDataExchange(CDataExchange *aDX);    // DDX/DDV support

@@ -13,7 +13,8 @@
 
 #include "rgc/BCMenu.h"
 #include "rgc/DropTarget.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class FileScrapDropDlg : public CDialog, public DropTargetObserver
 {
@@ -43,8 +44,8 @@ protected:
     xpr_bool_t mAlwaysTopMost;
 
 protected:
-    BCMenu   mMenu;
-    DlgState mState;
+    BCMenu    mMenu;
+    DlgState *mDlgState;
 
 public:
     virtual xpr_bool_t Create(CWnd *aParentWnd);

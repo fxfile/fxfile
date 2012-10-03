@@ -15,6 +15,8 @@
 
 #include "Option.h"
 #include "resource.h"
+#include "DlgState.h"
+#include "DlgStateMgr.h"
 #include "SyncOptionDlg.h"
 
 #include "command_string_table.h"
@@ -41,6 +43,7 @@ SyncDlg::SyncDlg(void)
     : super(IDD_FOLDER_SYNC)
     , mSyncDirs(XPR_NULL)
     , mStop(XPR_FALSE)
+    , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -173,23 +176,26 @@ xpr_bool_t SyncDlg::OnInitDialog(void)
     SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE,                 theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.synchronize")));
     SetDlgItemText(IDCANCEL,                                    theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.close")));
 
-    mState.setSection(XPR_STRING_LITERAL("FolderSync"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.setListCtrl(&mListCtrl);
-    mState.setComboBoxList(XPR_STRING_LITERAL("Path1"),          IDC_FOLDER_SYNC_PATH1);
-    mState.setComboBoxList(XPR_STRING_LITERAL("Path2"),          IDC_FOLDER_SYNC_PATH2);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Include Filter"),     IDC_FOLDER_SYNC_SCAN_INCLUDE_FILTER);
-    mState.setEditCtrl(XPR_STRING_LITERAL("Exclude Filter"),     IDC_FOLDER_SYNC_SCAN_EXCLUDE_FILTER);
-    mState.setCheckBox(XPR_STRING_LITERAL("Exclude Equal"),      IDC_FOLDER_SYNC_SCAN_EXCLUDE_EQUAL_FILENAME);
-    mState.setCheckBox(XPR_STRING_LITERAL("Exclude Other"),      IDC_FOLDER_SYNC_SCAN_EXCLUDE_OTHER_FILENAME);
-    mState.setCheckBox(XPR_STRING_LITERAL("System File"),        IDC_FOLDER_SYNC_SCAN_SYSTEM);
-    mState.setCheckBox(XPR_STRING_LITERAL("Hidden File"),        IDC_FOLDER_SYNC_SCAN_HIDDEN);
-    mState.setCheckBox(XPR_STRING_LITERAL("Subfolder"),          IDC_FOLDER_SYNC_SCAN_SUBFOLDER);
-    mState.setCheckBox(XPR_STRING_LITERAL("Compare Date Time"),  IDC_FOLDER_SYNC_COMPARE_BY_DATETIME);
-    mState.setCheckBox(XPR_STRING_LITERAL("Compare Attributes"), IDC_FOLDER_SYNC_COMPARE_BY_ATTRIBUTES);
-    mState.setCheckBox(XPR_STRING_LITERAL("Compare Size"),       IDC_FOLDER_SYNC_COMPARE_BY_SIZE);
-    mState.setCheckBox(XPR_STRING_LITERAL("Compare Contents"),   IDC_FOLDER_SYNC_COMPARE_BY_CONTENTS);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("FolderSync"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->setListCtrl(XPR_STRING_LITERAL("List"),               mListCtrl.GetDlgCtrlID());
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Path1"),          IDC_FOLDER_SYNC_PATH1);
+        mDlgState->setComboBoxList(XPR_STRING_LITERAL("Path2"),          IDC_FOLDER_SYNC_PATH2);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Include Filter"),     IDC_FOLDER_SYNC_SCAN_INCLUDE_FILTER);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Exclude Filter"),     IDC_FOLDER_SYNC_SCAN_EXCLUDE_FILTER);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Exclude Equal"),      IDC_FOLDER_SYNC_SCAN_EXCLUDE_EQUAL_FILENAME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Exclude Other"),      IDC_FOLDER_SYNC_SCAN_EXCLUDE_OTHER_FILENAME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("System File"),        IDC_FOLDER_SYNC_SCAN_SYSTEM);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Hidden File"),        IDC_FOLDER_SYNC_SCAN_HIDDEN);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Subfolder"),          IDC_FOLDER_SYNC_SCAN_SUBFOLDER);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Compare Date Time"),  IDC_FOLDER_SYNC_COMPARE_BY_DATETIME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Compare Attributes"), IDC_FOLDER_SYNC_COMPARE_BY_ATTRIBUTES);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Compare Size"),       IDC_FOLDER_SYNC_COMPARE_BY_SIZE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("Compare Contents"),   IDC_FOLDER_SYNC_COMPARE_BY_CONTENTS);
+        mDlgState->load();
+    }
 
     SetDlgItemText(IDC_FOLDER_SYNC_PATH1, mDir[0].c_str());
     SetDlgItemText(IDC_FOLDER_SYNC_PATH2, mDir[1].c_str());
@@ -201,8 +207,11 @@ void SyncDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }
 
 void SyncDlg::setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2)

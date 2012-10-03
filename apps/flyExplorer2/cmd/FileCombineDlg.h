@@ -12,12 +12,13 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class FileCombine;
 } // namespace fxb
+
+class DlgState;
 
 class FileCombineDlg : public CResizingDialog
 {
@@ -42,9 +43,9 @@ protected:
     fxb::FileCombine *mFileCombine;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
 
 public:
     virtual xpr_bool_t DestroyWindow();

@@ -12,12 +12,13 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 
 namespace fxb
 {
 class FileSplit;
 } // namespace fxb
+
+class DlgState;
 
 class FileSplitDlg : public CResizingDialog
 {
@@ -51,11 +52,11 @@ protected:
     xpr_bool_t mSetSplitCoutMode;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
-    CComboBox     mSplitSizePreset;
-    CComboBox     mSplitSizeUnit;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CComboBox      mSplitSizePreset;
+    CComboBox      mSplitSizeUnit;
 
 public:
     virtual xpr_bool_t DestroyWindow(void);

@@ -555,14 +555,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgAdvStateDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgAdvStateDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cfg\CfgContentsDlg.cpp"
 				>
 			</File>
@@ -2825,6 +2817,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cmd\FileListDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\FileListDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cmd\FileMergeDlg.cpp"
 				>
 			</File>
@@ -2977,19 +2977,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\SchLocDlg.cpp"
+				RelativePath=".\cmd\SearchLocDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\SchLocDlg.h"
+				RelativePath=".\cmd\SearchLocDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\SchLocEditDlg.cpp"
+				RelativePath=".\cmd\SearchLocEditDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\SchLocEditDlg.h"
+				RelativePath=".\cmd\SearchLocEditDlg.h"
 				>
 			</File>
 			<File
@@ -3046,14 +3046,6 @@
 			</File>
 			<File
 				RelativePath=".\cmd\SyncOptionDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\TextFileOutDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\TextFileOutDlg.h"
 				>
 			</File>
 			<File

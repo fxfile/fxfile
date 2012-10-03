@@ -15,6 +15,7 @@
 
 #include "resource.h"
 #include "DlgState.h"
+#include "DlgStateMgr.h"
 
 #include <Imm.h>
 
@@ -29,6 +30,7 @@ static char THIS_FILE[] = __FILE__;
 DriveDlg::DriveDlg(void)
     : super(IDD_DRIVE, XPR_NULL)
     , mDrive(0)
+    , mDlgState(XPR_NULL)
 {
 }
 
@@ -133,9 +135,12 @@ xpr_bool_t DriveDlg::OnInitDialog(void)
 
     SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.drive.title")));
 
-    mState.setSection(XPR_STRING_LITERAL("Drive"));
-    mState.setDialog(this, XPR_TRUE);
-    mState.load();
+    mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Drive"));
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->setDialog(this, XPR_TRUE);
+        mDlgState->load();
+    }
 
     return XPR_TRUE;
 }
@@ -338,6 +343,9 @@ void DriveDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    mState.reset();
-    mState.save();
+    if (XPR_IS_NOT_NULL(mDlgState))
+    {
+        mDlgState->reset();
+        mDlgState->save();
+    }
 }

@@ -12,7 +12,6 @@
 #pragma once
 
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
 #include "gfl/libgfl.h"
 
 #ifdef _DEBUG
@@ -23,6 +22,8 @@ namespace fxb
 {
 class PicConv;
 } // namespace fxb
+
+class DlgState;
 
 class PicCnvDlg : public CResizingDialog
 {
@@ -56,11 +57,11 @@ protected:
     xpr_sint_t       mPaletteTransparent;
 
 protected:
-    HICON         mIcon;
-    DlgState      mState;
-    CProgressCtrl mProgressCtrl;
-    CListCtrl     mListCtrl;
-    CComboBoxEx   mFormatComboBox;
+    HICON          mIcon;
+    DlgState      *mDlgState;
+    CProgressCtrl  mProgressCtrl;
+    CListCtrl      mListCtrl;
+    CComboBoxEx    mFormatComboBox;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

@@ -10,6 +10,9 @@
 #include "stdafx.h"
 #include "DlgStateMgr.h"
 
+#include "fxb/fxb_ini_file.h"
+
+#include "DlgState.h"
 #include "CfgPath.h"
 
 #ifdef _DEBUG
@@ -19,251 +22,166 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 DlgStateMgr::DlgStateMgr(void)
+    : mLoaded(XPR_FALSE)
 {
 }
 
 DlgStateMgr::~DlgStateMgr(void)
 {
+    clear();
 }
 
-xpr_bool_t DlgStateMgr::getName(xpr_uint_t aType, std::tstring &aName)
+void DlgStateMgr::setPath(const xpr_tchar_t *aPath)
 {
-    aName.clear();
-
-    switch (aType)
-    {
-    case TypeAttrTime:      aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.attr_time"));        break;
-    case TypeBatchCreate:   aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.batch_create"));     break;
-    case TypeCrc:           aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.crc"));              break;
-    case TypeDosCmd:        aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.dos_cmd"));          break;
-    case TypeDriveSel:      aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.drive"));            break;
-    case TypeFileScrap:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.file_scrap"));       break;
-    case TypeFileCombine:   aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.file_combine"));     break;
-    case TypeFileMerge:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.file_merge"));       break;
-    case TypeFileSplit:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.file_split"));       break;
-    case TypeHistory:       aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.history"));          break;
-    case TypeGoPath:        aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.go_path"));          break;
-    case TypeBookmarkEdit:  aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.bookmark_edit"));    break;
-    case TypeParamExec:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.param_exec"));       break;
-    case TypePicConv:       aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.pic_conv"));         break;
-    case TypePicViewer:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.pic_viewer"));       break;
-    case TypeRename:        aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.batch_rename"));     break;
-    case TypeSearch:        aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.search_bar"));       break;
-    case TypeSelFilter:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.select_by_filter")); break;
-    case TypeSelName:       aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.select_by_name"));   break;
-    case TypeSharedFile:    aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.shared_process"));   break;
-    case TypeSyncDirs:      aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.folder_sync"));      break;
-    case TypeTextMerge:     aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.text_merge"));       break;
-    case TypeTextOut:       aName = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.dialog_state.type.file_list"));        break;
-    }
-
-    return (aName.empty() == XPR_TRUE) ? XPR_FALSE : XPR_TRUE;
+    if (XPR_IS_NOT_NULL(aPath))
+        mPath = aPath;
 }
 
-xpr_bool_t DlgStateMgr::getPath(xpr_uint_t aType, xpr_uint_t aSubType, std::tstring &aPath)
+xpr_bool_t DlgStateMgr::load(void)
 {
-    aPath.clear();
+    clear();
 
-    switch (aType)
-    {
-    case TypeAttrTime:      aPath = XPR_STRING_LITERAL("dlgAttrTime");      break;
-    case TypeDosCmd:        aPath = XPR_STRING_LITERAL("dlgDosCmd");        break;
-    case TypeDriveSel:      aPath = XPR_STRING_LITERAL("dlgDrive");         break;
-    case TypeFileCombine:   aPath = XPR_STRING_LITERAL("dlgFileCombine");   break;
-    case TypeFileMerge:     aPath = XPR_STRING_LITERAL("dlgFileMerge");     break;
-    case TypeFileSplit:     aPath = XPR_STRING_LITERAL("dlgFileSplit");     break;
-    case TypeHistory:       aPath = XPR_STRING_LITERAL("dlgHistory");       break;
-    case TypeGoPath:        aPath = XPR_STRING_LITERAL("dlgGoPath");        break;
-    case TypeBookmarkEdit:  aPath = XPR_STRING_LITERAL("dlgLink");          break;
-    case TypeParamExec:     aPath = XPR_STRING_LITERAL("dlgParamExec");     break;
-    case TypePicConv:       aPath = XPR_STRING_LITERAL("dlgPicCon");        break;
-    case TypePicViewer:     aPath = XPR_STRING_LITERAL("dlgPicViewer");     break;
-    case TypeSharedFile:    aPath = XPR_STRING_LITERAL("dlgSharedFile");    break;
-    case TypeSyncDirs:      aPath = XPR_STRING_LITERAL("dlgSyncDirs");      break;
-    case TypeTextMerge:     aPath = XPR_STRING_LITERAL("dlgTextJoin");      break;
-    case TypeTextOut:       aPath = XPR_STRING_LITERAL("dlgTextOut");       break;
+    fxb::IniFile sIniFile(mPath.c_str());
 
-    case TypeBatchCreate:
-        {
-            switch (aSubType)
-            {
-            case SubTypeBatchCreate:       aPath = XPR_STRING_LITERAL("dlgBatchCreate");       break;
-            case SubTypeBatchCreateFormat: aPath = XPR_STRING_LITERAL("dlgBatchCreateFormat"); break;
-            }
-            break;
-        }
-
-    case TypeCrc:
-        {
-            switch (aSubType)
-            {
-            case SubTypeCrcCreate: aPath = XPR_STRING_LITERAL("dlgCRC");      break;
-            case SubTypeCrcCheck:  aPath = XPR_STRING_LITERAL("dlgCRCCheck"); break;
-            }
-            break;
-        }
-
-    case TypeFileScrap:
-        {
-            switch (aSubType)
-            {
-            case SubTypeFileScrap:     aPath = XPR_STRING_LITERAL("dlgFileScrap");     break;
-            case SubTypeFileScrapDrop: aPath = XPR_STRING_LITERAL("dlgFileScrapDrop"); break;
-            }
-            break;
-        }
-
-    case TypeRename:
-        {
-            switch (aSubType)
-            {
-            case SubTypeRename:            aPath = XPR_STRING_LITERAL("dlgRename");             break;
-            case SubTypeRename1:           aPath = XPR_STRING_LITERAL("dlgRename1");            break;
-            case SubTypeRename2:           aPath = XPR_STRING_LITERAL("dlgRename2");            break;
-            case SubTypeRename3:           aPath = XPR_STRING_LITERAL("dlgRename3");            break;
-            case SubTypeRename4:           aPath = XPR_STRING_LITERAL("dlgRename4");            break;
-            case SubTypeRename5:           aPath = XPR_STRING_LITERAL("dlgRename5");            break;
-            case SubTypeRenameDirectInput: aPath = XPR_STRING_LITERAL("dlgRename-DirectInput"); break;
-            case SubTypeRenameEdit:        aPath = XPR_STRING_LITERAL("dlgRenameEdit");         break;
-            }
-            break;
-        }
-
-    case TypeSearch:
-        {
-            switch (aSubType)
-            {
-            case SubTypeSearch: aPath = XPR_STRING_LITERAL("dlgSearch"); break;
-            case SubTypeSchLoc: aPath = XPR_STRING_LITERAL("dlgSchLoc"); break;
-            }
-            break;
-        }
-
-    case TypeSelFilter:
-        {
-            switch (aSubType)
-            {
-            case SubTypeSelFilter:   aPath = XPR_STRING_LITERAL("dlgSelFilter");   break;
-            case SubTypeUnSelFilter: aPath = XPR_STRING_LITERAL("dlgUnSelFilter"); break;
-            }
-            break;
-        }
-
-    case TypeSelName:
-        {
-            switch (aSubType)
-            {
-            case SubTypeSelName:   aPath = XPR_STRING_LITERAL("dlgSelName");   break;
-            case SubTypeUnSelName: aPath = XPR_STRING_LITERAL("dlgUnSelName"); break;
-            }
-            break;
-        }
-    }
-
-    if (aPath.empty() == true)
+    if (sIniFile.readFileW() == XPR_FALSE)
         return XPR_FALSE;
 
-    aPath += XPR_STRING_LITERAL(".ini");
+    xpr_size_t i, j;
+    xpr_size_t sKeyCount;
+    xpr_size_t sEntryCount;
+    const xpr_tchar_t *sKeyName;
+    const xpr_tchar_t *sEntryName;
+    const xpr_tchar_t *sValue;
+    DlgState *sDlgState;
+    DlgState::ValueMap sValueMap;
+    DlgStateMap::iterator sIterator;
+
+    sKeyCount = sIniFile.getKeyCount();
+    for (i = 0; i < sKeyCount; ++i)
+    {
+        sKeyName = sIniFile.getKeyName(i);
+        if (XPR_IS_NULL(sKeyName))
+            continue;
+
+        sIterator = mDlgStateMap.find(sKeyName);
+        if (sIterator != mDlgStateMap.end())
+        {
+            sDlgState = sIterator->second;
+            XPR_SAFE_DELETE(sDlgState);
+
+            mDlgStateMap.erase(sIterator);
+        }
+
+        sDlgState = new DlgState(sKeyName);
+        if (XPR_IS_NULL(sDlgState))
+            continue;
+
+        sValueMap.clear();
+
+        sEntryCount = sIniFile.getEntryCount(i);
+        for (j = 0; j < sEntryCount; ++j)
+        {
+            sEntryName = sIniFile.getEntryName(i, j);
+            if (XPR_IS_NULL(sEntryName))
+                continue;
+
+            sValue = sIniFile.getValueS(sKeyName, sEntryName);
+            if (XPR_IS_NOT_NULL(sValue))
+            {
+                sValueMap[sEntryName] = sValue;
+            }
+        }
+
+        sDlgState->setValueMap(sValueMap);
+
+        mDlgStateMap[sKeyName] = sDlgState;
+    }
 
     return XPR_TRUE;
 }
 
-xpr_bool_t DlgStateMgr::getPathList(xpr_uint_t aType, PathDeque &aPathDeque)
+void DlgStateMgr::save(void) const
 {
-    aPathDeque.clear();
+    xpr_tchar_t sPath[XPR_MAX_PATH] = {0};
+    CfgPath::instance().getSavePath(CfgPath::TypeDlgState, sPath, XPR_MAX_PATH);
 
-    xpr_uint_t sSubType1 = SubTypeNone;
-    xpr_uint_t sSubType2 = SubTypeNone+1;
+    fxb::IniFile sIniFile(sPath);
 
-    switch (aType)
+    const DlgState *sDlgState;
+    DlgStateMap::const_iterator sIterator;
+    DlgState::ValueMap::const_iterator sValueIterator;
+
+    sIterator = mDlgStateMap.begin();
+    for (; sIterator != mDlgStateMap.end(); ++sIterator)
     {
-    case TypeAttrTime:
-    case TypeDosCmd:
-    case TypeDriveSel:
-    case TypeFileCombine:
-    case TypeFileMerge:
-    case TypeFileSplit:
-    case TypeHistory:
-    case TypeGoPath:
-    case TypeBookmarkEdit:
-    case TypeParamExec:
-    case TypePicConv:
-    case TypePicViewer:
-    case TypeSharedFile:
-    case TypeSyncDirs:
-    case TypeTextMerge:
-    case TypeTextOut: break;
+        sDlgState = sIterator->second;
+        if (XPR_IS_NULL(sDlgState))
+            continue;
 
-    case TypeBatchCreate: sSubType1 = SubTypeBatchCreateBegin; sSubType2 = SubTypeBatchCreateEnd; break;
-    case TypeCrc:         sSubType1 = SubTypeCrcBegin;         sSubType2 = SubTypeCrcEnd;         break;
-    case TypeFileScrap:   sSubType1 = SubTypeFileScrapBegin;   sSubType2 = SubTypeFileScrapEnd;   break;
-    case TypeRename:      sSubType1 = SubTypeRenameBegin;      sSubType2 = SubTypeRenameEnd;      break;
-    case TypeSearch:      sSubType1 = SubTypeSearchBegin;      sSubType2 = SubTypeSearchEnd;      break;
-    case TypeSelFilter:   sSubType1 = SubTypeSelFilterBegin;   sSubType2 = SubTypeSelFilterEnd;   break;
-    case TypeSelName:     sSubType1 = SubTypeSelNameBegin;     sSubType2 = SubTypeSelNameEnd;     break;
-    }
+        const std::tstring &sKey = sDlgState->getSection();
+        const DlgState::ValueMap &sValueMap = sDlgState->getValueMap();
 
-    xpr_uint_t sSubType;
-    std::tstring sPath;
-
-    for (sSubType = sSubType1; sSubType < sSubType2; ++sSubType)
-    {
-        if (getPath(aType, sSubType, sPath))
-            aPathDeque.push_back(sPath);
-    }
-
-    return (aPathDeque.empty() == true) ? XPR_FALSE : XPR_TRUE;
-}
-
-xpr_bool_t DlgStateMgr::clear(xpr_uint_t aType)
-{
-    PathDeque sPathDeque;
-    if (getPathList(aType, sPathDeque) == XPR_FALSE)
-        return XPR_FALSE;
-
-    std::tstring sDir;
-    if (CfgPath::instance().getLoadDir(CfgPath::TypeSettings, sDir) == XPR_FALSE)
-        return XPR_FALSE;
-
-    xpr_bool_t sResult = XPR_FALSE;
-
-    if (sPathDeque.empty() == false)
-    {
-        xpr_tchar_t *sFileNames = new xpr_tchar_t[(XPR_MAX_PATH + 1) * sPathDeque.size() + 100];
-        if (XPR_IS_NOT_NULL(sFileNames))
+        sValueIterator = sValueMap.begin();
+        for (; sValueIterator != sValueMap.end(); ++sValueIterator)
         {
-            sFileNames[0] = XPR_STRING_LITERAL('\0');
-            sFileNames[1] = XPR_STRING_LITERAL('\0');
+            const std::tstring &sEntry = sValueIterator->first;
+            const std::tstring &sValue = sValueIterator->second;
 
-            xpr_size_t sOffset = 0;
-            PathDeque::iterator sIterator;
-
-            sIterator = sPathDeque.begin();
-            for (; sIterator != sPathDeque.end(); ++sIterator)
-            {
-                _stprintf(sFileNames + sOffset, XPR_STRING_LITERAL("%s\\%s"), sDir.c_str(), sIterator->c_str());
-                sOffset += _tcslen(sFileNames + sOffset) + 1;
-            }
-
-            // double null
-            sFileNames[sOffset] = XPR_STRING_LITERAL('\0');
-
-            fxb::SHSilentDeleteFile(sFileNames);
-
-            XPR_SAFE_DELETE_ARRAY(sFileNames);
-
-            sResult = XPR_TRUE;
+            sIniFile.setValueS(sKey.c_str(), sEntry.c_str(), sValue.c_str());
         }
     }
 
-    sPathDeque.clear();
-
-    return sResult;
+    sIniFile.writeFileW();
 }
 
-void DlgStateMgr::clearAll(void)
+DlgState *DlgStateMgr::getDlgState(const xpr_tchar_t *aSection, xpr_bool_t aCreateIfNotExist)
 {
-    xpr_uint_t sType;
-    for (sType = TypeBegin; sType < TypeEnd; ++sType)
-        clear(sType);
+    if (XPR_IS_NULL(aSection))
+        return XPR_NULL;
+
+    if (XPR_IS_FALSE(mLoaded))
+    {
+        xpr_tchar_t sPath[XPR_MAX_PATH] = {0};
+        CfgPath::instance().getLoadPath(CfgPath::TypeDlgState, sPath, XPR_MAX_PATH);
+
+        setPath(sPath);
+
+        load();
+
+        mLoaded = XPR_TRUE;
+    }
+
+    DlgStateMap::iterator sIterator = mDlgStateMap.find(aSection);
+    if (sIterator == mDlgStateMap.end())
+    {
+        if (XPR_IS_TRUE(aCreateIfNotExist))
+        {
+            DlgState *sDlgState = new DlgState(aSection);
+            if (XPR_IS_NULL(sDlgState))
+                return XPR_NULL;
+
+            mDlgStateMap[aSection] = sDlgState;
+
+            return sDlgState;
+        }
+
+        return XPR_NULL;
+    }
+
+    return sIterator->second;
+}
+
+void DlgStateMgr::clear(void)
+{
+    DlgState *sDlgState;
+    DlgStateMap::iterator sIterator;
+
+    sIterator = mDlgStateMap.begin();
+    for (; sIterator != mDlgStateMap.end(); ++sIterator)
+    {
+        sDlgState = sIterator->second;
+        XPR_SAFE_DELETE(sDlgState);
+    }
+
+    mDlgStateMap.clear();
 }

@@ -13,6 +13,8 @@
 
 #include "xpr_pattern.h"
 
+class DlgState;
+
 class DlgStateMgr : public xpr::Singleton<DlgStateMgr>
 {
     friend class xpr::Singleton<DlgStateMgr>;
@@ -21,91 +23,22 @@ protected: DlgStateMgr(void);
 public:   ~DlgStateMgr(void);
 
 public:
-    enum
-    {
-        TypeNone = 0,
-        TypeBegin,
-        TypeAttrTime = TypeBegin,
-        TypeBatchCreate,
-        TypeCrc,
-        TypeDosCmd,
-        TypeDriveSel,
-        TypeFileScrap,
-        TypeFileCombine,
-        TypeFileMerge,
-        TypeFileSplit,
-        TypeHistory,
-        TypeGoPath,
-        TypeBookmarkEdit,
-        TypeParamExec,
-        TypePicConv,
-        TypePicViewer,
-        TypeRename,
-        TypeSearch,
-        TypeSelFilter,
-        TypeSelName,
-        TypeSharedFile,
-        TypeSyncDirs,
-        TypeTextMerge,
-        TypeTextOut,
-        TypeEnd,
-    };
+    void setPath(const xpr_tchar_t *aPath);
 
-    enum
-    {
-        SubTypeNone = 0,
-
-        SubTypeBatchCreateBegin = 10,
-        SubTypeBatchCreate = SubTypeBatchCreateBegin,
-        SubTypeBatchCreateFormat,
-        SubTypeBatchCreateEnd,
-
-        SubTypeCrcBegin,
-        SubTypeCrcCreate = SubTypeCrcBegin,
-        SubTypeCrcCheck,
-        SubTypeCrcEnd,
-
-        SubTypeFileScrapBegin,
-        SubTypeFileScrap = SubTypeFileScrapBegin,
-        SubTypeFileScrapDrop,
-        SubTypeFileScrapEnd,
-
-        SubTypeRenameBegin,
-        SubTypeRename = SubTypeRenameBegin,
-        SubTypeRename1,
-        SubTypeRename2,
-        SubTypeRename3,
-        SubTypeRename4,
-        SubTypeRename5,
-        SubTypeRenameDirectInput,
-        SubTypeRenameEdit,
-        SubTypeRenameEnd,
-
-        SubTypeSearchBegin,
-        SubTypeSearch = SubTypeSearchBegin,
-        SubTypeSchLoc,
-        SubTypeSearchEnd,
-
-        SubTypeSelFilterBegin,
-        SubTypeSelFilter = SubTypeSelFilterBegin,
-        SubTypeUnSelFilter,
-        SubTypeSelFilterEnd,
-
-        SubTypeSelNameBegin,
-        SubTypeSelName = SubTypeSelNameBegin,
-        SubTypeUnSelName,
-        SubTypeSelNameEnd,
-    };
-
-    typedef std::deque<std::tstring> PathDeque;
+    xpr_bool_t load(void);
+    void save() const;
 
 public:
-    xpr_bool_t getName(xpr_uint_t aType, std::tstring &aName);
-    xpr_bool_t getPath(xpr_uint_t aType, xpr_uint_t aSubType, std::tstring &aPath);
-    xpr_bool_t getPathList(xpr_uint_t aType, PathDeque &aPathDeque);
+    DlgState *getDlgState(const xpr_tchar_t *aSection, xpr_bool_t aCreateIfNotExist = XPR_TRUE);
 
-    xpr_bool_t clear(xpr_uint_t aType);
-    void clearAll(void);
+    void clear(void);
+
+protected:
+    std::tstring mPath;
+    xpr_bool_t   mLoaded;
+
+    typedef std::tr1::unordered_map<std::tstring, DlgState *> DlgStateMap;
+    DlgStateMap mDlgStateMap;
 };
 
 #endif // __FX_DLG_STATE_MGR_H__

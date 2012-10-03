@@ -13,7 +13,8 @@
 
 #include "fxb/fxb_file_ass.h"
 #include "rgc/ResizingDialog.h"
-#include "DlgState.h"
+
+class DlgState;
 
 class FileAssDlg : public CResizingDialog
 {
@@ -37,9 +38,9 @@ protected:
     fxb::FileAssItem  *mFileAssItem;
 
 protected:
-    CImageList mImgList;
-    DlgState   mState;
-    CTreeCtrl  mTreeCtrl;
+    CImageList  mImgList;
+    DlgState   *mDlgState;
+    CTreeCtrl   mTreeCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

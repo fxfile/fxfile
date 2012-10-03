@@ -1441,18 +1441,6 @@ BEGIN
     PUSHBUTTON      "S&et path",IDC_CFG_ADV_PATH_SET_PATH,197,227,58,14
 END
 
-IDD_CFG_ADV_STATE DIALOGEX 0, 0, 255, 241
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
-FONT 9, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    LTEXT           "Save &path:",IDC_CFG_ADV_STATE_LABEL_PATH,0,0,43,8
-    EDITTEXT        IDC_CFG_ADV_STATE_PATH,46,0,165,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
-    LTEXT           "Dialog state file &list:",IDC_CFG_ADV_STATE_LABEL_LIST,0,14,176,8
-    CONTROL         "",IDC_CFG_ADV_STATE_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,26,254,197
-    PUSHBUTTON      "&Initialize",IDC_CFG_ADV_STATE_INIT,196,227,58,14
-    PUSHBUTTON      "Initialize &all",IDC_CFG_ADV_STATE_INIT_ALL,0,227,58,14
-END
-
 IDD_CFG_FLD_WND DIALOGEX 0, 0, 255, 241
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
@@ -3008,7 +2996,7 @@ BEGIN
     END
 END
 
-IDR_SCH_LOC MENU 
+IDR_SEARCH_LOC MENU 
 BEGIN
     POPUP "Context Menu"
     BEGIN
@@ -3237,8 +3225,8 @@ IDI_DOS_CMD             ICON                    "res\\dos_cmd.ico"
 IDI_GO_UP               ICON                    "res\\goup.ico"
 IDI_NOT                 ICON                    "res\\not_custom_icon.ico"
 IDI_SEARCH              ICON                    "res\\search.ico"
-IDI_SCH_EXC             ICON                    "res\\schdec.ico"
-IDI_SCH_INC             ICON                    "res\\schinc.ico"
+IDI_SEARCH_EXC          ICON                    "res\\schdec.ico"
+IDI_SEARCH_INC          ICON                    "res\\schinc.ico"
 IDI_EXPAND              ICON                    "res\\expand.ico"
 IDI_FILE_SCRAP          ICON                    "res\\file_scrap.ico"
 IDI_PENDING             ICON                    "res\\pending.ico"
