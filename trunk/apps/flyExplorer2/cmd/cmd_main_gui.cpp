@@ -672,30 +672,4 @@ void ShowSearchBarCommand::execute(CommandContext &aContext)
         sSearchBar->getSearchDlg()->setNameFocus();
     }
 }
-
-xpr_sint_t ShowWorkingBarCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    if (sMainFrame->mWorkingBar.IsWindowVisible())
-        sState |= StateCheck;
-
-    return sState;
-}
-
-void ShowWorkingBarCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    WorkingBar *sWorkingBar = &sMainFrame->mWorkingBar;
-    sWorkingBar->createChild();
-
-    xpr_bool_t sShow = (sWorkingBar->IsWindowVisible() == XPR_TRUE) ? XPR_FALSE : XPR_TRUE;
-    sMainFrame->ShowControlBar(sWorkingBar, sShow, XPR_FALSE);
-
-    if (XPR_IS_FALSE(sShow))
-        sWorkingBar->OnBarClose();
-}
 } // namespace cmd

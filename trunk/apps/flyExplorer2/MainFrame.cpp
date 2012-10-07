@@ -32,6 +32,7 @@
 #include "FolderCtrl.h"
 #include "ExplorerView.h"
 #include "ExplorerCtrl.h"
+#include "SearchResultCtrl.h"
 #include "BookmarkItemEditDlg.h"
 #include "accel_table.h"
 #include "FileScrapDropDlg.h"
@@ -296,18 +297,10 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
     mSearchBar.EnableDocking(CBRS_ALIGN_ANY);
     DockControlBar(&mSearchBar, AFX_IDW_DOCKBAR_RIGHT);
 
-    // create working bar
-    _stprintf(sTitle, XPR_STRING_LITERAL("%s"), theApp.loadString(XPR_STRING_LITERAL("bar.working.title")));
-    mWorkingBar.Create(sTitle, this, CSize(200,150), XPR_TRUE, AFX_IDW_WORKING_BAR, WS_VISIBLE | WS_CHILD | CBRS_BOTTOM);
-    mWorkingBar.SetBarStyle(mWorkingBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-    mWorkingBar.EnableDocking(CBRS_ALIGN_ANY);
-    DockControlBar(&mWorkingBar, AFX_IDW_DOCKBAR_BOTTOM);
-
     // load control bar state
     loadControlBarState();
 
-    ShowControlBar(&mSearchBar,  XPR_FALSE, XPR_FALSE);
-    ShowControlBar(&mWorkingBar, XPR_FALSE, XPR_FALSE);
+    ShowControlBar(&mSearchBar, XPR_FALSE, XPR_FALSE);
 
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
@@ -378,29 +371,13 @@ xpr_bool_t MainFrame::OnCreateClient(LPCREATESTRUCT aCreateStruct, CCreateContex
     // splitter
     mSplitter.setObserver(dynamic_cast<SplitterObserver *>(this));
     mSplitter.setMaxSplitCount(MAX_VIEW_SPLIT_ROW, MAX_VIEW_SPLIT_COLUMN);
-    mSplitter.setPaneSizeLimit(50, ksintmax);
+    mSplitter.setPaneSizeLimit(MIN_PANE_SIZE, ksintmax);
     mSplitter.setSplitSize(SPLITTER_SIZE);
 
     mOneFolderSplitter.setObserver(dynamic_cast<SplitterObserver *>(this));
     mOneFolderSplitter.setMaxSplitCount(1, 2);
-    mOneFolderSplitter.setPaneSizeLimit(50, ksintmax);
+    mOneFolderSplitter.setPaneSizeLimit(MIN_PANE_SIZE, ksintmax);
     mOneFolderSplitter.setSplitSize(SPLITTER_SIZE);
-
-    //CRect sClientRect;
-    //GetClientRect(sClientRect);
-    //getClientRectExecptForControlBars(sClientRect);
-
-    //CRect sOneFolderSplitterRect(sClientRect);
-    //CRect sSplitterRect(sClientRect);
-
-    //if (XPR_IS_TRUE(gOpt->bSingleFolderPane) && XPR_IS_TRUE(gOpt->bShowSingleFolderPane))
-    //{
-    //    sSplitterRect.left += 200;
-    //    sSplitterRect.left += SPLITTER_SIZE;
-    //}
-
-    //mOneFolderSplitter.setWindowRect(sOneFolderSplitterRect);
-    //mSplitter.setWindowRect(sSplitterRect);
 
     if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode) && XPR_IS_TRUE(gOpt->mShowSingleFolderPane))
         mOneFolderSplitter.split(1, 2);
@@ -659,7 +636,6 @@ void MainFrame::destroy(void)
     }
 
     DESTROY_WINDOW(mSearchBar);
-    DESTROY_WINDOW(mWorkingBar);
 
     DESTROY_DELETE(mFileScrapDropDlg);
     DESTROY_DELETE(mPicViewer);
@@ -1750,9 +1726,10 @@ ExplorerCtrl *MainFrame::getExplorerCtrl(FolderCtrl *aFolderCtrl) const
     return XPR_NULL;
 }
 
-SearchResultCtrl *MainFrame::getSearchResultCtrl(void) const
+SearchResultCtrl *MainFrame::getSearchResultCtrl(xpr_sint_t aIndex) const
 {
-    return mWorkingBar.getSearchResultCtrl();
+    ExplorerView *sExplorerView = getExplorerView(aIndex);
+    return XPR_IS_NOT_NULL(sExplorerView) ? sExplorerView->getSearchResultCtrl() : XPR_NULL;
 }
 
 FolderView *MainFrame::getFolderView(void) const
@@ -2546,30 +2523,6 @@ xpr_bool_t MainFrame::OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, A
         else if (sCode == CN_COMMAND)
         {
             if (executeCommand(aId) == XPR_TRUE)
-                return XPR_TRUE;
-        }
-    }
-
-    //if (XPR_IS_NOT_NULL(mFolderPane[0].m_hWnd))
-    //{
-    //    if (GetFocus() == mFolderPane[0].getFolderCtrl() &&
-    //        mFolderPane[0].OnCmdMsg(aId, aCode, aExtra, aHandlerInfo))
-    //        return XPR_TRUE;
-    //}
-
-    //if (XPR_IS_NOT_NULL(mFolderPane[1].m_hWnd))
-    //{
-    //    if (GetFocus() == mFolderPane[1].getFolderCtrl() &&
-    //        mFolderPane[1].OnCmdMsg(aId, aCode, aExtra, aHandlerInfo))
-    //        return XPR_TRUE;
-    //}
-
-    if (XPR_IS_NOT_NULL(mWorkingBar.m_hWnd))
-    {
-        SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
-        if (XPR_IS_NOT_NULL(sSearchResultCtrl) && GetFocus() == sSearchResultCtrl)
-        {
-            if (sSearchResultCtrl->OnCmdMsg(aId, aCode, aExtra, aHandlerInfo) == XPR_TRUE)
                 return XPR_TRUE;
         }
     }
@@ -3995,15 +3948,10 @@ void MainFrame::setAccelerator(ACCEL *aAccel, xpr_sint_t aCount)
         saveAccelTable();
     }
 
-    // update CSearchBar
+    // update SearchBar
     SearchDlg *sSearchDlg = mSearchBar.getSearchDlg();
     if (sSearchDlg != XPR_NULL && sSearchDlg->m_hWnd != XPR_NULL)
         sSearchDlg->createAccelTable();
-
-    // update SearchResultCtrl
-    SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
-    if (sSearchResultCtrl != XPR_NULL)
-        sSearchResultCtrl->createAccelTable();
 
     // reload menu bar for short key update
     m_wndMenuBar.ReloadMenu();
@@ -4544,7 +4492,6 @@ void MainFrame::loadControlBarState(void)
 {
     BarState sBarState;
     sBarState.addBar(&mSearchBar);
-    sBarState.addBar(&mWorkingBar);
     sBarState.loadBarState(this);
 }
 
@@ -4552,7 +4499,6 @@ void MainFrame::saveControlBarState(void)
 {
     BarState sBarState;
     sBarState.addBar(&mSearchBar);
-    sBarState.addBar(&mWorkingBar);
     sBarState.saveBarState(this);
 }
 

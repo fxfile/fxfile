@@ -179,13 +179,13 @@ static void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
     xpr_bool_t sResult = XPR_FALSE;
 
     xpr_sint_t sFirst = -1;
-    LPSRITEMDATA sSrItemData = XPR_NULL;
+    SrItemData *sSrItemData = XPR_NULL;
     xpr_tchar_t sName[XPR_MAX_PATH + 1];
 
     sCount = aSearchResultCtrl.GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(i);
+        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
         if (XPR_IS_NULL(sSrItemData))
             continue;
 
@@ -284,9 +284,9 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
 
         xpr_sint_t i;
         xpr_sint_t sCount;
-        LPSRITEMDATA sSrItemData;
+        SrItemData *sSrItemData;
 
-        sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+        sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
         if (XPR_IS_NULL(sSrItemData))
             return;
 
@@ -305,7 +305,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
             sCount = sSearchResultCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
             {
-                sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(i);
+                sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(i);
                 if (XPR_IS_NULL(sSrItemData))
                     continue;
 
@@ -324,7 +324,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
             sCount = sSearchResultCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
             {
-                sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(i);
+                sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(i);
                 if (XPR_IS_NULL(sSrItemData))
                     continue;
 
@@ -417,9 +417,9 @@ void SelectSameExtCommand::execute(CommandContext &aContext)
 
         xpr_sint_t i;
         xpr_sint_t sCount;
-        LPSRITEMDATA sSrItemData;
+        SrItemData *sSrItemData;
 
-        sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+        sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
         if (XPR_IS_NULL(sSrItemData))
             return;
 
@@ -438,7 +438,7 @@ void SelectSameExtCommand::execute(CommandContext &aContext)
             sCount = sSearchResultCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
             {
-                sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(i);
+                sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(i);
                 if (XPR_IS_NULL(sSrItemData))
                     continue;
 
@@ -460,7 +460,7 @@ void SelectSameExtCommand::execute(CommandContext &aContext)
             sCount = sSearchResultCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
             {
-                sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(i);
+                sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(i);
                 if (XPR_IS_NULL(sSrItemData))
                     continue;
 
@@ -571,12 +571,12 @@ static void selectFile(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aFile)
 
     xpr_bool_t sSelect;
     xpr_sint_t i, sCount;
-    LPSRITEMDATA sSrItemData;
+    SrItemData *sSrItemData;
 
     sCount = aSearchResultCtrl.GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(i);
+        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
         if (sSrItemData == XPR_NULL)
             continue;
 
@@ -627,14 +627,14 @@ static void unselectFile(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aFile)
 {
     xpr_sint_t i;
     xpr_bool_t sUnselect;
-    LPSRITEMDATA sSrItemData;
+    SrItemData *sSrItemData;
 
     POSITION sPosition = aSearchResultCtrl.GetFirstSelectedItemPosition();
     while (XPR_IS_NOT_NULL(sPosition))
     {
         i = aSearchResultCtrl.GetNextSelectedItem(sPosition);
 
-        sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(i);
+        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
         if (sSrItemData == XPR_NULL)
             continue;
 
@@ -815,7 +815,7 @@ static void selectFilter(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect
 
     xpr_sint_t i;
     xpr_sint_t sCount;
-    LPSRITEMDATA sSrItemData;
+    SrItemData *sSrItemData;
     std::tstring sPath;
     const xpr_tchar_t *sExt;
 
@@ -824,7 +824,7 @@ static void selectFilter(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect
     {
         sResult = XPR_FALSE;
 
-        sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(i);
+        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
         if (XPR_IS_NOT_NULL(sSrItemData))
         {
             if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))

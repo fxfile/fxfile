@@ -14,7 +14,8 @@
 #include "rgc/scbarcf.h"
 
 #include "SearchDlg.h"
-#include "SearchResultCtrl.h"
+
+class SearchResultCtrl;
 
 class SearchBar : public CSizingControlBarCF
 {
@@ -30,8 +31,8 @@ public:
     void createChild(void);
     void destroyChild(void);
 
-    SearchDlg *getSearchDlg(void);
-    SearchResultCtrl *getSearchResultCtrl(void);
+    SearchDlg *getSearchDlg(void) const;
+    SearchResultCtrl *getSearchResultCtrl(void) const;
 
 protected:
     SearchDlg *mSearchDlg;

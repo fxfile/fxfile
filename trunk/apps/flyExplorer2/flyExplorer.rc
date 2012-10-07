@@ -2372,7 +2372,6 @@ BEGIN
         POPUP "cmd.bar.popup"
         BEGIN
             MENUITEM "&Search bar",                 ID_VIEW_BAR_SEARCH
-            MENUITEM "&Working bar",                ID_VIEW_BAR_WORK
         END
         MENUITEM SEPARATOR
         MENUITEM "Open &picture",               ID_VIEW_PICVIEWER
@@ -2762,7 +2761,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Refresh",                    ID_VIEW_REFRESH
         MENUITEM SEPARATOR
-        MENUITEM "Remove the &list",            ID_SR_DELETEALL
+        MENUITEM "Remove the &list",            ID_SR_REMOVE_LIST
         MENUITEM "Add all items to &scrap",     ID_SR_ADD_FILE_SCRAP
         MENUITEM SEPARATOR
         MENUITEM "&Close",                      ID_SR_CLOSE
@@ -3196,7 +3195,6 @@ BEGIN
     VK_F4,          ID_VIEW_ADDRESSBAR_SHOW, VIRTKEY, NOINVERT
     "E",            ID_VIEW_BAR_SEARCH,     VIRTKEY, CONTROL, NOINVERT
     VK_F3,          ID_VIEW_BAR_SEARCH,     VIRTKEY, NOINVERT
-    "K",            ID_VIEW_BAR_WORK,       VIRTKEY, CONTROL, NOINVERT
     "D",            ID_VIEW_FOLDER_TREE_SHOW, VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_VIEW_REFRESH,        VIRTKEY, NOINVERT
     VK_F6,          ID_WINDOW_NEXT,         VIRTKEY, NOINVERT
@@ -3392,7 +3390,6 @@ STRINGTABLE
 BEGIN
     ID_VIEW_FOLDER_TREE_SHOW "폴더창을 보이거나 숨깁니다.\n폴더"
     ID_VIEW_BAR_SEARCH      "검색창을 보이거나 숨깁니다.\n검색"
-    ID_VIEW_BAR_WORK        "작업창을 보이거나 숨깁니다."
     ID_VIEW_STYLE           "항목을 해당 보기 스타일로 표시합니다.\n보기"
     ID_VIEW_STYLE_LARGEICON "큰 아이콘으로 항목을 표시합니다."
     ID_VIEW_STYLE_SMALLICON "작은 아이콘으로 항목을 표시합니다."
@@ -3816,10 +3813,10 @@ BEGIN
     BEGIN
         MENUITEM "&New tab",                    ID_WINDOW_TAB_NEW
         MENUITEM SEPARATOR
-        MENUITEM "&Duplicate tab",              ID_WINDOW_TAB_DUPLICATE_FROM_CURSOR
+        MENUITEM "&Duplicate tab",              ID_WINDOW_TAB_DUPLICATE_ON_CURSOR
         MENUITEM SEPARATOR
-        MENUITEM "Close this tab",              ID_WINDOW_TAB_CLOSE_FROM_CURSOR
-        MENUITEM "Close all tabs but this",     ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_FROM_CURSOR
+        MENUITEM "Close this tab",              ID_WINDOW_TAB_CLOSE_ON_CURSOR
+        MENUITEM "Close all tabs but this",     ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_ON_CURSOR
         MENUITEM "Close all tabs",              ID_WINDOW_TAB_CLOSE_ALL
     END
 END

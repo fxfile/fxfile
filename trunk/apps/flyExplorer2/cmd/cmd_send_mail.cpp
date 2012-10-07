@@ -59,7 +59,7 @@ void SendMailCommand::execute(CommandContext &aContext)
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             xpr_char_t sPathA[XPR_MAX_PATH + 1];
             xpr_size_t sOutputBytes;
-            LPSRITEMDATA sSrItemData;
+            SrItemData *sSrItemData;
             DWORD sFileAttributes;
             xpr_sint_t sIndex;
 
@@ -67,7 +67,7 @@ void SendMailCommand::execute(CommandContext &aContext)
             {
                 sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-                sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+                sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
                 if (XPR_IS_NULL(sSrItemData))
                     continue;
 

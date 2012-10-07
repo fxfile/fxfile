@@ -24,7 +24,6 @@
 #include "Splitter.h"
 #include "SearchBar.h"
 #include "StatusBarEx.h"
-#include "WorkingBar.h"
 
 namespace fxb
 {
@@ -76,7 +75,7 @@ public:
     FolderCtrl       *getFolderCtrl(xpr_sint_t aIndex = -1) const;
     ExplorerCtrl     *getExplorerCtrl(xpr_sint_t aIndex = -1) const;
     ExplorerCtrl     *getExplorerCtrl(FolderCtrl *aFolderCtrl) const;
-    SearchResultCtrl *getSearchResultCtrl(void) const;
+    SearchResultCtrl *getSearchResultCtrl(xpr_sint_t aIndex = -1) const;
     DriveToolBar     *getDriveBar(void) const;
 
     void ShowControlBar(CControlBar *aControlBar, xpr_bool_t aShow, xpr_bool_t aDelay);
@@ -180,7 +179,6 @@ public:
     FolderPane       *mFolderPane[MAX_VIEW_SPLIT];
 
     SearchBar         mSearchBar;
-    WorkingBar        mWorkingBar;
 
     PicViewer        *mPicViewer;
     FileScrapDropDlg *mFileScrapDropDlg;

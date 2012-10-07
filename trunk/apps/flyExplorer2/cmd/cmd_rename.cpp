@@ -293,7 +293,7 @@ static void doBatchRename(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aWithF
     xpr_sint_t sIndex;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     FileSysItem *sFileSysItem;
-    LPSRITEMDATA sSrItemData = XPR_NULL;
+    SrItemData *sSrItemData = XPR_NULL;
     DWORD sFileAttributes;
     xpr_bool_t sFolder;
 
@@ -302,7 +302,7 @@ static void doBatchRename(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aWithF
     {
         sIndex = aSearchResultCtrl.GetNextSelectedItem(sPosition);
 
-        sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(sIndex);
+        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(sIndex);
         if (XPR_IS_NULL(sSrItemData))
             continue;
 
@@ -363,7 +363,7 @@ void RenameCommand::execute(CommandContext &aContext)
 
             if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
             {
-                LPSRITEMDATA sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+                SrItemData *sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
                 if (XPR_IS_NOT_NULL(sSrItemData))
                 {
                     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};

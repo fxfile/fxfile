@@ -10,8 +10,8 @@
 #include "stdafx.h"
 #include "SearchBar.h"
 
-#include "WorkingBar.h"
 #include "MainFrame.h"
+#include "ExplorerView.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -95,22 +95,17 @@ void SearchBar::OnSetFocus(CWnd *aOldWnd)
         mSearchDlg->SetFocus();
 }
 
-SearchDlg *SearchBar::getSearchDlg(void)
+SearchDlg *SearchBar::getSearchDlg(void) const
 {
     return mSearchDlg;
 }
 
-SearchResultCtrl *SearchBar::getSearchResultCtrl(void)
+SearchResultCtrl *SearchBar::getSearchResultCtrl(void) const
 {
-    SearchResultCtrl *sSearchResultCtrl = gFrame->mWorkingBar.getSearchResultCtrl();
-    if (XPR_IS_NULL(sSearchResultCtrl))
-    {
-        gFrame->mWorkingBar.createChild();
+    if (XPR_IS_NULL(mSearchDlg))
+        return XPR_NULL;
 
-        sSearchResultCtrl = gFrame->mWorkingBar.getSearchResultCtrl();
-    }
-
-    return sSearchResultCtrl;
+    return mSearchDlg->getSearchResultCtrl();
 }
 
 xpr_bool_t SearchBar::PreTranslateMessage(MSG *aMsg)

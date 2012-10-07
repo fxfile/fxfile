@@ -17,6 +17,8 @@
 #include "fxb/fxb_search_file.h"
 
 #include "MainFrame.h"
+#include "ExplorerView.h"
+#include "SearchResultCtrl.h"
 #include "DlgStateMgr.h"
 #include "DlgState.h"
 #include "CfgPath.h"
@@ -66,12 +68,13 @@ enum
 SearchDlg::SearchDlg(void)
     : super(IDD_SEARCH, XPR_NULL)
     , mSearchFile(XPR_NULL)
-    , mResultCtrl(XPR_NULL)
     , mAnimation(XPR_FALSE)
     , mDegree(0.0)
     , mCurSel(-1)
     , mAccelTable(XPR_NULL)
     , mDlgState(XPR_NULL)
+    , mSearchResultViewIndex(-1)
+    , mSearchResultCtrlId(0)
 {
 }
 
@@ -151,7 +154,6 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
     enableWindow(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_SEARCH_SUBFOLDER))->SetCheck(2);
     ((CComboBox *)GetDlgItem(IDC_SEARCH_TYPE))->SetCurSel(0);
-    mResultCtrl = ((SearchBar *)GetParent())->getSearchResultCtrl();
 
     mLocImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, -1, -1);
     mLocComboBox.SetImageList(&mLocImageList);
@@ -206,9 +208,19 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
 
     // 2. 'My Documents' folder
     LPSHELLFOLDER sShellFolder = XPR_NULL;
-    ::SHGetDesktopFolder(&sShellFolder);
-    sShellFolder->ParseDisplayName(XPR_NULL, XPR_NULL, XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"), XPR_NULL, &sFullPidl, XPR_NULL);
-    COM_RELEASE(sShellFolder);
+    if (SUCCEEDED(::SHGetDesktopFolder(&sShellFolder)))
+    {
+        sShellFolder->ParseDisplayName(
+            XPR_NULL,
+            XPR_NULL,
+            XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"),
+            XPR_NULL,
+            &sFullPidl,
+            XPR_NULL);
+
+        COM_RELEASE(sShellFolder);
+    }
+
     if (sFullPidl != XPR_NULL)
     {
         fxb::GetName(sFullPidl, SHGDN_INFOLDER, sName);
@@ -995,11 +1007,22 @@ static xpr_size_t ValidateTarget(std::deque<std::tstring> &aTargetDeque)
 
 void WINAPI OnSearchResult(const xpr_tchar_t *aFolder, WIN32_FIND_DATA *aWfd, LPARAM lParam)
 {
-    SearchResultCtrl *pResultCtrl = (SearchResultCtrl *)lParam;
-    if (!pResultCtrl)
+    SearchResultCtrl *sSearchResultCtrl = (SearchResultCtrl *)lParam;
+    if (XPR_IS_NULL(sSearchResultCtrl))
         return;
 
-    pResultCtrl->onSearch(aFolder, aWfd);
+    sSearchResultCtrl->onSearch(aFolder, aWfd);
+}
+
+SearchResultCtrl *SearchDlg::getSearchResultCtrl(void) const
+{
+    ExplorerView *sExplorerView = gFrame->getExplorerView(mSearchResultViewIndex);
+    if (XPR_IS_NULL(sExplorerView))
+        return XPR_NULL;
+
+    xpr_sint_t sTab = sExplorerView->findTabWndId(mSearchResultCtrlId);
+
+    return dynamic_cast<SearchResultCtrl *>(sExplorerView->getTabWnd(sTab));
 }
 
 void SearchDlg::OnStart(void) 
@@ -1013,7 +1036,18 @@ void SearchDlg::OnStart(void)
         }
     }
 
-    mResultCtrl = ((SearchBar *)GetParent())->getSearchResultCtrl();
+    ExplorerView *sExplorerView = gFrame->getExplorerView();
+    if (XPR_IS_NOT_NULL(sExplorerView))
+    {
+        xpr_sint_t sTab = sExplorerView->newSearchResultTab();
+
+        sExplorerView->setCurTab(sTab);
+
+        mSearchResultViewIndex = sExplorerView->getViewIndex();
+        mSearchResultCtrlId = sExplorerView->getTabWndId(sTab);
+    }
+
+    SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
 
     //----------------------------------------------------------------------
     // options
@@ -1268,10 +1302,8 @@ void SearchDlg::OnStart(void)
     //----------------------------------------------------------------------
     // start search
     //----------------------------------------------------------------------
-    mResultCtrl->onStartSearch();
+    sSearchResultCtrl->onStartSearch();
 
-    if (gFrame->mWorkingBar.IsWindowVisible() == XPR_FALSE)
-        gFrame->ShowControlBar(&gFrame->mWorkingBar, XPR_TRUE, XPR_FALSE);
     gFrame->mSearchBar.EnableTracking(XPR_FALSE);
 
     XPR_SAFE_DELETE(mSearchFile);
@@ -1283,7 +1315,7 @@ void SearchDlg::OnStart(void)
     mSearchFile->setName(sName, sNoWildcard);
     mSearchFile->setText(sText);
     mSearchFile->setResultFunc(OnSearchResult);
-    mSearchFile->setData((LPARAM)mResultCtrl);
+    mSearchFile->setData((LPARAM)sSearchResultCtrl);
 
     sIterator = sIncDirDeque.begin();
     for (; sIterator != sIncDirDeque.end(); ++sIterator)
@@ -1326,7 +1358,11 @@ LRESULT SearchDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     enableWindow(XPR_TRUE);
     gFrame->mSearchBar.EnableTracking(XPR_TRUE);
 
-    mResultCtrl->onEndSearch();
+    SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
+    if (XPR_IS_NOT_NULL(sSearchResultCtrl))
+    {
+        sSearchResultCtrl->onEndSearch();
+    }
 
     xpr_tchar_t sStatusText[0xff] = {0};
     xpr_tchar_t sElapsedTimeText[0xff] = {0};
@@ -1347,9 +1383,11 @@ void SearchDlg::getStatusText(xpr_tchar_t *aStatusText, xpr_tchar_t *aElapsedTim
     if (mSearchFile != XPR_NULL)
         mSearchFile->getStatus(XPR_NULL, &sSearchTime);
 
+    SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
+
     xpr_sint_t sCount = 0;
-    if (mResultCtrl != XPR_NULL)
-        sCount = mResultCtrl->GetItemCount();
+    if (XPR_IS_NOT_NULL(sSearchResultCtrl))
+        sCount = sSearchResultCtrl->GetItemCount();
 
     if (aStatusText != XPR_NULL)
     {
