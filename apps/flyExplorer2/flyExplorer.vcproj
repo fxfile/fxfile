@@ -783,14 +783,6 @@
 			Name="[2] Reusable GUI Components"
 			>
 			<File
-				RelativePath=".\rgc\bcgtabwnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\bcgtabwnd.h"
-				>
-			</File>
-			<File
 				RelativePath=".\rgc\BCMenu.cpp"
 				>
 			</File>
@@ -2059,6 +2051,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SearchResultCtrlObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Splitter.cpp"
 				>
 			</File>
@@ -2165,14 +2161,6 @@
 			</File>
 			<File
 				RelativePath=".\WaitDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WorkingBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\WorkingBar.h"
 				>
 			</File>
 			<Filter

@@ -219,7 +219,6 @@
 			<String ID="cmd.folder_tree.left_pane">왼쪽 폴더 트리(&amp;L)</String>
 			<String ID="cmd.folder_tree.right_pane">오른쪽 폴더 트리(&amp;R)</String>
 			<String ID="cmd.search_bar">검색창(&amp;S)</String>
-			<String ID="cmd.working_bar">작업창(&amp;W)</String>
 			<String ID="cmd.picture.show">그림 보기(&amp;P)</String>
 			<String ID="cmd.picture.popup">그림 보기 옵션(&amp;O)</String>
 			<String ID="cmd.picture.zoom_in">확대(&amp;I)</String>
@@ -1840,9 +1839,6 @@
 			<!-- bar: folder -->
 			<String ID="bar.folder.title">폴더창</String>
 
-			<!-- bar: working -->
-			<String ID="bar.working.title">작업창</String>
-
 			<!-- bar: search -->
 			<String ID="bar.search.title">검색창</String>
 			<String ID="bar.search.label.name">검색할 파일 및 폴더(&amp;N):</String>
@@ -1873,13 +1869,13 @@
 			<String ID="bar.search.status.elapsed_long_time">%1%분 %2%초 걸렸습니다.</String>
 
 			<!-- bar: search result -->
-			<String ID="bar.search_result.title">검색 결과</String>
-			<String ID="bar.search_result.column.name">이름</String>
-			<String ID="bar.search_result.column.location">위치</String>
-			<String ID="bar.search_result.column.size">크기</String>
-			<String ID="bar.search_result.column.type">종류</String>
-			<String ID="bar.search_result.column.date">수정한 날짜</String>
-			<String ID="bar.search_result.msg.wrong_path">다음의 경로를 접근할 수 없습니다. 이 경로가 옮겨졌거나 삭제되었습니다.&#10;&#10;%1%</String>
+			<String ID="search_result.title">검색 결과</String>
+			<String ID="search_result.column.name">이름</String>
+			<String ID="search_result.column.location">위치</String>
+			<String ID="search_result.column.size">크기</String>
+			<String ID="search_result.column.type">종류</String>
+			<String ID="search_result.column.date">수정한 날짜</String>
+			<String ID="search_result.msg.wrong_path">다음의 경로를 접근할 수 없습니다. 이 경로가 옮겨졌거나 삭제되었습니다.&#10;&#10;%1%</String>
 
 			<!-- print preview -->
 			<String ID="print_preview.button.print">인쇄</String>

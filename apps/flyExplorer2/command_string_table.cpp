@@ -185,7 +185,6 @@ void CommandStringTable::load(void)
     mCommandString[ID_VIEW_FOLDER_TREE_LEFT_PANE]     = XPR_STRING_LITERAL("cmd.folder_tree.left_pane");
     mCommandString[ID_VIEW_FOLDER_TREE_RIGHT_PANE]    = XPR_STRING_LITERAL("cmd.folder_tree.right_pane");
     mCommandString[ID_VIEW_BAR_SEARCH]                = XPR_STRING_LITERAL("cmd.search_bar");
-    mCommandString[ID_VIEW_BAR_WORK]                  = XPR_STRING_LITERAL("cmd.working_bar");
     mCommandString[ID_VIEW_PICVIEWER]                 = XPR_STRING_LITERAL("cmd.picture.show");
     mCommandString[ID_VIEW_PIC_ZOOM_IN]               = XPR_STRING_LITERAL("cmd.picture.zoom_in");
     mCommandString[ID_VIEW_PIC_ZOOM_OUT]              = XPR_STRING_LITERAL("cmd.picture.zoom_out");
@@ -243,16 +242,15 @@ void CommandStringTable::load(void)
     // main menu - window
     mCommandString[ID_WINDOW_TAB_NEW]                 = XPR_STRING_LITERAL("cmd.window.tab.new");
     mCommandString[ID_WINDOW_TAB_DUPLICATE]           = XPR_STRING_LITERAL("cmd.window.tab.duplicate");
-    mCommandString[ID_WINDOW_TAB_DUPLICATE_FROM_CURSOR]
-                                                      = XPR_STRING_LITERAL("cmd.window.tab.duplicate");
+    mCommandString[ID_WINDOW_TAB_DUPLICATE_ON_CURSOR] = XPR_STRING_LITERAL("cmd.window.tab.duplicate");
     mCommandString[ID_WINDOW_TAB_FIRST]               = XPR_STRING_LITERAL("cmd.window.tab.first");
     mCommandString[ID_WINDOW_TAB_PREVIOUS]            = XPR_STRING_LITERAL("cmd.window.tab.previous");
     mCommandString[ID_WINDOW_TAB_NEXT]                = XPR_STRING_LITERAL("cmd.window.tab.next");
     mCommandString[ID_WINDOW_TAB_LAST]                = XPR_STRING_LITERAL("cmd.window.tab.last");
     mCommandString[ID_WINDOW_TAB_CLOSE]               = XPR_STRING_LITERAL("cmd.window.tab.close");
-    mCommandString[ID_WINDOW_TAB_CLOSE_FROM_CURSOR]   = XPR_STRING_LITERAL("cmd.window.tab.close");
+    mCommandString[ID_WINDOW_TAB_CLOSE_ON_CURSOR]     = XPR_STRING_LITERAL("cmd.window.tab.close");
     mCommandString[ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS]  = XPR_STRING_LITERAL("cmd.window.tab.close_all_but_this");
-    mCommandString[ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_FROM_CURSOR]
+    mCommandString[ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_ON_CURSOR]
                                                       = XPR_STRING_LITERAL("cmd.window.tab.close_all_but_this");
     mCommandString[ID_WINDOW_TAB_CLOSE_ALL]           = XPR_STRING_LITERAL("cmd.window.tab.close_all");
     mCommandString[ID_WINDOW_NEXT]                    = XPR_STRING_LITERAL("cmd.window.next");
@@ -373,7 +371,7 @@ void CommandStringTable::load(void)
     mCommandString[ID_SR_VIEW_SMALLICON]              = XPR_STRING_LITERAL("cmd.search_result.view_style.small_icon");
     mCommandString[ID_SR_VIEW_LIST]                   = XPR_STRING_LITERAL("cmd.search_result.view_style.list");
     mCommandString[ID_SR_VIEW_DETAIL]                 = XPR_STRING_LITERAL("cmd.search_result.view_style.detail");
-    mCommandString[ID_SR_DELETEALL]                   = XPR_STRING_LITERAL("cmd.search_result.remove_list");
+    mCommandString[ID_SR_REMOVE_LIST]                 = XPR_STRING_LITERAL("cmd.search_result.remove_list");
     mCommandString[ID_SR_ADD_FILE_SCRAP]              = XPR_STRING_LITERAL("cmd.search_result.add_all_to_scrap");
     mCommandString[ID_SR_CLOSE]                       = XPR_STRING_LITERAL("cmd.search_result.close");
 

@@ -18,6 +18,7 @@
 
 #include "FolderPaneObserver.h"
 #include "ExplorerCtrlObserver.h"
+#include "SearchResultCtrlObserver.h"
 #include "AddressBarObserver.h"
 #include "PathBarObserver.h"
 #include "Splitter.h"
@@ -40,6 +41,7 @@ class ExplorerView
     , public SplitterObserver
     , public FolderPaneObserver
     , public ExplorerCtrlObserver
+    , public SearchResultCtrlObserver
     , public AddressBarObserver
     , public PathBarObserver
 {
@@ -58,28 +60,42 @@ public:
     void setViewIndex(xpr_sint_t aViewIndex);
     xpr_sint_t getViewIndex(void) const;
 
-    xpr_sint_t    newTab(void);
+    enum TabType
+    {
+        TabTypeNone,
+        TabTypeExplorer,
+        TabTypeSearchResult,
+        TabTypeFileScrap,
+    };
+
+    xpr_sint_t    newTab(TabType aTabType = TabTypeExplorer);
     xpr_sint_t    newTab(const std::tstring &aInitFolder);
-    xpr_sint_t    duplicateTab(xpr_bool_t aFromCursor = XPR_FALSE);
-    xpr_sint_t    getTabFromCursor(void) const;
+    xpr_sint_t    newSearchResultTab(void);
+    xpr_sint_t    duplicateTab(xpr_bool_t aOnCursor = XPR_FALSE);
+    xpr_bool_t    canDuplicateTab(xpr_bool_t aOnCursor = XPR_FALSE) const;
+    xpr_bool_t    isExplorerTabMode(void) const;
+    xpr_sint_t    getTabOnCursor(void) const;
     xpr_sint_t    getTabCount(void) const;
-    xpr_sint_t    findExplorerCtrlId(xpr_uint_t aExplorerCtrlId) const;
+    CWnd         *getTabWnd(xpr_sint_t aTab) const;
+    xpr_uint_t    getTabWndId(xpr_sint_t aTab) const;
+    xpr_sint_t    findTabWndId(xpr_uint_t aTabWndId) const;
     void          setCurTab(xpr_sint_t aTab);
     void          firstTab(void);
     void          previousTab(void);
     void          nextTab(void);
     void          lastTab(void);
-    void          closeTab(xpr_bool_t aFromCursor = XPR_FALSE);
-    void          closeAllTabsButThis(xpr_bool_t aFromCursor = XPR_FALSE);
+    void          closeTab(xpr_sint_t aTab = -1, xpr_bool_t aOnCursor = XPR_FALSE);
+    void          closeAllTabsButThis(xpr_bool_t aOnCursor = XPR_FALSE);
     void          closeAllTabs(void);
 
-    FolderPane   *getFolderPane(void) const;
-    FolderCtrl   *getFolderCtrl(void) const;
-    ExplorerCtrl *getExplorerCtrl(xpr_sint_t aTab = -1) const;
-    AddressBar   *getAddressBar(void) const;
-    PathBar      *getPathBar(void) const;
-    ActivateBar  *getActivateBar(void) const;
-    DrivePathBar *getDrivePathBar(void) const;
+    FolderPane       *getFolderPane(void) const;
+    FolderCtrl       *getFolderCtrl(void) const;
+    ExplorerCtrl     *getExplorerCtrl(xpr_sint_t aTab = -1) const;
+    SearchResultCtrl *getSearchResultCtrl(xpr_sint_t aTab = -1) const;
+    AddressBar       *getAddressBar(void) const;
+    PathBar          *getPathBar(void) const;
+    ActivateBar      *getActivateBar(void) const;
+    DrivePathBar     *getDrivePathBar(void) const;
 
     xpr_bool_t visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE, xpr_bool_t aSaveFolderPaneVisible = XPR_TRUE);
     xpr_bool_t isVisibleFolderPane(void) const;
@@ -127,7 +143,7 @@ public:
     void recalcLayout(void);
 
 protected:
-    xpr_uint_t generateExplorerCtrlId(void);
+    xpr_uint_t generateTabWndId(void);
 
     enum
     {
@@ -175,6 +191,7 @@ protected:
     ExplorerViewObserver *mObserver;
 
     xpr_sint_t     mViewIndex;
+    xpr_bool_t     mInit;
 
     TabCtrl       *mTabCtrl;
     xpr_uint_t     mNextExplorerCtrlId;
@@ -196,7 +213,9 @@ protected:
 
     DropTarget     mDropTarget;
 
-    struct TabData;
+    class TabData;
+    class ExplorerTabData;
+    class SearchResultTabData;
 
 protected:
     virtual xpr_bool_t PreCreateWindow(CREATESTRUCT &aCreateStruct);
@@ -259,6 +278,9 @@ protected:
     virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending);
     virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth);
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
+
+    // from SearchResultCtrlObserver
+    virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl);
 
     // from AddressBarObserver
     virtual xpr_bool_t onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);

@@ -135,7 +135,7 @@ void SearchResultViewDetailCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t SearchResultDeleteAllCommand::canExecute(CommandContext &aContext)
+xpr_sint_t SearchResultRemoveListCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -147,7 +147,7 @@ xpr_sint_t SearchResultDeleteAllCommand::canExecute(CommandContext &aContext)
     return sState;
 }
 
-void SearchResultDeleteAllCommand::execute(CommandContext &aContext)
+void SearchResultRemoveListCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -164,7 +164,7 @@ void SearchResultDeleteAllCommand::execute(CommandContext &aContext)
         xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
 
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         xpr_sint_t sIndex;
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
@@ -172,7 +172,7 @@ void SearchResultDeleteAllCommand::execute(CommandContext &aContext)
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -224,8 +224,6 @@ void SearchResultCloseCommand::execute(CommandContext &aContext)
     if (XPR_IS_NOT_NULL(sSearchResultCtrl))
     {
         sSearchResultCtrl->clearList();
-
-        gFrame->ShowControlBar(&gFrame->mWorkingBar, XPR_FALSE, XPR_FALSE);
     }
 }
 } // namespace cmd

@@ -70,7 +70,7 @@ static void executeFileAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aType
     if (sIndex < 0)
         return;
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(sIndex);
+    SrItemData *sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(sIndex);
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -161,7 +161,7 @@ static void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t 
     if (sIndex < 0)
         return;
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)aSearchResultCtrl.GetItemData(sIndex);
+    SrItemData *sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(sIndex);
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -367,7 +367,7 @@ void FileShellAssCommand::execute(CommandContext &aContext)
         if (sIndex < 0)
             return;
 
-        LPSRITEMDATA sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+        SrItemData *sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
         if (XPR_IS_NULL(sSrItemData))
             return;
 

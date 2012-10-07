@@ -63,6 +63,7 @@
 #define MAX_VIEW_SPLIT          (MAX_VIEW_SPLIT_ROW * MAX_VIEW_SPLIT_COLUMN)
 #define DEF_VIEW_SPLIT_ROW      1
 #define DEF_VIEW_SPLIT_COLUMN   1
+#define MIN_PANE_SIZE           50
 #define SPLITTER_SIZE           2
 
 enum

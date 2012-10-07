@@ -21,8 +21,8 @@
 #include "rgc/FlatHeaderCtrl.h"
 #include "rgc/DropSource.h"     // for Drag & Drop
 #include "rgc/BCMenu.h"
-#include "rgc/BCGTabWnd.h"
 
+#include "SearchResultCtrlObserver.h"
 #include "MainFrame.h"
 #include "ExplorerCtrl.h"
 #include "command_string_table.h"
@@ -57,7 +57,7 @@ xpr_uint_t SearchResultCtrl::mCodeMgr = 0;
 
 SearchResultCtrl::SearchResultCtrl(void)
 {
-    mAccelTable    = XPR_NULL;
+    mObserver      = XPR_NULL;
 
     mSortColumn    = 0;
     mSortAscending = XPR_TRUE;
@@ -85,7 +85,26 @@ SearchResultCtrl::~SearchResultCtrl(void)
     XPR_SAFE_DELETE(mShellIcon);
 }
 
-BEGIN_MESSAGE_MAP(SearchResultCtrl, CListCtrl)
+void SearchResultCtrl::setObserver(SearchResultCtrlObserver *aObserver)
+{
+    mObserver = aObserver;
+}
+
+xpr_bool_t SearchResultCtrl::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
+{
+    DWORD sStyle = 0;
+    sStyle |= WS_VISIBLE;
+    sStyle |= WS_CHILD;
+    sStyle |= WS_CLIPSIBLINGS;
+    sStyle |= WS_CLIPCHILDREN;
+    sStyle |= LVS_REPORT;
+    sStyle |= LVS_SHOWSELALWAYS;
+    sStyle |= LVS_EDITLABELS;
+
+    return super::Create(sStyle, aRect, aParentWnd, aId);
+}
+
+BEGIN_MESSAGE_MAP(SearchResultCtrl, super)
     ON_WM_WINDOWPOSCHANGING()
     ON_WM_CREATE()
     ON_WM_CONTEXTMENU()
@@ -95,6 +114,7 @@ BEGIN_MESSAGE_MAP(SearchResultCtrl, CListCtrl)
     ON_WM_DESTROY()
     ON_WM_MEASUREITEM()
     ON_WM_MENUCHAR()
+    ON_WM_SETFOCUS()
     ON_WM_KEYDOWN()
     ON_WM_TIMER()
     ON_NOTIFY_REFLECT(LVN_GETDISPINFO,    OnGetdispinfo)
@@ -112,19 +132,21 @@ END_MESSAGE_MAP()
 
 xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
-    if (CListCtrl::OnCreate(aCreateStruct) == -1)
+    if (super::OnCreate(aCreateStruct) == -1)
         return -1;
+
+    SetExtendedStyle(GetExtendedStyle() | WS_EX_CLIENTEDGE);
 
     if (subclassHeader() == XPR_FALSE)
         return -1;
 
-    InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("bar.search_result.column.name")),     LVCFMT_LEFT,  200);
-    InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("bar.search_result.column.location")), LVCFMT_LEFT,  200);
-    InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("bar.search_result.column.size")),     LVCFMT_RIGHT, 100);
-    InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("bar.search_result.column.type")),     LVCFMT_LEFT,  100);
-    InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("bar.search_result.column.date")),     LVCFMT_LEFT,  100);
+    InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  200);
+    InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("search_result.column.location")), LVCFMT_LEFT,  200);
+    InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT, 100);
+    InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  100);
+    InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  100);
 
-    createAccelTable();
+    //createAccelTable();
 
     if (XPR_IS_NULL(mShellIcon))
     {
@@ -159,7 +181,7 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 
 void SearchResultCtrl::OnDestroy(void)
 {
-    CListCtrl::OnDestroy();
+    super::OnDestroy();
 
     fxb::ShellChangeNotify::instance().unregisterWatch(mShcnId);
 
@@ -186,61 +208,17 @@ xpr_bool_t SearchResultCtrl::subclassHeader(xpr_bool_t aBoldFont)
     return XPR_TRUE;
 }
 
-void SearchResultCtrl::createAccelTable(void)
-{
-    xpr_sint_t sId[] =
-    {
-        ID_EDIT_SEL_ALL, ID_EDIT_SEL_REVERSAL,
-        ID_EDIT_NAME_COPY, ID_EDIT_PATH_COPY, ID_EDIT_DEV_PATH_COPY, ID_EDIT_URL_COPY,
-        ID_EDIT_SEL_NAME, ID_EDIT_UNSEL_NAME, ID_EDIT_SEL_SAME_EXT, ID_EDIT_SEL_SAME_FILTER,
-        ID_EDIT_SEL_FILE, ID_EDIT_SEL_FOLDER, ID_EDIT_UNSEL_FILE, ID_EDIT_UNSEL_FOLDER,
-        ID_FILE_DELETE, ID_FILE_RENAME, ID_EDIT_COPY, ID_EDIT_PASTE,
-        ID_FILE_BATCH_RENAME_FILE, ID_FILE_BATCH_RENAME_FOLDER, ID_FILE_BATCH_RENAME_ALL,
-        ID_FILE_PROPERTY, ID_EDIT_CUT, ID_FILE_EXEC_PARAM, ID_FILE_EXEC,
-        ID_FILE_VIEW, ID_FILE_EDIT, ID_FILE_VIEWER_ASS, ID_FILE_EDITOR_ASS, ID_FILE_SHELL_ASS,
-    };
-
-    xpr_sint_t sIdCount = sizeof(sId) / sizeof(xpr_sint_t);
-
-    ACCEL sMainAccel[MAX_ACCEL];
-    HACCEL sMainAccelHandle = gFrame->getAccelTable();
-    xpr_sint_t sMainAccelCount = ::CopyAcceleratorTable(sMainAccelHandle, sMainAccel, MAX_ACCEL);
-
-    ACCEL sAccel[MAX_ACCEL];
-    xpr_sint_t i, j, sCount = 0;
-    for (i = 0; i < sIdCount; ++i)
-    {
-        for (j = 0; j < sMainAccelCount; ++j)
-        {
-            if (sId[i] == sMainAccel[j].cmd)
-            {
-                sAccel[sCount].cmd   = sMainAccel[j].cmd;
-                sAccel[sCount].fVirt = sMainAccel[j].fVirt;
-                sAccel[sCount].key   = sMainAccel[j].key;
-                sCount++;
-            }
-        }
-    }
-
-    if (XPR_IS_NOT_NULL(mAccelTable))
-        ::DestroyAcceleratorTable(mAccelTable);
-
-    mAccelTable = ::CreateAcceleratorTable(sAccel, sCount);
-}
-
 void SearchResultCtrl::OnWindowPosChanging(WINDOWPOS FAR *aWindowPos)
 {
-    CListCtrl::OnWindowPosChanging(aWindowPos);
+    super::OnWindowPosChanging(aWindowPos);
 
-    ShowScrollBar(SB_HORZ, XPR_FALSE);
-    ModifyStyle(WS_HSCROLL, 0, SWP_DRAWFRAME);
+    //ShowScrollBar(SB_HORZ, XPR_FALSE);
+    //ModifyStyle(WS_HSCROLL, 0, SWP_DRAWFRAME);
 }
 
 xpr_bool_t SearchResultCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *aResult)
 {
-    ((CBCGTabWnd *)GetParent())->SynchronizeScrollBar();
-
-    return CListCtrl::OnNotify(wParam, lParam, aResult);
+    return super::OnNotify(wParam, lParam, aResult);
 }
 
 void SearchResultCtrl::onStartSearch(void)
@@ -266,7 +244,7 @@ void SearchResultCtrl::onStartSearch(void)
 
 void SearchResultCtrl::onSearch(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData)
 {
-    LPSRITEMDATA sSrItemData = new SRItemData;
+    SrItemData *sSrItemData = new SrItemData;
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -324,14 +302,14 @@ void SearchResultCtrl::addList(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32F
     insertList(-1, aDir, aWin32FindData);
 }
 
-void SearchResultCtrl::addList(LPSRITEMDATA aSrItemData)
+void SearchResultCtrl::addList(SrItemData *aSrItemData)
 {
     insertList(-1, aSrItemData);
 }
 
 void SearchResultCtrl::insertList(xpr_sint_t aIndex, const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData)
 {
-    LPSRITEMDATA sSrItemData = new SRItemData;
+    SrItemData *sSrItemData = new SrItemData;
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -363,7 +341,7 @@ void SearchResultCtrl::insertList(xpr_sint_t aIndex, const xpr_tchar_t *aDir, WI
     insertList(-1, sSrItemData);
 }
 
-void SearchResultCtrl::insertList(xpr_sint_t aIndex, LPSRITEMDATA aSrItemData)
+void SearchResultCtrl::insertList(xpr_sint_t aIndex, SrItemData *aSrItemData)
 {
     if (aIndex == -1)
         aIndex = GetItemCount();
@@ -408,7 +386,7 @@ void SearchResultCtrl::OnGetdispinfo(NMHDR *aNmHdr, LRESULT *aResult)
 
     LVITEM &sLvItem = sLvDispInfo->item;
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)sLvItem.lParam;
+    SrItemData *sSrItemData = (SrItemData *)sLvItem.lParam;
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -488,7 +466,7 @@ void SearchResultCtrl::OnDeleteitem(NMHDR *aNmHdr, LRESULT *aResult)
 {
     NM_LISTVIEW *sNmListView = (NM_LISTVIEW*)aNmHdr;
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)sNmListView->lParam;
+    SrItemData *sSrItemData = (SrItemData *)sNmListView->lParam;
     XPR_SAFE_DELETE_ARRAY(sSrItemData->mDir);
     XPR_SAFE_DELETE_ARRAY(sSrItemData->mFileName);
     XPR_SAFE_DELETE_ARRAY(sSrItemData);
@@ -503,14 +481,14 @@ LRESULT SearchResultCtrl::OnMenuChar(xpr_uint_t aChar, xpr_uint_t aFlags, CMenu 
     if (BCMenu::IsMenu(aMenu) == XPR_TRUE)
         sResult = BCMenu::FindKeyboardShortcut(aChar, aFlags, aMenu);
     else
-        sResult = CListCtrl::OnMenuChar(aChar, aFlags, aMenu);
+        sResult = super::OnMenuChar(aChar, aFlags, aMenu);
 
     return sResult;
 }
 
 void SearchResultCtrl::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t aSysMenu) 
 {
-    //CListCtrl::OnInitMenuPopup(aPopupMenu, aIndex, aSysMenu);
+    //super::OnInitMenuPopup(aPopupMenu, aIndex, aSysMenu);
     ASSERT(aPopupMenu != XPR_NULL);
 
     // for multi-language
@@ -647,7 +625,7 @@ void SearchResultCtrl::OnMeasureItem(xpr_sint_t aIdCtl, LPMEASUREITEMSTRUCT aMea
     }
 
     if (XPR_IS_FALSE(sSetFlag))
-        CListCtrl::OnMeasureItem(aIdCtl, aMeasureItemStruct);
+        super::OnMeasureItem(aIdCtl, aMeasureItemStruct);
 }
 
 xpr_bool_t SearchResultCtrl::getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLIST *aPidls, xpr_sint_t &aCount)
@@ -678,7 +656,7 @@ xpr_bool_t SearchResultCtrl::getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLI
     {
         LPSHELLFOLDER sShellFolder = XPR_NULL;
 
-        LPSRITEMDATA sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+        SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
         if (XPR_IS_NOT_NULL(sSrItemData))
         {
             std::tstring sPath;
@@ -734,7 +712,7 @@ xpr_bool_t SearchResultCtrl::getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLI
             {
                 xpr_sint_t i = 0;
                 xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-                LPSRITEMDATA sSrItemData = XPR_NULL;
+                SrItemData *sSrItemData = XPR_NULL;
                 LPITEMIDLIST sFullPidl = XPR_NULL;
                 LPITEMIDLIST sChildPidl = XPR_NULL;
 
@@ -743,7 +721,7 @@ xpr_bool_t SearchResultCtrl::getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLI
                 {
                     sIndex = GetNextSelectedItem(sPosition);
 
-                    sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+                    sSrItemData = (SrItemData *)GetItemData(sIndex);
                     if (XPR_IS_NOT_NULL(sSrItemData))
                     {
                         sSrItemData->getPath(sPath);
@@ -791,7 +769,7 @@ xpr_bool_t SearchResultCtrl::getSelFullPidls(LPSHELLFOLDER *aShellFolder, LPITEM
         xpr_sint_t i = 0;
         xpr_sint_t sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
         LPITEMIDLIST sFullPidl = XPR_NULL;
 
         POSITION sPosition = GetFirstSelectedItemPosition();
@@ -799,7 +777,7 @@ xpr_bool_t SearchResultCtrl::getSelFullPidls(LPSHELLFOLDER *aShellFolder, LPITEM
         {
             sIndex = GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+            sSrItemData = (SrItemData *)GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -840,7 +818,7 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
         (XPR_IS_TRUE(sVertScrl) && sVertScrlRect.PtInRect(aPoint)))
     {
         // default scroll bar
-        CListCtrl::OnContextMenu(aWnd, aPoint);
+        super::OnContextMenu(aWnd, aPoint);
         return;
     }
 
@@ -941,7 +919,7 @@ xpr_bool_t SearchResultCtrl::invokeCommandSelf(fxb::ContextMenu *aContextMenu, x
 
     if (aId == CMID_OPEN_PARENT_FOLDER)
     {
-        LPSRITEMDATA sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+        SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
         if (XPR_IS_NOT_NULL(sSrItemData))
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
@@ -981,7 +959,7 @@ xpr_bool_t SearchResultCtrl::invokeCommandSelf(fxb::ContextMenu *aContextMenu, x
 
         if (_tcsicmp(sVerb, CMID_VERB_OPEN) == 0)
         {
-            LPSRITEMDATA sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+            SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData) && XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
             {
                 execute(sIndex);
@@ -1225,7 +1203,7 @@ void SearchResultCtrl::doExecuteError(LPSHELLFOLDER aShellFolder, LPITEMIDLIST a
 void SearchResultCtrl::doExecuteError(const xpr_tchar_t *aPath)
 {
     xpr_tchar_t sMsg[XPR_MAX_PATH * 2] = {0};
-    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search_result.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
+    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("search_result.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 }
 
@@ -1254,7 +1232,7 @@ void SearchResultCtrl::execute(xpr_sint_t aIndex)
         aIndex = GetSelectionMark();
     }
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)GetItemData(aIndex);
+    SrItemData *sSrItemData = (SrItemData *)GetItemData(aIndex);
     if (XPR_IS_NULL(sSrItemData))
         return;
 
@@ -1339,7 +1317,7 @@ xpr_sint_t SearchResultCtrl::OnMouseActivate(CWnd *aDesktopWnd, xpr_uint_t aHitT
     if (sIndex >= 0)
         return MA_NOACTIVATE;
 
-    return CListCtrl::OnMouseActivate(aDesktopWnd, aHitTest, aMessage);
+    return super::OnMouseActivate(aDesktopWnd, aHitTest, aMessage);
 }
 
 xpr_bool_t SearchResultCtrl::PreTranslateMessage(MSG *aMsg) 
@@ -1352,12 +1330,6 @@ xpr_bool_t SearchResultCtrl::PreTranslateMessage(MSG *aMsg)
     ::GetClassName(aMsg->hwnd, sClassName, MAX_CLASS_NAME);
     if (_tcsicmp(sClassName, sEditClassName) == 0)
         return XPR_FALSE;
-
-    if (XPR_IS_NOT_NULL(mAccelTable))
-    {
-        if (::TranslateAccelerator(m_hWnd, mAccelTable, aMsg) == XPR_TRUE)
-            return XPR_TRUE;
-    }
 
     if (aMsg->message == WM_KEYDOWN)
     {
@@ -1372,17 +1344,17 @@ xpr_bool_t SearchResultCtrl::PreTranslateMessage(MSG *aMsg)
         }
     }
 
-    return CListCtrl::PreTranslateMessage(aMsg);
+    return super::PreTranslateMessage(aMsg);
 }
 
 void SearchResultCtrl::OnHScroll(xpr_uint_t aSBCode, xpr_uint_t aPos, CScrollBar *aScrollBar) 
 {
-    CListCtrl::OnHScroll(aSBCode, aPos, aScrollBar);
+    super::OnHScroll(aSBCode, aPos, aScrollBar);
 }
 
 xpr_bool_t SearchResultCtrl::OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, AFX_CMDHANDLERINFO *aHandlerInfo) 
 {
-    return CListCtrl::OnCmdMsg(aId, aCode, aExtra, aHandlerInfo);
+    return super::OnCmdMsg(aId, aCode, aExtra, aHandlerInfo);
 }
 
 void SearchResultCtrl::renameDirectly(xpr_sint_t aIndex)
@@ -1440,7 +1412,7 @@ void SearchResultCtrl::OnShcnRename(fxb::Shcn *aShcn)
 
     xpr_sint_t i;
     xpr_sint_t sCount;
-    LPSRITEMDATA sSrItemData;
+    SrItemData *sSrItemData;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     xpr_tchar_t sDir[XPR_MAX_PATH + 1];
     xpr_tchar_t *sFindDir;
@@ -1450,7 +1422,7 @@ void SearchResultCtrl::OnShcnRename(fxb::Shcn *aShcn)
     sCount = GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSrItemData = (LPSRITEMDATA)GetItemData(i);
+        sSrItemData = (SrItemData *)GetItemData(i);
         if (XPR_IS_NULL(sSrItemData))
             continue;
 
@@ -1496,14 +1468,14 @@ void SearchResultCtrl::refresh(void)
     xpr_sint_t i, sCount;
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    LPSRITEMDATA sSrItemData = XPR_NULL;
+    SrItemData *sSrItemData = XPR_NULL;
     WIN32_FIND_DATA sWin32FindData;
     HANDLE sFindFile;
 
     sCount = GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSrItemData = (LPSRITEMDATA)GetItemData(i);
+        sSrItemData = (SrItemData *)GetItemData(i);
         if (XPR_IS_NULL(sSrItemData))
             continue;
 
@@ -1548,7 +1520,7 @@ void SearchResultCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     XPR_SAFE_DELETE_ARRAY(mEditExt);
     mEditSel = -1;
 
-    LPSRITEMDATA sSrItemData = (LPSRITEMDATA)sLvDispInfo->item.lParam;
+    SrItemData *sSrItemData = (SrItemData *)sLvDispInfo->item.lParam;
     if (XPR_IS_NULL(sSrItemData))
     {
         *aResult = 1;
@@ -1610,7 +1582,7 @@ void SearchResultCtrl::OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     }
     mEditSel = -1;
 
-    LPSRITEMDATA sOldSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+    SrItemData *sOldSrItemData = (SrItemData *)GetItemData(sIndex);
     if (XPR_IS_NOT_NULL(sOldSrItemData))
     {
         xpr_tchar_t sOldPath[XPR_MAX_PATH + 1];
@@ -1621,7 +1593,7 @@ void SearchResultCtrl::OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
         {
             *sSplit = '\0';
 
-            LPSRITEMDATA sNewSrItemData = new SRItemData;
+            SrItemData *sNewSrItemData = new SrItemData;
 
             sNewSrItemData->mDir = new xpr_tchar_t[_tcslen(sOldPath) + 3];
             _tcscpy(sNewSrItemData->mDir, sOldPath);
@@ -1722,7 +1694,7 @@ void SearchResultCtrl::OnTimer(xpr_uint_t aIdEvent)
         }
     }
 
-    CListCtrl::OnTimer(aIdEvent);
+    super::OnTimer(aIdEvent);
 }
 
 void SearchResultCtrl::sortItems(xpr_sint_t aColumn)
@@ -1759,8 +1731,8 @@ xpr_sint_t CALLBACK SearchResultCtrl::DefaultItemCompareProc(LPARAM lParam1, LPA
 {
     xpr_sint_t sResult = 0;
 
-    LPSRITEMDATA sSrItemData1 = (LPSRITEMDATA)lParam1;
-    LPSRITEMDATA sSrItemData2 = (LPSRITEMDATA)lParam2;
+    SrItemData *sSrItemData1 = (SrItemData *)lParam1;
+    SrItemData *sSrItemData2 = (SrItemData *)lParam2;
     xpr_bool_t sAscending = HIWORD(lParamSort);
     xpr_sint_t sColumn = LOWORD(lParamSort);
 
@@ -1889,9 +1861,19 @@ xpr_sint_t CALLBACK SearchResultCtrl::DefaultItemCompareProc(LPARAM lParam1, LPA
     return (sResult * (XPR_IS_TRUE(sAscending) ? 1 : -1));
 }
 
+void SearchResultCtrl::OnSetFocus(CWnd *aOldWnd)
+{
+    super::OnSetFocus(aOldWnd);
+
+    if (mObserver != XPR_NULL)
+    {
+        mObserver->onSetFocus(*this);
+    }
+}
+
 void SearchResultCtrl::OnKeyDown(xpr_uint_t aChar, xpr_uint_t aRepCnt, xpr_uint_t aFlags) 
 {
-    CListCtrl::OnKeyDown(aChar, aRepCnt, aFlags);
+    super::OnKeyDown(aChar, aRepCnt, aFlags);
 }
 
 void SearchResultCtrl::OnLvnKeyDown(NMHDR *aNmHdr, LRESULT *aResult) 
@@ -1909,11 +1891,11 @@ LRESULT SearchResultCtrl::OnShellAsyncIcon(WPARAM wParam, LPARAM lParam)
     if (sAsyncIcon->mCode == mCode)
     {
         xpr_sint_t sIndex = -1;
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         if (sAsyncIcon->mItem != -1 && sAsyncIcon->mItem >= 0)
         {
-            sSrItemData = (LPSRITEMDATA)GetItemData((xpr_sint_t)sAsyncIcon->mItem);
+            sSrItemData = (SrItemData *)GetItemData((xpr_sint_t)sAsyncIcon->mItem);
             if (XPR_IS_NOT_NULL(sSrItemData) && sSrItemData->mSignature == sAsyncIcon->mSignature)
                 sIndex = (xpr_sint_t)sAsyncIcon->mItem;
         }
@@ -1922,7 +1904,7 @@ LRESULT SearchResultCtrl::OnShellAsyncIcon(WPARAM wParam, LPARAM lParam)
         {
             sIndex = findItemSignature(sAsyncIcon->mSignature);
             if (sIndex >= 0)
-                sSrItemData = (LPSRITEMDATA)GetItemData(sIndex);
+                sSrItemData = (SrItemData *)GetItemData(sIndex);
         }
 
         if (sIndex >= 0 && XPR_IS_NOT_NULL(sSrItemData))
@@ -1969,12 +1951,12 @@ xpr_sint_t SearchResultCtrl::findItemSignature(xpr_uint_t aSignature)
 {
     xpr_sint_t i;
     xpr_sint_t sCount;
-    LPSRITEMDATA sSrItemData;
+    SrItemData *sSrItemData;
 
     sCount = GetItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        sSrItemData = (LPSRITEMDATA)GetItemData(i);
+        sSrItemData = (SrItemData *)GetItemData(i);
         if (XPR_IS_NULL(sSrItemData))
             continue;
 

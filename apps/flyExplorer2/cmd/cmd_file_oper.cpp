@@ -109,14 +109,14 @@ void FileDeleteCommand::execute(CommandContext &aContext)
 
                 xpr_sint_t sIndex;
                 xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-                LPSRITEMDATA sSrItemData = XPR_NULL;
+                SrItemData *sSrItemData = XPR_NULL;
                 xpr_tchar_t *sSourceEnum = sSource;
 
                 while (XPR_IS_NOT_NULL(sPosition))
                 {
                     sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-                    sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+                    sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
                     if (XPR_IS_NOT_NULL(sSrItemData))
                     {
                         sSrItemData->getPath(sPath);
@@ -500,14 +500,14 @@ void FolderCopyCommand::execute(CommandContext &aContext)
         xpr_tchar_t *sSource = new xpr_tchar_t[(XPR_MAX_PATH + 1) * sCount + 1];
         xpr_sint_t sRCount = 0, sPos = 0, sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -647,14 +647,14 @@ void FolderMoveCommand::execute(CommandContext &aContext)
         xpr_tchar_t *sSource = new xpr_tchar_t[(XPR_MAX_PATH + 1) * sCount + 1];
         xpr_sint_t sRCount = 0, sPos = 0, sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);

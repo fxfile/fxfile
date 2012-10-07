@@ -46,6 +46,9 @@ public:
 
     void setNameFocus(void);
 
+public:
+    SearchResultCtrl *getSearchResultCtrl(void) const;
+
 protected:
     void enableWindow(xpr_bool_t aEnable);
     void getStatusText(xpr_tchar_t *aStatusText, xpr_tchar_t *aElapsedTimeText);
@@ -53,8 +56,7 @@ protected:
     void stopAnimation(void);
 
 protected:
-    fxb::SearchFile  *mSearchFile;
-    SearchResultCtrl *mResultCtrl;
+    fxb::SearchFile *mSearchFile;
 
     typedef struct tagSearchDir
     {
@@ -67,6 +69,9 @@ protected:
     xpr_bool_t   mAnimation;
     xpr_double_t mDegree;
     xpr_sint_t   mCurSel;
+
+    xpr_sint_t mSearchResultViewIndex;
+    xpr_sint_t mSearchResultCtrlId;
 
 protected:
     CImageList mLocImageList;

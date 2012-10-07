@@ -20,9 +20,10 @@ class ShellIcon;
 class ContextMenu;
 } // namespace fxb
 
+class SearchResultCtrlObserver;
 class FlatHeaderCtrl;
 
-class SRItemData
+class SrItemData
 {
 public:
     xpr_bool_t getPath(std::tstring &aPath)
@@ -57,25 +58,29 @@ public:
     DWORD        mFileAttributes;
 };
 
-typedef SRItemData FAR *LPSRITEMDATA;
-
 class SearchResultCtrl : public CListCtrl
 {
+    typedef CListCtrl super;
+
 public:
     SearchResultCtrl(void);
     virtual ~SearchResultCtrl(void);
 
 public:
-    void createAccelTable(void);
+    void setObserver(SearchResultCtrlObserver *aObserver);
 
+public:
+    virtual xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
+
+public:
     void onStartSearch(void);
     void onSearch(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData);
     void onEndSearch(void);
 
     void addList(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData);
-    void addList(LPSRITEMDATA aSrItemData);
+    void addList(SrItemData *aSrItemData);
     void insertList(xpr_sint_t aIndex, const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData);
-    void insertList(xpr_sint_t aIndex, LPSRITEMDATA aSrItemData);
+    void insertList(xpr_sint_t aIndex, SrItemData *aSrItemData);
     void clearList(void);
 
     void sortItems(xpr_sint_t aColumn);
@@ -117,8 +122,9 @@ protected:
     xpr_sint_t findItemSignature(xpr_uint_t aSignature);
 
 protected:
+    SearchResultCtrlObserver *mObserver;
+
     BCMenu mMenu;
-    HACCEL mAccelTable;
 
     xpr_sint_t mSortColumn;
     xpr_bool_t mSortAscending;
@@ -126,7 +132,7 @@ protected:
     FlatHeaderCtrl *mHeaderCtrl;
     fxb::ShellIcon *mShellIcon;
 
-    typedef std::deque<LPSRITEMDATA> ResultDeque;
+    typedef std::deque<SrItemData *> ResultDeque;
     ResultDeque mResultDeque;
     fxb::Cs     mCs;
     xpr_bool_t  mNotify;
@@ -167,6 +173,7 @@ protected:
     afx_msg void OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult);
     afx_msg void OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult);
     afx_msg void OnColumnclick(NMHDR *aNmHdr, LRESULT *aResult);
+    afx_msg void OnSetFocus(CWnd *aOldWnd);
     afx_msg void OnKeyDown(xpr_uint_t aChar, xpr_uint_t aRepCnt, xpr_uint_t aFlags);
     afx_msg void OnLvnKeyDown(NMHDR *aNmHdr, LRESULT *aResult);
     afx_msg void OnTimer(xpr_uint_t aIdEvent);

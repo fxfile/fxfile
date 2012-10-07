@@ -17,11 +17,11 @@ namespace cmd
 {
 XPR_COMMAND_DECLARE_CLASS(NewTabCommand);
 XPR_COMMAND_DECLARE_CLASS(DuplicateTabCommand);
-XPR_COMMAND_DECLARE_CLASS(DuplicateTabFromCursorCommand);
+XPR_COMMAND_DECLARE_CLASS(DuplicateTabOnCursorCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseTabCommand);
-XPR_COMMAND_DECLARE_CLASS(CloseTabFromCursorCommand);
+XPR_COMMAND_DECLARE_CLASS(CloseTabOnCursorCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseAllTabsButThisCommand);
-XPR_COMMAND_DECLARE_CLASS(CloseAllTabsButThisFromCursorCommand);
+XPR_COMMAND_DECLARE_CLASS(CloseAllTabsButThisOnCursorCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseAllTabsCommand);
 XPR_COMMAND_DECLARE_CLASS(FirstTabCommand);
 XPR_COMMAND_DECLARE_CLASS(PreviousTabCommand);

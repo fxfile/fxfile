@@ -41,7 +41,18 @@ void NewTabCommand::execute(CommandContext &aContext)
 
 xpr_sint_t DuplicateTabCommand::canExecute(CommandContext &aContext)
 {
-    return StateEnable;
+    XPR_COMMAND_DECLARE_CTRL;
+
+    xpr_sint_t sState = 0;
+
+    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
+    if (XPR_IS_NOT_NULL(sExplorerView))
+    {
+        if (sExplorerView->canDuplicateTab() == XPR_TRUE)
+            sState = StateEnable;
+    }
+
+    return sState;
 }
 
 void DuplicateTabCommand::execute(CommandContext &aContext)
@@ -55,7 +66,7 @@ void DuplicateTabCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t DuplicateTabFromCursorCommand::canExecute(CommandContext &aContext)
+xpr_sint_t DuplicateTabOnCursorCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -64,15 +75,18 @@ xpr_sint_t DuplicateTabFromCursorCommand::canExecute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        xpr_sint_t sTab = sExplorerView->getTabFromCursor();
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
         if (sTab >= 0)
-            sState = StateEnable;
+        {
+            if (sExplorerView->canDuplicateTab(XPR_TRUE) == XPR_TRUE)
+                sState = StateEnable;
+        }
     }
 
     return sState;
 }
 
-void DuplicateTabFromCursorCommand::execute(CommandContext &aContext)
+void DuplicateTabOnCursorCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -87,17 +101,7 @@ xpr_sint_t CloseTabCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    xpr_sint_t sState = 0;
-
-    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
-    if (XPR_IS_NOT_NULL(sExplorerView))
-    {
-        xpr_sint_t sTabCount = sExplorerView->getTabCount();
-        if (sTabCount > 1)
-            sState = StateEnable;
-    }
-
-    return sState;
+    return StateEnable;
 }
 
 void CloseTabCommand::execute(CommandContext &aContext)
@@ -107,11 +111,31 @@ void CloseTabCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeTab();
+        xpr_sint_t sTabCount = sExplorerView->getTabCount();
+        xpr_bool_t sExplorerTabMode = sExplorerView->isExplorerTabMode();
+
+        if (sTabCount >= 1)
+        {
+            if ((sTabCount > 1) || (sTabCount == 1 && sExplorerTabMode == XPR_FALSE))
+            {
+                sExplorerView->SetRedraw(XPR_FALSE);
+
+                sExplorerView->closeTab();
+
+                if (sTabCount == 1 && sExplorerTabMode == XPR_FALSE)
+                {
+                    sExplorerView->newTab();
+                    sExplorerView->setCurTab(0);
+                }
+
+                sExplorerView->SetRedraw(XPR_TRUE);
+                sExplorerView->RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+            }
+        }
     }
 }
 
-xpr_sint_t CloseTabFromCursorCommand::canExecute(CommandContext &aContext)
+xpr_sint_t CloseTabOnCursorCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -120,7 +144,7 @@ xpr_sint_t CloseTabFromCursorCommand::canExecute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        xpr_sint_t sTab = sExplorerView->getTabFromCursor();
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
         if (sTab >= 0)
             sState = StateEnable;
     }
@@ -128,14 +152,14 @@ xpr_sint_t CloseTabFromCursorCommand::canExecute(CommandContext &aContext)
     return sState;
 }
 
-void CloseTabFromCursorCommand::execute(CommandContext &aContext)
+void CloseTabOnCursorCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeTab(XPR_TRUE);
+        sExplorerView->closeTab(-1, XPR_TRUE);
     }
 }
 
@@ -167,7 +191,7 @@ void CloseAllTabsButThisCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t CloseAllTabsButThisFromCursorCommand::canExecute(CommandContext &aContext)
+xpr_sint_t CloseAllTabsButThisOnCursorCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -176,7 +200,7 @@ xpr_sint_t CloseAllTabsButThisFromCursorCommand::canExecute(CommandContext &aCon
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        xpr_sint_t sTab = sExplorerView->getTabFromCursor();
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
         if (sTab >= 0)
             sState = StateEnable;
     }
@@ -184,7 +208,7 @@ xpr_sint_t CloseAllTabsButThisFromCursorCommand::canExecute(CommandContext &aCon
     return sState;
 }
 
-void CloseAllTabsButThisFromCursorCommand::execute(CommandContext &aContext)
+void CloseAllTabsButThisOnCursorCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 

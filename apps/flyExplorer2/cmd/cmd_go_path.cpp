@@ -163,7 +163,14 @@ void GoSystemMyDocumentCommand::execute(CommandContext &aContext)
         if (FAILED(sHResult))
             return;
 
-        sHResult = sShellFolder->ParseDisplayName(XPR_NULL, XPR_NULL, XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"), XPR_NULL, &sFullPidl, XPR_NULL);
+        sHResult = sShellFolder->ParseDisplayName(
+            XPR_NULL,
+            XPR_NULL,
+            XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"),
+            XPR_NULL,
+            &sFullPidl,
+            XPR_NULL);
+
         if (SUCCEEDED(sHResult))
             sExplorerCtrl->explore(sFullPidl);
 

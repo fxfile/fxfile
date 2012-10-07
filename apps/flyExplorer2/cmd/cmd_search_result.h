@@ -19,7 +19,7 @@ XPR_COMMAND_DECLARE_CLASS(SearchResultViewIconCommand);
 XPR_COMMAND_DECLARE_CLASS(SearchResultViewSmallIconCommand);
 XPR_COMMAND_DECLARE_CLASS(SearchResultViewListCommand);
 XPR_COMMAND_DECLARE_CLASS(SearchResultViewDetailCommand);
-XPR_COMMAND_DECLARE_CLASS(SearchResultDeleteAllCommand);
+XPR_COMMAND_DECLARE_CLASS(SearchResultRemoveListCommand);
 XPR_COMMAND_DECLARE_CLASS(SearchResultAddFileScrapCommand);
 XPR_COMMAND_DECLARE_CLASS(SearchResultCloseCommand);
 } // namespace cmd

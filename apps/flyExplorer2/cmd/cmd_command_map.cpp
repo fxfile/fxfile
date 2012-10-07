@@ -269,7 +269,6 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_LEFT_PANE,       new cmd::LeftFolderPaneCommand);
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_RIGHT_PANE,      new cmd::RightFolderPaneCommand);
     aExecutor.bindCommand(ID_VIEW_BAR_SEARCH,                  new cmd::ShowSearchBarCommand);
-    aExecutor.bindCommand(ID_VIEW_BAR_WORK,                    new cmd::ShowWorkingBarCommand);
 
     aExecutor.bindCommand(ID_VIEW_PICVIEWER,                   new cmd::PicViewerCommand);
 
@@ -332,16 +331,16 @@ void CommandMap::map(CommandExecutor &aExecutor)
     //
     aExecutor.bindCommand(ID_WINDOW_TAB_NEW,                   new cmd::NewTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_DUPLICATE,             new cmd::DuplicateTabCommand);
-    aExecutor.bindCommand(ID_WINDOW_TAB_DUPLICATE_FROM_CURSOR, new cmd::DuplicateTabFromCursorCommand);
+    aExecutor.bindCommand(ID_WINDOW_TAB_DUPLICATE_ON_CURSOR,   new cmd::DuplicateTabOnCursorCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_FIRST,                 new cmd::FirstTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_PREVIOUS,              new cmd::PreviousTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_NEXT,                  new cmd::NextTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_LAST,                  new cmd::LastTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE,                 new cmd::CloseTabCommand);
-    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_FROM_CURSOR,     new cmd::CloseTabFromCursorCommand);
+    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ON_CURSOR,       new cmd::CloseTabOnCursorCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS,    new cmd::CloseAllTabsButThisCommand);
-    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_FROM_CURSOR,
-                                                               new cmd::CloseAllTabsButThisFromCursorCommand);
+    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_ON_CURSOR,
+                                                               new cmd::CloseAllTabsButThisOnCursorCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL,             new cmd::CloseAllTabsCommand);
     aExecutor.bindCommand(ID_WINDOW_NEXT,                      new cmd::WindowNextCommand);
     aExecutor.bindCommand(ID_WINDOW_PREV,                      new cmd::WindowPrevCommand);
@@ -390,11 +389,11 @@ void CommandMap::map(CommandExecutor &aExecutor)
     // Search Result Menu
     //
     aExecutor.bindCommand(ID_SR_VIEW_ICON,                     new cmd::SearchResultViewIconCommand);
-    //aExecutor.bindCommand(ID_SR_VIEW_SMALLICON,                new cmd::SearchResultViewSmallIconCommand);
-    //aExecutor.bindCommand(ID_SR_VIEW_LIST,                     new cmd::SearchResultViewListCommand);
-    //aExecutor.bindCommand(ID_SR_VIEW_DETAIL,                   new cmd::SearchResultViewDetailCommand);
-    //aExecutor.bindCommand(ID_SR_DELETEALL,                     new cmd::SearchResultDeleteAllCommand);
-    //aExecutor.bindCommand(ID_SR_ADD_FILE_SCRAP,                new cmd::SearchResultAddFileScrapCommand);
-    //aExecutor.bindCommand(ID_SR_CLOSE,                         new cmd::SearchResultCloseCommand);
+    aExecutor.bindCommand(ID_SR_VIEW_SMALLICON,                new cmd::SearchResultViewSmallIconCommand);
+    aExecutor.bindCommand(ID_SR_VIEW_LIST,                     new cmd::SearchResultViewListCommand);
+    aExecutor.bindCommand(ID_SR_VIEW_DETAIL,                   new cmd::SearchResultViewDetailCommand);
+    aExecutor.bindCommand(ID_SR_REMOVE_LIST,                   new cmd::SearchResultRemoveListCommand);
+    aExecutor.bindCommand(ID_SR_ADD_FILE_SCRAP,                new cmd::SearchResultAddFileScrapCommand);
+    aExecutor.bindCommand(ID_SR_CLOSE,                         new cmd::SearchResultCloseCommand);
 }
 } // namespace cmd

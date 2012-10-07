@@ -1037,14 +1037,14 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
         xpr_tchar_t *sSplit;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -1180,14 +1180,14 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
         xpr_sint_t sIndex;
         xpr_tchar_t *sSplit;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -1351,14 +1351,14 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
 
         xpr_sint_t sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -1481,14 +1481,14 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
         xpr_tchar_t sName[XPR_MAX_PATH * 2 + 1];
         xpr_tchar_t sTemp[XPR_MAX_PATH + 1];
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
@@ -1626,14 +1626,14 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
         fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
-        LPSRITEMDATA sSrItemData = XPR_NULL;
+        SrItemData *sSrItemData = XPR_NULL;
 
         POSITION sPosition = sSearchResultCtrl->GetFirstSelectedItemPosition();
         while (XPR_IS_NOT_NULL(sPosition))
         {
             sIndex = sSearchResultCtrl->GetNextSelectedItem(sPosition);
 
-            sSrItemData = (LPSRITEMDATA)sSearchResultCtrl->GetItemData(sIndex);
+            sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData))
             {
                 sSrItemData->getPath(sPath);
