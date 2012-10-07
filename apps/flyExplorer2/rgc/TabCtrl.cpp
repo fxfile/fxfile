@@ -558,7 +558,7 @@ void TabCtrl::OnPaint(void)
         {
             if (mXPTheme.IsAppThemed() == XPR_TRUE)
             {
-                sTabButtonRect.InflateRect(1, 0, 1, 2);
+                sTabButtonRect.InflateRect(1, 0, 1, 4);
 
                 if (i == mCurTab)
                 {
@@ -575,8 +575,8 @@ void TabCtrl::OnPaint(void)
 
                 sMemDC.FillSolidRect(sTabButtonRect, ::GetSysColor(COLOR_WINDOW));
 
-                sMemDC.MoveTo(sTabButtonRect.left, sTabButtonRect.bottom - 1);
-                sMemDC.LineTo(sTabButtonRect.left, sTabButtonRect.top);
+                sMemDC.MoveTo(sTabButtonRect.left,  sTabButtonRect.bottom);
+                sMemDC.LineTo(sTabButtonRect.left,  sTabButtonRect.top);
                 sMemDC.LineTo(sTabButtonRect.right, sTabButtonRect.top);
                 sMemDC.LineTo(sTabButtonRect.right, sTabButtonRect.bottom);
             }
@@ -627,15 +627,15 @@ void TabCtrl::OnPaint(void)
     CRect sUnderlineRect(sClientRect);
     if (mCurTab != InvalidTab)
     {
-        sMemDC.MoveTo(sUnderlineRect.left, sUnderlineRect.bottom - 2);
-        sMemDC.LineTo(sCurTabButtonRect.left, sUnderlineRect.bottom - 2);
-        sMemDC.MoveTo(sCurTabButtonRect.right, sUnderlineRect.bottom - 2);
-        sMemDC.LineTo(sUnderlineRect.right, sUnderlineRect.bottom - 2);
+        sMemDC.MoveTo(sUnderlineRect.left,     sUnderlineRect.bottom - 1);
+        sMemDC.LineTo(sCurTabButtonRect.left,  sUnderlineRect.bottom - 1);
+        sMemDC.MoveTo(sCurTabButtonRect.right, sUnderlineRect.bottom - 1);
+        sMemDC.LineTo(sUnderlineRect.right,    sUnderlineRect.bottom - 1);
     }
     else
     {
-        sMemDC.MoveTo(sUnderlineRect.left, sUnderlineRect.bottom - 2);
-        sMemDC.LineTo(sUnderlineRect.right, sUnderlineRect.bottom - 2);
+        sMemDC.MoveTo(sUnderlineRect.left,  sUnderlineRect.bottom - 1);
+        sMemDC.LineTo(sUnderlineRect.right, sUnderlineRect.bottom - 1);
     }
 
     sMemDC.SelectObject(sOldPen);
