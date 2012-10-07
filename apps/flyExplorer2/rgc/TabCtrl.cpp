@@ -590,7 +590,7 @@ void TabCtrl::OnPaint(void)
         {
             if (mXPTheme.IsAppThemed() == XPR_TRUE)
             {
-                sTabButtonRect.DeflateRect(0, 2, -1, -1);
+                sTabButtonRect.DeflateRect(0, 2, -1, -2);
 
                 mXPTheme.DrawBackground(sMemDC, TABP_TABITEM, TIS_NORMAL, &sTabButtonRect, XPR_NULL);
             }
