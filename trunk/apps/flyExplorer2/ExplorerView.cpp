@@ -1300,7 +1300,7 @@ void ExplorerView::closeAllTabsButThis(xpr_bool_t aOnCursor)
 
     for (i = sTab + 1; i < sTabCount; ++i)
     {
-        mTabCtrl->removeTab(i);
+        mTabCtrl->removeTab(sTab + 1);
     }
 
     for (i = 0; i < sTab; ++i)
