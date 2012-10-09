@@ -36,6 +36,16 @@ HistoryDlg::HistoryDlg(xpr_size_t aHistory)
 HistoryDlg::~HistoryDlg(void)
 {
     DESTROY_ICON(mIcon);
+
+    HistoryDispDeque::iterator sIterator;
+
+    sIterator = mHistoryDispDeque.begin();
+    for (; sIterator != mHistoryDispDeque.end(); ++sIterator)
+    {
+        HistoryDisp *sHistoryDisp = *sIterator;
+        XPR_SAFE_DELETE(sHistoryDisp);
+    }
+
     mHistoryDispDeque.clear();
 }
 
