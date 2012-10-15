@@ -141,6 +141,8 @@ xpr_sint_t getFileCrcSfv(const xpr_tchar_t *aPath, xpr_ulong_t *aCrcVal)
 
     *aCrcVal = sCrcVal ^ 0xffffffff;
 
+    XPR_SAFE_DELETE_ARRAY(sBuffer);
+
     fclose(sFile);
 
     return 0;
