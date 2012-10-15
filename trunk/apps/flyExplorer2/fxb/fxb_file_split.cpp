@@ -142,7 +142,7 @@ unsigned FileSplit::OnEntryProc(void)
         sIndex = 1;
 
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-        XPR_MBS_TO_TCS(sFileName.c_str(), sFileName.length() * sizeof(xpr_tchar_t), sFileNameA, &sOutputBytes);
+        XPR_TCS_TO_MBS(sFileName.c_str(), sFileName.length() * sizeof(xpr_tchar_t), sFileNameA, &sOutputBytes);
         sFileNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         while (IsStop() == XPR_FALSE)
