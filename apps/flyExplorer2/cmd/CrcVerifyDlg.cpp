@@ -168,6 +168,7 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
             sLvItem.pszText  = (xpr_tchar_t *)sText;
             mListCtrl.SetItem(&sLvItem);
 
+            sCrcCodeBytes = 0xff * sizeof(xpr_tchar_t);
             XPR_MBS_TO_TCS(sVerifyFile->mCrcCode, strlen(sVerifyFile->mCrcCode), sCrcCode, &sCrcCodeBytes);
             sCrcCode[sCrcCodeBytes / sizeof(xpr_tchar_t)] = 0;
 
@@ -304,9 +305,9 @@ LRESULT CrcVerifyDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 
             switch (sVerifyFile->mResult)
             {
-            case fxb::CrcVerify::VerifyResultFailed:     sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.status_read_failed")); break;
-            case fxb::CrcVerify::VerifyResultNotEqualed: sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.status_not_matched")); break;
-            case fxb::CrcVerify::VerifyResultEqualed:    sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.status_success"));     break;
+            case fxb::CrcVerify::VerifyResultFailed:     sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_read_failed")); break;
+            case fxb::CrcVerify::VerifyResultNotEqualed: sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_not_matched")); break;
+            case fxb::CrcVerify::VerifyResultEqualed:    sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_success"));     break;
             }
 
             if (sText != XPR_NULL)
