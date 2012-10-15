@@ -126,6 +126,7 @@ xpr_bool_t MainFrame::PreCreateWindow(CREATESTRUCT &aCreateStruct)
         return XPR_FALSE;
 
     aCreateStruct.style &= ~FWS_ADDTOTITLE;
+    aCreateStruct.dwExStyle &= ~WS_EX_CLIENTEDGE;
 
     CBrush sBrush(::GetSysColor(COLOR_WINDOWFRAME));
     HCURSOR sCursor = ::LoadCursor(XPR_NULL, IDC_ARROW);
