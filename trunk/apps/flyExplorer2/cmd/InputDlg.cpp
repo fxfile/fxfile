@@ -152,6 +152,9 @@ xpr_bool_t InputDlg::OnInitDialog(void)
         }
     }
 
+    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+
     return XPR_TRUE;
 }
 
