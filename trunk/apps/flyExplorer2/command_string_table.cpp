@@ -66,7 +66,7 @@ void CommandStringTable::load(void)
     mCommandString[ID_APP_EXIT]                       = XPR_STRING_LITERAL("cmd.exit");
 
     // main menu - edit
-    mCommandString[ID_EDIT_UNDO]                      = XPR_STRING_LITERAL("cmd.undo");
+    mCommandString[ID_EDIT_UNDO]                      = XPR_STRING_LITERAL("cmd.undo.none");
     mCommandString[ID_EDIT_CUT]                       = XPR_STRING_LITERAL("cmd.cut");
     mCommandString[ID_EDIT_COPY]                      = XPR_STRING_LITERAL("cmd.copy");
     mCommandString[ID_EDIT_NAME_COPY]                 = XPR_STRING_LITERAL("cmd.copy_name");

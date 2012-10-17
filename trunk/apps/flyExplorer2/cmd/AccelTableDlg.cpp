@@ -13,6 +13,8 @@
 #include "Option.h"
 #include "resource.h"
 
+#include "../command_string_table.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -105,6 +107,8 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
         sCategory->mSubMenu = i;
 
         mMenu.GetMenuString(i, sCategory->mText, 0xfe, MF_BYPOSITION);
+
+        _tcscpy(sCategory->mText, theApp.loadString(sCategory->mText));
 
         xpr_tchar_t *sEnd = _tcsrchr(sCategory->mText, '(');
         if (sEnd != XPR_NULL)
@@ -351,6 +355,9 @@ void AccelTableDlg::fillRecursiveCategory(CommandList &aCommandList, CMenu *aMen
     xpr_tchar_t sText[0xff];
     xpr_sint_t i, sCount;
     xpr_uint_t sId;
+    const xpr_tchar_t *sStringId;
+
+    CommandStringTable &sCommandStringTable = CommandStringTable::instance();
 
     MENUITEMINFO sMenuItemInfo = {0};
     sMenuItemInfo.cbSize  = sizeof(MENUITEMINFO);
@@ -374,38 +381,53 @@ void AccelTableDlg::fillRecursiveCategory(CommandList &aCommandList, CMenu *aMen
             continue;
         }
 
+        aMenu->GetMenuItemInfo(i, &sMenuItemInfo, XPR_TRUE);
+
         sText[0] = 0;
-        if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
+        if (XPR_IS_NOT_NULL(sMenuItemInfo.hSubMenu))
         {
-            if (sText[0] == 0)
-                continue;
-
-            xpr_tchar_t *sEnd = _tcsrchr(sText, '(');
-            if (sEnd)
-                *sEnd = '\0';
-
-            aMenu->GetMenuItemInfo(i, &sMenuItemInfo, XPR_TRUE);
-            if (sMenuItemInfo.hSubMenu != XPR_NULL)
+            if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
             {
-                CMenu sSubMenu;
-                sSubMenu.Attach(sMenuItemInfo.hSubMenu);
-                fillRecursiveCategory(aCommandList, &sSubMenu, sText, aSubText);
-                sSubMenu.Detach();
+                _tcscpy(sText, theApp.loadString(sText));
             }
+        }
+        else
+        {
+            sStringId = sCommandStringTable.loadString(sId);
+            if (sStringId != XPR_NULL)
+            {
+                _tcscpy(sText, theApp.loadString(sStringId));
+            }
+        }
+
+        if (sText[0] == 0)
+            continue;
+
+        xpr_tchar_t *sEnd = _tcsrchr(sText, '(');
+        if (XPR_IS_NOT_NULL(sEnd))
+            *sEnd = '\0';
+
+        aMenu->GetMenuItemInfo(i, &sMenuItemInfo, XPR_TRUE);
+        if (XPR_IS_NOT_NULL(sMenuItemInfo.hSubMenu))
+        {
+            CMenu sSubMenu;
+            sSubMenu.Attach(sMenuItemInfo.hSubMenu);
+            fillRecursiveCategory(aCommandList, &sSubMenu, sText, aSubText);
+            sSubMenu.Detach();
+        }
+        else
+        {
+            if (aSubText == XPR_TRUE && aSubMenu != XPR_NULL)
+                _stprintf(sFullText, XPR_STRING_LITERAL("%s >> %s"), aSubMenu, sText);
             else
-            {
-                if (aSubText == XPR_TRUE && aSubMenu != XPR_NULL)
-                    _stprintf(sFullText, XPR_STRING_LITERAL("%s >> %s"), aSubMenu, sText);
-                else
-                    _tcscpy(sFullText, sText);
+                _tcscpy(sFullText, sText);
 
-                Command *sCommand = new Command;
-                sCommand->mId = sMenuItemInfo.wID;
-                sCommand->mDesc = XPR_TRUE;
-                _tcscpy(sCommand->mText, sFullText);
+            Command *sCommand = new Command;
+            sCommand->mId = sMenuItemInfo.wID;
+            sCommand->mDesc = XPR_TRUE;
+            _tcscpy(sCommand->mText, sFullText);
 
-                aCommandList.push_back(sCommand);
-            }
+            aCommandList.push_back(sCommand);
         }
     }
 }
