@@ -15,6 +15,8 @@
 #include "DlgStateMgr.h"
 #include "InputDlg.h"
 
+#include "../command_string_table.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -270,8 +272,49 @@ LRESULT FileScrapDlg::OnMenuChar(xpr_uint_t aChar, xpr_uint_t aFlags, CMenu *aMe
 
 void FileScrapDlg::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t aSysMenu) 
 {
-    //CDialog::OnInitMenuPopup(aPopupMenu, aIndex, aSysMenu);
     ASSERT(aPopupMenu != XPR_NULL);
+    // Check the enabled state of various menu items.
+
+    BCMenu *sBCPopupMenu = dynamic_cast<BCMenu *>(aPopupMenu);
+    if (sBCPopupMenu != XPR_NULL)
+    {
+        xpr_uint_t sId;
+        xpr_sint_t sCount = sBCPopupMenu->GetMenuItemCount();
+
+        const xpr_tchar_t *sStringId;
+        const xpr_tchar_t *sString;
+        CString sMenuText;
+        CommandStringTable &sCommandStringTable = CommandStringTable::instance();
+
+        xpr_sint_t i;
+        for (i = 0; i < sCount; ++i)
+        {
+            sId = sBCPopupMenu->GetMenuItemID(i);
+
+            // apply string table
+            if (sId != 0) // if sId is 0, it's separator.
+            {
+                if (sId == -1)
+                {
+                    // if sId(xpr_uint_t) is -1, it's sub-menu.
+                    sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
+
+                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
+                }
+                else
+                {
+                    sStringId = sCommandStringTable.loadString(sId);
+                    if (sStringId != XPR_NULL)
+                    {
+                        sString = theApp.loadString(sStringId);
+
+                        sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
+                    }
+                }
+            }
+        }
+    }
 
     // Check the enabled state of various menu items.
     CCmdUI sState;
