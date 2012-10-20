@@ -418,7 +418,7 @@ void AccelTableDlg::fillRecursiveCategory(CommandList &aCommandList, CMenu *aMen
         else
         {
             if (aSubText == XPR_TRUE && aSubMenu != XPR_NULL)
-                _stprintf(sFullText, XPR_STRING_LITERAL("%s >> %s"), aSubMenu, sText);
+                _stprintf(sFullText, XPR_STRING_LITERAL("%s > %s"), aSubMenu, sText);
             else
                 _tcscpy(sFullText, sText);
 
@@ -514,10 +514,10 @@ void AccelTableDlg::OnEnChangeHotKey(void)
             }
         }
 
-        if (sId)
+        if (sId != 0)
         {
             xpr_tchar_t sText[0xff] = {0};
-            if (getRecursiveTextToId(&mMenu, sId, sText))
+            if (getRecursiveTextToId(&mMenu, sId, sText) == XPR_TRUE)
             {
                 SetDlgItemText(IDC_ACCEL_ASSIGNED_TO, sText);
                 sNone = XPR_FALSE;
@@ -560,6 +560,10 @@ xpr_bool_t AccelTableDlg::getRecursiveTextToId(CMenu *aMenu, xpr_uint_t aId, xpr
     static xpr_tchar_t sSubText[0xff];
     xpr_tchar_t sText[0xff];
     xpr_sint_t i, sCount;
+    xpr_uint_t sId;
+    const xpr_tchar_t *sStringId;
+
+    CommandStringTable &sCommandStringTable = CommandStringTable::instance();
 
     MENUITEMINFO sMenuItemInfo = {0};
     sMenuItemInfo.cbSize = sizeof(MENUITEMINFO);
@@ -568,46 +572,64 @@ xpr_bool_t AccelTableDlg::getRecursiveTextToId(CMenu *aMenu, xpr_uint_t aId, xpr
     sCount = aMenu->GetMenuItemCount();
     for (i = 0; i < sCount; ++i)
     {
-        if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
+        sId = aMenu->GetMenuItemID(i);
+
+        aMenu->GetMenuItemInfo(i, &sMenuItemInfo, XPR_TRUE);
+
+        sText[0] = 0;
+        if (XPR_IS_NOT_NULL(sMenuItemInfo.hSubMenu))
         {
-            if (_tcslen(sText) <= 0)
-                continue;
-
-            xpr_tchar_t *sEnd = _tcsrchr(sText, '(');
-            if (sEnd)
-                *sEnd = '\0';
-
-            aMenu->GetMenuItemInfo(i, &sMenuItemInfo, XPR_TRUE);
-            if (sMenuItemInfo.hSubMenu != XPR_NULL)
+            if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
             {
-                CMenu sSubMenu;
-                sSubMenu.Attach(sMenuItemInfo.hSubMenu);
-                xpr_bool_t sResult = getRecursiveTextToId(&sSubMenu, aId, aText);
-                sSubMenu.Detach();
+                _tcscpy(sText, theApp.loadString(sText));
+            }
+        }
+        else
+        {
+            sStringId = sCommandStringTable.loadString(sId);
+            if (sStringId != XPR_NULL)
+            {
+                _tcscpy(sText, theApp.loadString(sStringId));
+            }
+        }
 
-                if (sResult == XPR_TRUE)
-                {
-                    _tcscpy(sSubText, aText);
-                    _stprintf(aText, XPR_STRING_LITERAL("%s >> %s"), sText, sSubText);
-                    return XPR_TRUE;
-                }
-                else
-                {
-                    xpr_tchar_t *sSplit = _tcsrchr(aText, '>');
-                    if (sSplit)
-                    {
-                        sSplit--;
-                        *sSplit = '\0';
-                    }
-                }
+        if (sText[0] == 0)
+            continue;
+
+        xpr_tchar_t *sEnd = _tcsrchr(sText, '(');
+        if (XPR_IS_NOT_NULL(sEnd))
+            *sEnd = '\0';
+
+        if (XPR_IS_NOT_NULL(sMenuItemInfo.hSubMenu))
+        {
+            CMenu sSubMenu;
+            sSubMenu.Attach(sMenuItemInfo.hSubMenu);
+
+            xpr_bool_t sResult = getRecursiveTextToId(&sSubMenu, aId, aText);
+
+            sSubMenu.Detach();
+
+            if (sResult == XPR_TRUE)
+            {
+                _tcscpy(sSubText, aText);
+                _stprintf(aText, XPR_STRING_LITERAL("%s > %s"), sText, sSubText);
+                return XPR_TRUE;
             }
             else
             {
-                if (sMenuItemInfo.wID == aId)
+                xpr_tchar_t *sSplit = _tcsrchr(aText, '>');
+                if (XPR_IS_NOT_NULL(sSplit))
                 {
-                    _tcscpy(aText, sText);
-                    return XPR_TRUE;
+                    *sSplit = '\0';
                 }
+            }
+        }
+        else
+        {
+            if (sMenuItemInfo.wID == aId)
+            {
+                _tcscpy(aText, sText);
+                return XPR_TRUE;
             }
         }
     }
