@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "cmd_folder_sync.h"
 
-#include "SyncDlg.h"
+#include "FolderSyncDlg.h"
 #include "MainFrame.h"
 #include "ExplorerCtrl.h"
 
@@ -49,7 +49,7 @@ void FolderSyncCommand::execute(CommandContext &aContext)
     if (XPR_IS_NOT_NULL(sExplorerCtrls[0]) && sExplorerCtrls[0]->isFileSystemFolder() == XPR_TRUE) sDir[0] = sExplorerCtrls[0]->getCurPath();
     if (XPR_IS_NOT_NULL(sExplorerCtrls[1]) && sExplorerCtrls[1]->isFileSystemFolder() == XPR_TRUE) sDir[1] = sExplorerCtrls[1]->getCurPath();
 
-    SyncDlg sDlg;
+    FolderSyncDlg sDlg;
     sDlg.setDir(sDir[0].c_str(), sDir[1].c_str());
     sDlg.DoModal();
 }

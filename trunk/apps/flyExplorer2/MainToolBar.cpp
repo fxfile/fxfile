@@ -16,6 +16,7 @@
 
 #include "MainFrame.h"
 #include "ExplorerView.h"
+#include "command_string_table.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -156,6 +157,19 @@ xpr_bool_t MainToolBar::HasButtonTip(xpr_uint_t aId)
         sResult = XPR_FALSE;
 
     return sResult;
+}
+
+void MainToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)
+{
+    CommandStringTable &sCommandStringTable = CommandStringTable::instance();
+
+    const xpr_tchar_t *sStringId = sCommandStringTable.loadButtonString(aId);
+    ASSERT(sStringId != NULL);
+
+    if (XPR_IS_NULL(sStringId))
+        return;
+
+    aText = theApp.loadString(sStringId);
 }
 
 void MainToolBar::OnContextMenu(CWnd* pWnd, CPoint pt)

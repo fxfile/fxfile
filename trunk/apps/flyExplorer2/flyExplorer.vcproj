@@ -2845,6 +2845,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cmd\FolderSyncDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\FolderSyncDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\FolderSyncOptionDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\FolderSyncOptionDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cmd\GoPathDlg.cpp"
 				>
 			</File>
@@ -3018,22 +3034,6 @@
 			</File>
 			<File
 				RelativePath=".\cmd\SingleRenameDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\SyncDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\SyncDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\SyncOptionDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\SyncOptionDlg.h"
 				>
 			</File>
 			<File

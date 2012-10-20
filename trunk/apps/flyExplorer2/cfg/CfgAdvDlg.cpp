@@ -139,6 +139,9 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
         1,
         OPT_ID_TRAY_ONE_CLICK);
 
+    SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
+    SetDlgItemText(IDC_CFG_ADV_DEFAULT,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
+
     return XPR_TRUE;
 }
 

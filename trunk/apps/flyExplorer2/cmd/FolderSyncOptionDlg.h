@@ -7,19 +7,19 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_SYNC_OPTION_DLG_H__
-#define __FX_SYNC_OPTION_DLG_H__
+#ifndef __FX_FOLDER_SYNC_OPTION_DLG_H__
+#define __FX_FOLDER_SYNC_OPTION_DLG_H__
 #pragma once
 
 #include "rgc/ResizingDialog.h"
 
-class SyncOptionDlg : public CDialog
+class FolderSyncOptionDlg : public CDialog
 {
     typedef CDialog super;
 
 public:
-    SyncOptionDlg(void);
-    virtual ~SyncOptionDlg(void);
+    FolderSyncOptionDlg(void);
+    virtual ~FolderSyncOptionDlg(void);
 
 public:
     void setPath(xpr_sint_t aIndex, const xpr_tchar_t *aPath);
@@ -50,4 +50,4 @@ protected:
     afx_msg void OnToLeftRight(void);
 };
 
-#endif // __FX_SYNC_OPTION_DLG_H__
+#endif // __FX_FOLDER_SYNC_OPTION_DLG_H__

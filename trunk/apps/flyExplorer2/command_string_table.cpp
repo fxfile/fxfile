@@ -28,6 +28,12 @@ CommandStringTable::~CommandStringTable(void)
 
 void CommandStringTable::load(void)
 {
+    loadCommands();
+    loadCommandButtons();
+}
+
+void CommandStringTable::loadCommands(void)
+{
     // main menu - file
     mCommandString[ID_FILE_NEW_FOLDER]                = XPR_STRING_LITERAL("cmd.new.folder");
     mCommandString[ID_FILE_NEW_FILE]                  = XPR_STRING_LITERAL("cmd.new.file");
@@ -117,6 +123,10 @@ void CommandStringTable::load(void)
     mCommandString[ID_GO_INIT_FOLDER]                 = XPR_STRING_LITERAL("cmd.go.init_folder_all");
     mCommandString[ID_GO_INIT_FOLDER_1]               = XPR_STRING_LITERAL("cmd.go.init_folder_1");
     mCommandString[ID_GO_INIT_FOLDER_2]               = XPR_STRING_LITERAL("cmd.go.init_folder_2");
+    mCommandString[ID_GO_INIT_FOLDER_3]               = XPR_STRING_LITERAL("cmd.go.init_folder_3");
+    mCommandString[ID_GO_INIT_FOLDER_4]               = XPR_STRING_LITERAL("cmd.go.init_folder_4");
+    mCommandString[ID_GO_INIT_FOLDER_5]               = XPR_STRING_LITERAL("cmd.go.init_folder_5");
+    mCommandString[ID_GO_INIT_FOLDER_6]               = XPR_STRING_LITERAL("cmd.go.init_folder_6");
     mCommandString[ID_GO_DESKTOP]                     = XPR_STRING_LITERAL("cmd.go.system_folder.desktop");
     mCommandString[ID_GO_MYDOCUMENT]                  = XPR_STRING_LITERAL("cmd.go.system_folder.my_document");
     mCommandString[ID_GO_MYCOMPUTER]                  = XPR_STRING_LITERAL("cmd.go.system_folder.my_computer");
@@ -391,6 +401,58 @@ void CommandStringTable::load(void)
     mCommandString[ID_SYNC_ORIGINAL]                  = XPR_STRING_LITERAL("cmd.sync.restore");
 }
 
+void CommandStringTable::loadCommandButtons(void)
+{
+    mCommandButtonString[ID_GO_BACK]                  = XPR_STRING_LITERAL("tool_bar.cmd.navigate.back");
+    mCommandButtonString[ID_GO_FORWARD]               = XPR_STRING_LITERAL("tool_bar.cmd.navigate.forward");
+    mCommandButtonString[ID_GO_UP]                    = XPR_STRING_LITERAL("tool_bar.cmd.go.up");
+    mCommandButtonString[ID_GO_HISTORY]               = XPR_STRING_LITERAL("tool_bar.cmd.navigate.history");
+
+    mCommandButtonString[ID_VIEW_FOLDER_TREE_SHOW]    = XPR_STRING_LITERAL("tool_bar.cmd.folder_tree.show");
+    mCommandButtonString[ID_VIEW_BAR_SEARCH]          = XPR_STRING_LITERAL("tool_bar.cmd.search_bar");
+
+    mCommandButtonString[ID_GO_BOOKMARK]              = XPR_STRING_LITERAL("tool_bar.cmd.bookmark.popup_menu");
+    mCommandButtonString[ID_GO_DRIVE]                 = XPR_STRING_LITERAL("tool_bar.cmd.go.drive");
+    mCommandButtonString[ID_GO_WORKING_FOLDER]        = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.popup_menu");
+    mCommandButtonString[ID_GO_WORKING_FOLDER_0]      = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.go_1");
+    mCommandButtonString[ID_GO_WORKING_FOLDER_1]      = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.go_2");
+    mCommandButtonString[ID_GO_WORKING_FOLDER_2]      = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.go_3");
+    mCommandButtonString[ID_GO_WORKING_FOLDER_3]      = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.go_4");
+    mCommandButtonString[ID_GO_WORKING_FOLDER_4]      = XPR_STRING_LITERAL("tool_bar.cmd.working_folder.go_5");
+
+    mCommandButtonString[ID_EDIT_CUT]                 = XPR_STRING_LITERAL("tool_bar.cmd.cut");
+    mCommandButtonString[ID_EDIT_COPY]                = XPR_STRING_LITERAL("tool_bar.cmd.copy");
+    mCommandButtonString[ID_EDIT_PASTE]               = XPR_STRING_LITERAL("tool_bar.cmd.paste");
+    mCommandButtonString[ID_EDIT_FOLDER_MOVE]         = XPR_STRING_LITERAL("tool_bar.cmd.move_to_folder");
+    mCommandButtonString[ID_EDIT_FOLDER_COPY]         = XPR_STRING_LITERAL("tool_bar.cmd.copy_to_folder");
+
+    mCommandButtonString[ID_FILE_RENAME]              = XPR_STRING_LITERAL("tool_bar.cmd.rename");
+    mCommandButtonString[ID_FILE_DELETE]              = XPR_STRING_LITERAL("tool_bar.cmd.delete");
+    mCommandButtonString[ID_EDIT_UNDO]                = XPR_STRING_LITERAL("tool_bar.cmd.undo");
+    mCommandButtonString[ID_FILE_ATTRTIME]            = XPR_STRING_LITERAL("tool_bar.cmd.change_attr_time");
+    mCommandButtonString[ID_FILE_PROPERTY]            = XPR_STRING_LITERAL("tool_bar.cmd.properties");
+
+    mCommandButtonString[ID_VIEW_STYLE]               = XPR_STRING_LITERAL("tool_bar.cmd.view_style");
+    mCommandButtonString[ID_WINDOW_SPLIT]             = XPR_STRING_LITERAL("tool_bar.cmd.window.split");
+    mCommandButtonString[ID_WINDOW_SPLIT_SINGLE]      = XPR_STRING_LITERAL("tool_bar.cmd.window.split.single");
+    mCommandButtonString[ID_WINDOW_SPLIT_1x2]         = XPR_STRING_LITERAL("tool_bar.cmd.window.split.1x2");
+    mCommandButtonString[ID_WINDOW_SPLIT_2x1]         = XPR_STRING_LITERAL("tool_bar.cmd.window.split.2x1");
+    mCommandButtonString[ID_WINDOW_SPLIT_EQUAL]       = XPR_STRING_LITERAL("tool_bar.cmd.window.equal");
+    mCommandButtonString[ID_WINDOW_SPLIT_SWAP]        = XPR_STRING_LITERAL("tool_bar.cmd.window.swap");
+
+    mCommandButtonString[ID_FILE_NEW_FOLDER]          = XPR_STRING_LITERAL("tool_bar.cmd.new.folder");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_VIEW]     = XPR_STRING_LITERAL("tool_bar.cmd.scrap.view");
+    mCommandButtonString[ID_TOOL_CMD]                 = XPR_STRING_LITERAL("tool_bar.cmd.command_prompt");
+    mCommandButtonString[ID_TOOL_EMPTY_RECYCLEBIN]    = XPR_STRING_LITERAL("tool_bar.cmd.recycle_bin.empty");
+    mCommandButtonString[ID_FILE_PRINT]               = XPR_STRING_LITERAL("tool_bar.cmd.print");
+    mCommandButtonString[ID_VIEW_PICVIEWER]           = XPR_STRING_LITERAL("tool_bar.cmd.picture.show");
+    mCommandButtonString[ID_FILE_VIEW]                = XPR_STRING_LITERAL("tool_bar.cmd.file_view");
+    mCommandButtonString[ID_FILE_EDIT]                = XPR_STRING_LITERAL("tool_bar.cmd.file_edit");
+
+    mCommandButtonString[ID_TOOL_OPTION]              = XPR_STRING_LITERAL("tool_bar.cmd.preferences");
+    mCommandButtonString[ID_APP_ABOUT]                = XPR_STRING_LITERAL("tool_bar.cmd.about");
+}
+
 const xpr_tchar_t *CommandStringTable::loadString(xpr_uint_t aId)
 {
     if (aId == 0)
@@ -400,6 +462,23 @@ const xpr_tchar_t *CommandStringTable::loadString(xpr_uint_t aId)
     if (sIterator == mCommandString.end())
     {
         XPR_TRACE(XPR_STRING_LITERAL("[CommandStringTable] String ID for %d command ID can not load."), aId);
+        return XPR_NULL;
+    }
+
+    const xpr_tchar_t *sStringId = sIterator->second.c_str();
+
+    return sStringId;
+}
+
+const xpr_tchar_t *CommandStringTable::loadButtonString(xpr_uint_t aId)
+{
+    if (aId == 0)
+        return XPR_NULL;
+
+    CommandStringMap::iterator sIterator = mCommandButtonString.find(aId);
+    if (sIterator == mCommandButtonString.end())
+    {
+        XPR_TRACE(XPR_STRING_LITERAL("[CommandStringTable] String ID for button of %d command ID can not load."), aId);
         return XPR_NULL;
     }
 

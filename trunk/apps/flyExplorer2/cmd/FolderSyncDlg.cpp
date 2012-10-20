@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "SyncDlg.h"
+#include "FolderSyncDlg.h"
 
 #include "fxb/fxb_sync_dirs.h"
 #include "fxb/fxb_sys_img_list.h"
@@ -17,7 +17,7 @@
 #include "resource.h"
 #include "DlgState.h"
 #include "DlgStateMgr.h"
-#include "SyncOptionDlg.h"
+#include "FolderSyncOptionDlg.h"
 
 #include "command_string_table.h"
 
@@ -39,7 +39,7 @@ enum
     TM_SYNC_STATUS = 100,
 };
 
-SyncDlg::SyncDlg(void)
+FolderSyncDlg::FolderSyncDlg(void)
     : super(IDD_FOLDER_SYNC)
     , mSyncDirs(XPR_NULL)
     , mStop(XPR_FALSE)
@@ -48,13 +48,13 @@ SyncDlg::SyncDlg(void)
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-SyncDlg::~SyncDlg(void)
+FolderSyncDlg::~FolderSyncDlg(void)
 {
     DESTROY_ICON(mIcon);
     XPR_SAFE_DELETE(mSyncDirs);
 }
 
-void SyncDlg::DoDataExchange(CDataExchange* pDX)
+void FolderSyncDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_FOLDER_SYNC_PATH1, mPathComboBox[0]);
@@ -62,7 +62,7 @@ void SyncDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_FOLDER_SYNC_LIST,  mListCtrl);
 }
 
-BEGIN_MESSAGE_MAP(SyncDlg, super)
+BEGIN_MESSAGE_MAP(FolderSyncDlg, super)
     ON_WM_TIMER()
     ON_WM_CONTEXTMENU()
     ON_WM_MENUCHAR()
@@ -85,7 +85,7 @@ BEGIN_MESSAGE_MAP(SyncDlg, super)
     ON_MESSAGE(WM_SYNC_STATUS, OnSyncStatus)
 END_MESSAGE_MAP()
 
-xpr_bool_t SyncDlg::OnInitDialog(void) 
+xpr_bool_t FolderSyncDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -203,7 +203,7 @@ xpr_bool_t SyncDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void SyncDlg::OnDestroy(void)
+void FolderSyncDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
@@ -214,13 +214,13 @@ void SyncDlg::OnDestroy(void)
     }
 }
 
-void SyncDlg::setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2)
+void FolderSyncDlg::setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2)
 {
     if (aDir1 != XPR_NULL) mDir[0] = aDir1;
     if (aDir2 != XPR_NULL) mDir[1] = aDir2;
 }
 
-xpr_bool_t SyncDlg::getPath(xpr_sint_t aIndex, xpr_tchar_t *aPath, xpr_sint_t aMaxPathLen)
+xpr_bool_t FolderSyncDlg::getPath(xpr_sint_t aIndex, xpr_tchar_t *aPath, xpr_sint_t aMaxPathLen)
 {
     if (!XPR_IS_RANGE(0, aIndex, 1) || aPath == XPR_NULL || aMaxPathLen <= 0)
         return XPR_FALSE;
@@ -242,7 +242,7 @@ static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM
     return 0;
 }
 
-void SyncDlg::OnPath1Browse(void)
+void FolderSyncDlg::OnPath1Browse(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     getPath(0, sPath, XPR_MAX_PATH);
@@ -288,7 +288,7 @@ void SyncDlg::OnPath1Browse(void)
     COM_FREE(sOldFullPidl);
 }
 
-void SyncDlg::OnPath2Browse(void)
+void FolderSyncDlg::OnPath2Browse(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     getPath(1, sPath, XPR_MAX_PATH);
@@ -334,7 +334,7 @@ void SyncDlg::OnPath2Browse(void)
     COM_FREE(sOldFullPidl);
 }
 
-void SyncDlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
+void FolderSyncDlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
 {
     LPNMLVCUSTOMDRAW pLVCD = reinterpret_cast<LPNMLVCUSTOMDRAW>(pNMHDR);
     *pResult = 0;
@@ -413,7 +413,7 @@ void SyncDlg::OnNMCustomdrawList(NMHDR *pNMHDR, LRESULT *pResult)
     }
 }
 
-void SyncDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
+void FolderSyncDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
 {
     NMLVDISPINFO *pDispInfo = reinterpret_cast<NMLVDISPINFO*>(pNMHDR);
     *pResult = 0;
@@ -505,7 +505,7 @@ void SyncDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
     sLvItem.mask |= LVIF_DI_SETITEM;
 }
 
-void SyncDlg::view(void)
+void FolderSyncDlg::view(void)
 {
     if (mSyncDirs == XPR_NULL)
         return;
@@ -545,7 +545,7 @@ void SyncDlg::view(void)
     mListCtrl.Invalidate();
 }
 
-void SyncDlg::scan(void)
+void FolderSyncDlg::scan(void)
 {
     xpr_tchar_t sPath[2][XPR_MAX_PATH + 1];
     getPath(0, sPath[0], XPR_MAX_PATH);
@@ -651,7 +651,7 @@ void SyncDlg::scan(void)
     }
 }
 
-void SyncDlg::compare(void)
+void FolderSyncDlg::compare(void)
 {
     if (mSyncDirs == XPR_NULL)
         return;
@@ -670,7 +670,7 @@ void SyncDlg::compare(void)
     mSyncDirs->compare();
 }
 
-void SyncDlg::synchronize(void)
+void FolderSyncDlg::synchronize(void)
 {
     if (mSyncDirs == XPR_NULL)
         return;
@@ -683,7 +683,7 @@ void SyncDlg::synchronize(void)
     sFiles[0] = (xpr_sint_t)mSyncDirs->getSyncFiles(fxb::SyncDirectionToRight, &sSize[0]);
     sFiles[1] = (xpr_sint_t)mSyncDirs->getSyncFiles(fxb::SyncDirectionToLeft,  &sSize[1]);
 
-    SyncOptionDlg sDlg;
+    FolderSyncOptionDlg sDlg;
     sDlg.setPath(0, sPath[0]);
     sDlg.setPath(1, sPath[1]);
     sDlg.setFiles(0, sFiles[0], sSize[0]);
@@ -708,7 +708,7 @@ void SyncDlg::synchronize(void)
     }
 }
 
-void SyncDlg::OnCompare(void)
+void FolderSyncDlg::OnCompare(void)
 {
     mStop = XPR_FALSE;
 
@@ -730,7 +730,7 @@ void SyncDlg::OnCompare(void)
     scan();
 }
 
-void SyncDlg::OnSynchronize(void)
+void FolderSyncDlg::OnSynchronize(void)
 {
     mStop = XPR_FALSE;
 
@@ -750,7 +750,7 @@ void SyncDlg::OnSynchronize(void)
     synchronize();
 }
 
-LRESULT SyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
+LRESULT FolderSyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
 {
     fxb::SyncDirs::Status sStatus = (fxb::SyncDirs::Status)wParam;
 
@@ -845,7 +845,7 @@ LRESULT SyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void SyncDlg::OnTimer(UINT_PTR nIDEvent)
+void FolderSyncDlg::OnTimer(UINT_PTR nIDEvent)
 {
     if (nIDEvent == TM_SYNC_STATUS)
     {
@@ -885,7 +885,7 @@ void SyncDlg::OnTimer(UINT_PTR nIDEvent)
     super::OnTimer(nIDEvent);
 }
 
-void SyncDlg::setControlState(State uState)
+void FolderSyncDlg::setControlState(State uState)
 {
     xpr_uint_t sIds[] = {
         IDC_FOLDER_SYNC_PATH1,
@@ -962,7 +962,7 @@ void SyncDlg::setControlState(State uState)
         }
 }
 
-xpr_bool_t SyncDlg::PreTranslateMessage(MSG* pMsg)
+xpr_bool_t FolderSyncDlg::PreTranslateMessage(MSG* pMsg)
 {
     if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_SYSKEYDOWN)
     {
@@ -993,7 +993,7 @@ xpr_bool_t SyncDlg::PreTranslateMessage(MSG* pMsg)
     return super::PreTranslateMessage(pMsg);
 }
 
-void SyncDlg::OnContextMenu(CWnd *pWnd, CPoint pt)
+void FolderSyncDlg::OnContextMenu(CWnd *pWnd, CPoint pt)
 {
     if (!pWnd)
         return;
@@ -1034,7 +1034,7 @@ void SyncDlg::OnContextMenu(CWnd *pWnd, CPoint pt)
     }
 }
 
-LRESULT SyncDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu) 
+LRESULT FolderSyncDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu) 
 {
     LRESULT sResult;
 
@@ -1046,7 +1046,7 @@ LRESULT SyncDlg::OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu)
     return sResult;
 }
 
-void SyncDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bool_t bSysMenu) 
+void FolderSyncDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bool_t bSysMenu) 
 {
     //CDialog::OnInitMenuPopup(pPopupMenu, nIndex, bSysMenu);
     ASSERT(pPopupMenu != XPR_NULL);
@@ -1171,7 +1171,7 @@ void SyncDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bool_t b
     }
 }
 
-void SyncDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
+void FolderSyncDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct) 
 {
     xpr_bool_t sSetFlag = XPR_FALSE;
     if (lpMeasureItemStruct->CtlType == ODT_MENU)
@@ -1191,7 +1191,7 @@ void SyncDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItem
         CDialog::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
 }
 
-void SyncDlg::setItemSync(xpr_uint_t aSync)
+void FolderSyncDlg::setItemSync(xpr_uint_t aSync)
 {
     xpr_sint_t sIndex;
     fxb::SyncItem *sSyncItem;
@@ -1214,7 +1214,7 @@ void SyncDlg::setItemSync(xpr_uint_t aSync)
     mListCtrl.SetRedraw();
 }
 
-void SyncDlg::setItemOriginalSync(void)
+void FolderSyncDlg::setItemOriginalSync(void)
 {
     xpr_sint_t sIndex;
     POSITION sPos;
@@ -1238,33 +1238,33 @@ void SyncDlg::setItemOriginalSync(void)
     mListCtrl.SetRedraw();
 }
 
-void SyncDlg::setStatus(const xpr_tchar_t *aStatusText)
+void FolderSyncDlg::setStatus(const xpr_tchar_t *aStatusText)
 {
     if (aStatusText != XPR_NULL)
         SetDlgItemText(IDC_FOLDER_SYNC_STATUS, aStatusText);
 }
 
-void SyncDlg::OnSyncLeft(void)
+void FolderSyncDlg::OnSyncLeft(void)
 {
     setItemSync(fxb::SyncToLeft);
 }
 
-void SyncDlg::OnSyncRight(void)
+void FolderSyncDlg::OnSyncRight(void)
 {
     setItemSync(fxb::SyncToRight);
 }
 
-void SyncDlg::OnSyncNone(void)
+void FolderSyncDlg::OnSyncNone(void)
 {
     setItemSync(fxb::SyncNone);
 }
 
-void SyncDlg::OnSyncOriginal(void)
+void FolderSyncDlg::OnSyncOriginal(void)
 {
     setItemOriginalSync();
 }
 
-void SyncDlg::selectListItem(xpr_sint_t aIndex, xpr_bool_t aUnselAll, xpr_bool_t aFocus)
+void FolderSyncDlg::selectListItem(xpr_sint_t aIndex, xpr_bool_t aUnselAll, xpr_bool_t aFocus)
 {
     if (aUnselAll == XPR_TRUE)
     {
@@ -1287,7 +1287,7 @@ void SyncDlg::selectListItem(xpr_sint_t aIndex, xpr_bool_t aUnselAll, xpr_bool_t
         mListCtrl.SetFocus();
 }
 
-void SyncDlg::selectListAllItem(xpr_bool_t aFocus)
+void FolderSyncDlg::selectListAllItem(xpr_bool_t aFocus)
 {
     xpr_sint_t i;
     xpr_sint_t sCount;
@@ -1300,7 +1300,7 @@ void SyncDlg::selectListAllItem(xpr_bool_t aFocus)
         mListCtrl.SetFocus();
 }
 
-void SyncDlg::OnPrevDiff(void)
+void FolderSyncDlg::OnPrevDiff(void)
 {
     xpr_sint_t sIndex;
     xpr_sint_t sCount;
@@ -1324,7 +1324,7 @@ void SyncDlg::OnPrevDiff(void)
         selectListItem(sIndex, XPR_TRUE, XPR_TRUE);
 }
 
-void SyncDlg::OnNextDiff(void)
+void FolderSyncDlg::OnNextDiff(void)
 {
     xpr_sint_t sIndex;
     xpr_sint_t sCount;
@@ -1348,7 +1348,7 @@ void SyncDlg::OnNextDiff(void)
         selectListItem(sIndex, XPR_TRUE, XPR_TRUE);
 }
 
-void SyncDlg::OnSizeItem(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy, HDWP hdwp)
+void FolderSyncDlg::OnSizeItem(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy, HDWP hdwp)
 {
     CWnd *sPath1BrowseCtrl = GetDlgItem(IDC_FOLDER_SYNC_PATH1_BROWSE);
     CWnd *sPath2BrowseCtrl = GetDlgItem(IDC_FOLDER_SYNC_PATH2_BROWSE);
@@ -1394,7 +1394,7 @@ void SyncDlg::OnSizeItem(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy, HDWP hd
     }
 }
 
-xpr_bool_t SyncDlg::OnEraseBkgnd(CDC* pDC)
+xpr_bool_t FolderSyncDlg::OnEraseBkgnd(CDC* pDC)
 {
     xpr_uint_t sIds[] = 
     {

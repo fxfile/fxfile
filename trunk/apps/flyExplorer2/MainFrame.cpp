@@ -329,9 +329,6 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
     sRemovableDevice.create();
     sRemovableDevice.registerObserver(this);
 
-    // load command string table
-    CommandStringTable::instance().load();
-
     return 0;
 }
 
@@ -4114,22 +4111,29 @@ void MainFrame::OnActivateApp(xpr_bool_t aActive, DWORD aThreadId)
 
 void MainFrame::goInitFolder(xpr_sint_t aIndex)
 {
+    if (aIndex < -1 || aIndex >= MAX_VIEW_SPLIT)
+        return;
+
     xpr_sint_t i, sCount;
     LPITEMIDLIST sFullPidl;
     const xpr_tchar_t *sInitFolder;
     ExplorerCtrl *sExplorerCtrl;
 
-    switch (aIndex)
+    if (aIndex == -1)
     {
-    case 0:  i = 0; sCount = i + 1; break;
-    case 1:  i = 1; sCount = i + 1; break;
-    default: i = 0; sCount = 2;     break;
+        i = 0;
+        sCount = MAX_VIEW_SPLIT;
+    }
+    else
+    {
+        i = aIndex;
+        sCount = i + 1;
     }
 
     for (; i < sCount; ++i)
     {
         sInitFolder = gOpt->mExplorerInitFolder[i];
-        if (_tcslen(sInitFolder) <= 0)
+        if (sInitFolder[0] == 0)
             continue;
 
         sExplorerCtrl = getExplorerCtrl(i);

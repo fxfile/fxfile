@@ -27,6 +27,8 @@
 #include "CfgPath.h"
 #include "RecentFileListEx.h"
 #include "AppVer.h"
+#include "command_string_table.h"
+
 #include "gfl/libgfl.h"
 
 #include "cfg/CfgMgrDlg.h"
@@ -190,6 +192,9 @@ xpr_bool_t ExplorerApp::InitInstance(void)
     }
 
     loadLanguage(gOpt->mLanguage);
+
+    // load command string table
+    CommandStringTable::instance().load();
 
     // load link
     fxb::BookmarkMgr::instance().load();

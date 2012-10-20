@@ -60,7 +60,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,199,259,55,14
     PUSHBUTTON      "Cancel",IDCANCEL,256,259,55,14
     CONTROL         "",IDC_CREATE_PROGRESS,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,234,304,10
-    LTEXT           "Total 0 file.",IDC_CREATE_STATUS,7,244,304,10,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDC_CREATE_STATUS,7,244,304,10,SS_CENTERIMAGE | SS_SUNKEN
 END
 
 IDD_ACCEL DIALOGEX 0, 0, 375, 224
@@ -139,28 +139,28 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "형식(&O):",IDC_CREATE_LABEL_PATH,7,7,92,14,SS_CENTERIMAGE
+    LTEXT           "F&ormat:",IDC_CREATE_LABEL_FORMAT,7,7,92,14,SS_CENTERIMAGE
     EDITTEXT        IDC_CREATE_FORMAT,7,20,182,14,ES_AUTOHSCROLL
     PUSHBUTTON      "▶",IDC_CREATE_FORMAT_MENU,191,20,13,14
-    PUSHBUTTON      "숫자",IDC_CREATE_FORMAT_AUTO_NUM,79,38,39,13
-    PUSHBUTTON      "날짜",IDC_CREATE_FORMAT_DATE,124,38,39,13
-    PUSHBUTTON      "시간",IDC_CREATE_FORMAT_TIME,165,38,39,13
-    LTEXT           "숫자 증가값(&I):",IDC_CREATE_LABEL_NUMBER_INCREASE,7,58,82,14,SS_CENTERIMAGE
+    PUSHBUTTON      "Number digit",IDC_CREATE_FORMAT_AUTO_NUM,79,38,39,13
+    PUSHBUTTON      "Date",IDC_CREATE_FORMAT_DATE,124,38,39,13
+    PUSHBUTTON      "Time",IDC_CREATE_FORMAT_TIME,165,38,39,13
+    LTEXT           "&Increase:",IDC_CREATE_LABEL_NUMBER_INCREASE,7,58,82,14,SS_CENTERIMAGE
     EDITTEXT        IDC_CREATE_NUMBER_INCREASE,92,58,33,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_CREATE_NUMBER_INCREASE_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,125,58,10,14
-    LTEXT           "시작 번호(&S):",IDC_CREATE_LABEL_NUMBER_START,7,105,82,14,SS_CENTERIMAGE
+    LTEXT           "&Start number:",IDC_CREATE_LABEL_NUMBER_START,7,105,82,14,SS_CENTERIMAGE
     EDITTEXT        IDC_CREATE_NUMBER_START,92,105,33,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_CREATE_NUMBER_START_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,125,105,10,14
-    CONTROL         "끝 번호(&E):",IDC_CREATE_IS_NUMBER_END,"Button",BS_AUTORADIOBUTTON | BS_FLAT,18,122,71,14
+    CONTROL         "&End number:",IDC_CREATE_IS_NUMBER_END,"Button",BS_AUTORADIOBUTTON | BS_FLAT,18,122,71,14
     EDITTEXT        IDC_CREATE_NUMBER_END,92,122,33,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_CREATE_NUMBER_END_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,126,122,10,14
-    CONTROL         "번호 개수(&T):",IDC_CREATE_IS_NUMBER_COUNT,"Button",BS_AUTORADIOBUTTON | BS_FLAT,18,138,71,14
+    CONTROL         "Coun&t:",IDC_CREATE_IS_NUMBER_COUNT,"Button",BS_AUTORADIOBUTTON | BS_FLAT,18,138,71,14
     EDITTEXT        IDC_CREATE_NUMBER_COUNT,92,138,33,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_CREATE_NUMBER_COUNT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,126,138,10,14
-    LTEXT           "자리수(&L):",IDC_CREATE_LABEL_NUMBER_LENGTH,7,75,82,14,SS_CENTERIMAGE
+    LTEXT           "&Length:",IDC_CREATE_LABEL_NUMBER_LENGTH,7,75,82,14,SS_CENTERIMAGE
     EDITTEXT        IDC_CREATE_NUMBER_LENGTH,92,75,33,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_CREATE_NUMBER_LENGTH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,125,75,10,14
-    CONTROL         "'0'으로 자리수 채우기(&0)",IDC_CREATE_NUMBER_ZERO,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,18,92,186,10
+    CONTROL         "Zero filled(&0)",IDC_CREATE_NUMBER_ZERO,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,18,92,186,10
 END
 
 IDD_BATCH_CREATE_TEXT DIALOGEX 0, 0, 211, 197
@@ -184,8 +184,8 @@ BEGIN
     PUSHBUTTON      "Move &down",IDC_COLUMN_ITEM_DOWN,167,60,61,14
     PUSHBUTTON      "&Show",IDC_COLUMN_ITEM_SHOW,167,85,61,14
     PUSHBUTTON      "&Hide",IDC_COLUMN_ITEM_HIDE,167,102,61,14
-    DEFPUSHBUTTON   "확인",IDOK,116,230,55,14
-    PUSHBUTTON      "취소",IDCANCEL,173,230,55,14
+    DEFPUSHBUTTON   "OK",IDOK,116,230,55,14
+    PUSHBUTTON      "Cancel",IDCANCEL,173,230,55,14
     LTEXT           "Select the details you want to display for the items in this folder.\n'*' suffix is supported window explorer.",IDC_COLUMN_LABEL_DESC,7,7,221,16
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,220,220,1
     PUSHBUTTON      "Show &all",IDC_COLUMN_ITEM_SHOW_ALL,167,127,61,14
@@ -209,14 +209,14 @@ BEGIN
     LTEXT           "C Drive",IDC_DRIVE_DRIVE,14,12,47,8
     LTEXT           "Free size:",IDC_DRIVE_LABEL_FREE,8,187,79,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,211,221,1
-    RTEXT           "0 바이트",IDC_DRIVE_FREE_BYTE,92,187,80,8
-    RTEXT           "0 바이트",IDC_DRIVE_FREE_UNIT,178,187,49,8
+    RTEXT           "0 byte",IDC_DRIVE_FREE_BYTE,92,187,80,8
+    RTEXT           "0 byte",IDC_DRIVE_FREE_UNIT,178,187,49,8
     LTEXT           "Used size:",IDC_DRIVE_LABEL_USED,8,199,79,8
-    RTEXT           "0 바이트",IDC_DRIVE_USED_BYTE,92,199,80,8
-    RTEXT           "0 바이트",IDC_DRIVE_USED_UNIT,178,199,49,8
+    RTEXT           "0 byte",IDC_DRIVE_USED_BYTE,92,199,80,8
+    RTEXT           "0 byte",IDC_DRIVE_USED_UNIT,178,199,49,8
     LTEXT           "Total size:",IDC_DRIVE_LABEL_TOTAL,8,217,79,8
-    RTEXT           "0 바이트",IDC_DRIVE_TOTAL_BYTE,92,217,80,8
-    RTEXT           "0 바이트",IDC_DRIVE_TOTAL_UNIT,178,217,49,8
+    RTEXT           "0 byte",IDC_DRIVE_TOTAL_BYTE,92,217,80,8
+    RTEXT           "0 byte",IDC_DRIVE_TOTAL_UNIT,178,217,49,8
     ICON            "",IDC_DRIVE_ICON,22,24,18,18
     LTEXT           "&Lable:",IDC_DRIVE_LABEL_LABEL,62,12,55,8
     EDITTEXT        IDC_DRIVE_LABEL,122,12,96,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
@@ -377,7 +377,7 @@ BEGIN
     LTEXT           "&Group:",IDC_FILE_SCRAP_GROUP_LABEL,7,7,95,8
     CONTROL         "",IDC_FILE_SCRAP_GROUP,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,7,17,97,97
     CONTROL         "&New",IDC_FILE_SCRAP_NEW_GROUP,"Button",BS_OWNERDRAW | WS_TABSTOP,106,16,71,15
-    LTEXT           "수집한 파일 및 폴더(&L):",IDC_FILE_SCRAP_LIST_LABEL,7,40,157,8
+    LTEXT           "Scrapped file &list:",IDC_FILE_SCRAP_LIST_LABEL,7,40,157,8
     CONTROL         "List2",IDC_FILE_SCRAP_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,52,170,130
     PUSHBUTTON      "&Copy to folder",IDC_FILE_SCRAP_COPY_TO_FOLDER,182,50,61,14
     PUSHBUTTON      "&Move to folder",IDC_FILE_SCRAP_MOVE_TO_FOLDER,182,66,61,14
@@ -829,8 +829,8 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Tip of the today"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    PUSHBUTTON      "다음 팁 >>",IDC_TIP_NEXT,122,157,55,14
-    CONTROL         "프로그램 시작시 띄우지 않기",IDC_TIP_NO_STARTUP,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,7,158,105,10
+    PUSHBUTTON      "Next tip >>",IDC_TIP_NEXT,122,157,55,14
+    CONTROL         "No show on startup",IDC_TIP_NO_STARTUP,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,7,158,105,10
     CONTROL         "",IDC_STATIC,"Static",SS_GRAYFRAME,7,7,228,145
     DEFPUSHBUTTON   "OK",IDOK,180,157,55,14
 END
@@ -992,10 +992,10 @@ END
 
 IDD_FOLDER_SYNC_OPTION DIALOGEX 0, 0, 223, 120
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
-CAPTION "동기화"
+CAPTION "Folder synchronization"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "동기화 방향(&D):",IDC_FOLDER_SYNC_OPTION_LABEL_DIRECTION,7,9,64,8
+    LTEXT           "Syncronization &direction:",IDC_FOLDER_SYNC_OPTION_LABEL_DIRECTION,7,9,64,8
     COMBOBOX        IDC_FOLDER_SYNC_OPTION_DIRECTION,73,7,81,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "->",IDC_FOLDER_SYNC_OPTION_TO_RIGHT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,209,10
     EDITTEXT        IDC_FOLDER_SYNC_OPTION_PATH1,7,42,209,14,ES_AUTOHSCROLL | ES_READONLY
@@ -1029,7 +1029,7 @@ END
 
 IDD_SIZE_FORMAT DIALOGEX 0, 0, 211, 257
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "용량 표시 형식"
+CAPTION "Size format display"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "Size format &list:",IDC_SIZE_FORMAT_LABEL_LIST,7,7,104,8
@@ -1060,10 +1060,10 @@ END
 
 IDD_SEL_FOLDER DIALOGEX 0, 0, 215, 71
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "폴더 선택"
+CAPTION "Select folder"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "폴더를 선택하여 주십시오.",IDC_SEL_FOLDER_DESC,7,7,199,8
+    LTEXT           "Please, select folder.",IDC_SEL_FOLDER_DESC,7,7,199,8
     COMBOBOX        IDC_FOLDER,7,19,184,131,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_STATUS,7,37,201,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
     PUSHBUTTON      "...",IDC_BROWSE,194,19,14,14
@@ -1093,7 +1093,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,19,122,229,10
     CONTROL         "Create by popup &dialog",IDC_CFG_GENERAL_CREATE_BY_POPUP,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,135,241,10
-    LTEXT           "확장자 표시(&E):",IDC_CFG_GENERAL_LABEL_EXTENSION,8,153,67,8
+    LTEXT           "Display file &extension:",IDC_CFG_GENERAL_LABEL_EXTENSION,8,153,67,8
     COMBOBOX        IDC_CFG_GENERAL_EXTENSION,77,150,109,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Default(&R)",IDC_CFG_GENERAL_DEFAULT,192,227,63,14
 END
@@ -1145,8 +1145,8 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "",IDC_CFG_ADV_OPTION,"Button",BS_OWNERDRAW | WS_TABSTOP,0,0,254,223
-    PUSHBUTTON      "최근 실행된 목록 지우기(&E)",IDC_CFG_ADV_REMOVE_RECENT_FILELIST,91,227,99,14
-    PUSHBUTTON      "기본값 복원(&R)",IDC_CFG_ADV_DEFAULT,192,227,63,14
+    PUSHBUTTON      "Cl&ear recently executed file list",IDC_CFG_ADV_REMOVE_RECENT_FILELIST,91,227,99,14
+    PUSHBUTTON      "Default(&R)",IDC_CFG_ADV_DEFAULT,192,227,63,14
 END
 
 IDD_CFG_EXP_THUMB DIALOGEX 0, 0, 255, 241
@@ -1606,22 +1606,22 @@ END
 
 IDD_FILE_ASS_SET DIALOGEX 0, 0, 211, 170
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "파일 외부 연동 설정"
+CAPTION "External file association setting"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "이름(&N):",IDC_FILE_ASS_SET_LABEL_NAME,7,7,44,14,SS_CENTERIMAGE
+    LTEXT           "&Name:",IDC_FILE_ASS_SET_LABEL_NAME,7,7,44,14,SS_CENTERIMAGE
     EDITTEXT        IDC_FILE_ASS_SET_NAME,53,7,86,14,ES_AUTOHSCROLL
-    GROUPBOX        "연동 방식(&W)",IDC_FILE_ASS_SET_GROUP_METHOD,7,30,96,48
-    CONTROL         "확장자 연동(&X)",IDC_FILE_ASS_SET_METHOD_EXT,"Button",BS_AUTORADIOBUTTON,14,44,82,10
-    CONTROL         "필터링 연동(&F)",IDC_FILE_ASS_SET_METHOD_FILTER,"Button",BS_AUTORADIOBUTTON,14,58,82,10
-    GROUPBOX        "연동 형태(&T)",IDC_FILE_ASS_SET_GROUP_TYPE,108,30,96,48
-    CONTROL         "뷰어 설정(&V)",IDC_FILE_ASS_SET_TYPE_VIEWER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,116,44,81,10
-    CONTROL         "편집 설정(&D)",IDC_FILE_ASS_SET_TYPE_EDITOR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,116,58,81,10
-    LTEXT           "필터링(&F):",IDC_FILE_ASS_SET_LABEL_FILTER,7,85,46,14,SS_CENTERIMAGE
+    GROUPBOX        "&Method",IDC_FILE_ASS_SET_GROUP_METHOD,7,30,96,48
+    CONTROL         "E&xtension",IDC_FILE_ASS_SET_METHOD_EXT,"Button",BS_AUTORADIOBUTTON,14,44,82,10
+    CONTROL         "&Filtering",IDC_FILE_ASS_SET_METHOD_FILTER,"Button",BS_AUTORADIOBUTTON,14,58,82,10
+    GROUPBOX        "&Type",IDC_FILE_ASS_SET_GROUP_TYPE,108,30,96,48
+    CONTROL         "&Viewer",IDC_FILE_ASS_SET_TYPE_VIEWER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,116,44,81,10
+    CONTROL         "E&ditor",IDC_FILE_ASS_SET_TYPE_EDITOR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,116,58,81,10
+    LTEXT           "&Filtering:",IDC_FILE_ASS_SET_LABEL_FILTER,7,85,46,14,SS_CENTERIMAGE
     COMBOBOX        IDC_FILE_ASS_SET_FILTER,55,85,149,117,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "확장자(&E):",IDC_FILE_ASS_SET_LABEL_EXTS,7,103,46,14,SS_CENTERIMAGE
+    LTEXT           "&Extension:",IDC_FILE_ASS_SET_LABEL_EXTS,7,103,46,14,SS_CENTERIMAGE
     EDITTEXT        IDC_FILE_ASS_SET_EXTS,55,103,149,14,ES_AUTOHSCROLL
-    LTEXT           "프로그램(&P):",IDC_FILE_ASS_SET_LABEL_PROGRAM,7,122,46,14,SS_CENTERIMAGE
+    LTEXT           "&Program:",IDC_FILE_ASS_SET_LABEL_PROGRAM,7,122,46,14,SS_CENTERIMAGE
     EDITTEXT        IDC_FILE_ASS_SET_PROGRAM,55,122,131,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_FILE_ASS_SET_PROGRAM_BROWSE,190,122,14,14
     DEFPUSHBUTTON   "OK",IDOK,92,147,55,14
@@ -1633,9 +1633,9 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_CLIPSIB
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    LTEXT           "텍스트 옵션(&X):",IDC_CUSTOM_TOOLBAR_LABEL_TEXT_OPTION,7,2,59,8
+    LTEXT           "Te&xt option:",IDC_CUSTOM_TOOLBAR_LABEL_TEXT_OPTION,7,2,59,8
     COMBOBOX        IDC_CUSTOM_TOOLBAR_TEXT_OPTION,69,0,111,89,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "아이콘 옵션(&N):",IDC_CUSTOM_TOOLBAR_LABEL_ICON_OPTION,7,19,60,8
+    LTEXT           "Ico&n option:",IDC_CUSTOM_TOOLBAR_LABEL_ICON_OPTION,7,19,60,8
     COMBOBOX        IDC_CUSTOM_TOOLBAR_ICON_OPTION,69,17,111,72,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -2267,6 +2267,10 @@ BEGIN
             MENUITEM "Open &all init folder",       ID_GO_INIT_FOLDER
             MENUITEM "Open init folder in window #&1", ID_GO_INIT_FOLDER_1
             MENUITEM "Open init folder in window #&2", ID_GO_INIT_FOLDER_2
+            MENUITEM "Open init folder in window #&3", ID_GO_INIT_FOLDER_3
+            MENUITEM "Open init folder in window #&4", ID_GO_INIT_FOLDER_4
+            MENUITEM "Open init folder in window #&5", ID_GO_INIT_FOLDER_5
+            MENUITEM "Open init folder in window #&6", ID_GO_INIT_FOLDER_6
         END
         POPUP "cmd.go.system_folder.popup"
         BEGIN
@@ -3237,24 +3241,7 @@ IDI_PENDING             ICON                    "res\\pending.ico"
 
 STRINGTABLE 
 BEGIN
-    IDP_OLE_INIT_FAILED     "OLE 초기화에 실패하였습니다. OLE 라이브러리의 버전이 올바른지 확인하십시오."
-    IDS_CLIPBOARD_METAFILE_FORMAT "그림 (메타 파일)\n그림"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_TBI_SMALL           "작은 아이콘"
-    IDS_TBI_LARGE           "큰 아이콘"
-    IDS_CLIPBOARD_DIB_FORMAT "장치 독립 비트맵\n장치 독립 비트맵"
-    IDS_CLIPBOARD_BITMAP_FORMAT "미트맵\n미트맵"
-    IDS_CLIPBOARD_TEXT_FORMAT "서식이 없는 텍스트\n서식이 없는 텍스트"
-    IDS_CLIPBOARD_UNICODE_TEXT_FORMAT "서식이 없는 유니코드 텍스트\n서식이 없는 유니코드 텍스트"
-    IDS_CLIPBOARD_URL_FORMAT "인터넷 주소\n인터넷 주소"
-    IDS_CLIPBOARD_FILE_CONTENTS_FORMAT "파일 내용\n파일 내용"
-    IDS_CLIPBOARD_FILE_NAME_FORMAT "파일 이름\n파일 이름"
-    IDS_CLIPBOARD_UNICODE_FILE_NAME_FORMAT "유니코드 파일 이름\n유니코드 파일 이름"
-    IDS_CLIPBOARD_SHELL_IDLIST_FORMAT 
-                            "파일 작업 (복사, 이동, 등...)\n파일 작업 (복사, 이동, 등...)"
+    IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
 END
 
 STRINGTABLE 
@@ -3265,7 +3252,7 @@ END
 STRINGTABLE 
 BEGIN
     AFX_IDS_APP_TITLE       "flyExplorer"
-    AFX_IDS_IDLEMESSAGE     "준비"
+    AFX_IDS_IDLEMESSAGE     "For Help, press F1"
 END
 
 STRINGTABLE 
@@ -3280,468 +3267,29 @@ END
 
 STRINGTABLE 
 BEGIN
-    ID_FILE_NEW             "flyExplorer 을 초기화합니다.\n초기화"
-    ID_FILE_OPEN            "기존 문서를 엽니다\n열기"
-    ID_FILE_CLOSE           "현재 열린 문서를 닫습니다\n닫기"
-    ID_FILE_SAVE            "현재 열린 문서를 저장합니다\n저장"
-    ID_FILE_SAVE_AS         "현재 열린 문서를 다른 이름으로 저장합니다\n다른 이름으로 저장"
-    ID_FILE_PAGE_SETUP      "인쇄 옵션을 변경합니다\n쪽 설정"
-    ID_FILE_PRINT_SETUP     "프린터와 인쇄 옵션을 변경합니다\n인쇄 설정"
-    ID_FILE_PRINT           "현재 열린 문서를 인쇄합니다\n인쇄"
-    ID_FILE_PRINT_PREVIEW   "쪽 전체를 표시합니다\n인쇄 미리 보기"
-    ID_FILE_SEND_MAIL       "선택한 항목을 메일에 첨부하여 보냅니다."
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
 STRINGTABLE 
 BEGIN
-    ID_APP_ABOUT            "flyExplorer 정보와 버전 정보, 저작권 정보를 표시합니다\n정보"
-    ID_APP_EXIT             "flyExplorer를 닫습니다."
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
 STRINGTABLE 
 BEGIN
-    ID_NEXT_PANE            "다음 창으로 전환합니다\n다음 창"
-    ID_PREV_PANE            "이전 창으로 전환합니다\n이전 창"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_SPLIT         "현재 열린 창을 나눕니다\n창 분할"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_EDIT_CLEAR           "선택 부분을 지웁니다\n지우기"
-    ID_EDIT_CLEAR_ALL       "모든 것을 지웁니다\n모두 지우기"
-    ID_EDIT_COPY            "선택 항목을 복사하여 클립보드에 넣습니다\n복사"
-    ID_EDIT_CUT             "선택 항목을 잘라내어 클립보드에 넣습니다\n잘라내기"
-    ID_EDIT_FIND            "지정한 문자열을 찾습니다\n찾기"
-    ID_EDIT_PASTE           "클립보드의 내용을 붙여 넣습니다\n붙여넣기"
-    ID_EDIT_PASTE_LINK      "클립보드의 내용을 바로 가기로 붙여 넣습니다\n붙여넣기"
-    ID_EDIT_PASTE_SPECIAL   "클립보드의 내용을 선택하여 붙여 넣습니다."
-    ID_EDIT_REPEAT          "마지막으로 실행한 동작을 반복합니다\n반복"
-    ID_EDIT_REPLACE         "지정한 문자열을 다른 문자열로 바꿉니다\n바꾸기"
-    ID_EDIT_SELECT_ALL      "문서 전체를 선택합니다\n전체 선택"
-    ID_EDIT_UNDO            "파일에 대한 이전 작업을 취소합니다.\n실행취소"
-    ID_EDIT_REDO            "이전에 취소한 동작을 다시 수행합니다\n다시 실행"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_TOOLBAR         "표준 단추를 보이거나 숨깁니다."
-    ID_VIEW_STATUS_BAR      "상태 표시줄을 표시하거나 숨깁니다."
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_SCSIZE          "창의 크기를 변경합니다"
-    AFX_IDS_SCMOVE          "창의 위치를 변경합니다"
-    AFX_IDS_SCMINIMIZE      "창을 아이콘으로 줄여서 표시합니다"
-    AFX_IDS_SCMAXIMIZE      "창을 최대 크기로 확장합니다"
-    AFX_IDS_SCNEXTWINDOW    "다음 문서 창으로 전환합니다"
-    AFX_IDS_SCPREVWINDOW    "이전 문서 창으로 전환합니다"
-    AFX_IDS_SCCLOSE         "현재 열린 창을 닫고 문서를 저장할 것인지를 묻습니다"
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_SCRESTORE       "창을 원래 크기로 복원합니다"
-    AFX_IDS_SCTASKLIST      "작업 목록을 활성화합니다"
-END
-
-STRINGTABLE 
-BEGIN
-    AFX_IDS_PREVIEW_CLOSE   "인쇄 미리 보기 모드를 닫습니다\n미리 보기 취소"
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
 END
 
 STRINGTABLE 
 BEGIN
     IDS_TRAY_NOTIFY         "Tray Notify Message"
-    IDS_TBT_TEXT            "도구 이름 표시"
-    IDS_TBT_RIGHT           "도구 이름 오른쪽에 표시"
-    IDS_TBT_NO              "도구 이름 표시 안 함"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_EXPORT_CONFIG   "현재 환경 설정을 파일로 내보냅니다."
-    ID_FILE_EXPORT_ACCELERATOR "현재 단축키 설정을 파일로 내보냅니다."
-    ID_FILE_TEXT_MERGE      "선택한 텍스트 파일을 하나의 텍스트 파일로 합쳐줍니다."
-    ID_FILE_LIST_FILE       "선택한 항목의 이름을 텍스트 파일 형식으로 파일 목록을 만듭니다."
-    ID_TRAY_APP_EXIT        "flyExplorer를 종료합니다."
-    ID_FILE_DUPLICATE       "선택한 항목을 사본으로 만듭니다."
-    ID_FILE_ATTRTIME        "선택한 파일 및 폴더의 속성과 날짜를 바꿉니다.\n속성날짜"
-    ID_APP_MINIMIZE_TRAY    "프로그램을 트레이로 최소화시킵니다."
-    ID_FILE_EXEC_PARAM      "선택한 항목을 파라미터와 함께 실행할 수 있습니다."
-    ID_FILE_EXEC            "선택한 항목을 실행합니다."
-    ID_FILE_VIEW            "선택한 파일을 뷰어 프로그램로 봅니다.\n파일보기"
-    ID_FILE_EDIT            "선택한 파일을 파일 편집기로 편집합니다.\n파일편집"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_NEW_FOLDER      "비어 있는 폴더를 새로 만듭니다.\n새 폴더"
-    ID_FILE_NEW_TEXT        "비어 있는 텍스트 파일을 새로 만듭니다."
-    ID_FILE_NEW_LINK        "비어 있는 바로 가기를 새로 만듭니다."
-    ID_FILE_NEW_ITEMS       "비어 있는 파일 및 폴더를 일괄적으로 새로 만듭니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_FOLDER_TREE_SHOW "폴더창을 보이거나 숨깁니다.\n폴더"
-    ID_VIEW_BAR_SEARCH      "검색창을 보이거나 숨깁니다.\n검색"
-    ID_VIEW_STYLE           "항목을 해당 보기 스타일로 표시합니다.\n보기"
-    ID_VIEW_STYLE_LARGEICON "큰 아이콘으로 항목을 표시합니다."
-    ID_VIEW_STYLE_SMALLICON "작은 아이콘으로 항목을 표시합니다."
-    ID_VIEW_STYLE_LIST      "항목을 간단하게 표시합니다."
-    ID_VIEW_STYLE_DETAIL    "각각의 항목에 대한 정보를 자세하게 표시합니다."
-    ID_VIEW_STYLE_THUMBNAIL "작게 보기(썸네일) 기능을 사용해 항목을 표시합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_ARRAY_ASCENDING "항목을 오름 차순으로 정렬합니다."
-    ID_VIEW_ARRAY_DECENDING "항목을 내림 차순으로 정렬합니다."
-    ID_VIEW_REFRESH         "현재 폴더 내용을 새로 고칩니다.\n새로고침"
-    ID_VIEW_STOP            "현재 페이지의 로드를 중지합니다.\n중지"
-    ID_VIEW_FONT_LARGEST    "가장 큰 글꼴 크기를 선택합니다."
-    ID_VIEW_FONT_LARGE      "큰 글꼴 크기를 선택합니다."
-    ID_VIEW_FONT_MEDIUM     "보통 글꼴 크기를 선택합니다."
-    ID_VIEW_FONT_SMALL      "작은 글꼴 크기를 선택합니다."
-    ID_VIEW_FONT_SMALLEST   "가장 작은 글꼴 크기를 선택합니다."
-    ID_VIEW_SOURCE          "이 페이지의 소스(HTML)를 표시합니다."
-    ID_VIEW_COLUMN_NAME     "이름 열을 보이거나 숨깁니다."
-    ID_VIEW_COLUMN_SIZE     "크기 열을 보이거나 숨깁니다."
-    ID_VIEW_COLUMN_TYPE     "종류 열을 보이거나 숨깁니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_COLUMN_DATE     "수정한 날짜 열을 보이거나 숨깁니다."
-    ID_VIEW_COLUMN_ATTR     "속성 열을 보이거나 숨깁니다."
-    ID_VIEW_COLUMN_EXT      "확장자 열을 보이거나 숨깁니다."
-    ID_VIEW_DRIVEBAR_REFRESH "드라이브를 새로 고칩니다."
-    ID_VIEW_ARRAY_NAME      "항목을 이름순으로 정렬합니다."
-    ID_VIEW_ARRAY_TYPE      "항목을 종류별로 정렬합니다."
-    ID_VIEW_ARRAY_SIZE      "항목을 크기순으로 정렬합니다."
-    ID_VIEW_ARRAY_DATE      "항목을 날짜순으로 정렬합니다."
-    ID_VIEW_ARRAY_ATTR      "항목을 속성순으로 정렬합니다."
-    ID_VIEW_ARRAY_EXT       "항목을 확장자순으로 정렬합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_ACTIVATEWND     "활성바를 보이거나 숨깁니다."
-    ID_VIEW_DRIVEBAR_LEFT   "분할된 드라이브를 경로바 왼쪽에 위치합니다."
-    ID_VIEW_DRIVEBAR_RIGHT  "분할된 드라이브를 경로바 오른쪽에 위치합니다."
-    ID_VIEW_DRIVEBAR_VIEWSPLIT "드라이브를 분할된 창에 각각 할당합니다."
-    ID_VIEW_BOOKMARKBAR_WRAPABLE "연결 항목 표시에 대해 한 줄로 부족할 경우 여러 줄로 표시합니다."
-    ID_VIEW_ADDRESSBAR_SHOW "주소 표시줄을 펼쳐 줍니다."
-    ID_VIEW_DRIVEBAR_WRAPABLE "드라이브 표시에 대해 한 줄로 부족할 경우 여러 줄로 표시합니다."
-    ID_VIEW_BOOKMARKBAR_REFRESH "연결 항목을 새로 고칩니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_LINK            "선택한 항목을 바로 가기로 만듭니다."
-    ID_FILE_DELETE          "선택한 항목을 삭제합니다.\n삭제"
-    ID_FILE_RENAME          "선택한 항목의 이름을 바꿉니다.\n이름변경"
-    ID_FILE_IMAGE_CONV      "선택한 이미지의 파일 포멧을 바꿉니다."
-    ID_FILE_PROPERTY        "선택한 항목의 등록 정보를 표시합니다.\n등록정보"
-    ID_FILE_CRC_CREATE      "선택한 파일의 CRC Checksum 파일을 생성합니다."
-    ID_FILE_CRC_VERIFY      "선택한 CRC Checksum 파일을 검사합니다."
-    ID_FILE_IMPORT_CONFIG   "파일을 가져와 현재 환경 설정에 적용시킵니다."
-    ID_FILE_IMPORT_ACCELERATOR "파일을 가져와 단축키 설정에 적용시킵니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_EDIT_FILE_SCRAP_ADD  "선택한 항목을 수집합니다.\n수집"
-    ID_EDIT_FOLDER_MOVE     "선택한 항목들을 다른 위치로 이동합니다.\n이동"
-    ID_EDIT_FOLDER_COPY     "선택한 항목들을 다른 위치로 복사합니다.\n복사"
-    ID_EDIT_FILE_SCRAP_CUR_COPY "수집한 파일을 현재 폴더로 복사합니다."
-    ID_EDIT_FILE_SCRAP_CUR_MOVE "수집한 파일을 현재 폴더로 이동합니다."
-    ID_EDIT_FILE_SCRAP_DELETE "수집한 파일을 모두 삭제합니다."
-    ID_EDIT_FILE_SCRAP_CLIPBOARD_CUT "수집한 파일을 클립보드로 잘라냅니다."
-    ID_EDIT_FILE_SCRAP_CLIPBOARD_COPY "수집한 파일을 클립보드로 복사합니다."
-    ID_EDIT_FILE_SCRAP_VIEW "수집한 파일을 관리합니다.\n수집관리"
-    ID_EDIT_FILE_SCRAP_LIST_REMOVE "수집한 파일의 목록을 제거합니다."
-    ID_EDIT_FILE_SCRAP_DROP "수집함을 띄워 드래그 앤 드롭 기능을 이용해 보다 편리하게 수집할 수 있습니다."
-    ID_EDIT_SEL_NAME        "탐색창의 항목을 이름으로 선택합니다."
-    ID_EDIT_UNSEL_NAME      "탐색창의 항목을 이름으로 선택 해제합니다."
-    ID_EDIT_SEL_SAME_EXT    "선택된 항목과 같은 종류를 모두 선택합니다."
-    ID_EDIT_SEL_ALL         "모든 항목을 선택합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_VIEW_DRIVEBAR        "드라이브 단추를 보이거나 숨깁니다."
-    ID_VIEW_BOOKMARKBAR     "연결 항목 단추를 보이거나 숨깁니다."
-    ID_VIEW_PATHBAR         "경로바을 보이거나 숨깁니다."
-    ID_VIEW_ADDRESSBAR      "주소 표시줄을 보이거나 숨깁니다."
-    ID_VIEW_DRIVEBAR_SHORTTEXT "드라이브 도구의 이름을 짧게 표시합니다."
-    ID_VIEW_DRIVEBAR_LONGTEXT "드라이브 도구의 이름을 길게 표시합니다."
-    ID_VIEW_BOOKMARKBAR_NONAME "연결 항목 단추의 이름을 표시하지 않습니다."
-    ID_VIEW_BOOKMARKBAR_NAME "연결 항목 단추의 이름을 표시합니다."
-    ID_VIEW_TOOL_LOCK       "도구의 이동을 잠금니다."
-    ID_VIEW_TOOLBAR_CUSTOMIZE "표준 단추를 사용자가 지정할 수 있습니다."
-    ID_VIEW_PICVIEWER       "그림 보기 창을 보이거나 숨깁니다.\n그림보기"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_HOME              "홈페이지로 이동합니다.\n홈"
-    ID_GO_SEARCH            "유명한 검색 사이트의 모음입니다.\n검색"
-    ID_GO_SEARCH_GOOGLE     "구글 검색 엔진 사이트로 이동합니다."
-    ID_GO_SEARCH_YAHOO      "야후 검색 엔진 사이트로 이동합니다."
-    ID_GO_SEARCH_YAHOO_KOREA "야후 코리아 검색 엔진 사이트로 이동합니다."
-    ID_GO_SEARCH_EMPAS      "엠파스 엔진 사이트로 이동합니다."
-    ID_GO_SEARCH_NAVER      "네이버 검색 엔진 사이트로 이동합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_TOOL_NETWORK_CONNECT "네트워크 드라이브에 연결합니다."
-    ID_TOOL_NETWORK_DISCONNECT "네트워크 드라이브 연결을 끊습니다."
-    ID_TOOL_ACCELERATOR     "flyExplorer 단축키를 설정합니다."
-    ID_TOOL_OPTION          "flyExplorer 환경을 설정합니다.\n환경설정"
-    ID_TOOL_WINDOWS_EXPLORER "윈도우즈 탐색기를 현재 경로로 실행합니다."
-    ID_TOOL_SHARED_PROC     "선택된 항목에 대해 공유 중인 프로세스를 보여줍니다."
-    ID_TOOL_FOLDER_SYNC     "두 폴더 간의 내용을 동기화 합니다."
-    ID_TOOL_SAVE_OPTION     "모든 설정 내용을 저장합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_DRIVE             "드라이브 목록을 보여주고 해당 드라이브로 이동합니다.\n드라이브"
-    ID_GO_BOOKMARK          "연결 항목을 보여주고 해당 폴더로 이동합니다.\n연결항목"
-    ID_GO_BOOKMARK_ADD      "현재 폴더를 연결 항목에 추가합니다."
-    ID_GO_BOOKMARK_MODIFY   "연결 항목을 편집합니다."
-    ID_GO_BACK              "이전 폴더로 이동합니다.\n뒤로"
-    ID_GO_FORWARD           "다음 폴더로 이동합니다.\n앞으로"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_SIBLING_UP        "위 폴더로 이동합니다."
-    ID_GO_SIBLING_DOWN      "아래 폴더로 이동합니다."
-    ID_GO_UP                "한 단계 상위 폴더로 이동합니다.\n위로"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_ROOT              "현재 경로의 루트로 이동합니다."
-    ID_GO_DESKTOP           "바탕 화면으로 이동합니다."
-    ID_GO_MYDOCUMENT        "내 문서로 이동합니다."
-    ID_GO_MYCOMPUTER        "내 컴퓨터로 이동합니다."
-    ID_GO_NETWORK           "네트워크 환경으로 이동합니다."
-    ID_GO_CONTROLS          "제어판으로 이동합니다."
-    ID_GO_STARTUP           "시작 메뉴 폴더로 이동합니다."
-    ID_GO_TEMPORARY         "임시 폴더로 이동합니다."
-    ID_GO_RECYCLE           "휴지통으로 이동합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_TOOL_EMPTY_RECYCLEBIN "휴지통을 모두 비웁니다.\n비우기"
-    ID_TOOL_CMD             "명령 프롬프트를 현재 경로로 실행합니다.\n프롬프트"
-    ID_TOOL_DOS_CMD         "도스 명령을 실행합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_APP_HELP             "도움말을 엽니다."
-    ID_APP_HELP_FIND        "도움말에서 기능을 찾아봅니다."
-    ID_APP_ACCELERATOR      "단축키 모두 봅니다."
-    ID_APP_TIP              "오늘의 팁을 표시합니다."
-    ID_APP_HOMEPAGE         "flyExplorer 홈페이지로 이동합니다."
-    ID_APP_EMAIL            "flyExplorer 제작자에게 전자 우편을 보냅니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_EDIT_NAME_COPY       "선택 부분을 이름으로 복사하여 클립보드에 넣습니다\n이름 복사"
-    ID_EDIT_PATH_COPY       "선택한 항목을 경로명으로 복사하여 클립보드에 넣습니다\n경로명 복사"
-    ID_EDIT_DEV_PATH_COPY   "선택한 항목을 개발자 경로명으로 복사하여 클립보드에 넣습니다\n개발자 경로명 복사"
-    ID_EDIT_PASTE_COPY      "클립보드의 내용을 사본으로 붙여 넣습니다\n사본 붙여넣기"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_NEXT          "다음 창으로 이동합니다."
-    ID_WINDOW_PREV          "이전 창으로 이동합니다."
-    ID_WINDOW_SPLIT_SINGLE  "단일 창으로 분할합니다.\n단일창"
-    ID_WINDOW_SPLIT_1x2     "두 창을 수직으로 분할합니다.\n수직분할"
-    ID_WINDOW_SPLIT_2x1     "두 창을 수평으로 분할합니다.\n수평분할"
-    ID_WINDOW_SPLIT_2x2     "창을 2x2로 분할합니다."
-    ID_WINDOW_SPLIT_1x3     "창을 1x3으로 분할합니다."
-    ID_WINDOW_SPLIT_2x3     "창을 2x3으로 분할합니다."
-    ID_WINDOW_SPLIT_EQUALLY "같은 비율로 두 창을 분할합니다."
-    ID_WINDOW_LIST          "열려 있는 웹 창의 목록을 보여줍니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_EDIT_UNSEL_ALL       "모든 항목을 선택 해제합니다."
-    ID_EDIT_SEL_REVERSAL    "선택한 항목을 반전시킵니다."
-    ID_EDIT_WEB_FIND        "지정한 문자열을 현재 문서에서 찾아 강조시켜줍니다.\n지능검색"
-    ID_EDIT_FILE_SCRAP_GROUP_ADD "탐색창에 열려 있는 폴더를 수집 그룹으로 추가합니다."
-    ID_EDIT_FILE_SCRAP_GROUP_VIEW "파일 수집 그룹을 관리합니다."
-    ID_EDIT_SEL_FOLDER      "폴더만 모두 선택합니다."
-    ID_EDIT_SEL_FILE        "파일만 모두 선택합니다."
-    ID_EDIT_UNSEL_FILE      "파일만 모두 선택 해제합니다."
-    ID_EDIT_UNSEL_FOLDER    "폴더만 모두 선택 해제합니다."
-    ID_EDIT_URL_COPY        "선택한 항목을 URL 경로명으로 복사하여 클립보드에 넣습니다"
-    ID_EDIT_SEL_SAME_FILTER "선택된 항목과 같은 필터링에 해당되는 모든 항목을 선택합니다."
-    ID_EDIT_SEL_FILTER      "항목을 필터링으로 선택합니다."
-    ID_EDIT_UNSEL_FILTER    "항목을 필터링으로 선택 해제합니다."
-    ID_EDIT_FILENAME_COPY   "선택 항목을 파일 이름으로 복사하여 클립보드에 넣습니다\n파일명 복사"
-    ID_EDIT_FILE_SCRAP_GROUP_DEFAULT "기본 수집 그룹을 설정합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_DRIVE_DETAIL      "각 드라이브의 상세한 정보를 보여줍니다."
-    ID_GO_FLYEXPLORER       "flyExplorer 프로그램이 설치된 폴더로 이동합니다."
-    ID_GO_PATH              "해당 경로로 이동합니다."
-    ID_GO_PROGRAMFILES      "프로그램이 설치된 폴더로 이동합니다."
-    ID_GO_WINDOWS           "설치된 윈도우즈 폴더로 이동합니다."
-    ID_GO_SYSTEM            "윈도우즈 시스템 폴더로 이동합니다."
-    ID_GO_RECENT            "최근에 실행된 문서 폴더로 이동합니다."
-    ID_GO_SENDTO            "팝업 메뉴의 보내기 폴더로 이동합니다."
-    ID_GO_COMMON            "프로그램들간의 공용 폴더로 이동합니다."
-    ID_GO_INTERNETCACHE     "인터넷 익스플로러의 캐쉬 폴더로 이동합니다."
-    ID_GO_FONTS             "폰트가 설치된 폴더로 이동합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_SPLIT_SWAP    "창간의 경로를 서로 교환합니다.\n스왑하기"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_COPY          "현재 창에서 선택한 항목을 다른 창으로 복사합니다."
-    ID_WINDOW_MOVE          "현재 창에서 선택한 항목을 다른 창으로 이동합니다."
-    ID_WINDOW_1_COPY        "창 #2에서 선택한 항목을 창 #1로 복사합니다."
-    ID_WINDOW_1_MOVE        "창 #2에서 선택한 항목을 창 #1로 이동합니다."
-    ID_WINDOW_2_COPY        "창 #1에서 선택한 항목을 창 #2로 복사합니다."
-    ID_WINDOW_2_MOVE        "창 #1에서 선택한 항목을 창 #2로 이동합니다."
-    ID_WINDOW_SPLIT_EQUAL   "비활성화된 창의 경로와 같게 설정합니다.\n경로같게"
-    ID_WINDOW_COMPARE       "창간의 폴더 내용을 비교합니다."
-    ID_WINDOW_DUAL_MOVE     "창 #1과 창 #2에서 선택한 항목을 서로 이동합니다."
-    ID_WINDOW_DUAL_COPY     "창 #1과 창 #2에서 선택한 항목을 서로 복사합니다."
-    ID_WINDOW_DUAL_DELETE   "창 #1과 창 #2에서 선택한 항목을 모두 삭제합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_WINDOW_SPLIT_OTHER_EQUAL "현재 경로를 비활성화된 창의 경로로 설정합니다.\n경로설정"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_FAVORITES         "즐겨찾기 폴더로 이동합니다."
-    ID_GO_INTERNETCOOKIE    "인터넷 익스플로러의 쿠키 폴더로 이동합니다."
-    ID_GO_HISTORY           "이전에 열어본 폴더로 이동합니다.\n히스토리"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_BOOKMARK_DYNAMIC_MENU "등록된 연결 항목이 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_DRIVE_DYNAMIC_MENU   "이동할 드라이브가 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_UP_DYNAMIC_MENU   "상위 폴더가 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_BACKWARD_DYNAMIC_MENU "이전에 탐색했던 폴더가 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_FORWARD_DYNAMIC_MENU "앞서 탐색했던 폴더가 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_HISTORY_DYNAMIC_MENU "히스토리가 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_WORKING_FOLDER_DYNAMIC_MENU "작업 폴더를 사용할 수 없습니다."
-    ID_GO_WORKING_FOLDER_0  "Ctrl키+Shift키와 함께 작업 폴더 1을 설정할 수 있습니다.\n작업 폴더 1"
-    ID_GO_WORKING_FOLDER_1  "Ctrl키+Shift키와 함께 작업 폴더 2를 설정할 수 있습니다.\n작업 폴더 2"
-    ID_GO_WORKING_FOLDER_2  "Ctrl키+Shift키와 함께 작업 폴더 3을 설정할 수 있습니다.\n작업 폴더 3"
-    ID_GO_WORKING_FOLDER_3  "Ctrl키+Shift키와 함께 작업 폴더 4를 설정할 수 있습니다.\n작업 폴더 4"
-    ID_GO_WORKING_FOLDER_4  "Ctrl키+Shift키와 함께 작업 폴더 5를 설정할 수 있습니다.\n작업 폴더 5"
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_NEW_DYNAMIC_MENU "쉘에 의해 새로 만들 항목이 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_MRU_FILE1       "최근에 실행된 목록이 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_RECENT_DYNAMIC_MENU "최근에 실행된 파일 목록이 없습니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_BATCH_RENAME_ALL "선택한 항목의 이름을 일괄적으로 바꿉니다."
-    ID_FILE_BATCH_RENAME_FILE "선택한 항목 중 파일의 이름만 일괄적으로 바꿉니다."
-    ID_FILE_BATCH_RENAME_FOLDER "선택한 항목 중 폴더의 이름만 일괄적으로 바꿉니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_VIEWER_ASS      "선택한 항목에 대해 뷰어 프로그램을 선택하여 봅니다."
-    ID_FILE_EDITOR_ASS      "선택한 항목에 대해 편집 프로그램을 선택하여 편집합니다."
-    ID_FILE_SHELL_ASS       "선택한 항목을 윈도우 연결 프로그램으로 선택하여 보기 및 편집합니다."
-    ID_FILE_SPLIT           "선택한 파일을 여러 조각으로 분할합니다."
-    ID_FILE_COMBINE         "여러 조각난 파일을 하나의 파일로 결합합니다."
-    ID_FILE_MERGE           "여러 파일을 하나의 파일로 합칩니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_INIT_FOLDER       "모든 창에 대해 환경 설정에서 설정된 초기 폴더로 이동합니다."
-    ID_GO_INIT_FOLDER_1     "창 #1만 환경 설정에서 설정된 초기 폴더로 이동합니다."
-    ID_GO_INIT_FOLDER_2     "창 #2만 환경 설정에서 설정된 초기 폴더로 이동합니다."
-    ID_GO_HISTORY_CLEAR     "이전에 열어본 폴더 기록을 모두 지웁니다."
-    ID_GO_HISTORY_BOX       "이전에 열어본 폴더를 보여주고 해당 폴더로 이동합니다."
-    ID_GO_BACK_BOX          "이전 폴더를 보여주고 해당 폴더로 이동합니다."
-    ID_GO_FORWARD_BOX       "다음 폴더를 보여주고 해당 폴더로 이동합니다."
-    ID_GO_BACK_CLEAR        "이전 폴더 기록을 모두 지웁니다."
-    ID_GO_FORWARD_CLEAR     "다음 폴더 기록을 모두 지웁니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_GO_UP_BOX            "상위 폴더를 모두 보여주고 해당 폴더로 이동합니다."
-    ID_GO_HISTORY_ALL_CLEAR "이전 폴더, 다음 폴더, 이전에 열어본 폴더 기록 모두를 지웁니다."
-    ID_GO_WORKING_FOLDER    "작업 폴더를 보여주고 해당 폴더로 이동합니다.\n작업폴더"
-    ID_GO_WORKING_FOLDER_RESET "모든 작업 폴더를 초기화 합니다."
-END
-
-STRINGTABLE 
-BEGIN
-    ID_FILE_NEW_FILE        "비어 있는 파일을 새로 만듭니다."
 END
 
 #endif    // Neutral resources
@@ -3756,51 +3304,6 @@ END
 LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
 #pragma code_page(949)
 #endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_FILE_ASSOCIATION DIALOG  0, 0, 238, 244
-STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
-CAPTION "파일 형식 연결"
-FONT 9, "굴림"
-BEGIN
-    LTEXT           "등록된 파일 형식(&T):",IDC_STATIC,7,7,66,8
-    CONTROL         "List1",IDC_LIST1,"SysListView32",LVS_REPORT | WS_BORDER | WS_TABSTOP,7,17,224,75
-    PUSHBUTTON      "새로 만들기(&N)",IDC_BUTTON1,124,97,63,16
-    PUSHBUTTON      "삭제(&D)",IDC_BUTTON2,191,97,40,16
-    GROUPBOX        "'001' 확장명에 대한 세부 정보",IDC_STATIC,7,115,224,99
-    LTEXT           "연결 프로그램:",IDC_STATIC,13,131,47,8
-    ICON            IDI_NOT,IDC_STATIC,64,125,18,21
-    PUSHBUTTON      "변경(&C)...",IDC_BUTTON5,176,128,50,16
-    PUSHBUTTON      "고급(&V)",IDC_BUTTON7,176,192,50,16
-    LTEXT           "빵집",IDC_STATIC,90,131,15,8
-    LTEXT           "'001' 확장명을 가진 파일은 '빵집 001 파일' 형식입니다. 모든 '빵집 001 파일' 파일에 적용할 설정을 변경하려면 [고급]을 누르십시오.",IDC_STATIC,13,150,213,36
-    DEFPUSHBUTTON   "확인",IDOK,148,221,40,16
-    PUSHBUTTON      "취소",IDCANCEL,191,221,40,16
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_FILE_ASSOCIATION, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 231
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 237
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
 
 /////////////////////////////////////////////////////////////////////////////
 //

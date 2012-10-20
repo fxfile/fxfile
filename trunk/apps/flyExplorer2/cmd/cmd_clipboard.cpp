@@ -775,17 +775,53 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
         xpr_tchar_t sTargetDir[XPR_MAX_PATH + 1] = {0};
         fxb::GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sTargetDir);
 
+        const xpr_tchar_t *sFormatText;
+        FORMATETC sFormatEtc = {0};
+        sFormatEtc.dwAspect = DVASPECT_CONTENT;
+        sFormatEtc.ptd      = XPR_NULL;
+        sFormatEtc.lindex   = -1;
+
         COlePasteSpecialDialog sDlg;
-        //sDlg.AddFormat(CF_METAFILEPICT,  TYMED_MFPICT,                   AFX_IDS_METAFILE_FORMAT,                XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_DIB,                    TYMED_HGLOBAL,                  AFX_IDS_DIB_FORMAT,                     XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_BITMAP,                 TYMED_GDI,                      AFX_IDS_BITMAP_FORMAT,                  XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_TEXT,                   TYMED_HGLOBAL,                  AFX_IDS_TEXT_FORMAT,                    XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_UNICODETEXT,            TYMED_HGLOBAL,                  IDS_CLIPBOARD_UNICODE_TEXT_FORMAT,      XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mInetUrl,      TYMED_HGLOBAL,                  IDS_CLIPBOARD_URL_FORMAT,               XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mFileContents, TYMED_ISTREAM | TYMED_ISTORAGE, IDS_CLIPBOARD_FILE_CONTENTS_FORMAT,     XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mShellIDList,  TYMED_HGLOBAL,                  IDS_CLIPBOARD_SHELL_IDLIST_FORMAT,      XPR_FALSE, XPR_FALSE);
-        //sDlg.AddFormat(sClipFormat.mFileName,     TYMED_FILE | TYMED_HGLOBAL,     IDS_CLIPBOARD_FILE_NAME_FORMAT,         XPR_FALSE, XPR_FALSE);
-        //sDlg.AddFormat(sClipFormat.mFileNameW,    TYMED_FILE | TYMED_HGLOBAL,     IDS_CLIPBOARD_UNICODE_FILE_NAME_FORMAT, XPR_FALSE, XPR_FALSE);
+
+        //sFormatEtc.cfFormat = CF_METAFILEPICT; sFormatEtc.tymed = TYMED_MFPICT;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_DIB; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_BITMAP; sFormatEtc.tymed = TYMED_GDI;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_TEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_UNICODETEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mInetUrl; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mFileContents; sFormatEtc.tymed = TYMED_ISTREAM | TYMED_ISTORAGE;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mShellIDList; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        //sFormatEtc.cfFormat = sClipFormat.mFileName; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        //sFormatEtc.cfFormat = sClipFormat.mFileNameW; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         if (sDlg.DoModal() != IDOK)
             return;
@@ -853,17 +889,53 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
     {
         fxb::ClipFormat &sClipFormat = fxb::ClipFormat::instance();
 
+        const xpr_tchar_t *sFormatText;
+        FORMATETC sFormatEtc = {0};
+        sFormatEtc.dwAspect = DVASPECT_CONTENT;
+        sFormatEtc.ptd      = XPR_NULL;
+        sFormatEtc.lindex   = -1;
+
         COlePasteSpecialDialog sDlg;
-        //sDlg.AddFormat(CF_METAFILEPICT,  TYMED_MFPICT,                   IDS_CLIPBOARD_METAFILE_FORMAT,          XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_DIB,                    TYMED_HGLOBAL,                  IDS_CLIPBOARD_DIB_FORMAT,               XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_BITMAP,                 TYMED_GDI,                      IDS_CLIPBOARD_BITMAP_FORMAT,            XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_TEXT,                   TYMED_HGLOBAL,                  IDS_CLIPBOARD_TEXT_FORMAT,              XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(CF_UNICODETEXT,            TYMED_HGLOBAL,                  IDS_CLIPBOARD_UNICODE_TEXT_FORMAT,      XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mInetUrl,      TYMED_HGLOBAL,                  IDS_CLIPBOARD_URL_FORMAT,               XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mFileContents, TYMED_ISTREAM | TYMED_ISTORAGE, IDS_CLIPBOARD_FILE_CONTENTS_FORMAT,     XPR_FALSE, XPR_FALSE);
-        sDlg.AddFormat(sClipFormat.mShellIDList,  TYMED_HGLOBAL,                  IDS_CLIPBOARD_SHELL_IDLIST_FORMAT,      XPR_FALSE, XPR_FALSE);
-        //sDlg.AddFormat(mFileName,     TYMED_FILE | TYMED_HGLOBAL,     IDS_CLIPBOARD_FILE_NAME_FORMAT,         XPR_FALSE, XPR_FALSE);
-        //sDlg.AddFormat(mFileNameW,    TYMED_FILE | TYMED_HGLOBAL,     IDS_CLIPBOARD_UNICODE_FILE_NAME_FORMAT, XPR_FALSE, XPR_FALSE);
+
+        //sFormatEtc.cfFormat = CF_METAFILEPICT; sFormatEtc.tymed = TYMED_MFPICT;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_DIB; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_BITMAP; sFormatEtc.tymed = TYMED_GDI;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_TEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = CF_UNICODETEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mInetUrl; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mFileContents; sFormatEtc.tymed = TYMED_ISTREAM | TYMED_ISTORAGE;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        sFormatEtc.cfFormat = sClipFormat.mShellIDList; sFormatEtc.tymed = TYMED_HGLOBAL;
+        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
+        sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        //sFormatEtc.cfFormat = sClipFormat.mFileName; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
+
+        //sFormatEtc.cfFormat = sClipFormat.mFileNameW; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
+        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
+        //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         if (sDlg.DoModal() != IDOK)
             return;

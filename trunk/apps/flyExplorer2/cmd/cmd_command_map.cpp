@@ -189,6 +189,10 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_INIT_FOLDER,                   new cmd::GoInitFolderCommand);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_1,                 new cmd::GoInitFolder1Command);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_2,                 new cmd::GoInitFolder2Command);
+    aExecutor.bindCommand(ID_GO_INIT_FOLDER_3,                 new cmd::GoInitFolder3Command);
+    aExecutor.bindCommand(ID_GO_INIT_FOLDER_4,                 new cmd::GoInitFolder4Command);
+    aExecutor.bindCommand(ID_GO_INIT_FOLDER_5,                 new cmd::GoInitFolder5Command);
+    aExecutor.bindCommand(ID_GO_INIT_FOLDER_6,                 new cmd::GoInitFolder6Command);
 
     aExecutor.bindCommand(ID_GO_DESKTOP,                       new cmd::GoSystemDesktopCommand);
     aExecutor.bindCommand(ID_GO_MYDOCUMENT,                    new cmd::GoSystemMyDocumentCommand);
