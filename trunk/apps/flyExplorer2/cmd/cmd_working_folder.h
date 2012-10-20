@@ -17,6 +17,8 @@ namespace cmd
 {
 XPR_COMMAND_DECLARE_CLASS(WorkingFolderPopupCommand);
 XPR_COMMAND_DECLARE_CLASS(GoWorkingFolderCommand);
+XPR_COMMAND_DECLARE_CLASS(WorkingFolderSetCommand);
+XPR_COMMAND_DECLARE_CLASS(WorkingFolderResetCommand);
 XPR_COMMAND_DECLARE_CLASS(WorkingFolderResetAllCommand);
 } // namespace cmd
 

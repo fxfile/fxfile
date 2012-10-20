@@ -61,10 +61,49 @@ void GoWorkingFolderCommand::execute(CommandContext &aContext)
     {
         if (sMainFrame->goWorkingFolder(sIndex) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.working_folder.msg.not_set"));
+            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("working_folder.msg.not_set"));
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
         }
     }
+}
+
+xpr_sint_t WorkingFolderSetCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void WorkingFolderSetCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    xpr_sint_t sIndex = sCommandId - ID_GO_WORKING_FOLDER_SET_FIRST;
+    if (!XPR_IS_RANGE(0, sIndex, MAX_WORKING_FOLDER-1))
+        return;
+
+    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    {
+        LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+        if (XPR_IS_NOT_NULL(sTvItemData))
+        {
+            sMainFrame->setWorkingFolder(sIndex, sTvItemData->mFullPidl);
+        }
+    }
+}
+
+xpr_sint_t WorkingFolderResetCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void WorkingFolderResetCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    xpr_sint_t sIndex = sCommandId - ID_GO_WORKING_FOLDER_RESET_FIRST;
+    if (!XPR_IS_RANGE(0, sIndex, MAX_WORKING_FOLDER-1))
+        return;
+
+    sMainFrame->resetWorkingFolder(sIndex);
 }
 
 xpr_sint_t WorkingFolderResetAllCommand::canExecute(CommandContext &aContext)

@@ -118,7 +118,7 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_GO_BOOKMARK_ADD]                = XPR_STRING_LITERAL("cmd.bookmark.add");
     mCommandString[ID_GO_BOOKMARK_MODIFY]             = XPR_STRING_LITERAL("cmd.bookmark.modify");
     mCommandString[ID_GO_WORKING_FOLDER]              = XPR_STRING_LITERAL("cmd.working_folder.popup_menu");
-    mCommandString[ID_GO_WORKING_FOLDER_RESET]        = XPR_STRING_LITERAL("cmd.working_folder.reset");
+    mCommandString[ID_GO_WORKING_FOLDER_RESET_ALL]    = XPR_STRING_LITERAL("cmd.working_folder.reset_all");
     mCommandString[ID_GO_PATH]                        = XPR_STRING_LITERAL("cmd.go.path");
     mCommandString[ID_GO_INIT_FOLDER]                 = XPR_STRING_LITERAL("cmd.go.init_folder_all");
     mCommandString[ID_GO_INIT_FOLDER_1]               = XPR_STRING_LITERAL("cmd.go.init_folder_1");

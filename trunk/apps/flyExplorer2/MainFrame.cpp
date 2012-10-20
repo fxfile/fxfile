@@ -1644,8 +1644,24 @@ xpr_sint_t MainFrame::insertGoWorkingFolderPopupMenu(BCMenu *aPopupMenu, xpr_sin
     sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
-        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.item"), XPR_STRING_LITERAL("%d,%d")), i+1, i+1);
-        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_FIRST+i, sText, &sToolBarImgList, 44+i);
+        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.go"), XPR_STRING_LITERAL("%d,%d")), i+1, i+1);
+        aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_FIRST+i, sText, &sToolBarImgList, 44+i);
+    }
+
+    aPopupMenu->InsertMenu(aInsert++, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
+
+    for (i = 0; i < sCount; ++i)
+    {
+        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.set"), XPR_STRING_LITERAL("%d")), i+1);
+        aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_SET_FIRST+i, sText);
+    }
+
+    aPopupMenu->InsertMenu(aInsert++, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
+
+    for (i = 0; i < sCount; ++i)
+    {
+        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.reset"), XPR_STRING_LITERAL("%d")), i+1);
+        aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_RESET_FIRST+i, sText);
     }
 
     return sCount;
@@ -2723,7 +2739,10 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
 
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3 + 1] = {0};
             _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_real_path"), XPR_STRING_LITERAL("%s,%s")), sPath.c_str(), sFullPath.c_str());
-            xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
+            xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
+            if (sMsgId == IDCANCEL)
+                return XPR_FALSE;
+
             sOnlyFileSystemPath = (sMsgId == IDYES) ? XPR_TRUE : XPR_FALSE;
         }
     }
@@ -2731,9 +2750,23 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
     return fxb::Pidl2Path(aFullPidl, gOpt->mWorkingFolder[aIndex], sOnlyFileSystemPath);
 }
 
+void MainFrame::resetWorkingFolder(xpr_size_t aIndex)
+{
+    if (!XPR_IS_RANGE(0, aIndex, MAX_WORKING_FOLDER - 1))
+        return;
+
+    xpr_tchar_t sMsg[0xff] = {0};
+    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_initialize"), XPR_STRING_LITERAL("%d")), aIndex + 1);
+    xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
+    if (sMsgId != IDYES)
+        return;
+
+    gOpt->mWorkingFolder[aIndex][0] = XPR_STRING_LITERAL('\0');
+}
+
 void MainFrame::resetWorkingFolder(void)
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("working_folder.msg.question_initialize"));
+    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("working_folder.msg.question_initialize_all"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
