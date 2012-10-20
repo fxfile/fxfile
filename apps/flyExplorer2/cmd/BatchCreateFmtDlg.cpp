@@ -96,6 +96,17 @@ xpr_bool_t BatchCreateFmtDlg::OnInitDialog(void)
     ((CButton *)GetDlgItem((sEnd == XPR_TRUE) ? IDC_CREATE_IS_NUMBER_END : IDC_CREATE_IS_NUMBER_COUNT))->SetCheck(1);
     EnableWindow(sEnd);
 
+    SetDlgItemText(IDC_CREATE_LABEL_FORMAT,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.format")));
+    SetDlgItemText(IDC_CREATE_FORMAT_AUTO_NUM,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.number_digit")));
+    SetDlgItemText(IDC_CREATE_FORMAT_DATE,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.date")));
+    SetDlgItemText(IDC_CREATE_FORMAT_TIME,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.time")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_INCREASE, theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.increase")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_START,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.start_number")));
+    SetDlgItemText(IDC_CREATE_IS_NUMBER_END,         theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.end_number")));
+    SetDlgItemText(IDC_CREATE_IS_NUMBER_COUNT,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.count")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_LENGTH,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.length")));
+    SetDlgItemText(IDC_CREATE_NUMBER_ZERO,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.check.zero_filled")));
+
     return XPR_TRUE;
 }
 

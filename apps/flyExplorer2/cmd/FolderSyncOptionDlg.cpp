@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "SyncOptionDlg.h"
+#include "FolderSyncOptionDlg.h"
 
 #include "fxb/fxb_sync_dirs.h"
 
@@ -20,7 +20,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SyncOptionDlg::SyncOptionDlg(void)
+FolderSyncOptionDlg::FolderSyncOptionDlg(void)
     : super(IDD_FOLDER_SYNC_OPTION)
     , mDirection(fxb::SyncDirectionNone)
     , mFiles1(0), mFiles2(0)
@@ -28,24 +28,24 @@ SyncOptionDlg::SyncOptionDlg(void)
 {
 }
 
-SyncOptionDlg::~SyncOptionDlg(void)
+FolderSyncOptionDlg::~FolderSyncOptionDlg(void)
 {
 }
 
-void SyncOptionDlg::DoDataExchange(CDataExchange* pDX)
+void FolderSyncOptionDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_FOLDER_SYNC_OPTION_DIRECTION, mDirectionComboBox);
 }
 
-BEGIN_MESSAGE_MAP(SyncOptionDlg, super)
+BEGIN_MESSAGE_MAP(FolderSyncOptionDlg, super)
     ON_CBN_SELCHANGE(IDC_FOLDER_SYNC_OPTION_DIRECTION, OnSelchangeDirection)
     ON_BN_CLICKED(IDOK,                            OnOK)
     ON_BN_CLICKED(IDC_FOLDER_SYNC_OPTION_TO_RIGHT, OnToLeftRight)
     ON_BN_CLICKED(IDC_FOLDER_SYNC_OPTION_TO_LEFT,  OnToLeftRight)
 END_MESSAGE_MAP()
 
-xpr_bool_t SyncOptionDlg::OnInitDialog(void) 
+xpr_bool_t FolderSyncOptionDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -74,10 +74,15 @@ xpr_bool_t SyncOptionDlg::OnInitDialog(void)
 
     OnSelchangeDirection();
 
+    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.title")));
+    SetDlgItemText(IDC_FOLDER_SYNC_OPTION_LABEL_DIRECTION, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.label.direction")));
+    SetDlgItemText(IDOK,                                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+
     return XPR_TRUE;
 }
 
-void SyncOptionDlg::setPath(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
+void FolderSyncOptionDlg::setPath(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
 {
     if (aPath == XPR_NULL)
         return;
@@ -86,13 +91,13 @@ void SyncOptionDlg::setPath(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
     if (aIndex == 1) mPath2 = aPath;
 }
 
-void SyncOptionDlg::setFiles(xpr_sint_t aIndex, xpr_sint_t aFiles, xpr_sint64_t aSize)
+void FolderSyncOptionDlg::setFiles(xpr_sint_t aIndex, xpr_sint_t aFiles, xpr_sint64_t aSize)
 {
     if (aIndex == 0) { mFiles1 = aFiles; mSize1 = aSize; }
     if (aIndex == 1) { mFiles2 = aFiles; mSize2 = aSize; }
 }
 
-void SyncOptionDlg::OnSelchangeDirection(void)
+void FolderSyncOptionDlg::OnSelchangeDirection(void)
 {
     xpr_uint_t sDirection = fxb::SyncDirectionNone;
 
@@ -108,7 +113,7 @@ void SyncOptionDlg::OnSelchangeDirection(void)
     ((CButton *)GetDlgItem(IDC_FOLDER_SYNC_OPTION_TO_LEFT ))->SetCheck(XPR_TEST_BITS(sDirection, fxb::SyncDirectionToLeft));
 }
 
-void SyncOptionDlg::OnOK(void)
+void FolderSyncOptionDlg::OnOK(void)
 {
     xpr_sint_t sCurSel = mDirectionComboBox.GetCurSel();
     switch (sCurSel)
@@ -121,12 +126,12 @@ void SyncOptionDlg::OnOK(void)
     super::OnOK();
 }
 
-xpr_uint_t SyncOptionDlg::getDirection(void)
+xpr_uint_t FolderSyncOptionDlg::getDirection(void)
 {
     return mDirection;
 }
 
-void SyncOptionDlg::OnToLeftRight(void)
+void FolderSyncOptionDlg::OnToLeftRight(void)
 {
     xpr_bool_t sToLeft  = ((CButton *)GetDlgItem(IDC_FOLDER_SYNC_OPTION_TO_LEFT ))->GetCheck();
     xpr_bool_t sToRight = ((CButton *)GetDlgItem(IDC_FOLDER_SYNC_OPTION_TO_RIGHT))->GetCheck();

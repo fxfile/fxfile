@@ -23,10 +23,16 @@ public:   ~CommandStringTable(void);
 public:
     void load(void);
     const xpr_tchar_t *loadString(xpr_uint_t aId);
+    const xpr_tchar_t *loadButtonString(xpr_uint_t aId);
+
+protected:
+    void loadCommands(void);
+    void loadCommandButtons(void);
 
 protected:
     typedef std::map<xpr_uint_t, std::tstring> CommandStringMap;
     CommandStringMap mCommandString;
+    CommandStringMap mCommandButtonString;
 };
 
 #endif // __FX_COMMAND_STRING_TABLE_H__

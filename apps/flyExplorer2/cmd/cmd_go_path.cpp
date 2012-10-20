@@ -115,6 +115,54 @@ void GoInitFolder2Command::execute(CommandContext &aContext)
     sMainFrame->goInitFolder(1);
 }
 
+xpr_sint_t GoInitFolder3Command::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoInitFolder3Command::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    sMainFrame->goInitFolder(2);
+}
+
+xpr_sint_t GoInitFolder4Command::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoInitFolder4Command::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    sMainFrame->goInitFolder(3);
+}
+
+xpr_sint_t GoInitFolder5Command::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoInitFolder5Command::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    sMainFrame->goInitFolder(4);
+}
+
+xpr_sint_t GoInitFolder6Command::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoInitFolder6Command::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    sMainFrame->goInitFolder(5);
+}
+
 static void goSystemFolder(MainFrame &aMainFrame, xpr_sint_t aCSIDL)
 {
     ExplorerCtrl *sExplorerCtrl = aMainFrame.getExplorerCtrl();

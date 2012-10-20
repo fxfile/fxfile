@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_SYNC_DLG_H__
-#define __FX_SYNC_DLG_H__
+#ifndef __FX_FOLDER_SYNC_DLG_H__
+#define __FX_FOLDER_SYNC_DLG_H__
 #pragma once
 
 #include "rgc/ResizingDialog.h"
@@ -21,13 +21,13 @@ namespace fxb
 class SyncDirs;
 } // namespace fxb
 
-class SyncDlg : public CResizingDialog
+class FolderSyncDlg : public CResizingDialog
 {
     typedef CResizingDialog super;
 
 public:
-    SyncDlg(void);
-    virtual ~SyncDlg(void);
+    FolderSyncDlg(void);
+    virtual ~FolderSyncDlg(void);
 
 public:
     void setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2);
@@ -101,4 +101,4 @@ protected:
     afx_msg void OnDestroy(void);
 };
 
-#endif // __FX_SYNC_DLG_H__
+#endif // __FX_FOLDER_SYNC_DLG_H__

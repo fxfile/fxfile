@@ -144,6 +144,10 @@
 			<String ID="cmd.go.init_folder_all">모두 초기 폴더로 이동(&amp;A)</String>
 			<String ID="cmd.go.init_folder_1">창 #1 초기 폴더로 이동(&amp;1)</String>
 			<String ID="cmd.go.init_folder_2">창 #2 초기 폴더로 이동(&amp;2)</String>
+			<String ID="cmd.go.init_folder_3">창 #3 초기 폴더로 이동(&amp;3)</String>
+			<String ID="cmd.go.init_folder_4">창 #4 초기 폴더로 이동(&amp;4)</String>
+			<String ID="cmd.go.init_folder_5">창 #5 초기 폴더로 이동(&amp;5)</String>
+			<String ID="cmd.go.init_folder_6">창 #6 초기 폴더로 이동(&amp;6)</String>
 			<String ID="cmd.go.system_folder.popup">시스템 경로 이동(&amp;S)</String>
 			<String ID="cmd.go.system_folder.desktop">바탕 화면(&amp;T)</String>
 			<String ID="cmd.go.system_folder.my_document">내 문서(&amp;D)</String>
@@ -432,11 +436,16 @@
 			<String ID="tool_bar.cmd.navigate.forward">앞으로</String>
 			<String ID="tool_bar.cmd.go.up">위로</String>
 			<String ID="tool_bar.cmd.navigate.history">히스토리</String>
-			<String ID="tool_bar.cmd.folder_pane">폴더</String>
+			<String ID="tool_bar.cmd.folder_tree.show">폴더</String>
 			<String ID="tool_bar.cmd.search_bar">검색</String>
 			<String ID="tool_bar.cmd.bookmark.popup_menu">북마크</String>
 			<String ID="tool_bar.cmd.go.drive">드라이브</String>
 			<String ID="tool_bar.cmd.working_folder.popup_menu">작업폴더</String>
+			<String ID="tool_bar.cmd.working_folder.go_1">작업폴더1</String>
+			<String ID="tool_bar.cmd.working_folder.go_2">작업폴더2</String>
+			<String ID="tool_bar.cmd.working_folder.go_3">작업폴더3</String>
+			<String ID="tool_bar.cmd.working_folder.go_4">작업폴더4</String>
+			<String ID="tool_bar.cmd.working_folder.go_5">작업폴더5</String>
 			<String ID="tool_bar.cmd.cut">잘라내기</String>
 			<String ID="tool_bar.cmd.copy">복사</String>
 			<String ID="tool_bar.cmd.paste">붙여넣기</String>
@@ -450,11 +459,11 @@
 			<String ID="tool_bar.cmd.view_style">보기</String>
 			<String ID="tool_bar.cmd.window.split">창 분할</String>
 			<String ID="tool_bar.cmd.window.split.single">단일창</String>
-			<String ID="tool_bar.cmd.window.split.vertical">수직창</String>
-			<String ID="tool_bar.cmd.window.split.horizontal">수평창</String>
+			<String ID="tool_bar.cmd.window.split.1x2">수직창</String>
+			<String ID="tool_bar.cmd.window.split.2x1">수평창</String>
 			<String ID="tool_bar.cmd.window.equal">경로같게</String>
 			<String ID="tool_bar.cmd.window.swap">스왑하기</String>
-			<String ID="tool_bar.cmd.new_folder">새 폴더</String>
+			<String ID="tool_bar.cmd.new.folder">새 폴더</String>
 			<String ID="tool_bar.cmd.scrap.view">수집함</String>
 			<String ID="tool_bar.cmd.command_prompt">프롬프트</String>
 			<String ID="tool_bar.cmd.recycle_bin.empty">비우기</String>
@@ -462,7 +471,7 @@
 			<String ID="tool_bar.cmd.picture.show">그림보기</String>
 			<String ID="tool_bar.cmd.file_view">파일보기</String>
 			<String ID="tool_bar.cmd.file_edit">파일편집</String>
-			<String ID="tool_bar.cmd.options">환경설정</String>
+			<String ID="tool_bar.cmd.preferences">환경설정</String>
 			<String ID="tool_bar.cmd.about">정보</String>
 
 			<!-- popup common -->
@@ -562,6 +571,16 @@
 			<String ID="popup.batch_create.status.preparing">%1% / %2% 준비 중...%3%%%</String>
 			<String ID="popup.batch_create.status.verifying">%1% / %2% 유효성 검사 중...%3%%%</String>
 			<String ID="popup.batch_create.status.creating">%1% / %2% 새 항목 생성 중...%3%%%</String>
+			<String ID="popup.batch_create.tab.format.label.format">형식(&amp;O):</String>
+			<String ID="popup.batch_create.tab.format.button.number_digit">숫자</String>
+			<String ID="popup.batch_create.tab.format.button.date">날짜</String>
+			<String ID="popup.batch_create.tab.format.button.time">시간</String>
+			<String ID="popup.batch_create.tab.format.label.increase">숫자 증가값(&amp;I):</String>
+			<String ID="popup.batch_create.tab.format.label.start_number">시작 번호(&amp;S):</String>
+			<String ID="popup.batch_create.tab.format.label.end_number">끝 번호(&amp;S):</String>
+			<String ID="popup.batch_create.tab.format.label.count">번호 개수(&amp;T):</String>
+			<String ID="popup.batch_create.tab.format.label.length">자리수(&amp;L):</String>
+			<String ID="popup.batch_create.tab.format.check.zero_filled">&#8216;0&#8217;으로 자리수 채우기(&amp;0)</String>
 
 			<!-- column set popup -->
 			<String ID="popup.column_set.title">열 세부 선택</String>
@@ -1237,12 +1256,12 @@
 			<!-- popup: folder synchronization option -->
 			<String ID="popup.folder_sync_option.title">동기화</String>
 			<String ID="popup.folder_sync_option.label.direction">동기화 방향(&amp;D):</String>
-			<String ID="popup.folder_sync_option.direction.right">오늘쪽 방향(-&gt;)</String>
-			<String ID="popup.folder_sync_option.direction.left">왼쪽 방향(%lt;-)</String>
-			<String ID="popup.folder_sync_option.direction.bi-drectional">양방향(%lt;-&gt;)</String>
+			<String ID="popup.folder_sync_option.direction.right">오늘쪽 방향 (-&gt;)</String>
+			<String ID="popup.folder_sync_option.direction.left">왼쪽 방향 (&lt;-)</String>
+			<String ID="popup.folder_sync_option.direction.bi-drectional">양방향 (&lt;-&gt;)</String>
 			<String ID="popup.folder_sync_option.direction.none">방향 없음</String>
 			<String ID="popup.folder_sync_option.check.to_right">-&gt; 방향, 파일 %1%, 총 %2% 바이트</String>
-			<String ID="popup.folder_sync_option.check.to_left">-&lt; 방향, 파일 %1%, 총 %2% 바이트</String>
+			<String ID="popup.folder_sync_option.check.to_left">&lt;- 방향, 파일 %1%, 총 %2% 바이트</String>
 
 			<!-- popup: folder comparison -->
 			<String ID="popup.folder_compare.title">폴더 비교하기</String>
@@ -1264,7 +1283,7 @@
 			<!-- popup: file association setting -->
 			<String ID="popup.file_ass_set.title">파일 외부 연동 설정</String>
 			<String ID="popup.file_ass_set.label.name">이름(&amp;N):</String>
-			<String ID="popup.file_ass_set.group.method">연동 방식(&amp;W)</String>
+			<String ID="popup.file_ass_set.group.method">연동 방식(&amp;M)</String>
 			<String ID="popup.file_ass_set.radio.method_extension">확장자 연동(&amp;X)</String>
 			<String ID="popup.file_ass_set.radio.method_filter">필터링 연동(&amp;F)</String>
 			<String ID="popup.file_ass_set.group.type">연동 형태(&amp;T)</String>
@@ -1336,11 +1355,16 @@
 			<String ID="popup.custom_toolbar.icon.small">작은 아이콘</String>
 			<String ID="popup.custom_toolbar.icon.large">큰 아이콘</String>
 
-
-
-
-
-
+			<!-- popup: special paste -->
+			<String ID="popup.paste_special.format.text">서식이 없는 텍스트</String>
+			<String ID="popup.paste_special.format.unicode_text">서식이 없는 유니코드 텍스트</String>
+			<String ID="popup.paste_special.format.dib_bitmap">장치 독립 비트맵</String>
+			<String ID="popup.paste_special.format.bitmap">비트맵</String>
+			<String ID="popup.paste_special.format.url">인터넷 주소</String>
+			<String ID="popup.paste_special.format.file_contents">파일 내용</String>
+			<String ID="popup.paste_special.format.file_name">파일 이름</String>
+			<String ID="popup.paste_special.format.unicode_file_name">유니코드 파일 이름</String>
+			<String ID="popup.paste_special.format.shell_idlist">파일 작업 (복사, 이동, 등...)</String>
 
 			<!-- popup: Configuration -->
 			<String ID="popup.cfg.title">환경 설정</String>
@@ -1657,7 +1681,7 @@
 			<String ID="popup.cfg.body.advanced.option.system_tray.go_init_folder_on_restore">복원시 초기 폴더로 이동하기</String>
 			<String ID="popup.cfg.body.advanced.option.system_tray.restore_hide_on_one_click">한번 클릭으로 복원/숨기기</String>
 			<String ID="popup.cfg.body.advanced.button.remove_recent_file_list">최근 실행된 목록 지우기(&amp;E)</String>
-			<String ID="popup.cfg.body.advanced.button.restore_to_default">기본값 복원(&amp;R)</String>
+			<String ID="popup.cfg.body.advanced.button.restore_to_default">기본값 복원(&amp;D)</String>
 			<String ID="popup.cfg.body.advanced.msg.confirm_remove_recent_file_list">최근 실행된 목록을 정말 모두 지우시겠습니까?</String>
 
 			<String ID="popup.cfg.body.advanced.cfg_path.radio.program">프로그램과 같은 경로(&amp;D)</String>
