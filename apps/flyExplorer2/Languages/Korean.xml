@@ -136,9 +136,11 @@
 			<String ID="cmd.bookmark.add">북마크 추가(&amp;A)</String>
 			<String ID="cmd.bookmark.modify">북마크 편집(&amp;M)</String>
 			<String ID="cmd.working_folder.popup_menu">작업 폴더(&amp;W)</String>
-			<String ID="cmd.working_folder.item">작업 폴더 %1%(&amp;%2%)</String>
+			<String ID="cmd.working_folder.go">작업 폴더 %1%(&amp;%2%)</String>
+			<String ID="cmd.working_folder.set">작업 폴더 %1% 설정</String>
+			<String ID="cmd.working_folder.reset">작업 폴더 %1% 초기화</String>
 			<String ID="cmd.working_folder.popup">작업 폴더 이동(&amp;O)</String>
-			<String ID="cmd.working_folder.reset">작업 폴더 모두 초기화(&amp;R)</String>
+			<String ID="cmd.working_folder.reset_all">작업 폴더 모두 초기화(&amp;R)</String>
 			<String ID="cmd.go.path">경로 이동(&amp;G)</String>
 			<String ID="cmd.go.init_folder.popup">초기 폴더로 이동(&amp;I)</String>
 			<String ID="cmd.go.init_folder_all">모두 초기 폴더로 이동(&amp;A)</String>
@@ -901,20 +903,6 @@
 			<String ID="popup.trash_empty.msg.already_empty">휴지통이 비워져 있습니다.</String>
 			<String ID="popup.trash_empty.msg.confirm_empty">현재 휴지통에 총 %1% (%2% 바이트), %3%개의 항목이 있습니다.&#10;&#10;휴지통을 모두 비우시겠습니까?</String>
 			<String ID="popup.trash_empty.msg.complete">휴지통을 모두 비웠습니다.</String>
-
-			<!-- popup: working folder -->
-			<String ID="popup.working_folder.msg.not_set">작업 폴더가 설정되어 있지 않습니다.&#10;Ctrl키+Shift키와 함께 작업 폴더를 설정할 수 있습니다.</String>
-
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
-			<!-- index specifier -->
 
 			<!-- popup: batch image format conversion -->
 			<String ID="popup.pic_conv.title">일괄적 이미지 포멧 바꾸기</String>
@@ -1751,22 +1739,6 @@
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.windows_boot">윈도우즈 시작시 자동 실행(&amp;W)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.show_tray">시스템 트레이 표시(&amp;T)</String>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			<!-- popup: select folder -->
 			<String ID="popup.select_folder.title">폴더 선택</String>
 			<String ID="popup.select_folder.label.desc">폴더를 선택하여 주십시오.</String>
@@ -1795,7 +1767,6 @@
 			<String ID="popup.size_format.msg.select_unit">표시할 용량의 단위를 선택하여 주십시오.</String>
 			<String ID="popup.size_format.msg.confirm_delete">정말로 삭제하시겠습니까?</String>
 
-
 			<!-- main frame -->
 			<String ID="main_frame.msg.exit_file_operation_in_progress">파일 복사 및 이동 등의 작업이 현재 %1%개가 처리되고 있습니다.&#10;처리하는 중에는 종료하지 않기를 권장합니다.&#10;&#10;그래도 종료하시겠습니까?</String>
 			<String ID="main_frame.msg.confirm_exit">정말로 종료하시겠습니까?</String>
@@ -1803,8 +1774,10 @@
 			<String ID="main_frame.title.admin_mode">관리자</String>
 
 			<!-- working folder -->
+			<String ID="working_folder.msg.not_set">작업 폴더가 설정되어 있지 않습니다.&#10;Ctrl키+Shift키와 함께 작업 폴더를 설정할 수 있습니다.</String>
 			<String ID="working_folder.msg.question_real_path">실제 경로로 설정하시겠습니까?&#10;&#10;실제 경로: &#8216;%1%&#8217;&#10;가상 트리 경로: &#8216;%2%&#8217;</String>
-			<String ID="working_folder.msg.question_initialize">정말로 모든 작업 폴더를 초기화 하시겠습니까?</String>
+			<String ID="working_folder.msg.question_initialize">정말로 작업 폴더 %1%을(를) 초기화 하시겠습니까?</String>
+			<String ID="working_folder.msg.question_initialize_all">정말로 모든 작업 폴더를 초기화 하시겠습니까?</String>
 
 			<!-- explorer window -->
 			<String ID="explorer_window.column.name">이름</String>

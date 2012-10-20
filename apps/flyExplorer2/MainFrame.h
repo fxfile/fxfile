@@ -128,6 +128,7 @@ public:
     void goInitFolder(xpr_sint_t aIndex = -1);
     xpr_bool_t goWorkingFolder(xpr_sint_t aIndex);
     xpr_bool_t setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl);
+    void resetWorkingFolder(xpr_size_t aIndex);
     void resetWorkingFolder(void);
 
     xpr_bool_t isDriveBar(void) const;

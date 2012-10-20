@@ -2258,7 +2258,7 @@ BEGIN
         BEGIN
             MENUITEM "It can not use the working folder.", ID_GO_WORKING_FOLDER_DYNAMIC_MENU, INACTIVE
             MENUITEM SEPARATOR
-            MENUITEM "&Reset all working folders",  ID_GO_WORKING_FOLDER_RESET
+            MENUITEM "&Reset all working folders",  ID_GO_WORKING_FOLDER_RESET_ALL
         END
         MENUITEM SEPARATOR
         MENUITEM "&Go path...",                 ID_GO_PATH
@@ -3064,7 +3064,7 @@ BEGIN
     BEGIN
         MENUITEM "It can not use the working folder.", ID_GO_WORKING_FOLDER_DYNAMIC_MENU, INACTIVE
         MENUITEM SEPARATOR
-        MENUITEM "&Reset all working folders",  ID_GO_WORKING_FOLDER_RESET
+        MENUITEM "&Reset all working folders",  ID_GO_WORKING_FOLDER_RESET_ALL
     END
 END
 

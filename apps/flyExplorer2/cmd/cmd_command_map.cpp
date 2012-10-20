@@ -183,7 +183,11 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_WORKING_FOLDER,                new cmd::WorkingFolderPopupCommand);
     aExecutor.bindCommand(
         ID_GO_WORKING_FOLDER_FIRST, ID_GO_WORKING_FOLDER_LAST, new cmd::GoWorkingFolderCommand);
-    aExecutor.bindCommand(ID_GO_WORKING_FOLDER_RESET,          new cmd::WorkingFolderResetAllCommand);
+    aExecutor.bindCommand(
+        ID_GO_WORKING_FOLDER_SET_FIRST, ID_GO_WORKING_FOLDER_SET_LAST, new cmd::WorkingFolderSetCommand);
+    aExecutor.bindCommand(
+        ID_GO_WORKING_FOLDER_RESET_FIRST, ID_GO_WORKING_FOLDER_RESET_LAST, new cmd::WorkingFolderResetCommand);
+    aExecutor.bindCommand(ID_GO_WORKING_FOLDER_RESET_ALL,      new cmd::WorkingFolderResetAllCommand);
 
     aExecutor.bindCommand(ID_GO_PATH,                          new cmd::GoPathCommand);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER,                   new cmd::GoInitFolderCommand);
