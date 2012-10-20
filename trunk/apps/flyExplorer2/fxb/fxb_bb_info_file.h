@@ -13,7 +13,6 @@
 
 namespace fxb
 {
-// BitBucket Info/Info2 File
 class BBInfoFile
 {
 public:
@@ -21,31 +20,29 @@ public:
     virtual ~BBInfoFile(void);
 
 public:
-    xpr_bool_t open(xpr_tchar_t aDrive);
+    xpr_bool_t open(xpr_tchar_t aDriveChar);
     void close(void);
 
     xpr_size_t getCount(void);
-    void getBBPath(xpr_tchar_t *aPath);
-    xpr_bool_t isUnicode(void);
+    void getDirPath(xpr_tchar_t *aDirPath);
     xpr_tchar_t getDrive(void);
 
-    xpr_bool_t findOriginalPath(xpr_tchar_t *aFind, FILETIME aCreatedTime, xpr_tchar_t *aBBIndexPath);
-    xpr_bool_t getBBIndexPath(xpr_size_t aIndex, xpr_tchar_t *aBBIndexPath);
+    xpr_bool_t findOriginalPath(const xpr_tchar_t *aOriginalFilePath, FILETIME aCreatedTime, xpr_tchar_t *aRestoreFilePath);
 
 protected:
-    xpr_bool_t getDataEntryAll(void);
+    void readINFO2Index(void);
+    void readVistaIndex(void);
 
 protected:
-    FILE        *mFile;
-    xpr_tchar_t  mPath[XPR_MAX_PATH + 1];
-    xpr_bool_t   mUnicode;
+    xpr_tchar_t mDirPath[XPR_MAX_PATH + 1];
 
     struct BitBucketInfoHeader;
     struct BitBucketDataEntryA;
     struct BitBucketDataEntryW;
+    struct Index;
 
-    std::deque<BitBucketDataEntryA *> mListA;
-    std::deque<BitBucketDataEntryW *> mListW;
+    typedef std::deque<Index *> IndexDeque;
+    IndexDeque mIndexDeque;
 };
 } // namespace fxb
 

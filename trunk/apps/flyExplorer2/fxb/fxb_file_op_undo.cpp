@@ -667,7 +667,7 @@ SHFILEOPSTRUCT *FileOpUndo::startRecycleBin(FILE *aFile)
     sSource2[0] = '\0';
     sTarget2[0] = '\0';
 
-    xpr_tchar_t sDrive;
+    xpr_tchar_t sDriveChar;
     xpr_bool_t sSucceeded;
     BBInfoFile sBBInfoFile;
 
@@ -675,8 +675,8 @@ SHFILEOPSTRUCT *FileOpUndo::startRecycleBin(FILE *aFile)
     xpr_tchar_t *sTarget2Enum = sTarget2;
     for (i = 0; i < sSourceCount; ++i)
     {
-        sDrive = sSourceElem[i][0];
-        if (sBBInfoFile.open(sDrive) == XPR_FALSE)
+        sDriveChar = sSourceElem[i][0];
+        if (sBBInfoFile.open(sDriveChar) == XPR_FALSE)
             continue;
 
         sSucceeded = sBBInfoFile.findOriginalPath(sSourceElem[i], sFileTime[i], sTarget2Enum);

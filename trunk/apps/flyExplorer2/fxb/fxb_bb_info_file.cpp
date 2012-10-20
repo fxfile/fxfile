@@ -12,6 +12,11 @@
 
 #include <Sddl.h> // for Security Indentifier
 
+// Windows vista below
+//  - INFO/INFO2 File
+// Windows vista higher
+//  - R$XXXXXX.ext, I$XXXX.ext
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -48,6 +53,16 @@ struct BBInfoFile::BitBucketDataEntryW
     FILETIME    mDeleteTime;
     DWORD       mSize;
     xpr_wchar_t mOriginal[260];           // original filename
+};
+
+struct BBInfoFile::Index
+{
+    xpr_bool_t  mInfo2Mode;
+    xpr_sint_t  mInfo2Key;
+    xpr_tchar_t mKey[7];
+    FILETIME    mDeleteFileTime;
+    DWORD       mFileSize;
+    xpr_tchar_t mOriginalFilePath[MAX_PATH * 2 + 1];
 };
 
 static PTOKEN_USER GetUserToken(HANDLE aUserHandle)
@@ -166,251 +181,304 @@ static xpr_bool_t GetUserSid(HANDLE aTokenHandle, xpr_tchar_t *aStringSid, DWORD
 // 2. d:\\Recycled\\Info2                 - FAT  FileSystem
 
 BBInfoFile::BBInfoFile(void)
-    : mFile(XPR_NULL), mUnicode(XPR_FALSE)
 {
-    mPath[0] = '\0';
+    mDirPath[0] = '\0';
 }
 
 BBInfoFile::~BBInfoFile(void)
 {
     close();
 
-    {
-        BitBucketDataEntryA *sBitBucketDataEntryA;
-        std::deque<BitBucketDataEntryA *>::iterator sIterator;
+    Index *sIndex;
+    IndexDeque::iterator sIterator;
 
-        sIterator = mListA.begin();
-        for (; sIterator != mListA.end(); ++sIterator)
-        {
-            sBitBucketDataEntryA = *sIterator;
-            XPR_SAFE_DELETE(sBitBucketDataEntryA);
-        }
+    sIterator = mIndexDeque.begin();
+    for (; sIterator != mIndexDeque.end(); ++sIterator)
+    {
+        sIndex = *sIterator;
+        XPR_SAFE_DELETE(sIndex);
     }
 
-    {
-        BitBucketDataEntryW *sBitBucketDataEntryW;
-        std::deque<BitBucketDataEntryW *>::iterator sIterator;
-
-        sIterator = mListW.begin();
-        for (; sIterator != mListW.end(); ++sIterator)
-        {
-            sBitBucketDataEntryW = *sIterator;
-            XPR_SAFE_DELETE(sBitBucketDataEntryW);
-        }
-    }
-
-    mListA.clear();
-    mListW.clear();
+    mIndexDeque.clear();
 }
 
-xpr_bool_t BBInfoFile::open(xpr_tchar_t aDrive)
+xpr_bool_t BBInfoFile::open(xpr_tchar_t aDriveChar)
 {
-    mPath[0] = '\0';
-    if (IsDriveSecure(aDrive))
+    mDirPath[0] = '\0';
+
+    if (IsDriveSecure(aDriveChar) == XPR_TRUE)
     {
         xpr_tchar_t sUserSid[XPR_MAX_PATH + 1] = {0};
         if (GetUserSid(XPR_NULL, sUserSid, XPR_MAX_PATH))
-            _stprintf(mPath, XPR_STRING_LITERAL("%c:\\RECYCLER\\%s"), aDrive, sUserSid);
+        {
+            if (UserEnv::instance().mWinVer >= UserEnv::WinVista)
+            {
+                _stprintf(mDirPath, XPR_STRING_LITERAL("%c:\\$Recycle.Bin\\%s"), aDriveChar, sUserSid);
+            }
+            else
+            {
+                _stprintf(mDirPath, XPR_STRING_LITERAL("%c:\\RECYCLER\\%s"), aDriveChar, sUserSid);
+            }
+        }
     }
     else
     {
-        _stprintf(mPath, XPR_STRING_LITERAL("%c:\\RECYCLED"), aDrive);
+        _stprintf(mDirPath, XPR_STRING_LITERAL("%c:\\RECYCLED"), aDriveChar);
     }
 
-    if (mPath[0] == '\0')
+    if (mDirPath[0] == '\0')
         return XPR_FALSE;
 
-    xpr_tchar_t sInfo[XPR_MAX_PATH + 1] = {0};
-    _stprintf(sInfo, XPR_STRING_LITERAL("%s\\INFO2"), mPath);
-
-    mFile = _tfopen(sInfo, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(mFile))
-        return XPR_FALSE;
-
-    getDataEntryAll();
+    if (UserEnv::instance().mWinVer >= UserEnv::WinVista)
+    {
+        readVistaIndex();
+    }
+    else
+    {
+        readINFO2Index();
+    }
 
     return XPR_TRUE;
 }
 
 void BBInfoFile::close(void)
 {
-    if (XPR_IS_NOT_NULL(mFile))
-    {
-        fclose(mFile);
-        mFile = XPR_NULL;
-    }
 }
 
 xpr_size_t BBInfoFile::getCount(void)
 {
-    return (isUnicode() == XPR_TRUE) ? (xpr_sint_t)mListW.size() : (xpr_sint_t)mListA.size();
+    return mIndexDeque.size();
 }
 
 xpr_tchar_t BBInfoFile::getDrive(void)
 {
-    return mPath[0];
+    return mDirPath[0];
 }
 
-void BBInfoFile::getBBPath(xpr_tchar_t *aPath)
+void BBInfoFile::getDirPath(xpr_tchar_t *aDirPath)
 {
-    if (XPR_IS_NOT_NULL(aPath))
-        _tcscpy(aPath, mPath);
+    if (XPR_IS_NOT_NULL(aDirPath))
+        _tcscpy(aDirPath, mDirPath);
 }
 
-xpr_bool_t BBInfoFile::isUnicode(void)
+void BBInfoFile::readINFO2Index(void)
 {
-    return mUnicode;
-}
+    xpr_tchar_t sINFO2FilePath[XPR_MAX_PATH + 1] = {0};
+    _stprintf(sINFO2FilePath, XPR_STRING_LITERAL("%s\\INFO2"), mDirPath);
 
-xpr_bool_t BBInfoFile::getDataEntryAll(void)
-{
+    FILE *sFile = _tfopen(sINFO2FilePath, XPR_STRING_LITERAL("rb"));
+    if (XPR_IS_NULL(sFile))
+        return;
+
     xpr_size_t sRead;
     xpr_size_t sSize;
+    xpr_bool_t sUnicode;
 
     BitBucketInfoHeader sBitBucketInfoHeader = {0};
-    sRead = fread(&sBitBucketInfoHeader, sizeof(BitBucketInfoHeader), 1, mFile);
-    if (sRead != 1)
-        return XPR_TRUE;
-
-    mUnicode = XPR_FALSE;
-    sSize = sizeof(BitBucketDataEntryA);
-    if (sBitBucketInfoHeader.mDataEntrySize == sizeof(BitBucketDataEntryW))
+    sRead = fread(&sBitBucketInfoHeader, sizeof(BitBucketInfoHeader), 1, sFile);
+    if (sRead == 1)
     {
-        mUnicode = XPR_TRUE;
-        sSize = sizeof(BitBucketDataEntryW);
-    }
+        sUnicode = XPR_FALSE;
 
-    BitBucketDataEntryA *sBitBucketDataEntryA = XPR_NULL;
-    BitBucketDataEntryW *sBitBucketDataEntryW = XPR_NULL;
-
-    do
-    {
-        if (XPR_IS_TRUE(mUnicode))
+        sSize = sizeof(BitBucketDataEntryA);
+        if (sBitBucketInfoHeader.mDataEntrySize == sizeof(BitBucketDataEntryW))
         {
-            sBitBucketDataEntryW = new BitBucketDataEntryW;
-            sRead = fread(sBitBucketDataEntryW, sSize, 1, mFile);
-
-            mListW.push_back(sBitBucketDataEntryW);
+            sUnicode = XPR_TRUE;
+            sSize = sizeof(BitBucketDataEntryW);
         }
-        else
+
+        Index *sIndex;
+        BitBucketDataEntryA sBitBucketDataEntryA;
+        BitBucketDataEntryW sBitBucketDataEntryW;
+        xpr_size_t sOutputBytes;
+
+        if (XPR_IS_TRUE(sUnicode))
         {
-            sBitBucketDataEntryA = new BitBucketDataEntryA;
-            sRead = fread(sBitBucketDataEntryA, sSize, 1, mFile);
-
-            mListA.push_back(sBitBucketDataEntryA);
-        }
-    }
-    while (sRead == 1);
-
-    return XPR_TRUE;
-}
-
-xpr_bool_t BBInfoFile::findOriginalPath(xpr_tchar_t *aFind, FILETIME aCreatedTime, xpr_tchar_t *aBBIndexPath)
-{
-    xpr_size_t i, sCount;
-    HANDLE sFindFile;
-    WIN32_FIND_DATA sWin32FindData = {0};
-    xpr_wchar_t sFindW[XPR_MAX_PATH + 1] = {0};
-    xpr_char_t sFindA[XPR_MAX_PATH + 1] = {0};
-    xpr_size_t sOutputBytes;
-
-    sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(aFind, _tcslen(aFind) * sizeof(xpr_tchar_t), sFindW, &sOutputBytes);
-    sFindW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
-
-    sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-    XPR_TCS_TO_MBS(aFind, _tcslen(aFind) * sizeof(xpr_tchar_t), sFindA, &sOutputBytes);
-    sFindA[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-    sCount = getCount();
-    for (i = 0; i < sCount; ++i)
-    {
-        if (XPR_IS_TRUE(mUnicode))
-        {
-            if (_wcsicmp(mListW[i]->mOriginal, sFindW) == 0)
+            do
             {
-                getBBIndexPath(i, aBBIndexPath);
-
-                sFindFile = ::FindFirstFile(aBBIndexPath, &sWin32FindData);
-                if (sFindFile != INVALID_HANDLE_VALUE)
+                sRead = fread(&sBitBucketDataEntryW, sSize, 1, sFile);
+                if (sRead == 1)
                 {
-                    ::FindClose(sFindFile);
-
-                    if (::CompareFileTime(&aCreatedTime, &sWin32FindData.ftCreationTime) == 0)
+                    sIndex = new Index;
+                    if (XPR_IS_NOT_NULL(sIndex))
                     {
-                        return XPR_TRUE;
+                        sIndex->mInfo2Mode      = XPR_TRUE;
+                        sIndex->mInfo2Key       = sBitBucketDataEntryW.mIndex;
+                        sIndex->mKey[0]         = 0;
+                        sIndex->mDeleteFileTime = sBitBucketDataEntryW.mDeleteTime;
+                        sIndex->mFileSize       = sBitBucketDataEntryW.mSize;
+
+                        sOutputBytes = sizeof(sIndex->mOriginalFilePath) - sizeof(xpr_tchar_t);
+                        XPR_UTF16_TO_TCS(sBitBucketDataEntryW.mOriginal, wcslen(sBitBucketDataEntryW.mOriginal) * sizeof(xpr_wchar_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                        sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                        mIndexDeque.push_back(sIndex);
                     }
                 }
             }
+            while (sRead == 1);
         }
         else
         {
-            if (_stricmp(mListA[i]->mOriginal, sFindA) == 0)
+            do
             {
-                getBBIndexPath(i, aBBIndexPath);
-
-                sFindFile = ::FindFirstFile(aBBIndexPath, &sWin32FindData);
-                if (sFindFile != INVALID_HANDLE_VALUE)
+                sRead = fread(&sBitBucketDataEntryA, sSize, 1, sFile);
+                if (sRead == 1)
                 {
-                    ::FindClose(sFindFile);
-
-                    if (::CompareFileTime(&aCreatedTime, &sWin32FindData.ftCreationTime) == 0)
+                    sIndex = new Index;
+                    if (XPR_IS_NOT_NULL(sIndex))
                     {
-                        return XPR_TRUE;
+                        sIndex->mInfo2Mode      = XPR_TRUE;
+                        sIndex->mInfo2Key       = sBitBucketDataEntryA.mIndex;
+                        sIndex->mKey[0]         = 0;
+                        sIndex->mDeleteFileTime = sBitBucketDataEntryA.mDeleteTime;
+                        sIndex->mFileSize       = sBitBucketDataEntryA.mSize;
+
+                        sOutputBytes = sizeof(sIndex->mOriginalFilePath) - sizeof(xpr_tchar_t);
+                        XPR_MBS_TO_TCS(sBitBucketDataEntryA.mOriginal, strlen(sBitBucketDataEntryA.mOriginal) * sizeof(xpr_char_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                        sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                        mIndexDeque.push_back(sIndex);
                     }
+                }
+            }
+           while (sRead == 1);
+        }
+    }
+
+    fclose(sFile);
+    sFile = XPR_NULL;
+}
+
+void BBInfoFile::readVistaIndex(void)
+{
+    xpr_tchar_t sFindPath[XPR_MAX_PATH * 2 + 1] = {0};
+    _tcscpy(sFindPath, mDirPath);
+    _tcscat(sFindPath, XPR_STRING_LITERAL("\\*.*"));
+
+    FILE *sFile;
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    xpr_sint64_t sFileSize;
+    xpr_wchar_t sOriginalFile[XPR_MAX_PATH * 2 + 1] = {0};
+    xpr_size_t sOutputBytes;
+    Index *sIndex;
+
+    HANDLE sFindFile;
+    WIN32_FIND_DATA sWin32FindData = {0};
+
+    sFindFile = ::FindFirstFile(sFindPath, &sWin32FindData);
+    if (sFindFile != INVALID_HANDLE_VALUE)
+    {
+        do
+        {
+            if (_tcscmp(sWin32FindData.cFileName, XPR_STRING_LITERAL(".")) == 0 || _tcscmp(sWin32FindData.cFileName, XPR_STRING_LITERAL("..")) == 0)
+                continue;
+
+            if (sWin32FindData.cFileName[0] != '$' || sWin32FindData.cFileName[1] != 'I')
+                continue;
+
+            _tcscpy(sPath, mDirPath);
+            _tcscat(sPath, XPR_STRING_LITERAL("\\"));
+            _tcscat(sPath, sWin32FindData.cFileName);
+
+            sFile = _tfopen(sPath, XPR_STRING_LITERAL("rb"));
+            if (XPR_IS_NOT_NULL(sFile))
+            {
+                sIndex = new Index;
+                if (XPR_IS_NOT_NULL(sIndex))
+                {
+                    fseek(sFile, 0, SEEK_END);
+                    sFileSize = _ftelli64(sFile);
+                    fseek(sFile, 8, SEEK_SET);
+
+                    fread(&sIndex->mFileSize, (sFileSize == 544) ? 8 : 7, 1, sFile);
+                    fread(&sIndex->mDeleteFileTime, sizeof(FILETIME), 1, sFile);
+                    fread(&sOriginalFile, sFileSize - _ftelli64(sFile), 1, sFile);
+
+                    sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                    XPR_UTF16_TO_TCS(sOriginalFile, wcslen(sOriginalFile) * sizeof(xpr_wchar_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                    sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                    sIndex->mInfo2Mode = XPR_FALSE;
+                    _tcsncpy(sIndex->mKey, sWin32FindData.cFileName + 2, 6);
+                    sIndex->mKey[6] = 0;
+
+                    mIndexDeque.push_back(sIndex);
+                }
+
+                fclose(sFile);
+            }
+        }
+        while (::FindNextFile(sFindFile, &sWin32FindData) == XPR_TRUE);
+
+        ::FindClose(sFindFile);
+        sFindFile = XPR_NULL;
+    }
+}
+
+xpr_bool_t BBInfoFile::findOriginalPath(const xpr_tchar_t *aOriginalFilePath, FILETIME aCreatedTime, xpr_tchar_t *aRestoreFilePath)
+{
+    if (XPR_IS_NULL(aOriginalFilePath) || XPR_IS_NULL(aRestoreFilePath))
+        return XPR_FALSE;
+
+    HANDLE sFindFile;
+    WIN32_FIND_DATA sWin32FindData = {0};
+    IndexDeque::iterator sIterator;
+    Index *sIndex;
+    const xpr_tchar_t *sFileExt;
+
+    sIterator = mIndexDeque.begin();
+    for (; sIterator != mIndexDeque.end(); ++sIterator)
+    {
+        sIndex = *sIterator;
+        if (XPR_IS_NULL(sIndex))
+            continue;
+
+        if (_tcsicmp(sIndex->mOriginalFilePath, aOriginalFilePath) == 0)
+        {
+            if (XPR_IS_TRUE(sIndex->mInfo2Mode))
+            {
+                // data file to restore
+                //  - 'D' + drive + key + file ext.
+                //  - ex) DC1.xml
+                //        drive:     C
+                //        key:       1
+                //        file ext.: .xml
+
+                _stprintf(aRestoreFilePath, XPR_STRING_LITERAL("%s\\D%c%d"), mDirPath, mDirPath[0], sIndex->mInfo2Key);
+
+                sFileExt = fxb::GetFileExt(sIndex->mOriginalFilePath);
+                if (XPR_IS_NOT_NULL(sFileExt))
+                    _tcscat(aRestoreFilePath, sFileExt);
+            }
+            else
+            {
+                // data file to restore
+                //  - R$' + key(6) + file ext.
+                //  - ex) $RN0JW9J.xml
+                //        key:       N0JW9J
+                //        file ext.: .xml
+
+                _stprintf(aRestoreFilePath, XPR_STRING_LITERAL("%s\\$R%s"), mDirPath, sIndex->mKey);
+
+                sFileExt = fxb::GetFileExt(sIndex->mOriginalFilePath);
+                if (XPR_IS_NOT_NULL(sFileExt))
+                    _tcscat(aRestoreFilePath, sFileExt);
+            }
+
+            sFindFile = ::FindFirstFile(aRestoreFilePath, &sWin32FindData);
+            if (sFindFile != INVALID_HANDLE_VALUE)
+            {
+                ::FindClose(sFindFile);
+
+                if (::CompareFileTime(&aCreatedTime, &sWin32FindData.ftCreationTime) == 0)
+                {
+                    return XPR_TRUE;
                 }
             }
         }
     }
 
     return XPR_FALSE;
-}
-
-xpr_bool_t BBInfoFile::getBBIndexPath(xpr_size_t aIndex, xpr_tchar_t *aBBIndexPath)
-{
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mListW) || !aBBIndexPath)
-        return XPR_FALSE;
-
-    xpr_tchar_t sBBPath[XPR_MAX_PATH + 1] = {0};
-    getBBPath(sBBPath);
-
-    xpr_sint_t sIndexId;
-    xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
-    if (isUnicode() == XPR_TRUE)
-    {
-        sIndexId = mListW[aIndex]->mIndex;
-        xpr_wchar_t *sSplit = wcsrchr(mListW[aIndex]->mOriginal, '\\');
-        if (XPR_IS_NOT_NULL(sSplit))
-        {
-            sSplit++;
-            xpr_wchar_t *sFindedExt = wcsrchr(sSplit, '.');
-            if (XPR_IS_NOT_NULL(sFindedExt))
-            {
-                xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_UTF16_TO_TCS(sFindedExt, wcslen(sFindedExt) * sizeof(xpr_wchar_t), sExt, &sOutputBytes);
-                sExt[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-            }
-        }
-    }
-    else
-    {
-        sIndexId = mListA[aIndex]->mIndex;
-        xpr_char_t *sSplit = strrchr(mListA[aIndex]->mOriginal, '\\');
-        if (XPR_IS_NOT_NULL(sSplit))
-        {
-            sSplit++;
-            xpr_char_t *sFindedExt = strrchr(sSplit, '.');
-            if (XPR_IS_NOT_NULL(sFindedExt))
-            {
-                xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_MBS_TO_TCS(sFindedExt, strlen(sFindedExt) * sizeof(xpr_char_t), sExt, &sOutputBytes);
-                sExt[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-            }
-        }
-    }
-
-    _stprintf(aBBIndexPath, XPR_STRING_LITERAL("%s\\D%c%d%s"), sBBPath, sBBPath[0], sIndexId, sExt);
-
-    return XPR_TRUE;
 }
 } // namespace fxb
