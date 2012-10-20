@@ -19,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="../../../bin"
-			IntermediateDirectory="obj/dbg"
+			IntermediateDirectory="../../../obj/fxKeyHook/dbg-x86"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -95,7 +95,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="../../../bin"
-			IntermediateDirectory="obj/rel"
+			IntermediateDirectory="../../../obj/fxKeyHook/rel-x86"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
