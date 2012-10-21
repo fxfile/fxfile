@@ -1004,11 +1004,14 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         xpr_sint_t sGoForwardInsert = -1;
         xpr_sint_t sGoHistoryInsert = -1;
         xpr_sint_t sGoWorkingFolderInsert = -1;
+        xpr_sint_t sGoWorkingFolderSetInsert = -1;
+        xpr_sint_t sGoWorkingFolderResetInsert = -1;
         xpr_sint_t sShellNewInsert = -1;
         xpr_sint_t sRecentInsert = -1;
 
         typedef std::deque<xpr_uint_t> CmdIdDeque;
         CmdIdDeque sDelCmdIdDeque;
+        xpr_sint_t sDelCount = 0;
 
         const xpr_tchar_t *sStringId;
         const xpr_tchar_t *sString;
@@ -1091,81 +1094,110 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             if (XPR_IS_RANGE(ID_DRIVE_FIRST, sId, ID_DRIVE_LAST))
             {
                 if (sDriveInsert == -1)
-                    sDriveInsert = i;
+                    sDriveInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_BOOKMARK_FIRST, sId, ID_BOOKMARK_LAST))
             {
                 if (sBookmarkInsert == -1)
-                    sBookmarkInsert = i;
+                    sBookmarkInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_GO_UP_FIRST, sId, ID_GO_UP_LAST))
             {
                 if (sGoUpInsert == -1)
-                    sGoUpInsert = i;
+                    sGoUpInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_GO_BACKWARD_FIRST, sId, ID_GO_BACKWARD_LAST))
             {
                 if (sGoBackwardInsert == -1)
-                    sGoBackwardInsert = i;
+                    sGoBackwardInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_GO_FORWARD_FIRST, sId, ID_GO_FORWARD_LAST))
             {
                 if (sGoForwardInsert == -1)
-                    sGoForwardInsert = i;
+                    sGoForwardInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_GO_HISTORY_FIRST, sId, ID_GO_HISTORY_LAST))
             {
                 if (sGoHistoryInsert == -1)
-                    sGoHistoryInsert = i;
+                    sGoHistoryInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_GO_WORKING_FOLDER_FIRST, sId, ID_GO_WORKING_FOLDER_LAST))
             {
                 if (sGoWorkingFolderInsert == -1)
-                    sGoWorkingFolderInsert = i;
+                    sGoWorkingFolderInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
+            }
+
+            if (XPR_IS_RANGE(ID_GO_WORKING_FOLDER_SET_FIRST, sId, ID_GO_WORKING_FOLDER_SET_LAST))
+            {
+                if (sGoWorkingFolderSetInsert == -1)
+                    sGoWorkingFolderSetInsert = i - sDelCount;
+
+                sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
+            }
+
+            if (XPR_IS_RANGE(ID_GO_WORKING_FOLDER_RESET_FIRST, sId, ID_GO_WORKING_FOLDER_RESET_LAST))
+            {
+                if (sGoWorkingFolderResetInsert == -1)
+                    sGoWorkingFolderResetInsert = i - sDelCount;
+
+                sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_FILE_NEW_FIRST, sId, ID_FILE_NEW_LAST))
             {
                 if (sShellNewInsert == -1)
-                    sShellNewInsert = i;
+                    sShellNewInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (XPR_IS_RANGE(ID_FILE_RECENT_FIRST, sId, ID_FILE_RECENT_LAST))
             {
                 if (sRecentInsert == -1)
-                    sRecentInsert = i;
+                    sRecentInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
+                ++sDelCount;
             }
 
             if (sDriveInsert == -1)
             {
                 if (sId == ID_DRIVE_DYNAMIC_MENU)
                 {
-                    sDriveInsert = i;
+                    sDriveInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1173,9 +1205,13 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_BOOKMARK_DYNAMIC_MENU)
                 {
-                    sBookmarkInsert = i;
+                    sBookmarkInsert = i - sDelCount;
+
                     if (fxb::BookmarkMgr::instance().getCount() > 0)
+                    {
                         sDelCmdIdDeque.push_back(sId);
+                        ++sDelCount;
+                    }
                 }
             }
 
@@ -1183,8 +1219,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_GO_UP_DYNAMIC_MENU)
                 {
-                    sGoUpInsert = i;
+                    sGoUpInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1192,8 +1230,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_GO_BACKWARD_DYNAMIC_MENU)
                 {
-                    sGoBackwardInsert = i;
+                    sGoBackwardInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1201,8 +1241,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_GO_FORWARD_DYNAMIC_MENU)
                 {
-                    sGoForwardInsert = i;
+                    sGoForwardInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1210,8 +1252,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_GO_HISTORY_DYNAMIC_MENU)
                 {
-                    sGoHistoryInsert = i;
+                    sGoHistoryInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1219,8 +1263,32 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_GO_WORKING_FOLDER_DYNAMIC_MENU)
                 {
-                    sGoWorkingFolderInsert = i;
+                    sGoWorkingFolderInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
+                }
+            }
+
+            if (sGoWorkingFolderSetInsert == -1)
+            {
+                if (sId == ID_GO_WORKING_FOLDER_SET_DYNAMIC_MENU)
+                {
+                    sGoWorkingFolderSetInsert = i - sDelCount;
+
+                    sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
+                }
+            }
+
+            if (sGoWorkingFolderResetInsert == -1)
+            {
+                if (sId == ID_GO_WORKING_FOLDER_RESET_DYNAMIC_MENU)
+                {
+                    sGoWorkingFolderResetInsert = i - sDelCount;
+
+                    sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1228,8 +1296,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_FILE_NEW_DYNAMIC_MENU)
                 {
-                    sShellNewInsert = i;
+                    sShellNewInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
 
@@ -1237,8 +1307,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
             {
                 if (sId == ID_FILE_RECENT_DYNAMIC_MENU)
                 {
-                    sRecentInsert = i;
+                    sRecentInsert = i - sDelCount;
+
                     sDelCmdIdDeque.push_back(sId);
+                    ++sDelCount;
                 }
             }
         }
@@ -1287,13 +1359,15 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         //    sBCPopupMenu->ModifyODMenu(XPR_NULL, sId, sImgListRef, nOffset);
         //}
 
-        if (sDriveInsert           >= 0) { insertDrivePopupMenu          (sBCPopupMenu, sDriveInsert          ); }
-        if (sBookmarkInsert        >= 0) { insertBookmarkPopupMenu       (sBCPopupMenu, sBookmarkInsert       ); }
-        if (sGoUpInsert            >= 0) { insertGoUpPopupMenu           (sBCPopupMenu, sGoUpInsert           ); }
-        if (sGoBackwardInsert      >= 0) { insertGoBackwardPopupMenu     (sBCPopupMenu, sGoBackwardInsert     ); }
-        if (sGoForwardInsert       >= 0) { insertGoForwardPopupMenu      (sBCPopupMenu, sGoForwardInsert      ); }
-        if (sGoHistoryInsert       >= 0) { insertGoHistoryPopupMenu      (sBCPopupMenu, sGoHistoryInsert      ); }
-        if (sGoWorkingFolderInsert >= 0) { insertGoWorkingFolderPopupMenu(sBCPopupMenu, sGoWorkingFolderInsert); }
+        if (sDriveInsert                >= 0) { insertDrivePopupMenu               (sBCPopupMenu, sDriveInsert               ); }
+        if (sBookmarkInsert             >= 0) { insertBookmarkPopupMenu            (sBCPopupMenu, sBookmarkInsert            ); }
+        if (sGoUpInsert                 >= 0) { insertGoUpPopupMenu                (sBCPopupMenu, sGoUpInsert                ); }
+        if (sGoBackwardInsert           >= 0) { insertGoBackwardPopupMenu          (sBCPopupMenu, sGoBackwardInsert          ); }
+        if (sGoForwardInsert            >= 0) { insertGoForwardPopupMenu           (sBCPopupMenu, sGoForwardInsert           ); }
+        if (sGoHistoryInsert            >= 0) { insertGoHistoryPopupMenu           (sBCPopupMenu, sGoHistoryInsert           ); }
+        if (sGoWorkingFolderSetInsert   >= 0) { insertGoWorkingFolderSetPopupMenu  (sBCPopupMenu, sGoWorkingFolderSetInsert  ); }
+        if (sGoWorkingFolderInsert      >= 0) { insertGoWorkingFolderPopupMenu     (sBCPopupMenu, sGoWorkingFolderInsert     ); }
+        if (sGoWorkingFolderResetInsert >= 0) { insertGoWorkingFolderResetPopupMenu(sBCPopupMenu, sGoWorkingFolderResetInsert); }
 
         if (XPR_IS_TRUE(gOpt->mShellNewMenu) && sShellNewInsert >= 0)
         {
@@ -1650,16 +1724,36 @@ xpr_sint_t MainFrame::insertGoWorkingFolderPopupMenu(BCMenu *aPopupMenu, xpr_sin
         aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_FIRST+i, sText, &sToolBarImgList, 44+i);
     }
 
-    aPopupMenu->InsertMenu(aInsert++, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
+    return sCount;
+}
 
+xpr_sint_t MainFrame::insertGoWorkingFolderSetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert)
+{
+    if (XPR_IS_NULL(aPopupMenu))
+        return 0;
+
+    xpr_sint_t i, sCount;
+    xpr_tchar_t sText[0xff] = {0};
+
+    sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
         _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.set"), XPR_STRING_LITERAL("%d")), i+1);
         aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_SET_FIRST+i, sText);
     }
 
-    aPopupMenu->InsertMenu(aInsert++, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
+    return sCount;
+}
 
+xpr_sint_t MainFrame::insertGoWorkingFolderResetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert)
+{
+    if (XPR_IS_NULL(aPopupMenu))
+        return 0;
+
+    xpr_sint_t i, sCount;
+    xpr_tchar_t sText[0xff] = {0};
+
+    sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
         _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.reset"), XPR_STRING_LITERAL("%d")), i+1);
