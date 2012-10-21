@@ -18,11 +18,12 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-ShortcutDlg::ShortcutDlg(const xpr_tchar_t *lpcszPath)
+ShortcutDlg::ShortcutDlg(const xpr_tchar_t *aPath)
     : super(IDD_CREATE_SHORTCUT)
     , mFullPidl(XPR_NULL)
 {
-    _tcscpy(mPath, lpcszPath);
+    if (XPR_IS_NOT_NULL(aPath))
+        _tcscpy(mPath, aPath);
 }
 
 ShortcutDlg::~ShortcutDlg(void)
@@ -117,7 +118,7 @@ void ShortcutDlg::OnOK(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     ::SHGetPathFromIDList(mFullPidl, sPath);
 
-    if (!_tcsicmp(sPath, sTarget))
+    if (_tcsicmp(sPath, sTarget) == 0)
         fxb::CreateShortcut(sLinkPath.c_str(), mFullPidl, sStartup, sHotKey, sShowCmd, sDesc);
     else
         fxb::CreateShortcut(sLinkPath.c_str(), sTarget, sStartup, sHotKey, sShowCmd, sDesc);
@@ -132,7 +133,7 @@ void ShortcutDlg::OnTargetBrowse(void)
     sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.folder_browse.title"));
     sBrowseInfo.ulFlags   = BIF_BROWSEINCLUDEFILES | BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
-    if (sFullPidl = XPR_NULL)
+    if (XPR_IS_NULL(sFullPidl))
         return;
 
     std::tstring sName, sPath;
