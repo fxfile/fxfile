@@ -632,7 +632,7 @@ void ExplorerView::recalcLayout(void)
         if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
         {
             sPathRect = sRect;
-            sPathRect.bottom = sRect.top + mPathBar->getHeight();
+            sPathRect.bottom = sPathRect.top + mPathBar->getHeight();
         }
 
         if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd))
@@ -644,9 +644,9 @@ void ExplorerView::recalcLayout(void)
             {
                 if (gFrame->isDriveViewSplitLeft() == XPR_TRUE)
                 {
-                    sDriveBarRect.left  = 0;
-                    sDriveBarRect.right = sDriveWidth;
-                    sPathRect.left   = sDriveWidth;
+                    sDriveBarRect.left  = sRect.left;
+                    sDriveBarRect.right = sDriveBarRect.left + sDriveWidth;
+                    sPathRect.left = sDriveBarRect.right;
                 }
                 else
                 {
@@ -934,6 +934,33 @@ void ExplorerView::OnContextMenu(CWnd *aWnd, CPoint aPoint)
 
         sPopupMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, aPoint, gFrame);
     }
+}
+
+xpr_bool_t ExplorerView::OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, AFX_CMDHANDLERINFO *aHandlerInfo)
+{
+    if (aHandlerInfo == XPR_NULL)
+    {
+        xpr_sint_t sMsg = 0;
+        xpr_sint_t sCode = aCode;
+
+        if (sCode != CN_UPDATE_COMMAND_UI)
+        {
+            sMsg  = HIWORD(aCode);
+            sCode = LOWORD(aCode);
+        }
+
+        if (sMsg == 0)
+            sMsg = WM_COMMAND;
+
+        if (sCode == CN_COMMAND)
+        {
+            ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+            if (XPR_IS_NOT_NULL(sExplorerCtrl))
+                gFrame->executeCommand(aId, sExplorerCtrl);
+        }
+    }
+
+    return super::OnCmdMsg(aId, aCode, aExtra, aHandlerInfo);
 }
 
 xpr_bool_t ExplorerView::createTabCtrl(void)

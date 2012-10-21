@@ -221,6 +221,7 @@ protected:
     virtual xpr_bool_t PreCreateWindow(CREATESTRUCT &aCreateStruct);
     virtual void OnInitialUpdate(void);
     virtual void OnDraw(CDC *aDC);
+    virtual xpr_bool_t OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, AFX_CMDHANDLERINFO *aHandlerInfo);
 
     // print
     virtual xpr_bool_t OnPreparePrinting(CPrintInfo *aPrintInfo);
