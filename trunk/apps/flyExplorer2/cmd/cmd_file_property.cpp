@@ -75,7 +75,7 @@ void FilePropertyCommand::execute(CommandContext &aContext)
 
             sExplorerCtrl->getSelItemData(&sShellFolder, &sPidls, sCount);
 
-            if (sCount > 0 && sShellFolder)
+            if (sCount > 0 && XPR_IS_NOT_NULL(sShellFolder))
                 fxb::ContextMenu::invokeCommand(sShellFolder, sPidls, sCount, CMID_VERB_PROPERTIES, sExplorerCtrl->GetSafeHwnd());
 
             XPR_SAFE_DELETE_ARRAY(sPidls);

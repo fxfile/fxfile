@@ -438,7 +438,7 @@ void DriveToolBar::OnContextMenu(CWnd* pWnd, CPoint pt)
                         }
 
                         if (XPR_IS_FALSE(sSelfInvoke))
-                            sContextMenu.invokeCommand(sId, &pt);
+                            sContextMenu.invokeCommand(sId);
                     }
 
                     sToolBarCtrl.GetButton(sIndex, &sTbButton);

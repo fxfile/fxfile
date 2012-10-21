@@ -50,8 +50,8 @@ public:
     xpr_bool_t getMenu(CMenu *aMenu, xpr_uint_t aIdFirst = CMID_DEF_ID_FIRST, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
     xpr_uint_t getIdFirst(void);
     xpr_uint_t trackPopupMenu(xpr_uint_t aFlags, LPPOINT aPoint, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
-    xpr_bool_t invokeCommand(xpr_uint_t aId, LPPOINT aPoint = XPR_NULL);
-    xpr_bool_t invokeCommand(const xpr_tchar_t *aVerb, LPPOINT aPoint = XPR_NULL);
+    xpr_bool_t invokeCommand(xpr_uint_t aId);
+    xpr_bool_t invokeCommand(const xpr_tchar_t *aVerb);
     xpr_bool_t getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength);
     void getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2);
     void destroySubclass(void);
