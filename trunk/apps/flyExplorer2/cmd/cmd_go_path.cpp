@@ -62,8 +62,7 @@ void GoPathCommand::execute(CommandContext &aContext)
         ExplorerCtrl *sExplorerCtrl = sMainFrame->getExplorerCtrl();
         if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
         {
-            sExplorerCtrl->explore(sFullPidl);
-            sResult = XPR_TRUE;
+            sResult = sExplorerCtrl->explore(sFullPidl);
         }
 
         if (XPR_IS_FALSE(sResult))
