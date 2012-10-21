@@ -2859,7 +2859,7 @@ xpr_bool_t ExplorerView::onGetExecParam(ExplorerCtrl &aExplorerCtrl, const xpr_t
         return XPR_FALSE;
 
     const xpr_tchar_t *sParameter = sDlg.getParameter();
-    if (_tcslen(sParameter) >= aMaxLen)
+    if (_tcslen(sParameter) <= aMaxLen)
     {
         _tcscpy(aParam, sParameter);
     }
