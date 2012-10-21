@@ -97,7 +97,7 @@
 			<String ID="cmd.move_to_folder">풀더에 이동(&amp;M)</String>
 			<String ID="cmd.copy_to_folder">폴더에 복사(&amp;V)</String>
 			<String ID="cmd.scrap.popup">수집함 작업(&amp;W)</String>
-			<String ID="cmd.scrap.add">수집하기(&amp;)</String>
+			<String ID="cmd.scrap.add">수집하기(&amp;F)</String>
 			<String ID="cmd.scrap.copy_to_this">현재 위치로 복사(&amp;F)</String>
 			<String ID="cmd.scrap.copy">복사하기(&amp;F)</String>
 			<String ID="cmd.scrap.move_to_this">현재 위치로 이동(&amp;V)</String>
