@@ -485,6 +485,9 @@ xpr_sint_t WindowCopy1Command::canExecute(CommandContext &aContext)
 
         if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
         {
+            if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+                std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
             if (sExplorerCtrl2->hasSelShellAttributes(SFGAO_CANCOPY) == XPR_TRUE && sExplorerCtrl1->isFileSystemFolder() == XPR_TRUE)
                 sState = StateEnable;
         }
@@ -504,7 +507,14 @@ void WindowCopy1Command::execute(CommandContext &aContext)
     ExplorerCtrl *sExplorerCtrl2 = sMainFrame->getExplorerCtrl(-2);
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
-        copyTo(sExplorerCtrl2, sExplorerCtrl1->getCurPath());
+    {
+        if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+            std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
+        const xpr_tchar_t *sCurPath = sExplorerCtrl1->getCurPath();
+
+        copyTo(sExplorerCtrl2, sCurPath);
+    }
 }
 
 xpr_sint_t WindowMove1Command::canExecute(CommandContext &aContext)
@@ -520,6 +530,9 @@ xpr_sint_t WindowMove1Command::canExecute(CommandContext &aContext)
 
         if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
         {
+            if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+                std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
             if (sExplorerCtrl2->hasSelShellAttributes(SFGAO_CANMOVE) == XPR_TRUE && sExplorerCtrl1->isFileSystemFolder() == XPR_TRUE)
                 sState = StateEnable;
         }
@@ -539,7 +552,14 @@ void WindowMove1Command::execute(CommandContext &aContext)
     ExplorerCtrl *sExplorerCtrl2 = sMainFrame->getExplorerCtrl(-2);
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
-        moveTo(sExplorerCtrl2, sExplorerCtrl1->getCurPath());
+    {
+        if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+            std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
+        const xpr_tchar_t *sCurPath = sExplorerCtrl1->getCurPath();
+
+        moveTo(sExplorerCtrl2, sCurPath);
+    }
 }
 
 xpr_sint_t WindowCopy2Command::canExecute(CommandContext &aContext)
@@ -555,6 +575,9 @@ xpr_sint_t WindowCopy2Command::canExecute(CommandContext &aContext)
 
         if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
         {
+            if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+                std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
             if (sExplorerCtrl1->hasSelShellAttributes(SFGAO_CANCOPY) == XPR_TRUE && sExplorerCtrl2->isFileSystemFolder() == XPR_TRUE)
                 sState = StateEnable;
         }
@@ -574,7 +597,14 @@ void WindowCopy2Command::execute(CommandContext &aContext)
     ExplorerCtrl *sExplorerCtrl2 = sMainFrame->getExplorerCtrl(-2);
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
-        copyTo(sExplorerCtrl1, sExplorerCtrl2->getCurPath());
+    {
+        if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+            std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
+        const xpr_tchar_t *sCurPath = sExplorerCtrl2->getCurPath();
+
+        copyTo(sExplorerCtrl1, sCurPath);
+    }
 }
 
 xpr_sint_t WindowMove2Command::canExecute(CommandContext &aContext)
@@ -590,6 +620,9 @@ xpr_sint_t WindowMove2Command::canExecute(CommandContext &aContext)
 
         if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
         {
+            if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+                std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
             if (sExplorerCtrl1->hasSelShellAttributes(SFGAO_CANMOVE) == XPR_TRUE && sExplorerCtrl2->isFileSystemFolder() == XPR_TRUE)
                 sState = StateEnable;
         }
@@ -609,7 +642,14 @@ void WindowMove2Command::execute(CommandContext &aContext)
     ExplorerCtrl *sExplorerCtrl2 = sMainFrame->getExplorerCtrl(-2);
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl1) && XPR_IS_NOT_NULL(sExplorerCtrl2))
-        moveTo(sExplorerCtrl1, sExplorerCtrl2->getCurPath());
+    {
+        if (sExplorerCtrl1->getViewIndex() > sExplorerCtrl2->getViewIndex())
+            std::swap(sExplorerCtrl1, sExplorerCtrl2);
+
+        const xpr_tchar_t *sCurPath = sExplorerCtrl2->getCurPath();
+
+        moveTo(sExplorerCtrl1, sCurPath);
+    }
 }
 
 xpr_sint_t WindowDualCopyCommand::canExecute(CommandContext &aContext)
