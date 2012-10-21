@@ -119,7 +119,8 @@ xpr_bool_t WriteBitmapFile(xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo, HBITMAP 
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    if (GetDIBits(aDC, aBitmap, 0, (WORD)sBitmapInfoHeader->biHeight, sBits, aBitmapInfo, DIB_RGB_COLORS) == XPR_TRUE)
+    xpr_sint_t sCopiedLines = GetDIBits(aDC, aBitmap, 0, (WORD)sBitmapInfoHeader->biHeight, sBits, aBitmapInfo, DIB_RGB_COLORS);
+    if (sCopiedLines != 0 && XPR_IS_NOT_NULL(sBits))
     {
         // Create the .BMP file.
         HANDLE sFile = ::CreateFile(
@@ -131,7 +132,7 @@ xpr_bool_t WriteBitmapFile(xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo, HBITMAP 
             FILE_ATTRIBUTE_NORMAL,
             (HANDLE)XPR_NULL);
 
-        sResult = (sFile != INVALID_HANDLE_VALUE);
+        sResult = (sFile != INVALID_HANDLE_VALUE) ? XPR_TRUE : XPR_FALSE;
 
         if (XPR_IS_TRUE(sResult))
         {
