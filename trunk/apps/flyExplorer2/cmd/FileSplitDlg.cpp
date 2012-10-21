@@ -530,10 +530,10 @@ void FileSplitDlg::OnSelchangeSplitSizePreset(void)
 
     if (sUserDefined == XPR_FALSE)
     {
-        xpr_tchar_t sSplitSize[XPR_MAX_PATH + 1] = {0};
-        _stprintf(sSplitSize, XPR_STRING_LITERAL("%I64d"), sSplitSize);
+        xpr_tchar_t sSplitSizeText[XPR_MAX_PATH + 1] = {0};
+        _stprintf(sSplitSizeText, XPR_STRING_LITERAL("%I64d"), sSplitSize);
 
-        SetDlgItemText(IDC_FILE_SPLIT_SIZE, sSplitSize);
+        SetDlgItemText(IDC_FILE_SPLIT_SIZE, sSplitSizeText);
         mSplitSizeUnit.SetCurSel(0);
     }
 }
