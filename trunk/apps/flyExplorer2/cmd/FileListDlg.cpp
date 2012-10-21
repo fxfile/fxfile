@@ -66,7 +66,7 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
     setDescIcon(sIcon, XPR_TRUE);
 
     ((CButton *)GetDlgItem(IDC_FILE_LIST_BY_LINE))->SetCheck(XPR_TRUE);
-    ((CButton *)GetDlgItem(IDC_FILE_LIST_ONLY_FILENAME))->SetCheck(XPR_TRUE);
+    ((CButton *)GetDlgItem(IDC_FILE_LIST_ONLY_FILE))->SetCheck(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_EXT))->SetCheck(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_DIR))->SetCheck(XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_INFO))->SetCheck(XPR_FALSE);
@@ -80,7 +80,7 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
     SetDlgItemText(IDC_FILE_LIST_LABEL_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.file_list.label.path")));
     SetDlgItemText(IDC_FILE_LIST_PATH_BROWSE,   theApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.path_browse")));
     SetDlgItemText(IDC_FILE_LIST_GROUP_OPTION,  theApp.loadString(XPR_STRING_LITERAL("popup.file_list.group.option")));
-    SetDlgItemText(IDC_FILE_LIST_ONLY_FILENAME, theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.only_filename")));
+    SetDlgItemText(IDC_FILE_LIST_ONLY_FILE,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.only_file")));
     SetDlgItemText(IDC_FILE_LIST_BY_LINE,       theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.by_line")));
     SetDlgItemText(IDC_FILE_LIST_WITH_EXT,      theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_extension")));
     SetDlgItemText(IDC_FILE_LIST_WITH_INFO,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_info")));
@@ -92,7 +92,7 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
     {
         mDlgState->setDialog(this, XPR_TRUE);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("ByLine"),         IDC_FILE_LIST_BY_LINE);
-        mDlgState->setCheckBox(XPR_STRING_LITERAL("OnlyFileName"),   IDC_FILE_LIST_ONLY_FILENAME);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("OnlyFile"),       IDC_FILE_LIST_ONLY_FILE);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("WithExt"),        IDC_FILE_LIST_WITH_EXT);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("WithDir"),        IDC_FILE_LIST_WITH_DIR);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("WithInfo"),       IDC_FILE_LIST_WITH_INFO);
@@ -146,7 +146,7 @@ void FileListDlg::enableWindow(xpr_bool_t aEnable)
         IDC_FILE_LIST_PATH,
         IDC_FILE_LIST_PATH_BROWSE,
         IDC_FILE_LIST_BY_LINE,
-        IDC_FILE_LIST_ONLY_FILENAME,
+        IDC_FILE_LIST_ONLY_FILE,
         IDC_FILE_LIST_WITH_DIR,
         IDC_FILE_LIST_WITH_EXT,
         IDC_FILE_LIST_WITH_INFO,
@@ -183,7 +183,7 @@ void FileListDlg::OnOK(void)
     GetDlgItemText(IDC_FILE_LIST_PATH, sTextFile, XPR_MAX_PATH);
 
     xpr_bool_t sByLine    = ((CButton *)GetDlgItem(IDC_FILE_LIST_BY_LINE))->GetCheck();
-    xpr_bool_t sOnlyFile  = ((CButton *)GetDlgItem(IDC_FILE_LIST_ONLY_FILENAME))->GetCheck();
+    xpr_bool_t sOnlyFile  = ((CButton *)GetDlgItem(IDC_FILE_LIST_ONLY_FILE))->GetCheck();
     xpr_bool_t sFrontPath = ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_DIR))->GetCheck();
     xpr_bool_t sExtension = ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_EXT))->GetCheck();
     xpr_bool_t sAttribute = ((CButton *)GetDlgItem(IDC_FILE_LIST_WITH_INFO))->GetCheck();

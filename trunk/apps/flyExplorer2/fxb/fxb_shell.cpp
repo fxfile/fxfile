@@ -921,7 +921,7 @@ xpr_bool_t GetFileSize(const xpr_tchar_t *aPath, xpr_tchar_t *aFileSizeText, xpr
     aFileSizeText[0] = XPR_STRING_LITERAL('\0');
 
     xpr_uint64_t sFileSize = GetFileSize(aPath);
-    if (sFileSize <= 0)
+    if (sFileSize < 0)
         return XPR_FALSE;
 
     SizeFormat::getDefSizeFormat(sFileSize, aFileSizeText, aMaxLen);

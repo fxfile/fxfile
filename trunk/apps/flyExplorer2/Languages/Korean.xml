@@ -9,7 +9,7 @@
 			<Description></Description>
 		</Description>
 		<StringTable>
-			<!-- size unit -->
+			<!-- common -->
 			<String ID="common.size.byte">바이트</String>
 			<String ID="common.shortcut.suffix"> - 바로 가기</String>
 			<String ID="common.drive.type.8_inch_floppy">8 인치 플로피 디스크</String>
@@ -869,12 +869,12 @@
 			<String ID="popup.file_list.label.path">저장할 경로명(&amp;T):</String>
 			<String ID="popup.file_list.button.path_browse">찾아보기(&amp;R)...</String>
 			<String ID="popup.file_list.group.option">옵션(&amp;O)</String>
-			<String ID="popup.file_list.check.only_filename">파일 이름만 출력(&amp;F)</String>
+			<String ID="popup.file_list.check.only_file">파일만 출력(&amp;F)</String>
 			<String ID="popup.file_list.check.by_line">라인별 출력(&amp;L)</String>
 			<String ID="popup.file_list.check.with_extension">확장자 포함(&amp;E)</String>
 			<String ID="popup.file_list.check.with_info">크기, 종류, 날짜 포함(&amp;A)</String>
-			<String ID="popup.file_list.check.with_dir">경로명 포함(&amp;P)</String>
-			<String ID="popup.file_list.check.seperator">구분자로 출력(&amp;S):</String>
+			<String ID="popup.file_list.check.with_dir">전체 경로명 포함(&amp;P)</String>
+			<String ID="popup.file_list.check.separator">구분자로 출력(&amp;S):</String>
 			<String ID="popup.file_list.button.stop">중지(&amp;S)</String>
 			<String ID="popup.file_list.msg.not_created">파일을 생성할 수 없습니다.</String>
 			<String ID="popup.file_list.file_dialog.filter.text_file">텍스트 파일</String>
