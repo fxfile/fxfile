@@ -1113,7 +1113,7 @@ void BookmarkToolBar::OnContextMenu(CWnd* pWnd, CPoint aPoint)
                             }
 
                             if (sSelfInvoke == XPR_FALSE)
-                                sContextMenu.invokeCommand(sId, &aPoint);
+                                sContextMenu.invokeCommand(sId);
                         }
 
                         sToolBarCtrl.GetButton(sIndex, &sTbButton);

@@ -327,7 +327,7 @@ void FolderCtrl::trackContextMenu(xpr_bool_t aRightClick)
             if (sId != -1)
             {
                 if (invokeCommandSelf(&sContextMenu, sId - sContextMenu.getIdFirst(), sTreeItem) == XPR_FALSE)
-                    sContextMenu.invokeCommand(sId - sContextMenu.getIdFirst(), &sPoint);
+                    sContextMenu.invokeCommand(sId - sContextMenu.getIdFirst());
             }
         }
 

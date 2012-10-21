@@ -590,7 +590,7 @@ void PathBar::trackContextMenu(CPoint aPoint)
                 }
 
                 if (XPR_IS_FALSE(sSelfInvoke))
-                    sContextMenu.invokeCommand(sId, &aPoint);
+                    sContextMenu.invokeCommand(sId);
             }
         }
 

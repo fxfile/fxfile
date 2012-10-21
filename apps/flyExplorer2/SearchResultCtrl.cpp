@@ -863,7 +863,7 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
                     sId -= sContextMenu.getIdFirst();
 
                     if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
-                        sContextMenu.invokeCommand(sId, &aPoint);
+                        sContextMenu.invokeCommand(sId);
                 }
 
                 sOwnerMenu = XPR_TRUE;
