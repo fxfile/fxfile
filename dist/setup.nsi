@@ -9,14 +9,14 @@
 ;--------------------------------
 ;Product Info
   !define PRODUCT_NAME "flyExplorer"
-  !define PRODUCT_VER "2.0.0 alpha"
+  !define PRODUCT_VER "v2.0.0 alpha2"
   Name "${PRODUCT_NAME} ${PRODUCT_VER}"
 
 ;--------------------------------
 ;Configuration
 
   ;General
-  OutFile "flyExplorer_v2.0.0_alpha.exe"
+  OutFile "flyExplorer_v2.0.0_alpha2.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
@@ -349,7 +349,9 @@ Section "Uninstall"
     goto unFindProcfxLauncherLoop
   unFindProcfxLauncherLoopDone:
 
+  ;
   ;current user
+  ;
   SetShellVarContext current
   
   Delete "$INSTDIR\flyExplorer.exe"
@@ -360,6 +362,9 @@ Section "Uninstall"
   Delete "$INSTDIR\fxLauncher.exe"
   Delete "$INSTDIR\libgfl340.dll"
   Delete "$INSTDIR\libgfle340.dll"
+  Delete "$INSTDIR\iconv.dll"
+  Delete "$INSTDIR\libxml2.dll"
+  Delete "$INSTDIR\zlib1.dll"
   Delete "$INSTDIR\Uninstall.exe"
   Delete "$INSTDIR\custom_image_list_16.bmp"
   Delete "$INSTDIR\custom_image_list_32.bmp"
@@ -367,6 +372,7 @@ Section "Uninstall"
   Delete "$INSTDIR\readme.txt"
   Delete "$INSTDIR\history.txt"
   Delete "$INSTDIR\license.txt"
+  RMDir /r "$INSTDIR\Languages"
   RMDir /r "$APPDATA\fxLauncher"
 
   ;Read a value from an InstallOptions INI file
@@ -405,7 +411,9 @@ Section "Uninstall"
     RMDir /r "$INSTDIR"
     RMDir /r "$APPDATA\flyExplorer"
 
+  ;
   ;all users
+  ;
   SetShellVarContext all
 
   !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
@@ -422,6 +430,14 @@ Section "Uninstall"
     Delete "$DESKTOP\flyExplorer.lnk"
     Delete "$QUICKLAUNCH\flyExplorer.lnk"
     RMDir /r "$SMPROGRAMS\${PRODUCT_NAME}"
+
+  ;
+  ;current users
+  ;
+  SetShellVarContext current
+  
+    Delete "$DESKTOP\flyExplorer.lnk"
+    Delete "$QUICKLAUNCH\flyExplorer.lnk"
 
   ;Delete empty start menu parent diretories
   StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"

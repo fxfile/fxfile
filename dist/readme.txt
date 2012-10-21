@@ -11,8 +11,8 @@
 1. 프로그램 정보
 
   프로그램 : flyExplorer (for Win98/ME/NT/2000/XP/2003/Vista/2008/7/8/2012 이상)
-  버    전 : 2.0.0 alpha
-  배 포 일 : 2012년 9월 23일
+  버    전 : 2.0.0 alpha2
+  배 포 일 : 2012년 10월 21일
   제 작 자 : 이재광 (Leon Lee)
   배포형태 : 프리웨어 (freeware)
   전자우편 : flychk@flychk.com
