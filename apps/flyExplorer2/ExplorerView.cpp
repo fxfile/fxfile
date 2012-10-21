@@ -487,6 +487,33 @@ void ExplorerView::OnInitialUpdate(void)
 
 void ExplorerView::OnDestroy(void)
 {
+    saveOption();
+
+    DESTROY_DELETE(mTabCtrl);
+    DESTROY_DELETE(mFolderPane);
+    DESTROY_DELETE(mAddressBar);
+    DESTROY_DELETE(mPathBar);
+
+    destroyPathBar();
+    destroyActivateBar();
+    destroyDrivePathBar();
+    destroyContentsWnd();
+
+    super::OnDestroy();
+
+    XPR_SAFE_DELETE(mListCtrlPrint);
+
+    mDropTarget.Revoke();
+}
+
+void ExplorerView::saveOption(void)
+{
+    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    {
+        sExplorerCtrl->saveOption();
+    }
+
     if (XPR_IS_NOT_NULL(mTabCtrl))
     {
         gOpt->mViewSplitTab[mViewIndex].mTabPathDeque.clear();
@@ -521,29 +548,12 @@ void ExplorerView::OnDestroy(void)
                 }
             }
         }
-
-        DESTROY_DELETE(mTabCtrl);
     }
 
     if (XPR_IS_FALSE(gOpt->mSingleFolderPaneMode))
     {
         gOpt->mShowEachFolderPane[mViewIndex] = XPR_IS_NOT_NULL(mFolderPane) ? XPR_TRUE : XPR_FALSE;
     }
-
-    DESTROY_DELETE(mFolderPane);
-    DESTROY_DELETE(mAddressBar);
-    DESTROY_DELETE(mPathBar);
-
-    destroyPathBar();
-    destroyActivateBar();
-    destroyDrivePathBar();
-    destroyContentsWnd();
-
-    super::OnDestroy();
-
-    XPR_SAFE_DELETE(mListCtrlPrint);
-
-    mDropTarget.Revoke();
 }
 
 void ExplorerView::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)

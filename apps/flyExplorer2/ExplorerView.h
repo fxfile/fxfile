@@ -142,6 +142,8 @@ public:
 
     void recalcLayout(void);
 
+    void saveOption(void);
+
 protected:
     xpr_uint_t generateTabWndId(void);
 

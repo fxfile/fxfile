@@ -600,19 +600,21 @@ void MainFrame::saveExplicitOption(void)
 {
     xpr_sint_t i;
     xpr_sint_t sViewCount = getViewCount();
-    ExplorerCtrl *sExplorerCtrl;
+    ExplorerView *sExplorerView;
 
     for (i = 0; i < sViewCount; ++i)
     {
-        sExplorerCtrl = getExplorerCtrl(i);
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            sExplorerCtrl->saveOption();
+        sExplorerView = getExplorerView(i);
+        if (XPR_IS_NOT_NULL(sExplorerView))
+            sExplorerView->saveOption();
     }
 
     saveOption();
 
-    OptionMgr::instance().saveOption();
-    OptionMgr::instance().saveMainOption();
+    OptionMgr &sOptionMgr = OptionMgr::instance();
+
+    sOptionMgr.saveOption();
+    sOptionMgr.saveMainOption();
 
     if (CfgPath::isInstance() == XPR_TRUE)
         CfgPath::instance().save();
