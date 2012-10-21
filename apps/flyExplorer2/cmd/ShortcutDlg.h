@@ -18,7 +18,7 @@ class ShortcutDlg : public TitleDlg
     typedef TitleDlg super;
 
 public:
-    ShortcutDlg(const xpr_tchar_t *lpcszPath);
+    ShortcutDlg(const xpr_tchar_t *aPath);
     virtual ~ShortcutDlg(void);
 
 protected:
