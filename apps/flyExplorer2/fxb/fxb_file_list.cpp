@@ -132,36 +132,59 @@ unsigned FileList::OnEntryProc(void)
             if (XPR_IS_TRUE(sOnlyFile) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
                 continue;
 
+            // file name
+            _tcscpy(sName, sPath.c_str());
+
             if (XPR_IS_FALSE(sFrontPath))
-                sPath = sPath.substr(sPath.rfind(XPR_STRING_LITERAL('\\'))+1);
+                _tcscpy(sName, sPath.substr(sPath.rfind(XPR_STRING_LITERAL('\\'))+1).c_str());
 
             if (XPR_IS_FALSE(sExtension) && !XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
             {
-                const xpr_tchar_t *sExt = GetFileExt(sPath.c_str());
+                xpr_tchar_t *sExt = (xpr_tchar_t *)GetFileExt(sName);
                 if (XPR_IS_NOT_NULL(sExt))
-                    sPath.erase(sExt - sPath.c_str());
+                    *sExt = 0;
             }
 
-            _tcscpy(sName, sPath.c_str());
-
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_TCS_TO_MBS(sPath.c_str(), sPath.length() * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+            XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
             sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
             if (XPR_IS_TRUE(sAttribute))
             {
+                // file name
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s", sAnsiName);
                 else                         fprintf(sFile, sFormat, sAnsiName);
 
-                GetFileSize(sPath.c_str(), sName, XPR_MAX_PATH);
+                // file size
+                if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+                    sName[0] = 0;
+                else
+                    GetFileSize(sPath.c_str(), sName, XPR_MAX_PATH);
+
+                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
+
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
                 else                         fprintf(sFile, " %20s", sAnsiName);
 
+                // file type
                 GetFileType(sPath.c_str(), sName);
+
+                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
+
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
                 else                         fprintf(sFile, " %-20s", sAnsiName);
 
+                // file time
                 GetFileTime(sPath.c_str(), sName);
+
+                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
+
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
                 else                         fprintf(sFile, " %-20s", sAnsiName);
             }
