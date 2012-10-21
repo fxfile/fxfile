@@ -46,7 +46,7 @@ void ExecuteCommand::execute(CommandContext &aContext)
 
     XPR_COMMAND_IF_SEARCH_RESULT_CTRL
     {
-        sExplorerCtrl->executeAllSelItems();
+        sSearchResultCtrl->executeAllSelItems();
     }
     XPR_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
@@ -78,7 +78,7 @@ void ParamExecuteCommand::execute(CommandContext &aContext)
 
     XPR_COMMAND_IF_SEARCH_RESULT_CTRL
     {
-        sExplorerCtrl->execute(-1, XPR_TRUE);
+        sSearchResultCtrl->execute(-1);
     }
     XPR_COMMAND_ELSE_IF_EXPLORER_CTRL
     {

@@ -97,6 +97,10 @@ public:
     void selectAll(void);
     void unselectAll(void);
 
+    // item execution
+    void execute(xpr_sint_t aIndex);
+    void executeAllSelItems(void);
+
 protected:
     xpr_bool_t setDataObject(LPDATAOBJECT *aDataObject, xpr_uint_t aShellAttributes);
     void beginDragDrop(NM_LISTVIEW *aNmListView);
@@ -107,8 +111,6 @@ protected:
     void executeLinkFolder(LPITEMIDLIST aFullPidl);
     void doExecuteError(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl);
     void doExecuteError(const xpr_tchar_t *aPath);
-    void execute(xpr_sint_t aIndex);
-    void executeAllSelItems(void);
 
     void OnShcnRename(fxb::Shcn *aShcn);
     void OnShcnUpdateDir(fxb::Shcn *aShcn);
