@@ -181,7 +181,7 @@ xpr_bool_t FileAss::getItemFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType, Fi
         }
     }
 
-    return (aFileAssDeque.empty() == false) ? XPR_FALSE : XPR_TRUE;
+    return (aFileAssDeque.empty() == false) ? XPR_TRUE : XPR_FALSE;
 }
 
 xpr_bool_t FileAss::getItemFromPath(const xpr_tchar_t *aPath, xpr_uint_t aType, FileAssDeque &aFileAssDeque)
