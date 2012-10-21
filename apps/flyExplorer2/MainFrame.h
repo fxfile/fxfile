@@ -205,6 +205,8 @@ protected:
     xpr_sint_t insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertGoWorkingFolderPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
+    xpr_sint_t insertGoWorkingFolderSetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
+    xpr_sint_t insertGoWorkingFolderResetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
 
     void getClientRectExecptForControlBars(CRect &aRect);

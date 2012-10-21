@@ -140,7 +140,8 @@
 			<String ID="cmd.working_folder.set">작업 폴더 %1% 설정</String>
 			<String ID="cmd.working_folder.reset">작업 폴더 %1% 초기화</String>
 			<String ID="cmd.working_folder.popup">작업 폴더 이동(&amp;O)</String>
-			<String ID="cmd.working_folder.reset_all">작업 폴더 모두 초기화(&amp;R)</String>
+			<String ID="cmd.working_folder.reset.popup">작업 폴더 초기화(&amp;I)</String>
+			<String ID="cmd.working_folder.reset_all">작업 폴더 모두 초기화(&amp;A)</String>
 			<String ID="cmd.go.path">경로 이동(&amp;G)</String>
 			<String ID="cmd.go.init_folder.popup">초기 폴더로 이동(&amp;I)</String>
 			<String ID="cmd.go.init_folder_all">모두 초기 폴더로 이동(&amp;A)</String>
