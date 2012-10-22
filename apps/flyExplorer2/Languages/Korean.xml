@@ -522,7 +522,7 @@
 			<String ID="popup.attr_time.title">일괄적 속성/날짜 바꾸기</String>
 			<String ID="popup.attr_time.label.path">경로(&amp;P):</String>
 			<String ID="popup.attr_time.multiple_folders">다양한 폴더</String>
-			<String ID="popup.attr_time.check.attr_timeibute">속성(&amp;I):</String>
+			<String ID="popup.attr_time.check.attribute">속성(&amp;I):</String>
 			<String ID="popup.attr_time.check.archive">기록(&amp;A):</String>
 			<String ID="popup.attr_time.check.hidden">숨김(&amp;H):</String>
 			<String ID="popup.attr_time.check.read_only">읽기 전용(&amp;R):</String>
@@ -927,7 +927,7 @@
 			<String ID="popup.pic_conv_color.radio.binary">바이너리(&amp;B):</String>
 			<String ID="popup.pic_conv_color.radio.grayscale">흑백(&amp;G):</String>
 			<String ID="popup.pic_conv_color.radio.color">컬러(&amp;C):</String>
-			<String ID="popup.pic_conv_color.radio.true_color">트루 컬럴(&amp;T)</String>
+			<String ID="popup.pic_conv_color.radio.true_color">트루 컬러(&amp;T)</String>
 			<String ID="popup.pic_conv_color.button.apply_all">모두 적용(&amp;A)</String>
 			<String ID="popup.pic_conv_color.button.apply">적용(&amp;P)</String>
 			<String ID="popup.pic_conv_color.button.cancel">취소(&amp;C)</String>
@@ -1163,8 +1163,8 @@
 
 			<!-- popup: tip of today -->
 			<String ID="popup.tip_of_today.title">오늘의 팁</String>
-			<String ID="popup.tip_of_today.check.no_show_on_startup">프로그램 시작시 띄우지 않기</String>
-			<String ID="popup.tip_of_today.button.next_tip">다음 팁 &gt;&gt;</String>
+			<String ID="popup.tip_of_today.check.no_show_on_startup">프로그램 시작시 띄우지 않기(&amp;S)</String>
+			<String ID="popup.tip_of_today.button.next_tip">다음 팁(&amp;N) &gt;&gt;</String>
 			<String ID="popup.tip_of_today.tip1">&#8216;수집하기&#8217;는 여러 위치에 있는 파일 및 폴더를 한 곳에 수집하여, 한 번에 복사, 이동, 삭제 등을 할 수 있습니다.</String>
 			<String ID="popup.tip_of_today.tip2">&#8216;북마크&#8217;는 폴더로 빠르게 이동시켜 주거나 파일을 실행시켜 주는 기능으로써, 기본 단축키 Ctrl+F9를 이용해 설정할 수 있습니다.</String>
 			<String ID="popup.tip_of_today.tip3">&#8216;드라이브 단추&#8217;를 이용하면, 각 드라이브 간에 빠르게 탐색할 수 있습니다. 또한 &#8216;환경 설정-기능&#8217;에서 &#8216;드라이브 이동시 폴더의 위치 기억&#8217; 옵션을 설정하면 이전 드라이브에서 탐색했던 폴더로 다시 탐색할 수 있습니다.</String>
