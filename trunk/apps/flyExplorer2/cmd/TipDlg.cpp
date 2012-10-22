@@ -70,6 +70,11 @@ xpr_bool_t TipDlg::OnInitDialog(void)
     if (mTipDeque.empty() == false)
         mIndex = rand() % mTipDeque.size();
 
+    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.title")));
+    SetDlgItemText(IDC_TIP_NO_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.check.no_show_on_startup")));
+    SetDlgItemText(IDC_TIP_NEXT,       theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.button.next_tip")));
+    SetDlgItemText(IDOK,               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+
     return XPR_TRUE;
 }
 
