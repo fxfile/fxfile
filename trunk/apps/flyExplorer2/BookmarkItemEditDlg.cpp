@@ -117,10 +117,24 @@ xpr_bool_t BookmarkItemEditDlg::OnInitDialog(void)
 
 void BookmarkItemEditDlg::add(LPITEMIDLIST aFullPidl)
 {
+    if (XPR_IS_NULL(aFullPidl))
+        return;
+
     mFullPidl = aFullPidl;
 
     fxb::GetName(aFullPidl, SHGDN_INFOLDER, mBookmark.mName);
     getPathFromPidl(aFullPidl, mBookmark.mPath);
+
+    // remove file extension, if new bookmark item is file.
+    if (fxb::IsFileSystem(aFullPidl) == XPR_TRUE)
+    {
+        if (fxb::IsFileSystemFolder(aFullPidl) == XPR_FALSE)
+        {
+            xpr_tchar_t *sFileExt = (xpr_tchar_t *)fxb::GetFileExt(mBookmark.mName);
+            if (XPR_IS_NOT_NULL(sFileExt))
+                *sFileExt = 0;
+        }
+    }
 
     mBookmark.mIconPath.clear();
     mBookmark.destroyIcon();
@@ -253,12 +267,12 @@ void BookmarkItemEditDlg::OnPathBrowse(void)
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
-    if (sFullPidl != XPR_NULL)
+    if (XPR_IS_NOT_NULL(sFullPidl))
     {
         xpr_tchar_t sNewPath[XPR_MAX_PATH + 1] = {0};
         fxb::GetName(sFullPidl, SHGDN_FORPARSING, sNewPath);
 
-        if (_tcsicmp(sOldPath, sNewPath))
+        if (_tcsicmp(sOldPath, sNewPath) != 0)
         {
             mBookmark.mName.clear();
             mBookmark.mPath.clear();
@@ -266,6 +280,17 @@ void BookmarkItemEditDlg::OnPathBrowse(void)
             // modify bookmark
             fxb::GetName(sFullPidl, SHGDN_INFOLDER, mBookmark.mName);
             getPathFromPidl(sFullPidl, mBookmark.mPath);
+
+            // remove file extension, if new bookmark item is file.
+            if (fxb::IsFileSystem(sFullPidl) == XPR_TRUE)
+            {
+                if (fxb::IsFileSystemFolder(sFullPidl) == XPR_FALSE)
+                {
+                    xpr_tchar_t *sFileExt = (xpr_tchar_t *)fxb::GetFileExt(mBookmark.mName);
+                    if (XPR_IS_NOT_NULL(sFileExt))
+                        *sFileExt = 0;
+                }
+            }
 
             fillItem();
         }
@@ -292,7 +317,7 @@ void BookmarkItemEditDlg::OnStartupBrowse(void)
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
-    if (sFullPidl != XPR_NULL)
+    if (XPR_IS_NOT_NULL(sFullPidl))
     {
         fxb::GetName(sFullPidl, SHGDN_FORPARSING, sStartup);
         SetDlgItemText(IDC_BMK_ITEM_EDIT_STARTUP, sStartup);
