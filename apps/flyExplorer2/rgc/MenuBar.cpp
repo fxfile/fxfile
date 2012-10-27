@@ -698,9 +698,10 @@ void CMenuBar::TrackChevronMenu( CRect& rcChevron, int nItem )
         CWinAppEx* pApp = CWinAppEx::GetInstance();
 
         // Create new popup menu
-        BCMenu menu;
+        CMenu menu;
         VERIFY( menu.CreatePopupMenu() );
 
+        CString strMenu;
         TCHAR szBuffer[ MAX_PATH ];
         MENUITEMINFO mii;
         mii.cbSize = sizeof( mii );
@@ -715,6 +716,16 @@ void CMenuBar::TrackChevronMenu( CRect& rcChevron, int nItem )
                 mii.dwTypeData = szBuffer;
                 mii.cch        = sizeof( szBuffer ) / sizeof( szBuffer[ 0 ] );
                 VERIFY( m_pMenu->GetMenuItemInfo( nIndex, &mii, TRUE ) );
+
+                if ( m_pObserver != NULL )
+                {
+                    strMenu = szBuffer;
+
+                    m_pObserver->OnLoadString( nIndex, strMenu );
+
+                    _tcscpy(szBuffer, strMenu);
+                    mii.cch = strMenu.GetLength();
+                }
 
                 UINT nMenuItems = menu.GetMenuItemCount();
                 if ( ( nMenuItems > 0 ) || !( mii.fType & MFT_SEPARATOR ) )
