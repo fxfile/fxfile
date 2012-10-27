@@ -190,7 +190,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_WORKING_FOLDER_RESET_ALL,      new cmd::WorkingFolderResetAllCommand);
 
     aExecutor.bindCommand(ID_GO_PATH,                          new cmd::GoPathCommand);
-    aExecutor.bindCommand(ID_GO_INIT_FOLDER,                   new cmd::GoInitFolderCommand);
+    aExecutor.bindCommand(ID_GO_INIT_FOLDER_ALL,               new cmd::GoInitFolderAllCommand);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_1,                 new cmd::GoInitFolder1Command);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_2,                 new cmd::GoInitFolder2Command);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_3,                 new cmd::GoInitFolder3Command);
@@ -198,25 +198,30 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_5,                 new cmd::GoInitFolder5Command);
     aExecutor.bindCommand(ID_GO_INIT_FOLDER_6,                 new cmd::GoInitFolder6Command);
 
-    aExecutor.bindCommand(ID_GO_DESKTOP,                       new cmd::GoSystemDesktopCommand);
-    aExecutor.bindCommand(ID_GO_MYDOCUMENT,                    new cmd::GoSystemMyDocumentCommand);
-    aExecutor.bindCommand(ID_GO_MYCOMPUTER,                    new cmd::GoSystemMyComputerCommand);
-    aExecutor.bindCommand(ID_GO_NETWORK,                       new cmd::GoSystemNetworkCommand);
-    aExecutor.bindCommand(ID_GO_CONTROLS,                      new cmd::GoSystemControlsCommand);
-    aExecutor.bindCommand(ID_GO_RECYCLE,                       new cmd::GoSystemRecycleCommand);
-    aExecutor.bindCommand(ID_GO_PROGRAMFILES,                  new cmd::GoSystemProgramFilesCommand);
-    aExecutor.bindCommand(ID_GO_COMMON,                        new cmd::GoSystemCommonCommand);
-    aExecutor.bindCommand(ID_GO_WINDOWS,                       new cmd::GoSystemWindowsCommand);
-    aExecutor.bindCommand(ID_GO_SYSTEM,                        new cmd::GoSystemSystemCommand);
-    aExecutor.bindCommand(ID_GO_FONTS,                         new cmd::GoSystemFontsCommand);
-    aExecutor.bindCommand(ID_GO_STARTUP,                       new cmd::GoSystemStartupCommand);
-    aExecutor.bindCommand(ID_GO_TEMPORARY,                     new cmd::GoSystemTemporaryCommand);
-    aExecutor.bindCommand(ID_GO_FAVORITES,                     new cmd::GoSystemFavoritesCommand);
-    aExecutor.bindCommand(ID_GO_INTERNETCACHE,                 new cmd::GoSystemInternetCacheCommand);
-    aExecutor.bindCommand(ID_GO_INTERNETCOOKIE,                new cmd::GoSystemInternetCookieCommand);
-    aExecutor.bindCommand(ID_GO_SENDTO,                        new cmd::GoSystemSendToCommand);
-    aExecutor.bindCommand(ID_GO_RECENT,                        new cmd::GoSystemRecentCommand);
-    aExecutor.bindCommand(ID_GO_APPDATA,                       new cmd::GoSystemAppDataCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_DESKTOP,                new cmd::GoSystemDesktopCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_LIBRARIES,              new cmd::GoSystemLibrariesCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_DOCUMENTS,              new cmd::GoSystemDocumentsCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_PICTURES,               new cmd::GoSystemPicturesCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_MUSIC,                  new cmd::GoSystemMusicCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_VIDEOS,                 new cmd::GoSystemVideosCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_MYDOCUMENT,             new cmd::GoSystemMyDocumentCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_MYCOMPUTER,             new cmd::GoSystemMyComputerCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_NETWORK,                new cmd::GoSystemNetworkCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_CONTROLS,               new cmd::GoSystemControlsCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_RECYCLE,                new cmd::GoSystemRecycleCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_PROGRAMFILES,           new cmd::GoSystemProgramFilesCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_COMMON,                 new cmd::GoSystemCommonCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_WINDOWS,                new cmd::GoSystemWindowsCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_WINDOWS_SYSTEM,         new cmd::GoSystemWindowsSystemCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_FONTS,                  new cmd::GoSystemFontsCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_STARTUP,                new cmd::GoSystemStartupCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_TEMPORARY,              new cmd::GoSystemTemporaryCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_FAVORITES,              new cmd::GoSystemFavoritesCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_INTERNETCACHE,          new cmd::GoSystemInternetCacheCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_INTERNETCOOKIE,         new cmd::GoSystemInternetCookieCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_SENDTO,                 new cmd::GoSystemSendToCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_RECENT,                 new cmd::GoSystemRecentCommand);
+    aExecutor.bindCommand(ID_GO_SYSTEM_APPDATA,                new cmd::GoSystemAppDataCommand);
 
     aExecutor.bindCommand(ID_GO_BACK,                          new cmd::GoDirectBackwardCommand);
     aExecutor.bindCommand(ID_GO_FORWARD,                       new cmd::GoDirectForwardCommand);
@@ -304,7 +309,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
 
     aExecutor.bindCommand(ID_VIEW_STYLE,                       new cmd::ViewStyleToolBarCommand);
     aExecutor.bindCommand(
-        ID_VIEW_STYLE_LARGEICON, ID_VIEW_STYLE_THUMBNAIL,      new cmd::ViewStyleCommand);
+        ID_VIEW_STYLE_LARGEICONS, ID_VIEW_STYLE_THUMBNAIL,     new cmd::ViewStyleCommand);
 
     aExecutor.bindCommand(
         ID_VIEW_ARRAY_NAME, ID_VIEW_ARRAY_ATTR,                new cmd::SortCommand);

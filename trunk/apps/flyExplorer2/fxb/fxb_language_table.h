@@ -43,7 +43,7 @@ public:
 protected:
     xpr_tchar_t mDir[XPR_MAX_PATH + 1];
 
-    typedef stdext::hash_map<std::tstring, LanguagePack *> LanguageMap;
+    typedef std::tr1::unordered_map<std::tstring, LanguagePack *> LanguageMap;
     typedef std::deque<LanguagePack *> LanguageDeque;
     LanguageMap   mLanguageMap;
     LanguageDeque mLanguageDeque;

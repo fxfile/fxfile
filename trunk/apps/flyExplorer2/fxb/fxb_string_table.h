@@ -38,7 +38,7 @@ public:
     void clear(void);
 
 protected:
-    typedef stdext::hash_map<std::tstring, std::tstring> StringTableMap;
+    typedef std::tr1::unordered_map<std::tstring, std::tstring> StringTableMap;
 
     xpr_bool_t load(const xpr_tchar_t *aFileName, StringTableMap &aStringTable);
 

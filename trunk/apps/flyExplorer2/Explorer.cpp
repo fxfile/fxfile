@@ -395,8 +395,14 @@ xpr_bool_t ExplorerApp::loadLanguage(const xpr_tchar_t *aLanguage)
     mStringTable = XPR_NULL;
     mFormatStringTable = XPR_NULL;
 
+    xpr_time_t sTime1 = xpr::timer_ms();
+
     if (mLanguageTable->loadLanguage(aLanguage) == XPR_FALSE)
         return XPR_FALSE;
+
+    xpr_time_t sTime2 = xpr::timer_ms();
+
+    XPR_TRACE(XPR_STRING_LITERAL("Loading time of language file = %I64dms\n"), sTime2 - sTime1);
 
     mStringTable = mLanguageTable->getStringTable();
     mFormatStringTable = mLanguageTable->getFormatStringTable();

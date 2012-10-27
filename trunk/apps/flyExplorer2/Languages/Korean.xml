@@ -153,6 +153,11 @@
 			<String ID="cmd.go.init_folder_6">창 #6 초기 폴더로 이동(&amp;6)</String>
 			<String ID="cmd.go.system_folder.popup">시스템 경로 이동(&amp;S)</String>
 			<String ID="cmd.go.system_folder.desktop">바탕 화면(&amp;T)</String>
+			<String ID="cmd.go.system_folder.libraries">라이브러리(&amp;L)</String>
+			<String ID="cmd.go.system_folder.documents">문서 폴더(&amp;D)</String>
+			<String ID="cmd.go.system_folder.pictures">사진 폴더(&amp;P)</String>
+			<String ID="cmd.go.system_folder.music">음악 폴더(&amp;M)</String>
+			<String ID="cmd.go.system_folder.videos">동영상 폴더(&amp;V)</String>
 			<String ID="cmd.go.system_folder.my_document">내 문서(&amp;D)</String>
 			<String ID="cmd.go.system_folder.my_computer">내 컴퓨터(&amp;C)</String>
 			<String ID="cmd.go.system_folder.network">네트워크 환경(&amp;N)</String>
@@ -161,7 +166,7 @@
 			<String ID="cmd.go.system_folder.program_files">프로그램(&amp;P)</String>
 			<String ID="cmd.go.system_folder.common">프로그램 공용(&amp;O)</String>
 			<String ID="cmd.go.system_folder.windows">윈도우즈(&amp;W)</String>
-			<String ID="cmd.go.system_folder.system">윈도우즈 시스템(&amp;S)</String>
+			<String ID="cmd.go.system_folder.windows_system">윈도우즈 시스템(&amp;S)</String>
 			<String ID="cmd.go.system_folder.application_data">Application Data(&amp;A)</String>
 			<String ID="cmd.go.system_folder.fonts">폰트(&amp;F)</String>
 			<String ID="cmd.go.system_folder.startup">시작 메뉴(&amp;U)</String>
@@ -248,10 +253,10 @@
 			<String ID="cmd.picture.close">닫기(&amp;C)</String>
 			<String ID="cmd.view_style.popup">보기(&amp;V)</String>
 			<String ID="cmd.view_style">보기 스타일</String>
-			<String ID="cmd.view_style.large_icon">큰 아이콘(&amp;G)</String>
-			<String ID="cmd.view_style.small_icon">작은 아이콘(&amp;M)</String>
+			<String ID="cmd.view_style.large_icons">큰 아이콘(&amp;G)</String>
+			<String ID="cmd.view_style.small_icons">작은 아이콘(&amp;M)</String>
 			<String ID="cmd.view_style.list">간단히(&amp;L)</String>
-			<String ID="cmd.view_style.detail">자세히(&amp;D)</String>
+			<String ID="cmd.view_style.details">자세히(&amp;D)</String>
 			<String ID="cmd.view_style.thumbnail">썸네일 이미지(&amp;H)</String>
 			<String ID="cmd.sort.popup">아이콘 정렬(&amp;I)</String>
 			<String ID="cmd.sort.name">이름순(&amp;N)</String>

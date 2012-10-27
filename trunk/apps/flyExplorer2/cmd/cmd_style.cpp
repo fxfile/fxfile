@@ -43,12 +43,12 @@ xpr_sint_t ViewStyleCommand::canExecute(CommandContext &aContext)
             xpr_bool_t sChecked = XPR_FALSE;
             switch (sCommandId)
             {
-            case ID_VIEW_STYLE_DETAIL:    sChecked = (sViewStyle == LVS_REPORT);    break;
-            case ID_VIEW_STYLE_SMALLICON: sChecked = (sViewStyle == LVS_SMALLICON); break;
-            case ID_VIEW_STYLE_LARGEICON: sChecked = (sViewStyle == LVS_ICON);      break;
-            case ID_VIEW_STYLE_LIST:      sChecked = (sViewStyle == LVS_LIST);      break;
-            case ID_VIEW_STYLE_THUMBNAIL: sChecked = (sViewStyle == LVS_THUMBNAIL); break;
-            default:                      sChecked = XPR_FALSE;                     break;
+            case ID_VIEW_STYLE_DETAILS:    sChecked = (sViewStyle == LVS_REPORT);    break;
+            case ID_VIEW_STYLE_SMALLICONS: sChecked = (sViewStyle == LVS_SMALLICON); break;
+            case ID_VIEW_STYLE_LARGEICONS: sChecked = (sViewStyle == LVS_ICON);      break;
+            case ID_VIEW_STYLE_LIST:       sChecked = (sViewStyle == LVS_LIST);      break;
+            case ID_VIEW_STYLE_THUMBNAIL:  sChecked = (sViewStyle == LVS_THUMBNAIL); break;
+            default:                       sChecked = XPR_FALSE;                     break;
             }
 
             if (XPR_IS_TRUE(sChecked))
@@ -69,12 +69,12 @@ void ViewStyleCommand::execute(CommandContext &aContext)
 
         switch (sCommandId)
         {
-        case ID_VIEW_LINEUP:          sExplorerCtrl->Arrange(LVA_SNAPTOGRID); break;
-        case ID_VIEW_STYLE_DETAIL:    sViewStyle = LVS_REPORT;                break;
-        case ID_VIEW_STYLE_SMALLICON: sViewStyle = LVS_SMALLICON;             break;
-        case ID_VIEW_STYLE_LARGEICON: sViewStyle = LVS_ICON;                  break;
-        case ID_VIEW_STYLE_LIST:      sViewStyle = LVS_LIST;                  break;
-        case ID_VIEW_STYLE_THUMBNAIL: sViewStyle = LVS_THUMBNAIL;             break;
+        case ID_VIEW_LINEUP:           sExplorerCtrl->Arrange(LVA_SNAPTOGRID); break;
+        case ID_VIEW_STYLE_DETAILS:    sViewStyle = LVS_REPORT;                break;
+        case ID_VIEW_STYLE_SMALLICONS: sViewStyle = LVS_SMALLICON;             break;
+        case ID_VIEW_STYLE_LARGEICONS: sViewStyle = LVS_ICON;                  break;
+        case ID_VIEW_STYLE_LIST:       sViewStyle = LVS_LIST;                  break;
+        case ID_VIEW_STYLE_THUMBNAIL:  sViewStyle = LVS_THUMBNAIL;             break;
         }
 
         if (sViewStyle != -1)
