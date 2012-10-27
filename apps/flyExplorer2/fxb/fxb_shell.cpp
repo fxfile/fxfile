@@ -231,7 +231,7 @@ HRESULT SH_GetKnownFolderIDList(REFKNOWNFOLDERID aRfid, DWORD aFlags, HANDLE aTo
     HINSTANCE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
     if (XPR_IS_NOT_NULL(sDll))
     {
-        SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t*)"SHGetKnownFolderIDList");
+        SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t *)380);
         if (XPR_IS_NOT_NULL(sSHGetKnownFolderIDListFunc))
         {
             sHResult = sSHGetKnownFolderIDListFunc(aRfid, aFlags, aToken, aPidl);
