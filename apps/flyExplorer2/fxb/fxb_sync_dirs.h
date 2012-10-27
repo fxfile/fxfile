@@ -177,7 +177,7 @@ public:
     xpr_uint_t mOrgSync;
 };
 
-typedef stdext::hash_multimap<std::tstring, SyncItem *> SyncMap;
+typedef std::tr1::unordered_multimap<std::tstring, SyncItem *> SyncMap;
 typedef std::pair<SyncMap::iterator, SyncMap::iterator> SyncMapPairIterator;
 typedef std::deque<SyncItem *> SyncDeque;
 typedef std::deque<std::tstring> FilterDeque;

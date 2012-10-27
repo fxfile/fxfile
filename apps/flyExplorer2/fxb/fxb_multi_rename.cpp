@@ -123,7 +123,7 @@ unsigned MultiRename::OnEntryProc(void)
     RenDeque::iterator sIterator;
     RenDeque::iterator sIterator2;
 
-    typedef stdext::hash_multimap<std::tstring, RenItem *> HashPathMap;
+    typedef std::tr1::unordered_multimap<std::tstring, RenItem *> HashPathMap;
     typedef std::pair<HashPathMap::iterator, HashPathMap::iterator> HashPathPairIterator;
     HashPathMap sHashOldPathMap;
     HashPathMap sHashNewPathMap;

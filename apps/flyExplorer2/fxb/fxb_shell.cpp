@@ -28,6 +28,7 @@ static xpr_char_t THIS_FILE[] = __FILE__;
 namespace fxb
 {
 typedef WINSHELLAPI LPITEMIDLIST (WINAPI *ILCreateFromPathFunc)(const xpr_char_t *aPath);
+typedef WINSHELLAPI HRESULT (WINAPI *SHGetKnownFolderIDListFunc)(REFKNOWNFOLDERID aRfid, DWORD aFlags, HANDLE aToken, LPITEMIDLIST *aPidl);
 
 //
 // path <-> pidl
@@ -221,6 +222,25 @@ xpr_bool_t Pidl2Path(LPITEMIDLIST aFullPidl, std::tstring &aPath, xpr_bool_t aOn
     GetName(aFullPidl, SHGDN_FORPARSING, aPath);
 
     return XPR_TRUE;
+}
+
+HRESULT SH_GetKnownFolderIDList(REFKNOWNFOLDERID aRfid, DWORD aFlags, HANDLE aToken, LPITEMIDLIST *aPidl)
+{
+    HRESULT sHResult = E_FAIL;
+
+    HINSTANCE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
+    if (XPR_IS_NOT_NULL(sDll))
+    {
+        SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t*)"SHGetKnownFolderIDList");
+        if (XPR_IS_NOT_NULL(sSHGetKnownFolderIDListFunc))
+        {
+            sHResult = sSHGetKnownFolderIDListFunc(aRfid, aFlags, aToken, aPidl);
+        }
+
+        ::FreeLibrary(sDll);
+    }
+
+    return sHResult;
 }
 
 //

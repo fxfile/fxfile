@@ -28,6 +28,7 @@ xpr_bool_t   Path2Pidl(const std::tstring &aPath, LPITEMIDLIST *aFullPidl);
 LPITEMIDLIST Path2Pidl(const std::tstring &aPath);
 xpr_bool_t   Pidl2Path(LPITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_bool_t aOnlyFileSystemPath = XPR_FALSE);
 xpr_bool_t   Pidl2Path(LPITEMIDLIST aFullPidl, std::tstring &aPath, xpr_bool_t aOnlyFileSystemPath = XPR_FALSE);
+HRESULT      SH_GetKnownFolderIDList(REFKNOWNFOLDERID aRfid, DWORD aFlags, HANDLE aToken, LPITEMIDLIST *aPidl);
 
 //
 // folder path (resolved, if pidl is link file)

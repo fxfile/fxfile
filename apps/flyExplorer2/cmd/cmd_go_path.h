@@ -16,7 +16,7 @@
 namespace cmd
 {
 XPR_COMMAND_DECLARE_CLASS(GoPathCommand);
-XPR_COMMAND_DECLARE_CLASS(GoInitFolderCommand);
+XPR_COMMAND_DECLARE_CLASS(GoInitFolderAllCommand);
 XPR_COMMAND_DECLARE_CLASS(GoInitFolder1Command);
 XPR_COMMAND_DECLARE_CLASS(GoInitFolder2Command);
 XPR_COMMAND_DECLARE_CLASS(GoInitFolder3Command);
@@ -25,6 +25,11 @@ XPR_COMMAND_DECLARE_CLASS(GoInitFolder5Command);
 XPR_COMMAND_DECLARE_CLASS(GoInitFolder6Command);
 
 XPR_COMMAND_DECLARE_CLASS(GoSystemDesktopCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemLibrariesCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemDocumentsCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemPicturesCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemMusicCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemVideosCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemMyDocumentCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemMyComputerCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemNetworkCommand);
@@ -33,7 +38,7 @@ XPR_COMMAND_DECLARE_CLASS(GoSystemRecycleCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemProgramFilesCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemCommonCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemWindowsCommand);
-XPR_COMMAND_DECLARE_CLASS(GoSystemSystemCommand);
+XPR_COMMAND_DECLARE_CLASS(GoSystemWindowsSystemCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemFontsCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemStartupCommand);
 XPR_COMMAND_DECLARE_CLASS(GoSystemTemporaryCommand);

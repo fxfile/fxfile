@@ -2191,7 +2191,7 @@ BEGIN
         MENUITEM "&Move to folder...",          ID_EDIT_FOLDER_MOVE
         MENUITEM "Copy to folder(&V)...",       ID_EDIT_FOLDER_COPY
         MENUITEM SEPARATOR
-        MENUITEM "Scrap(&F)",                   ID_EDIT_FILE_SCRAP_ADD
+        MENUITEM "Scrap(&F)",                   ID_EDIT_NAME_COPY
         POPUP "cmd.scrap.popup"
         BEGIN
             MENUITEM "Copy to current &folder",     ID_EDIT_FILE_SCRAP_CUR_COPY
@@ -2209,7 +2209,7 @@ BEGIN
         MENUITEM "Scrap b&ox",                  ID_EDIT_FILE_SCRAP_DROP
         MENUITEM SEPARATOR
         MENUITEM "Select by &name...",          ID_EDIT_SEL_NAME
-        MENUITEM "Unselect by name(&Q)...",     ID_EDIT_UNSEL_NAME
+        MENUITEM "Unselect by name(&Q)...",     ID_EDIT_FOLDER_COPY
         MENUITEM "Select as the same file &extension", ID_EDIT_SEL_SAME_EXT
         MENUITEM "Select as the same filte&r",  ID_EDIT_SEL_SAME_FILTER
         POPUP "cmd.select_special.popup"
@@ -2271,7 +2271,7 @@ BEGIN
         MENUITEM "&Go path...",                 ID_GO_PATH
         POPUP "cmd.go.init_folder.popup"
         BEGIN
-            MENUITEM "Open &all init folder",       ID_GO_INIT_FOLDER
+            MENUITEM "Open &all init folder",       ID_GO_INIT_FOLDER_ALL
             MENUITEM "Open init folder in window #&1", ID_GO_INIT_FOLDER_1
             MENUITEM "Open init folder in window #&2", ID_GO_INIT_FOLDER_2
             MENUITEM "Open init folder in window #&3", ID_GO_INIT_FOLDER_3
@@ -2279,33 +2279,39 @@ BEGIN
             MENUITEM "Open init folder in window #&5", ID_GO_INIT_FOLDER_5
             MENUITEM "Open init folder in window #&6", ID_GO_INIT_FOLDER_6
         END
+        MENUITEM SEPARATOR
+        MENUITEM "&Documents folder",           ID_GO_SYSTEM_DOCUMENTS
+        MENUITEM "&Pictures folder",            ID_GO_SYSTEM_PICTURES
+        MENUITEM "&Music folder",               ID_GO_SYSTEM_MUSIC
+        MENUITEM "&Videos folder",              ID_GO_SYSTEM_VIDEOS
         POPUP "cmd.go.system_folder.popup"
         BEGIN
-            MENUITEM "Desk&top",                    ID_GO_DESKTOP
+            MENUITEM "Desk&top",                    ID_GO_SYSTEM_DESKTOP
             MENUITEM SEPARATOR
-            MENUITEM "My &document",                ID_GO_MYDOCUMENT
-            MENUITEM "My &computer",                ID_GO_MYCOMPUTER
-            MENUITEM "&Network neighborhood",       ID_GO_NETWORK
+            MENUITEM "&Libraries",                  ID_GO_SYSTEM_LIBRARIES
+            MENUITEM "My &document",                ID_GO_SYSTEM_MYDOCUMENT
+            MENUITEM "My &computer",                ID_GO_SYSTEM_MYCOMPUTER
+            MENUITEM "&Network neighborhood",       ID_GO_SYSTEM_NETWORK
             MENUITEM SEPARATOR
-            MENUITEM "&Control panels",             ID_GO_CONTROLS
-            MENUITEM "R&ecycle bin",                ID_GO_RECYCLE
+            MENUITEM "&Control panels",             ID_GO_SYSTEM_CONTROLS
+            MENUITEM "R&ecycle bin",                ID_GO_SYSTEM_RECYCLE
             MENUITEM SEPARATOR
-            MENUITEM "&Program files",              ID_GO_PROGRAMFILES
-            MENUITEM "C&ommon files",               ID_GO_COMMON
-            MENUITEM "&Windows",                    ID_GO_WINDOWS
-            MENUITEM "Windows &system",             ID_GO_SYSTEM
-            MENUITEM "&Application data",           ID_GO_APPDATA
+            MENUITEM "&Program files",              ID_GO_SYSTEM_PROGRAMFILES
+            MENUITEM "C&ommon files",               ID_GO_SYSTEM_COMMON
+            MENUITEM "&Windows",                    ID_GO_SYSTEM_WINDOWS
+            MENUITEM "Windows &system",             ID_GO_SYSTEM_WINDOWS_SYSTEM
+            MENUITEM "&Application data",           ID_GO_SYSTEM_APPDATA
             MENUITEM SEPARATOR
-            MENUITEM "&Fonts",                      ID_GO_FONTS
-            MENUITEM "Start&up",                    ID_GO_STARTUP
-            MENUITEM "Te&mp",                       ID_GO_TEMPORARY
+            MENUITEM "&Fonts",                      ID_GO_SYSTEM_FONTS
+            MENUITEM "Start&up",                    ID_GO_SYSTEM_STARTUP
+            MENUITEM "Te&mp",                       ID_GO_SYSTEM_TEMPORARY
             MENUITEM SEPARATOR
-            MENUITEM "Fovor&ites",                  ID_GO_FAVORITES
-            MENUITEM "Temprary inte&rnet files",    ID_GO_INTERNETCACHE
-            MENUITEM "Internet &cookies",           ID_GO_INTERNETCOOKIE
+            MENUITEM "Fovor&ites",                  ID_GO_SYSTEM_FAVORITES
+            MENUITEM "Temprary inte&rnet files",    ID_GO_SYSTEM_INTERNETCACHE
+            MENUITEM "Internet &cookies",           ID_GO_SYSTEM_INTERNETCOOKIE
             MENUITEM SEPARATOR
-            MENUITEM "Se&nd to",                    ID_GO_SENDTO
-            MENUITEM "&Recent items",               ID_GO_RECENT
+            MENUITEM "Se&nd to",                    ID_GO_SYSTEM_SENDTO
+            MENUITEM "&Recent items",               ID_GO_SYSTEM_RECENT
         END
         MENUITEM SEPARATOR
         MENUITEM "&Backward",                   ID_GO_BACK
@@ -2413,10 +2419,10 @@ BEGIN
             MENUITEM "&Hide",                       ID_VIEW_PIC_HIDE
         END
         MENUITEM SEPARATOR
-        MENUITEM "Lar&ge icon",                 ID_VIEW_STYLE_LARGEICON
-        MENUITEM "S&mall icon",                 ID_VIEW_STYLE_SMALLICON
+        MENUITEM "Lar&ge icons",                ID_VIEW_STYLE_LARGEICONS
+        MENUITEM "S&mall icons",                ID_VIEW_STYLE_SMALLICONS
         MENUITEM "&List",                       ID_VIEW_STYLE_LIST
-        MENUITEM "&Details",                    ID_VIEW_STYLE_DETAIL
+        MENUITEM "&Details",                    ID_VIEW_STYLE_DETAILS
         MENUITEM "T&humbnail",                  ID_VIEW_STYLE_THUMBNAIL
         MENUITEM SEPARATOR
         POPUP "cmd.sort.popup"
@@ -2541,10 +2547,10 @@ IDR_EXP_VIEW_STYLE MENU
 BEGIN
     POPUP "Context Menu"
     BEGIN
-        MENUITEM "Lar&ge icon",                 ID_VIEW_STYLE_LARGEICON
-        MENUITEM "S&mall icon",                 ID_VIEW_STYLE_SMALLICON
+        MENUITEM "Lar&ge icons",                ID_VIEW_STYLE_LARGEICONS
+        MENUITEM "S&mall icons",                ID_VIEW_STYLE_SMALLICONS
         MENUITEM "&List",                       ID_VIEW_STYLE_LIST
-        MENUITEM "&Details",                    ID_VIEW_STYLE_DETAIL
+        MENUITEM "&Details",                    ID_VIEW_STYLE_DETAILS
         MENUITEM "T&humbnail",                  ID_VIEW_STYLE_THUMBNAIL
     END
 END
@@ -2555,10 +2561,10 @@ BEGIN
     BEGIN
         POPUP "cmd.view_style.popup"
         BEGIN
-            MENUITEM "Lar&ge icon",                 ID_VIEW_STYLE_LARGEICON
-            MENUITEM "S&mall icon",                 ID_VIEW_STYLE_SMALLICON
+            MENUITEM "Lar&ge icons",                ID_VIEW_STYLE_LARGEICONS
+            MENUITEM "S&mall icons",                ID_VIEW_STYLE_SMALLICONS
             MENUITEM "&List",                       ID_VIEW_STYLE_LIST
-            MENUITEM "&Details",                    ID_VIEW_STYLE_DETAIL
+            MENUITEM "&Details",                    ID_VIEW_STYLE_DETAILS
             MENUITEM "T&humbnail",                  ID_VIEW_STYLE_THUMBNAIL
         END
         MENUITEM SEPARATOR
@@ -2607,10 +2613,10 @@ BEGIN
     BEGIN
         POPUP "cmd.view_style.popup"
         BEGIN
-            MENUITEM "Lar&ge icon",                 ID_VIEW_STYLE_LARGEICON
-            MENUITEM "S&mall icon",                 ID_VIEW_STYLE_SMALLICON
+            MENUITEM "Lar&ge icons",                ID_VIEW_STYLE_LARGEICONS
+            MENUITEM "S&mall icons",                ID_VIEW_STYLE_SMALLICONS
             MENUITEM "&List",                       ID_VIEW_STYLE_LIST
-            MENUITEM "&Details",                    ID_VIEW_STYLE_DETAIL
+            MENUITEM "&Details",                    ID_VIEW_STYLE_DETAILS
             MENUITEM "T&humbnail",                  ID_VIEW_STYLE_THUMBNAIL
         END
         MENUITEM SEPARATOR
@@ -3168,7 +3174,7 @@ BEGIN
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_DEV_PATH_COPY,  VIRTKEY, SHIFT, CONTROL, ALT, NOINVERT
-    "F",            ID_EDIT_FILE_SCRAP_ADD, VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_NAME_COPY,      VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_FILENAME_COPY,  VIRTKEY, SHIFT, ALT, NOINVERT
     "C",            ID_EDIT_NAME_COPY,      VIRTKEY, SHIFT, CONTROL, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
@@ -3198,8 +3204,7 @@ BEGIN
     VK_F9,          ID_GO_BOOKMARK_MODIFY,  VIRTKEY, CONTROL, NOINVERT
     VK_F8,          ID_GO_DRIVE,            VIRTKEY, NOINVERT
     VK_RIGHT,       ID_GO_FORWARD,          VIRTKEY, ALT, NOINVERT
-    VK_HOME,        ID_GO_HOME,             VIRTKEY, ALT, NOINVERT
-    "I",            ID_GO_INIT_FOLDER,      VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_GO_INIT_FOLDER_ALL,  VIRTKEY, CONTROL, NOINVERT
     "G",            ID_GO_PATH,             VIRTKEY, CONTROL, NOINVERT
     "\\",           ID_GO_ROOT,             ASCII,  NOINVERT
     VK_DOWN,        ID_GO_SIBLING_DOWN,     VIRTKEY, ALT, NOINVERT

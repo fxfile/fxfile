@@ -183,7 +183,7 @@ unsigned BatchCreate::OnEntryProc(void)
     Item *sItem2;
     NewDeque::iterator sIterator;
 
-    typedef stdext::hash_multimap<std::tstring, Item *> HashPathMap;
+    typedef std::tr1::unordered_multimap<std::tstring, Item *> HashPathMap;
     typedef std::pair<HashPathMap::iterator, HashPathMap::iterator> HashPathPairIterator;
     HashPathMap sHashPathMap;
     HashPathMap::iterator sHashPathIterator;

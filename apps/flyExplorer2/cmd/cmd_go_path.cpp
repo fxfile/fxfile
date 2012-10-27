@@ -17,6 +17,8 @@
 #include "FolderCtrl.h"
 #include "ExplorerCtrl.h"
 
+#include <Knownfolders.h>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -78,12 +80,12 @@ void GoPathCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t GoInitFolderCommand::canExecute(CommandContext &aContext)
+xpr_sint_t GoInitFolderAllCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
 }
 
-void GoInitFolderCommand::execute(CommandContext &aContext)
+void GoInitFolderAllCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -179,6 +181,32 @@ static void goSystemFolder(MainFrame &aMainFrame, xpr_sint_t aCSIDL)
     }
 }
 
+static xpr_bool_t goNewSystemFolder(MainFrame &aMainFrame, KNOWNFOLDERID aKnownFolderId)
+{
+    xpr_bool_t sResult = XPR_FALSE;
+
+    ExplorerCtrl *sExplorerCtrl = aMainFrame.getExplorerCtrl();
+    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    {
+        LPITEMIDLIST sFullPidl = XPR_NULL;
+        HRESULT sHResult = fxb::SH_GetKnownFolderIDList(aKnownFolderId, 0, XPR_NULL, &sFullPidl);
+        if (SUCCEEDED(sHResult))
+        {
+            if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)
+            {
+                sResult = XPR_TRUE;
+            }
+        }
+
+        if (XPR_IS_FALSE(sResult))
+        {
+            COM_FREE(sFullPidl);
+        }
+    }
+
+    return sResult;
+}
+
 xpr_sint_t GoSystemDesktopCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
@@ -189,6 +217,78 @@ void GoSystemDesktopCommand::execute(CommandContext &aContext)
     XPR_COMMAND_DECLARE_CTRL;
 
     goSystemFolder(*sMainFrame, CSIDL_DESKTOP);
+}
+
+xpr_sint_t GoSystemLibrariesCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemLibrariesCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    goNewSystemFolder(*sMainFrame, FOLDERID_Libraries);
+}
+
+xpr_sint_t GoSystemDocumentsCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemDocumentsCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    if (goNewSystemFolder(*sMainFrame, FOLDERID_DocumentsLibrary) == XPR_FALSE)
+    {
+        goSystemFolder(*sMainFrame, CSIDL_MYDOCUMENTS);
+    }
+}
+
+xpr_sint_t GoSystemPicturesCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemPicturesCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    if (goNewSystemFolder(*sMainFrame, FOLDERID_PicturesLibrary) == XPR_FALSE)
+    {
+        goSystemFolder(*sMainFrame, CSIDL_MYPICTURES);
+    }
+}
+
+xpr_sint_t GoSystemMusicCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemMusicCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    if (goNewSystemFolder(*sMainFrame, FOLDERID_MusicLibrary) == XPR_FALSE)
+    {
+        goSystemFolder(*sMainFrame, CSIDL_MYMUSIC);
+    }
+}
+
+xpr_sint_t GoSystemVideosCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoSystemVideosCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    if (goNewSystemFolder(*sMainFrame, FOLDERID_VideosLibrary) == XPR_FALSE)
+    {
+        goSystemFolder(*sMainFrame, CSIDL_MYVIDEO);
+    }
 }
 
 xpr_sint_t GoSystemMyDocumentCommand::canExecute(CommandContext &aContext)
@@ -309,12 +409,12 @@ void GoSystemWindowsCommand::execute(CommandContext &aContext)
     goSystemFolder(*sMainFrame, CSIDL_WINDOWS);
 }
 
-xpr_sint_t GoSystemSystemCommand::canExecute(CommandContext &aContext)
+xpr_sint_t GoSystemWindowsSystemCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
 }
 
-void GoSystemSystemCommand::execute(CommandContext &aContext)
+void GoSystemWindowsSystemCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
