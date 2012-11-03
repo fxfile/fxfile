@@ -12,30 +12,31 @@
 
 #include "Option.h"
 
+#include <commoncontrols.h>
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
+#if (NTDDI_VERSION >= NTDDI_WINXP)
+#define SHIL_LARGE          0   // normally 32x32
+#define SHIL_SMALL          1   // normally 16x16
+#define SHIL_EXTRALARGE     2
+#define SHIL_SYSSMALL       3   // like SHIL_SMALL, but tracks system small icon metric correctly
+#if (NTDDI_VERSION < NTDDI_LONGHORN)
+#define SHIL_JUMBO          4   // normally 256x256
+#define SHIL_LAST           SHIL_JUMBO
+#else
+#define SHIL_LAST           SHIL_SYSSMALL
+#endif // (NTDDI_VERSION >= NTDDI_LONGHORN)
+#endif // (NTDDI_VERSION < NTDDI_WINXP)
+
 namespace fxb
 {
-//#include <commoncontrols.h>
-//#include <shellapi.h>
-//#if (NTDDI_VERSION >= NTDDI_WINXP)
-//#define SHIL_LARGE          0   // normally 32x32
-//#define SHIL_SMALL          1   // normally 16x16
-//#define SHIL_EXTRALARGE     2
-//#define SHIL_SYSSMALL       3   // like SHIL_SMALL, but tracks system small icon metric correctly
-//#if (NTDDI_VERSION >= NTDDI_LONGHORN)
-//#define SHIL_JUMBO          4   // normally 256x256
-//#define SHIL_LAST           SHIL_JUMBO
-//#else
-//#define SHIL_LAST           SHIL_SYSSMALL
-//#endif // (NTDDI_VERSION >= NTDDI_LONGHORN)
-//#endif // (NTDDI_VERSION >= NTDDI_WINXP)
-
 typedef WINSHELLAPI xpr_bool_t (WINAPI *Shell_GetImageListsFunc)(HIMAGELIST *aLargeImageList, HIMAGELIST *aSmallImageList);
+typedef WINSHELLAPI HRESULT (WINAPI *SHGetImageListFunc)(xpr_sint_t, REFIID, void**);
 typedef xpr_bool_t (WINAPI *FileIconInitFunc)(xpr_bool_t fFullInit);
 
 SysImgList::SysImgList(void)
@@ -53,10 +54,10 @@ void SysImgList::init(ImgSize aImgSize)
 
     switch (aImgSize)
     {
-    case ImgSizeSmall: SHGetImageLists(XPR_NULL, &sSysImgList); break;
-    case ImgSizeLarge: SHGetImageLists(&sSysImgList, XPR_NULL); break;
-    case ImgSizeExtra: break;
-    case ImgSizeJumbo: break;
+    case ImgSizeSmall: sSysImgList = SHGetImageList(SHIL_SYSSMALL  ); break;
+    case ImgSizeLarge: sSysImgList = SHGetImageList(SHIL_LARGE     ); break;
+    case ImgSizeExtra: sSysImgList = SHGetImageList(SHIL_EXTRALARGE); break;
+    case ImgSizeJumbo: sSysImgList = SHGetImageList(SHIL_JUMBO     ); break;
     }
 
     if (XPR_IS_NULL(sSysImgList))
@@ -65,61 +66,47 @@ void SysImgList::init(ImgSize aImgSize)
     Attach(sSysImgList);
 }
 
-//HIMAGELIST SysImgList::SHGetImageList()
-//{
-//    if (bLarge)
-//    {
-//        // Get the 48x48 system image list. 
-//        HRESULT hr, (WINAPI* pfnGetImageList)(xpr_sint_t, REFIID, void**) = XPR_NULL;
-//        HMODULE hmod = GetModuleHandle ( XPR_STRING_LITERAL("shell32") );
-//
-//        if ( XPR_NULL != hmod )
-//            (FARPROC&) pfnGetImageList = GetProcAddress ( hmod, "SHGetImageList" );
-//
-//        if ( XPR_NULL == pfnGetImageList )
-//            (FARPROC&) pfnGetImageList = GetProcAddress ( hmod, MAKEINTRESOURCEA(727) );  // see Q316931
-//
-//        if ( XPR_NULL != pfnGetImageList )
-//        {
-//
-//            hSysImgList = XPR_NULL;
-//            hr = pfnGetImageList ( SHIL_EXTRALARGE, IID_IImageList, (void**) &hSysImgList );
-//
-//            if ( SUCCEEDED(hr) )
-//            {
-//
-//                // HIMAGELIST and IImageList* are interchangeable, so this cast is kosher.
-//                //hSysImgList = (HIMAGELIST)(IImageList*) m_TileIml;
-//            }
-//        }
-//    }
-//}
-
-xpr_bool_t SysImgList::SHGetImageLists(HIMAGELIST *aLargeImageList, HIMAGELIST *aSmallImageList)
+HIMAGELIST SysImgList::SHGetImageList(xpr_sint_t aImageSize)
 {
-    xpr_bool_t sResult = XPR_FALSE;
-    HINSTANCE sDll;
-    Shell_GetImageListsFunc sShell_GetImageListsFunc;
+    HIMAGELIST sSysImgList = XPR_NULL;
 
-    sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
+    HMODULE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
     if (XPR_IS_NOT_NULL(sDll))
     {
-        sShell_GetImageListsFunc = (Shell_GetImageListsFunc)::GetProcAddress(sDll, (const xpr_char_t *)71);
-        if (XPR_IS_NOT_NULL(sShell_GetImageListsFunc))
-            sResult = sShell_GetImageListsFunc(aLargeImageList, aSmallImageList);
+        HRESULT sHResult;
+        SHGetImageListFunc sSHGetImageListFunc;
+
+        sSHGetImageListFunc = (SHGetImageListFunc)GetProcAddress(sDll, "SHGetImageList");
+        if (XPR_IS_NULL(sSHGetImageListFunc))
+            sSHGetImageListFunc = (SHGetImageListFunc)GetProcAddress(sDll, MAKEINTRESOURCEA(727));  // see Q316931
+
+        if (XPR_IS_NOT_NULL(sSHGetImageListFunc))
+        {
+            sHResult = sSHGetImageListFunc(aImageSize, IID_IImageList2, (void**)&sSysImgList);
+            if (FAILED(sHResult))
+            {
+                sHResult = sSHGetImageListFunc(aImageSize, IID_IImageList, (void**)&sSysImgList);
+                if (FAILED(sHResult))
+                {
+                    if (aImageSize == SHIL_SMALL || aImageSize == SHIL_LARGE || aImageSize == SHIL_SYSSMALL)
+                    {
+                        Shell_GetImageListsFunc sShell_GetImageListsFunc = (Shell_GetImageListsFunc)::GetProcAddress(sDll, (const xpr_char_t *)71);
+                        if (XPR_IS_NOT_NULL(sShell_GetImageListsFunc))
+                        {
+                            xpr_bool_t sResult = sShell_GetImageListsFunc(
+                                (aImageSize == SHIL_LARGE) ? &sSysImgList : XPR_NULL,
+                                (aImageSize == SHIL_LARGE) ? XPR_NULL : &sSysImgList);
+                        }
+                    }
+                }
+            }
+        }
+
         ::FreeLibrary(sDll);
+        sDll = XPR_NULL;
     }
 
-    // Initializes or reinitializes the system image list.
-    //if (XPR_IS_NOT_NULL(aSmallImageList))
-    //{
-    //    FileIconInitFunc sFileIconInitFunc;
-    //        sFileIconInitFunc = (FileIconInitFunc)    GetProcAddress(sDll, (const xpr_char_t *)660);
-    //    if (XPR_IS_NOT_NULL(sFileIconInitFunc))
-    //        sFileIconInitFunc(XPR_TRUE);
-    //}
-
-    return sResult;
+    return sSysImgList;
 }
 
 void SysImgList::release(void)
@@ -162,26 +149,4 @@ void SysImgListMgr::getCustomImgList(void)
         LoadImgList(sImgList[i], strPath.c_str(), sIconSize[i], 3);
     }
 }
-
-//SysImgList *SysImgListMgr::GetSysImgList(SysImgList::ImgSize nImgSize)
-//{
-//    switch (nImgSize)
-//    {
-//    case SysImgList::ImgSizeSmall: return &mSysImgList16;
-//    case SysImgList::ImgSizeLarge: return &mSysImgList32;
-//    }
-//
-//    return XPR_NULL;
-//}
-//
-//SysImgList *SysImgListMgr::GetCusImgList(SysImgList::ImgSize nImgSize)
-//{
-//    switch (nImgSize)
-//    {
-//    case SysImgList::ImgSizeSmall: return &mCusImgList16;
-//    case SysImgList::ImgSizeLarge: return &mCusImgList32;
-//    }
-//
-//    return XPR_NULL;
-//}
 } // namespace fxb
