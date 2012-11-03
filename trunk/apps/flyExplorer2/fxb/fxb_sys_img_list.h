@@ -35,7 +35,7 @@ public:
     void release(void);
 
 protected:
-    xpr_bool_t SHGetImageLists(HIMAGELIST *aLargeImageList, HIMAGELIST *aSmallImageList);
+    HIMAGELIST SHGetImageList(xpr_sint_t aImageSize);
 };
 
 class SysImgListMgr : public xpr::Singleton<SysImgListMgr>
