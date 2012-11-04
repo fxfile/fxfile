@@ -20,7 +20,6 @@
 #include "fxb/fxb_string_table.h"
 #include "fxb/fxb_format_string_table.h"
 
-#include "TraceWin.h"           // for Trace External Output
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "OptionMgr.h"
@@ -121,22 +120,12 @@ xpr_bool_t ExplorerApp::InitInstance(void)
         sMsg  = XPR_STRING_LITERAL("This program is \'flyExplorer\' file manager.\n");
         sMsg += XPR_STRING_LITERAL("It is contained that a routine verfiy for this program file name.\n");
         sMsg += XPR_STRING_LITERAL("The file name must be \'flyExplorer.exe\'.");
-        sMsg += XPR_STRING_LITERAL("Please, rename to \'flyExplorer.exe\', ater then execute this program again.\n");
+        sMsg += XPR_STRING_LITERAL("Please, rename to \'flyExplorer.exe\' and then execute this program again.\n");
         sMsg += XPR_STRING_LITERAL("\n");
         sMsg += XPR_STRING_LITERAL("Please, contact to homepage: http://flychk.com or e-mail: flychk@flychk.com for any question.");
         sMsg += XPR_STRING_LITERAL("\n");
         MessageBox(XPR_NULL, sMsg, XPR_STRING_LITERAL("flyExplorer"), MB_OK | MB_ICONSTOP);
         return XPR_FALSE;
-
-        //CString sMsg;
-        //sMsg  = XPR_STRING_LITERAL("본 프로그램은 flyExplorer 파일 관리 프로그램입니다.\n");
-        //sMsg += XPR_STRING_LITERAL("이 프로그램에는 실행 파일명을 검사하는 루틴이 포함되어 있습니다.\n");
-        //sMsg += XPR_STRING_LITERAL("실행 파일명을 \'flyExplorer.exe\'로 변경한 후, 다시 실행하여 주시기 바랍니다.\n");
-        //sMsg += XPR_STRING_LITERAL("\n");
-        //sMsg += XPR_STRING_LITERAL("문의 사항은 홈페이지 http://flychk.com이나 전자 우편 flychk@flychk.com으로 해 주시기 바랍니다.");
-        //sMsg += XPR_STRING_LITERAL("\n");
-        //MessageBox(XPR_NULL, sMsg, XPR_STRING_LITERAL("flyExplorer"), MB_OK | MB_ICONSTOP);
-        //return XPR_FALSE;
     }
 #endif // XPR_CFG_BUILD_RELEASE
 

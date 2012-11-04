@@ -923,14 +923,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rgc\Picture.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\Picture.h"
-				>
-			</File>
-			<File
 				RelativePath=".\rgc\Print.cpp"
 				>
 			</File>
@@ -976,14 +968,6 @@
 			</File>
 			<File
 				RelativePath=".\rgc\SizeGripWnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\SubclassWnd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\SubclassWnd.h"
 				>
 			</File>
 			<File
@@ -2141,10 +2125,6 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TraceWin.h"
 				>
 			</File>
 			<File
