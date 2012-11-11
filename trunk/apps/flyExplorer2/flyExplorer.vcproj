@@ -3189,6 +3189,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\xpr\include\xpr_system.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\xpr\include\xpr_thread.h"
 				>
 			</File>
@@ -3328,7 +3332,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\xpr\xpr\xpr_debug.cpp"
+					RelativePath="..\..\src\xpr\xpr\xpr_debug_win.cpp"
 					>
 					<FileConfiguration
 						Name="Debug-x86-Unicode|Win32"
@@ -3356,6 +3360,18 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release-x86-Ansicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\src\xpr\xpr\xpr_file_io_win.cpp"
+					>
+					<FileConfiguration
+						Name="Debug-x86-Unicode|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"
@@ -3608,6 +3624,18 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release-x86-Ansicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\src\xpr\xpr\xpr_system_win.cpp"
+					>
+					<FileConfiguration
+						Name="Debug-x86-Unicode|Win32"
 						>
 						<Tool
 							Name="VCCLCompilerTool"

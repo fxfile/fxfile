@@ -276,6 +276,10 @@ unsigned BatchCreate::OnEntryProc(void)
 
     if (IsStop() == XPR_FALSE && XPR_IS_FALSE(sInvalid))
     {
+        xpr_rcode_t sRcode;
+        xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        xpr::FileIo sFileIo;
+
         sIterator = mNewDeque.begin();
         for (; sIterator != mNewDeque.end(); ++sIterator)
         {
@@ -301,9 +305,9 @@ unsigned BatchCreate::OnEntryProc(void)
                 case CreateTypeFile:
                 case CreateTypeTextFile:
                     {
-                        CFile sFile;
-                        if (sFile.Open(sItem->mPath.c_str(), CFile::modeCreate | CFile::typeBinary))
-                            sFile.Close();
+                        sRcode = sFileIo.open(sItem->mPath.c_str(), sOpenMode);
+                        if (XPR_RCODE_IS_SUCCESS(sRcode))
+                            sFileIo.close();
                         break;
                     }
                 }

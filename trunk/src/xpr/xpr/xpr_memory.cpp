@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 namespace xpr
 {
-xpr_rcode_t MemAlloc(void **aAddr, xpr_size_t aSize)
+xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -40,7 +40,7 @@ xpr_rcode_t MemAlloc(void **aAddr, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t MemCalloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
+xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aNumber == 0 || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -65,7 +65,7 @@ xpr_rcode_t MemCalloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t MemRealloc(void **aAddr, xpr_size_t aSize)
+xpr_rcode_t xpr_realloc(void **aAddr, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -101,7 +101,7 @@ xpr_rcode_t MemRealloc(void **aAddr, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-void MemFree(void *aAddr)
+void xpr_free(void *aAddr)
 {
     if (aAddr == XPR_NULL)
         return;
@@ -118,7 +118,7 @@ void MemFree(void *aAddr)
 #endif
 }
 
-void MemSet(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
+void xpr_memset(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return;
@@ -134,12 +134,12 @@ void MemSet(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
 #endif
 }
 
-void MemZeroSet(void *aAddr, xpr_size_t aSize)
+void xpr_memset_zero(void *aAddr, xpr_size_t aSize)
 {
-    MemSet(aAddr, 0x00, aSize);
+    xpr_memset(aAddr, 0x00, aSize);
 }
 
-void MemCpy(void *aDest, const void *aSrc, xpr_size_t aSize)
+void xpr_memcpy(void *aDest, const void *aSrc, xpr_size_t aSize)
 {
     if (aSize == 0)
         return;
@@ -155,7 +155,7 @@ void MemCpy(void *aDest, const void *aSrc, xpr_size_t aSize)
 #endif
 }
 
-void MemMove(void *aDest, const void *aSrc, xpr_size_t aSize)
+void xpr_memmove(void *aDest, const void *aSrc, xpr_size_t aSize)
 {
     if (aSize == 0)
         return;
@@ -171,7 +171,7 @@ void MemMove(void *aDest, const void *aSrc, xpr_size_t aSize)
 #endif
 }
 
-xpr_sint_t MemCmp(const void *aAddr1, const void *aAddr2, xpr_size_t aSize)
+xpr_sint_t xpr_memcmp(const void *aAddr1, const void *aAddr2, xpr_size_t aSize)
 {
     if (aSize == 0)
         return 0;

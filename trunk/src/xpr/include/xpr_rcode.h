@@ -448,6 +448,7 @@ namespace xpr
 #if defined(XPR_CFG_OS_WINDOWS)
 
 #define XPR_RCODE_IS_SUCCESS(e)           ((e) == XPR_RCODE_SUCCESS)
+#define XPR_RCODE_IS_ERROR(e)             ((e) != XPR_RCODE_SUCCESS)
 #define XPR_RCODE_IS_EPERM(e)                                                 \
     (((e) == XPR_RCODE_EPERM)                                              || \
      ((e) == XPR_RCODE_CONVERT(ERROR_NOT_OWNER)))
@@ -670,6 +671,7 @@ namespace xpr
 #else // not, XPR_CFG_OS_WINDOWS
 
 #define XPR_RCODE_IS_SUCCESS(e)           ((e) == XPR_RCODE_SUCCESS)
+#define XPR_RCODE_IS_ERROR(e)             ((e) != XPR_RCODE_SUCCESS)
 #define XPR_RCODE_IS_EPERM(e)             ((e) == XPR_RCODE_EPERM)
 #define XPR_RCODE_IS_ENOENT(e)            ((e) == XPR_RCODE_ENOENT)
 #define XPR_RCODE_IS_ESRCH(e)             ((e) == XPR_RCODE_ESRCH)

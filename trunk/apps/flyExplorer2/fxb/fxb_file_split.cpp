@@ -20,7 +20,7 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-#define DEFAULT_BUFFER_SIZE (16 * 1024)
+static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
 
 FileSplit::FileSplit(void)
     : mHwnd(XPR_NULL), mMsg(0)
@@ -28,7 +28,7 @@ FileSplit::FileSplit(void)
     , mSplitedCount(0)
     , mFlags(0)
     , mUnitSize(0i64)
-    , mBufferSize(DEFAULT_BUFFER_SIZE)
+    , mBufferSize(kDefaultBufferSize)
 {
 }
 
@@ -110,8 +110,11 @@ unsigned FileSplit::OnEntryProc(void)
 
     Status sStatus = StatusNone;
 
-    FILE *sFile = _tfopen(mPath.c_str(), XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(mPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
     {
         sStatus = StatusNotReadable;
     }
@@ -119,9 +122,10 @@ unsigned FileSplit::OnEntryProc(void)
     {
         xpr_uint64_t sFileSize = GetFileSize(mPath);
 
-        xpr_size_t sRead;
+        xpr_ssize_t sRead;
         xpr_byte_t *sBuffer;
-        FILE *sTargetFile;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sTargetFileIo;
         std::tstring sFileName;
         xpr_char_t sFileNameA[XPR_MAX_PATH + 1];
         xpr_size_t sOutputBytes;
@@ -134,9 +138,8 @@ unsigned FileSplit::OnEntryProc(void)
         xpr_sint64_t sWritedFileSize;
         xpr_size_t sSize;
         xpr_size_t sWritedBuffer;
-        xpr_size_t sWrite;
+        xpr_ssize_t sWrite;
 
-        sTargetFile = XPR_NULL;
         sBuffer = new xpr_byte_t[mBufferSize];
         sFileName = mPath.substr(mPath.rfind(XPR_STRING_LITERAL('\\'))+1);
         sIndex = 1;
@@ -147,30 +150,32 @@ unsigned FileSplit::OnEntryProc(void)
 
         while (IsStop() == XPR_FALSE)
         {
-            sRead = fread(sBuffer, 1, mBufferSize, sFile);
-            if (sRead == 0)
+            sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
+            if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
                 break;
 
             sWritedBuffer = 0;
 
             do
             {
-                if (XPR_IS_NULL(sTargetFile))
+                if (sTargetFileIo.isOpened() == XPR_FALSE)
                     sWritedFileSize = 0;
 
-                if (XPR_IS_NULL(sTargetFile))
+                if (sTargetFileIo.isOpened() == XPR_FALSE)
                 {
                     _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s.%03d"), mDestDir.c_str(), sFileName.c_str(), sIndex++);
-                    sTargetFile = _tfopen(sPath, XPR_STRING_LITERAL("wb"));
 
-                    if (XPR_IS_NOT_NULL(sTargetFile))
+                    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+                    sRcode = sTargetFileIo.open(sPath, sOpenMode);
+
+                    if (XPR_RCODE_IS_SUCCESS(sRcode))
                     {
                         CsLocker sLocker(mCs);
                         mSplitedCount++;
                     }
                 }
 
-                if (XPR_IS_NULL(sTargetFile))
+                if (sTargetFileIo.isOpened() == XPR_FALSE)
                     break;
 
                 sSize = sRead - sWritedBuffer;
@@ -186,7 +191,9 @@ unsigned FileSplit::OnEntryProc(void)
                     if ((mUnitSize - sWritedFileSize) < sSize)
                         sSize = (xpr_size_t)(mUnitSize - sWritedFileSize);
 
-                    sWrite = fwrite(sBuffer+sWritedBuffer, 1, sSize, sTargetFile);
+                    sRcode = sTargetFileIo.write(sBuffer + sWritedBuffer, sSize, &sWrite);
+                    if (XPR_RCODE_IS_ERROR(sRcode))
+                        break;
 
                     sWritedBuffer += sWrite;
                     sWritedFileSize += sWrite;
@@ -199,23 +206,26 @@ unsigned FileSplit::OnEntryProc(void)
 
                 if (sWritedFileSize == mUnitSize)
                 {
-                    fclose(sTargetFile);
-                    sTargetFile = XPR_NULL;
+                    sTargetFileIo.close();
                 }
 
                 if (sWritedBuffer == sRead)
                     break;
-            }
-            while (IsStop() == XPR_FALSE);
+
+            } while (IsStop() == XPR_FALSE);
+
+            if (XPR_RCODE_IS_ERROR(sRcode))
+                break;
         }
 
-        if (XPR_IS_NOT_NULL(sTargetFile))
+        if (sTargetFileIo.isOpened() == XPR_TRUE)
         {
-            fclose(sTargetFile);
-            sTargetFile = XPR_NULL;
+            sTargetFileIo.close();
         }
 
-        fclose(sFile);
+        sFileIo.close();
+
+        FILE *sFile = XPR_NULL;
 
         if (IsStop() == XPR_FALSE && XPR_IS_NOT_NULL(sCrcCode))
         {

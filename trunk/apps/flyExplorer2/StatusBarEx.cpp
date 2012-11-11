@@ -67,7 +67,7 @@ xpr_sint_t StatusBarEx::OnCreate(LPCREATESTRUCT aCreateStruct)
     mDriveProgressCtrl.setTextBackColor(RGB(255,255,255));
     recalcLayout();
 
-    if (fxb::UserEnv::instance().mWinVer >= fxb::UserEnv::WinXP)
+    if (xpr::getOsVer() >= xpr::kOsVerWinXP)
     {
         CClientDC sClientDC(this);
         CSize sText = sClientDC.GetTextExtent(XPR_STRING_LITERAL("flychk"));

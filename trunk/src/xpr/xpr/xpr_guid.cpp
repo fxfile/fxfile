@@ -23,7 +23,7 @@ Guid::Guid(void)
     mData1 = 0;
     mData2 = 0;
     mData3 = 0;
-    MemZeroSet(mData4, sizeof(mData4));
+    xpr_memset_zero(mData4, sizeof(mData4));
 }
 
 Guid::Guid(const Guid &aGuid)
@@ -47,7 +47,7 @@ xpr_rcode_t Guid::generate(void)
 
 void Guid::clear(void)
 {
-    MemZeroSet(this, sizeof(Guid));
+    xpr_memset_zero(this, sizeof(Guid));
 }
 
 xpr_sint_t Guid::compare(const Guid &aGuid2) const
@@ -66,12 +66,12 @@ xpr_sint_t Guid::compare(const Guid &aGuid2) const
     if (sDiff != 0)
         return (sDiff > 0) ? 1 : -1;
 
-    return MemCmp(mData4, aGuid2.mData4, 8);
+    return xpr_memcmp(mData4, aGuid2.mData4, 8);
 }
 
 xpr_bool_t Guid::test(const Guid &aGuid2) const
 {
-    return (MemCmp(this, &aGuid2, sizeof(Guid)) == 0) ? XPR_TRUE : XPR_FALSE;
+    return (xpr_memcmp(this, &aGuid2, sizeof(Guid)) == 0) ? XPR_TRUE : XPR_FALSE;
 }
 
 xpr_bool_t Guid::none(void) const
@@ -145,7 +145,7 @@ void Guid::toGuid(Guid &aGuid) const
     aGuid.mData1 = mData1;
     aGuid.mData2 = mData2;
     aGuid.mData3 = mData3;
-    MemCpy(aGuid.mData4, mData4, sizeof(mData4));
+    xpr_memcpy(aGuid.mData4, mData4, sizeof(mData4));
 }
 
 void Guid::fromGuid(const Guid &aGuid)
@@ -153,7 +153,7 @@ void Guid::fromGuid(const Guid &aGuid)
     mData1 = aGuid.mData1;
     mData2 = aGuid.mData2;
     mData3 = aGuid.mData3;
-    MemCpy(mData4, aGuid.mData4, sizeof(mData4));
+    xpr_memcpy(mData4, aGuid.mData4, sizeof(mData4));
 }
 
 xpr_size_t Guid::getBufferSize(void) const
@@ -167,10 +167,10 @@ xpr_bool_t Guid::toBuffer(xpr_byte_t *aBuffer) const
     if (aBuffer == XPR_NULL)
         return XPR_FALSE;
 
-    MemCpy(aBuffer, &mData1, sizeof(mData1)); aBuffer += sizeof(mData1);
-    MemCpy(aBuffer, &mData2, sizeof(mData2)); aBuffer += sizeof(mData2);
-    MemCpy(aBuffer, &mData3, sizeof(mData3)); aBuffer += sizeof(mData3);
-    MemCpy(aBuffer,  mData4, sizeof(mData4));
+    xpr_memcpy(aBuffer, &mData1, sizeof(mData1)); aBuffer += sizeof(mData1);
+    xpr_memcpy(aBuffer, &mData2, sizeof(mData2)); aBuffer += sizeof(mData2);
+    xpr_memcpy(aBuffer, &mData3, sizeof(mData3)); aBuffer += sizeof(mData3);
+    xpr_memcpy(aBuffer,  mData4, sizeof(mData4));
 
     return XPR_TRUE;
 }
@@ -180,10 +180,10 @@ xpr_bool_t Guid::fromBuffer(const xpr_byte_t *aBuffer)
     if (aBuffer == XPR_NULL)
         return XPR_FALSE;
 
-    MemCpy(&mData1, aBuffer, sizeof(mData1)); aBuffer += sizeof(mData1);
-    MemCpy(&mData2, aBuffer, sizeof(mData2)); aBuffer += sizeof(mData2);
-    MemCpy(&mData3, aBuffer, sizeof(mData3)); aBuffer += sizeof(mData3);
-    MemCpy(mData4,  aBuffer, sizeof(mData4));
+    xpr_memcpy(&mData1, aBuffer, sizeof(mData1)); aBuffer += sizeof(mData1);
+    xpr_memcpy(&mData2, aBuffer, sizeof(mData2)); aBuffer += sizeof(mData2);
+    xpr_memcpy(&mData3, aBuffer, sizeof(mData3)); aBuffer += sizeof(mData3);
+    xpr_memcpy(mData4,  aBuffer, sizeof(mData4));
 
     return XPR_TRUE;
 }
@@ -193,7 +193,7 @@ Guid& Guid::operator = (const Guid &aGuid)
     mData1 = aGuid.mData1;
     mData2 = aGuid.mData2;
     mData3 = aGuid.mData3;
-    MemCpy(mData4, aGuid.mData4, sizeof(mData4));
+    xpr_memcpy(mData4, aGuid.mData4, sizeof(mData4));
 
     return *this;
 }

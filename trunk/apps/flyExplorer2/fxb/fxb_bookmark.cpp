@@ -322,7 +322,7 @@ xpr_bool_t BookmarkMgr::initDefault(void)
     return XPR_TRUE;
 }
 
-xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &dqList)
+xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &aBookmarkDeque)
 {
     typedef std::list<std::tstring> StringList;
     StringList sDefaultPaths;
@@ -330,11 +330,14 @@ xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &dqList)
     {
         sDefaultPaths.push_back(XPR_STRING_LITERAL("%Desktop%"));
 
-        if (UserEnv::instance().mWinVer >= UserEnv::Win7)
+        if (xpr::getOsVer() >= xpr::kOsVerWin7)
             sDefaultPaths.push_back(XPR_STRING_LITERAL("%Libraries%"));
 
+        sDefaultPaths.push_back(XPR_STRING_LITERAL("%Personal%"));
         sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyDocuments%"));
-        sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyComputer%"));
+        sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyMusic%"));
+        sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyPictures%"));
+        sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyVideo%"));
         sDefaultPaths.push_back(XPR_STRING_LITERAL("%MyNetwork%"));
     }
 
@@ -357,7 +360,7 @@ xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &dqList)
         sBookmark->mPath = sPath;
         COM_FREE(sFullPidl);
 
-        dqList.push_back(sBookmark);
+        aBookmarkDeque.push_back(sBookmark);
     }
 
     sDefaultPaths.clear();

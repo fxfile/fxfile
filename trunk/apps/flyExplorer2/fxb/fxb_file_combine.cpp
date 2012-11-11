@@ -21,12 +21,12 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-#define DEFAULT_BUFFER_SIZE (16*1024)
+static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
 
 FileCombine::FileCombine(void)
     : mHwnd(XPR_NULL), mMsg(0)
     , mStatus(StatusNone)
-    , mBufferSize(DEFAULT_BUFFER_SIZE)
+    , mBufferSize(kDefaultBufferSize)
     , mCombinedCount(0)
 {
 }
@@ -107,25 +107,30 @@ unsigned FileCombine::OnEntryProc(void)
         std::tstring sDestPath;
         sDestPath = mDestDir + XPR_STRING_LITERAL('\\') + sFileName;
 
-        FILE *sFile, *sDestFile;
+        xpr_rcode_t sRcode;
+        xpr::FileIo sFileIo;
+        xpr::FileIo sDestFileIo;
+        xpr_sint_t sOpenMode;
         xpr_char_t *sBuffer;
-        xpr_size_t sRead;
+        xpr_ssize_t sRead;
+        xpr_ssize_t sWritten;
         xpr_tchar_t sIndexText[0xff] = {0};
         std::tstring sPath;
         xpr_size_t sOutputBytes;
 
         sBuffer = new xpr_char_t[mBufferSize];
 
-        sDestFile = _tfopen(sDestPath.c_str(), XPR_STRING_LITERAL("wb"));
-        if (XPR_IS_NOT_NULL(sDestFile))
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode = sDestFileIo.open(sDestPath.c_str(), sOpenMode);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
             for (; IsStop() == XPR_FALSE; ++sIndex)
             {
                 _stprintf(sIndexText, XPR_STRING_LITERAL(".%03d"), sIndex);
                 sPath = sBasePath + sIndexText;
 
-                sFile = _tfopen(sPath.c_str(), XPR_STRING_LITERAL("rb"));
-                if (XPR_IS_NULL(sFile))
+                sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+                if (XPR_RCODE_IS_ERROR(sRcode))
                     break;
 
                 {
@@ -135,17 +140,19 @@ unsigned FileCombine::OnEntryProc(void)
 
                 while (IsStop() == XPR_FALSE)
                 {
-                    sRead = fread(sBuffer, 1, mBufferSize, sFile);
-                    if (sRead == 0)
+                    sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
+                    if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
                         break;
 
-                    fwrite(sBuffer, sRead, 1, sDestFile);
+                    sRcode = sDestFileIo.write(sBuffer, sRead, &sWritten);
+                    if (XPR_RCODE_IS_ERROR(sRcode))
+                        break;
                 }
 
-                fclose(sFile);
+                sFileIo.close();
             }
 
-            fclose(sDestFile);
+            sDestFileIo.close();
 
             sStatus = StatusCombineCompleted;
 

@@ -12,13 +12,6 @@ CMD5::CMD5()
 	init();
 }
 
-CMD5::CMD5(FILE *file)
-{
-	init();  // must be called be all constructors
-	update(file);
-	finalize ();
-}
-
 void CMD5::init()
 {
 	finalized=0;  // we just started!
@@ -73,18 +66,6 @@ void CMD5::update (uint1 *input, uint4 input_length)
 	
 	// and here we do the buffering:
 	memcpy(buffer+buffer_index, input+input_index, input_length-input_index);
-}
-
-void CMD5::update(FILE *file)
-{
-	unsigned char buffer[1024];
-	size_t len;
-	
-	while (len=fread(buffer, 1, 1024, file))
-		update(buffer, (int)len);
-	
-	fclose (file);
-	
 }
 
 void CMD5::finalize ()

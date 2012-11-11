@@ -20,6 +20,8 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
+static const xpr_size_t kCrcBufferSize = 16 * 1024; // 16KB
+
 //----------------------------------------------------------------------
 // Simple File Verify (SFV)
 //----------------------------------------------------------------------
@@ -102,48 +104,51 @@ static xpr_ulong_t getCrc32(xpr_ulong_t aCrc, xpr_uchar_t *aBuf, xpr_sint_t aLen
     return aCrc;
 }
 
-#define CRC_BUFFER_SIZE 16384 // 16KB
-
 xpr_sint_t getFileCrcSfv(const xpr_tchar_t *aPath, xpr_ulong_t *aCrcVal)
 {
     if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aCrcVal))
         return CRC_ERR_INVALID_PARAMETER;
 
-    xpr_uchar_t *sBuffer = new xpr_uchar_t[CRC_BUFFER_SIZE];
-    if (XPR_IS_NULL(sBuffer))
-        return CRC_ERR_FILE_READ;
-
     xpr_ulong_t sCrcVal = 0xffffffff;
     xpr_size_t sTotal = 0;
-    xpr_size_t sRead;
-    const xpr_sint_t sBufLen = sizeof(xpr_uchar_t) * CRC_BUFFER_SIZE;
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+    xpr::FileIo sFileIo;
+    const xpr_sint_t sBufLen = sizeof(xpr_uchar_t) * kCrcBufferSize;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    sRcode = sFileIo.open(aPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return CRC_ERR_FILE_READ;
+
+    xpr_uchar_t *sBuffer = new xpr_uchar_t[kCrcBufferSize];
+    if (XPR_IS_NULL(sBuffer))
     {
-        XPR_SAFE_DELETE_ARRAY(sBuffer);
+        sFileIo.close();
         return CRC_ERR_FILE_READ;
     }
 
-    while ((sRead = fread(sBuffer, 1, sBufLen, sFile)) > 0)
+    do
     {
-        sCrcVal = getCrc32(sCrcVal, sBuffer, (xpr_sint_t)sRead);
-        sTotal += sRead;
-    }
+        sRcode = sFileIo.read(sBuffer, sBufLen, &sRead);
+        if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0)
+        {
+            sCrcVal = getCrc32(sCrcVal, sBuffer, (xpr_sint_t)sRead);
+            sTotal += sRead;
+        }
+    } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0);
 
-    if (sRead == -1)
+    XPR_SAFE_DELETE_ARRAY(sBuffer);
+
+    if (XPR_RCODE_IS_ERROR(sRcode))
     {
-        XPR_SAFE_DELETE_ARRAY(sBuffer);
+        sFileIo.close();
 
-        fclose(sFile);
         return CRC_ERR_READ_LENGTH;
     }
 
     *aCrcVal = sCrcVal ^ 0xffffffff;
 
-    XPR_SAFE_DELETE_ARRAY(sBuffer);
-
-    fclose(sFile);
+    sFileIo.close();
 
     return 0;
 }
@@ -169,14 +174,37 @@ xpr_sint_t getFileCrcMd5(const xpr_tchar_t *aPath, xpr_char_t *aCrcVal)
     if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aCrcVal))
         return CRC_ERR_INVALID_PARAMETER;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+    xpr::FileIo sFileIo;
+    const xpr_sint_t sBufLen = sizeof(xpr_uchar_t) * kCrcBufferSize;
+
+    sRcode = sFileIo.open(aPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return CRC_ERR_FILE_READ;
+
+    xpr_uchar_t *sBuffer = new xpr_uchar_t[kCrcBufferSize];
+    if (XPR_IS_NULL(sBuffer))
+    {
+        sFileIo.close();
+        return CRC_ERR_FILE_READ;
+    }
 
     CMD5 sMd5;
     sMd5.init();
-    sMd5.update(sFile);
+
+    do
+    {
+        sRcode = sFileIo.read(sBuffer, sBufLen, &sRead);
+        if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0)
+        {
+            sMd5.update(sBuffer, (xpr_uint_t)sRead);
+        }
+    } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0);
+
     sMd5.finalize();
+
+    XPR_SAFE_DELETE_ARRAY(sBuffer);
 
     xpr_char_t *sCrcVal = XPR_NULL;
     sCrcVal = sMd5.hex_digest();
@@ -187,7 +215,7 @@ xpr_sint_t getFileCrcMd5(const xpr_tchar_t *aPath, xpr_char_t *aCrcVal)
         XPR_SAFE_DELETE_ARRAY(sCrcVal);
     }
 
-    fclose(sFile);
+    sFileIo.close();
 
     return 0;
 }

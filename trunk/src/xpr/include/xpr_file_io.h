@@ -10,6 +10,7 @@
 
 #include "xpr_config.h"
 #include "xpr_types.h"
+#include "xpr_file_sys.h"
 
 #if defined(XPR_CFG_OS_WINDOWS)
 #define XPR_EOLA XPR_MBCS_STRING_LITERAL("\r\n")
@@ -27,79 +28,88 @@
 
 namespace xpr
 {
-//class FileIo
-//{
-//public:
-//    enum OpenMode
-//    {
-//#if defined (XPR_CFG_OS_WINDOWS)
-//        OpenModeReadOnly  = 0x00000000,
-//        OpenModeWriteOnly = 0x00000001,
-//        OpenModeReadWrite = 0x00000002,
-//        OpenModeAppend    = 0x00000008,
-//        OpenModeCreate    = 0x00000010,
-//        OpenModeTruncate  = 0x00000020,
-//        OpenModeExclusive = 0x00000040,
-//        OpenModeSync      = 0x00000100,
-//#else
-//        OpenModeReadOnly  = O_RDONLY,
-//        OpenModeWriteOnly = O_WRONLY,
-//        OpenModeReadWrite = O_RDWR,
-//        OpenModeAppend    = O_APPEND,
-//        OpenModeCreate    = O_CREAT,
-//        OpenModeTruncate  = O_TRUNC,
-//        OpenModeExclusive = O_EXCL,
-//        OpenModeSync      = O_SYNC,
-//#endif
-//    };
-//
-//    enum SeekMode
-//    {
-//        SeekModeBegin,
-//        SeekModeCurrent,
-//        SeekModeEnd,
-//    };
-//
-//    struct Handle
-//    {
-//#if defined(XPR_CFG_OS_WINDOWS)
-//        HANDLE mFile;
-//#else
-//        sint_t mFile;
-//#endif
-//    };
-//
-//public:
-//    virtual xpr_rcode_t open(const xpr_tchar_t *aPath, OpenMode aOpenMode);
-//    virtual xpr_bool_t isOpened(void);
-//    virtual void close(void);
-//
-//public:
-//    virtual xpr_bool_t getPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen);
-//    virtual const xpr_tchar_t *getPath(void);
-//
-//public:
-//    virtual xpr_rcode_t read(void *aData, xpr_sint_t aSize);
-//    virtual xpr_rcode_t write(void *aData, xpr_sint_t aSize);
-//    virtual xpr_bool_t flush(void);
-//
-//public:
-//    virtual xpr_sint64_t tell(void);
-//    virtual xpr_rcode_t seekToBegin(void);
-//    virtual xpr_rcode_t seekFromBegin(xpr_sint64_t aOffset);
-//    virtual xpr_rcode_t seek(sint64_t aOffset, SeekMode aSeekMode = SeekModeCurrent);
-//    virtual xpr_rcode_t seekToEnd(void);
-//    virtual xpr_rcode_t seekFromEnd(xpr_sint64_t aOffset);
-//
-//public:
-//    virtual xpr_sint64_t getFileSize(void);
-//    virtual xpr_rcode_t setFileSize(xpr_sint64_t aSize);
-//    virtual xpr_bool_t setEndOfFile(void);
-//
-//protected:
-//    Handle mHandle;
-//    xpr_tchar_t mPath[XPR_MAX_PATH];
-//};
+class FileIo
+{
+public:
+    enum
+    {
+#if defined (XPR_CFG_OS_WINDOWS)
+        OpenModeReadOnly  = 0x00000000,
+        OpenModeWriteOnly = 0x00000001,
+        OpenModeReadWrite = 0x00000002,
+        OpenModeAppend    = 0x00000008,
+        OpenModeCreate    = 0x00000010,
+        OpenModeTruncate  = 0x00000020,
+        OpenModeExclusive = 0x00000040,
+        OpenModeSync      = 0x00000100,
+#else
+        OpenModeReadOnly  = O_RDONLY,
+        OpenModeWriteOnly = O_WRONLY,
+        OpenModeReadWrite = O_RDWR,
+        OpenModeAppend    = O_APPEND,
+        OpenModeCreate    = O_CREAT,
+        OpenModeTruncate  = O_TRUNC,
+        OpenModeExclusive = O_EXCL,
+        OpenModeSync      = O_SYNC,
+#endif
+    };
+
+    enum
+    {
+        SeekModeBegin,
+        SeekModeCurrent,
+        SeekModeEnd,
+    };
+
+    struct Handle
+    {
+#if defined(XPR_CFG_OS_WINDOWS)
+        HANDLE     mFile;
+#else
+        xpr_sint_t mFile;
+#endif
+    };
+
+public:
+    FileIo(void);
+    virtual ~FileIo(void);
+
+public:
+    virtual xpr_rcode_t open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode);
+    virtual xpr_bool_t isOpened(void) const;
+    virtual void close(void);
+
+public:
+    virtual xpr_bool_t getPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen);
+    virtual const xpr_tchar_t *getPath(void) const;
+
+public:
+    virtual xpr_rcode_t read(void *aData, xpr_size_t aSize, xpr_ssize_t *aReadSize);
+    virtual xpr_rcode_t write(const void *aData, xpr_size_t aSize, xpr_ssize_t *aWrittenSize);
+    virtual xpr_rcode_t sync(void);
+
+public:
+    virtual xpr_sint64_t tell(void) const;
+    virtual xpr_rcode_t seekToBegin(void);
+    virtual xpr_rcode_t seekFromBegin(xpr_sint64_t aOffset);
+    virtual xpr_rcode_t seek(xpr_sint64_t aOffset, xpr_uint_t aSeekMode = SeekModeCurrent);
+    virtual xpr_rcode_t seekToEnd(void);
+    virtual xpr_rcode_t seekFromEnd(xpr_sint64_t aOffset);
+
+public:
+    virtual xpr_sint64_t getFileSize(void) const;
+    virtual xpr_rcode_t truncate(void);
+    virtual xpr_rcode_t truncate(xpr_sint64_t aOffset);
+
+public:
+    virtual xpr_rcode_t lock(void);
+    virtual xpr_rcode_t tryLock(void);
+    virtual xpr_rcode_t unlock(void);
+
+protected:
+    Handle mHandle;
+    xpr_tchar_t mPath[XPR_MAX_PATH + 1];
+};
 } // namespace xpr
 
 #endif // __XPR_FILE_IO_H__

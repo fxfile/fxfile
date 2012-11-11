@@ -51,7 +51,7 @@ xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t  aInputBytes,  CodePa
         if (aInputBytes > *aOutputBytes)
             return XPR_RCODE_EINVAL;
 
-        MemCpy(aOutput, aInput, aInputBytes);
+        xpr_memcpy(aOutput, aInput, aInputBytes);
         *aOutputBytes = aInputBytes;
 
         return XPR_RCODE_SUCCESS;

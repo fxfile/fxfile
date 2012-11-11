@@ -417,11 +417,18 @@ xpr_bool_t DoPasteText(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath)
     {
         xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
 
-        FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("wb"));
-        if (XPR_IS_NOT_NULL(sFile))
+        xpr_rcode_t sRcode;
+        xpr_ssize_t sWritten;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sFileIo;
+
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode = sFileIo.open(aPath, sOpenMode);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
-            fwrite(aText, sSize - 1, 1, sFile);
-            fclose(sFile);
+            sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+
+            sFileIo.close();
 
             ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
             sResult = XPR_TRUE;
@@ -452,13 +459,21 @@ xpr_bool_t DoPasteUnicodeText(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath
     {
         xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
 
-        FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("wb"));
-        if (XPR_IS_NOT_NULL(sFile))
+        xpr_rcode_t sRcode;
+        xpr_ssize_t sWritten;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sFileIo;
+
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode = sFileIo.open(aPath, sOpenMode);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
             xpr_ushort_t sUnicodeBOM = 0xFEFF;
-            fwrite(&sUnicodeBOM, 2, 1, sFile);
-            fwrite(aText, sSize - 1, 1, sFile);
-            fclose(sFile);
+            sRcode = sFileIo.write(&sUnicodeBOM, 2, &sWritten);
+
+            sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+
+            sFileIo.close();
 
             ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
             sResult = XPR_TRUE;
@@ -653,7 +668,11 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
         {
             RemoveLastSplit(aDir);
 
-            FILE *sFile;
+            xpr_rcode_t sRcode;
+            xpr_ssize_t sWritten;
+            xpr_sint_t sOpenMode;
+            xpr::FileIo sFileIo;
+
             xpr_char_t *aText;
             STGMEDIUM sStgMedium = {0};
 
@@ -698,15 +717,17 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
                         aText = (xpr_char_t *)::GlobalLock(sStgMedium.hGlobal);
                         if (XPR_IS_NOT_NULL(aText))
                         {
-                            sFile = _tfopen(sPath, XPR_STRING_LITERAL("wb"));
-                            if (XPR_IS_NOT_NULL(sFile))
+                            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+                            sRcode = sFileIo.open(sPath, sOpenMode);
+                            if (XPR_RCODE_IS_SUCCESS(sRcode))
                             {
                                 xpr_sint_t sLen = XPR_IS_TRUE(aUnicode) ? sFileDescW->nFileSizeLow : sFileDescA->nFileSizeLow;
                                 if (sLen == 0)
                                     sLen = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
 
-                                fwrite(aText, sLen, 1, sFile);
-                                fclose(sFile);
+                                sRcode = sFileIo.write(aText, sLen, &sWritten);
+
+                                sFileIo.close();
 
                                 ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, sPath, XPR_NULL);
                                 sResult = XPR_TRUE;

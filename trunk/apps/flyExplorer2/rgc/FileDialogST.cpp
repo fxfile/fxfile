@@ -103,7 +103,7 @@ int CFileDialogST::DoModal()
 	BOOL	bRetValue = FALSE;
 
 	m_ofn.lStructSize = sizeof(m_ofn);
-	if (fxb::UserEnv::instance().mWinVer < fxb::UserEnv::Win2000)
+	if (xpr::getOsVer() < xpr::kOsVerWin2000)
 	{
 		// 9x Windows problem (OPENFILENAME Structure)
 		//

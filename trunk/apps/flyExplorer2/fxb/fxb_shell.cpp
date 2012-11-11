@@ -1319,9 +1319,13 @@ xpr_sint_t GetFileExtIconIndex(const xpr_tchar_t *aExt)
         _tcscat(sTempFile, XPR_STRING_LITERAL("temp"));
         _tcscat(sTempFile, aExt);
 
-        FILE *sFile = _tfopen(sTempFile, XPR_STRING_LITERAL("wb"));
-        if (XPR_IS_NOT_NULL(sFile))
-            fclose(sFile);
+        xpr_rcode_t sRcode;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sFileIo;
+
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode = sFileIo.open(sTempFile, sOpenMode);
+        sFileIo.close();
 
         ::SHGetFileInfo((const xpr_tchar_t *)sTempFile, 0, &sShFileInfo, sizeof(SHFILEINFO), sFlags);
     }
@@ -1351,9 +1355,13 @@ HICON GetFileExtIcon(const xpr_tchar_t *aExt, xpr_bool_t aLarge)
         _tcscat(sTempFile, XPR_STRING_LITERAL("temp"));
         _tcscat(sTempFile, aExt);
 
-        FILE *sFile = _tfopen(sTempFile, XPR_STRING_LITERAL("wb"));
-        if (XPR_IS_NOT_NULL(sFile))
-            fclose(sFile);
+        xpr_rcode_t sRcode;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sFileIo;
+
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode = sFileIo.open(sTempFile, sOpenMode);
+        sFileIo.close();
 
         ::SHGetFileInfo((const xpr_tchar_t *)sTempFile, 0, &sShFileInfo, sizeof(sShFileInfo), sFlags);
     }
@@ -2376,7 +2384,7 @@ xpr_bool_t OpenAsFile(const xpr_tchar_t *aPath,
     SHELLEXECUTEINFO sShellExecuteInfo = {0};
     sShellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
 
-    if (UserEnv::instance().mWinVer < UserEnv::WinVista)
+    if (xpr::getOsVer() < xpr::kOsVerWinVista)
     {
         sShellExecuteInfo.fMask        = 0;
         sShellExecuteInfo.hwnd         = AfxGetMainWnd()->GetSafeHwnd();

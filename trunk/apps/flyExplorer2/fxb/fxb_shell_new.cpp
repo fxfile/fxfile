@@ -293,14 +293,19 @@ xpr_bool_t ShellNew::doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tcha
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         SetNewPath(sPath, sDir, sFileName, XPR_IS_TRUE(sBriefCaseFile) ? XPR_NULL : sItem->mExt.c_str());
 
+        xpr_rcode_t sRcode;
+        xpr_ssize_t sWritten;
+        xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        xpr::FileIo sFileIo;
+
         switch (sItem->mType)
         {
         case TypeNullFile:
             {
-                CFile sFile;
-                if (sFile.Open(sPath, CFile::modeCreate) == XPR_TRUE)
+                sRcode = sFileIo.open(sPath, sOpenMode);
+                if (XPR_RCODE_IS_SUCCESS(sRcode) == XPR_TRUE)
                 {
-                    sFile.Close();
+                    sFileIo.close();
 
                     sResult = XPR_TRUE;
                 }
@@ -309,11 +314,11 @@ xpr_bool_t ShellNew::doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tcha
 
         case TypeData:
             {
-                CFile sFile;
-                if (sFile.Open(sPath, CFile::modeCreate | CFile::modeWrite) == XPR_TRUE)
+                sRcode = sFileIo.open(sPath, sOpenMode);
+                if (XPR_RCODE_IS_SUCCESS(sRcode) == XPR_TRUE)
                 {
-                    sFile.Write(sValueData, sValueLen);
-                    sFile.Close();
+                    sRcode = sFileIo.write(sValueData, sValueLen, &sWritten);
+                    sFileIo.close();
 
                     sResult = XPR_TRUE;
                 }

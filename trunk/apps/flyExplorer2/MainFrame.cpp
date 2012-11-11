@@ -1920,7 +1920,7 @@ SysTray *MainFrame::createTray(void)
     if (XPR_IS_NOT_NULL(mSysTray))
         return mSysTray;
 
-    xpr_uint_t sIconId = (fxb::UserEnv::instance().mWinVer <= fxb::UserEnv::Win2000) ? IDI_TRAY : IDI_TRAY_XP;
+    xpr_uint_t sIconId = (xpr::getOsVer() <= xpr::kOsVerWin2000) ? IDI_TRAY : IDI_TRAY_XP;
     HICON sIcon = (HICON)::LoadImage(theApp.m_hInstance, MAKEINTRESOURCE(sIconId), IMAGE_ICON, 0, 0, 0);
 
     mSysTray = new SysTray;

@@ -5721,11 +5721,15 @@ void ExplorerCtrl::createTextFile(const std::tstring &aNewTextFile, xpr_bool_t a
 
     unselectAll();
 
-    CFile sFile;
-    if (sFile.Open(aNewTextFile.c_str(), CFile::modeCreate) == XPR_FALSE)
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(aNewTextFile.c_str(), sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
-    sFile.Close();
+    sFileIo.close();
 
     setInsSelPath(aNewTextFile.c_str(), XPR_TRUE, aEditDirectly);
 
@@ -5743,11 +5747,15 @@ void ExplorerCtrl::createGeneralFile(const std::tstring &aNewGeneralFile, xpr_bo
 
     unselectAll();
 
-    CFile sFile;
-    if (sFile.Open(aNewGeneralFile.c_str(), CFile::modeCreate) == XPR_FALSE)
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(aNewGeneralFile.c_str(), sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
-    sFile.Close();
+    sFileIo.close();
 
     setInsSelPath(aNewGeneralFile.c_str(), XPR_TRUE, aEditDirectly);
 
