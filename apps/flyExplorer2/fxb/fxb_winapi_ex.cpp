@@ -403,22 +403,28 @@ HRESULT StreamToFile(LPSTREAM aStream, xpr_tchar_t *aFileName, const xpr_sint_t 
     if (XPR_IS_NULL(sBuffer))
         return E_FAIL;
 
-    xpr_ulong_t sRead = 0;
-    xpr_size_t sWrite = 0;
-
     HRESULT sHResult = S_OK;
-    FILE *sFile = _tfopen(aFileName, XPR_STRING_LITERAL("wb"));
-    if (sFile != XPR_NULL)
+    xpr_ulong_t sRead = 0;
+    xpr_ssize_t sWritten = 0;
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(aFileName, sOpenMode);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         do
         {
             sHResult = aStream->Read(sBuffer, aBlockSize, &sRead);
             if (sRead > 0)
-                sWrite = fwrite(sBuffer, (xpr_size_t)sRead, 1, sFile);
+            {
+                sRcode = sFileIo.write(sBuffer, (xpr_ssize_t)sRead, &sWritten);
+            }
         }
         while (S_OK == sHResult && sRead == (xpr_ulong_t)aBlockSize);
 
-        fclose(sFile);
+        sFileIo.close();
     }
     else
     {
@@ -468,11 +474,17 @@ HRESULT StorageToFile(LPSTORAGE aStorage, xpr_tchar_t *aFileName)
                     xpr_char_t *sBuffer = (xpr_char_t*)::GlobalLock(sStorage);
                     if (XPR_IS_NOT_NULL(sBuffer))
                     {
-                        FILE *sFile = _tfopen(aFileName, XPR_STRING_LITERAL("wb"));
-                        if (sFile != XPR_NULL)
+                        xpr_rcode_t sRcode;
+                        xpr_ssize_t sWritten;
+                        xpr_sint_t sOpenMode;
+                        xpr::FileIo sFileIo;
+
+                        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+                        sRcode = sFileIo.open(aFileName, sOpenMode);
+                        if (XPR_RCODE_IS_SUCCESS(sRcode))
                         {
-                            fwrite(sBuffer, (xpr_size_t)sSize, 1, sFile);
-                            fclose(sFile);
+                            sRcode = sFileIo.write(sBuffer, (xpr_ssize_t)sSize, &sWritten);
+                            sFileIo.close();
                         }
 
                         sHResult = S_OK;
@@ -520,7 +532,7 @@ HRESULT IsUACElevated(xpr_bool_t *aElevated)
     HRESULT sHResult = E_FAIL;
     HANDLE sToken = XPR_NULL;
 
-    if (UserEnv::instance().mWinVer < UserEnv::WinVista)
+    if (xpr::getOsVer() < xpr::kOsVerWinVista)
         return sHResult;
 
     if (::OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &sToken) == XPR_FALSE)

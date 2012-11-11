@@ -34,7 +34,7 @@ xpr_bool_t DragImage::beginDrag(HWND aHwnd, CImageList *aMyDragImage, LPDATAOBJE
     {
         mMyDragging = XPR_FALSE;
 
-        if (fxb::UserEnv::instance().mWinVer >= fxb::UserEnv::Win98 && fxb::UserEnv::instance().mInetExpVer == fxb::UserEnv::InetExp50More)
+        if (xpr::getOsVer() >= xpr::kOsVerWin98 && fxb::UserEnv::instance().mInetExpVer == fxb::UserEnv::InetExp50More)
         {
             ::CoCreateInstance(
                 CLSID_DragDropHelper,

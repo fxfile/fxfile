@@ -83,7 +83,7 @@ DROPEFFECT DropTarget::OnDragEnter(CWnd *aWnd, COleDataObject *aOleDataObject, D
 
     // bug: expand function on folder tree (hide drag contents for dragging)
     mDragShowContent = XPR_FALSE;
-    if (fxb::UserEnv::instance().mWinVer > fxb::UserEnv::WinMe)
+    if (xpr::getOsVer() >= xpr::kOsVerWin2000)
     {
         ::SystemParametersInfo(SPI_GETDRAGFULLWINDOWS, 0, &mDragShowContent, 0);
         if (XPR_IS_FALSE(mDragShowContent))

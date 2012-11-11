@@ -18,12 +18,12 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-#define DEFAULT_BUFFER_SIZE (16*1024)
+static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
 
 FileMerge::FileMerge(void)
     : mHwnd(XPR_NULL), mMsg(0)
     , mStatus(StatusNone)
-    , mBufferSize(DEFAULT_BUFFER_SIZE)
+    , mBufferSize(kDefaultBufferSize)
     , mMergedCount(0)
 {
 }
@@ -78,11 +78,17 @@ unsigned FileMerge::OnEntryProc(void)
 {
     Status sStatus = StatusNone;
 
-    FILE *sDestFile = _tfopen(mDestPath.c_str(), XPR_STRING_LITERAL("wb"));
-    if (XPR_IS_NOT_NULL(sDestFile))
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sDestFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sDestFileIo.open(mDestPath.c_str(), sOpenMode);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        FILE *sFile;
-        xpr_size_t sRead;
+        xpr::FileIo sFileIo;
+        xpr_ssize_t sRead;
+        xpr_ssize_t sWritten;
         xpr_char_t *sBuffer;
 
         PathDeque::iterator sIterator;
@@ -95,8 +101,8 @@ unsigned FileMerge::OnEntryProc(void)
         {
             sPath = *sIterator;
 
-            sFile = _tfopen(sPath.c_str(), XPR_STRING_LITERAL("rb"));
-            if (XPR_IS_NOT_NULL(sFile))
+            sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
             {
                 {
                     CsLocker sLocker(mCs);
@@ -105,21 +111,23 @@ unsigned FileMerge::OnEntryProc(void)
 
                 while (IsStop() == XPR_FALSE)
                 {
-                    sRead = fread(sBuffer, 1, mBufferSize, sFile);
-                    if (sRead == 0)
+                    sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
+                    if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
                         break;
 
-                    fwrite(sBuffer, sRead, 1, sDestFile);
+                    sRcode = sDestFileIo.write(sBuffer, sRead, &sWritten);
+                    if (XPR_RCODE_IS_ERROR(sRcode))
+                        break;
                 }
 
-                fclose(sFile);
+                sFileIo.close();
             }
 
             if (IsStop() == XPR_TRUE)
                 break;
         }
 
-        fclose(sDestFile);
+        sDestFileIo.close();
         XPR_SAFE_DELETE_ARRAY(sBuffer);
 
         sStatus = StatusMergeCompleted;

@@ -371,21 +371,23 @@ xpr_bool_t SearchFile::searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t 
     static xpr_size_t i, j, sLen, sTextLen;
     static xpr_char_t  *sBufferA, *sBufferA2;
     static xpr_wchar_t *sBufferW, *sBufferW2;
-    static FILE *sFile;
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+    xpr::FileIo sFileIo;
 
     _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s"), aFolder, aFileName);
-    sFile = _tfopen(sPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    sRcode = sFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
     // Is Ansi or Unciode text file?
     xpr_bool_t sUnicode = XPR_FALSE;
     xpr_ushort_t sCode = 0;
-    fread(&sCode, 2, 1, sFile);
+    sRcode = sFileIo.read(&sCode, 2, &sRead);
     if (sCode == 0xFEFF)
         sUnicode = XPR_TRUE;
     else
-        fseek(sFile, 0, SEEK_SET);
+        sRcode = sFileIo.seekToBegin();
 
     // search text in file
     xpr_bool_t sMatched = XPR_FALSE;
@@ -399,44 +401,48 @@ xpr_bool_t SearchFile::searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t 
         sBufferW  = (xpr_wchar_t *)mBuffer;
         sBufferW2 = mTextW;
 
-        while (true)
+        do
         {
-            if (feof(sFile))
-                break;
+            sRcode = sFileIo.read(
+                (sLen == 0) ? (mBuffer) : (mBuffer + sTextLen * sizeof(xpr_wchar_t)),
+                MAX_SEARCH_TEXT_BUF_SIZE - sTextLen * sizeof(xpr_wchar_t) - 1,
+                &sRead);
 
-            sLen = fread(sLen == 0 ? mBuffer : mBuffer+sTextLen*sizeof(xpr_wchar_t), 1,
-                MAX_SEARCH_TEXT_BUF_SIZE-sTextLen*sizeof(xpr_wchar_t)-1, sFile) + ((sLen == 0) ? 0 : sTextLen);
-
-            sLen /= sizeof(xpr_wchar_t);
-            for (i = 0; i < sLen; ++i)
+            if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0)
             {
-                if ('A' <= sBufferW[i] && sBufferW[i] <= 'Z')
-                    sBufferW[i] += 32;
+                sLen = sRead + ((sLen == 0) ? 0 : sTextLen);
 
-                if (sBufferW[i] == sBufferW2[0])
+                sLen /= sizeof(xpr_wchar_t);
+                for (i = 0; i < sLen; ++i)
                 {
-                    for (j = 1; j < sTextLen; ++j)
-                    {
-                        if ('A' <= sBufferW[i] && sBufferW[i] <= 'Z')
-                            sBufferW[i] += 32;
+                    if ('A' <= sBufferW[i] && sBufferW[i] <= 'Z')
+                        sBufferW[i] += 32;
 
-                        if (sBufferW[i+j] != sBufferW2[j])
+                    if (sBufferW[i] == sBufferW2[0])
+                    {
+                        for (j = 1; j < sTextLen; ++j)
+                        {
+                            if ('A' <= sBufferW[i] && sBufferW[i] <= 'Z')
+                                sBufferW[i] += 32;
+
+                            if (sBufferW[i+j] != sBufferW2[j])
+                                break;
+                        }
+
+                        if (j == sTextLen)
+                        {
+                            sMatched = XPR_TRUE;
                             break;
-                    }
-
-                    if (j == sTextLen)
-                    {
-                        sMatched = XPR_TRUE;
-                        break;
+                        }
                     }
                 }
+
+                if (XPR_IS_TRUE(sMatched))
+                    break;
+
+                memmove(sBufferW, sBufferW+sLen-sTextLen, sTextLen*sizeof(xpr_wchar_t));
             }
-
-            if (XPR_IS_TRUE(sMatched))
-                break;
-
-            memmove(sBufferW, sBufferW+sLen-sTextLen, sTextLen*sizeof(xpr_wchar_t));
-        }
+        } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0);
     }
     else
     {
@@ -448,47 +454,50 @@ xpr_bool_t SearchFile::searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t 
         sBufferA  = (xpr_char_t *)mBuffer;
         sBufferA2 = mTextA;
 
-        while (true)
+        do
         {
-            if (feof(sFile))
-                break;
+            sRcode = sFileIo.read(
+                (sLen == 0) ? (mBuffer) : (mBuffer + sTextLen),
+                MAX_SEARCH_TEXT_BUF_SIZE - sTextLen - 1,
+                &sRead);
 
-            sLen = fread(sLen == 0 ? mBuffer : mBuffer+sTextLen, 1,
-                MAX_SEARCH_TEXT_BUF_SIZE-sTextLen-1, sFile) + ((sLen == 0) ? 0 : sTextLen);
-
-            for (i = 0; i < sLen; ++i)
+            if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0)
             {
-                if ('A' <= sBufferA[i] && sBufferA[i] <= 'Z')
-                    sBufferA[i] += 32;
+                sLen = sRead + ((sLen == 0) ? 0 : sTextLen);
 
-                if (sBufferA[i] == sBufferA2[0])
+                for (i = 0; i < sLen; ++i)
                 {
-                    for (j = 1; j < sTextLen; ++j)
-                    {
-                        if ('A' <= sBufferA[i+j] && sBufferA[i+j] <= 'Z')
-                            sBufferA[i+j] += 32;
+                    if ('A' <= sBufferA[i] && sBufferA[i] <= 'Z')
+                        sBufferA[i] += 32;
 
-                        if (sBufferA[i+j] != sBufferA2[j])
+                    if (sBufferA[i] == sBufferA2[0])
+                    {
+                        for (j = 1; j < sTextLen; ++j)
+                        {
+                            if ('A' <= sBufferA[i+j] && sBufferA[i+j] <= 'Z')
+                                sBufferA[i+j] += 32;
+
+                            if (sBufferA[i+j] != sBufferA2[j])
+                                break;
+                        }
+
+                        if (j == sTextLen)
+                        {
+                            sMatched = XPR_TRUE;
                             break;
-                    }
-
-                    if (j == sTextLen)
-                    {
-                        sMatched = XPR_TRUE;
-                        break;
+                        }
                     }
                 }
+
+                if (XPR_IS_TRUE(sMatched))
+                    break;
+
+                memmove(sBufferA, sBufferA+sLen-sTextLen, sTextLen);
             }
-
-            if (XPR_IS_TRUE(sMatched))
-                break;
-
-            memmove(sBufferA, sBufferA+sLen-sTextLen, sTextLen);
-        }
+        } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0);
     }
 
-    fclose(sFile);
-    sFile = XPR_NULL;
+    sFileIo.close();
 
     return sMatched;
 }

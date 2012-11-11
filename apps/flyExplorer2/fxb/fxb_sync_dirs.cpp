@@ -295,15 +295,19 @@ SyncItem::Result SyncItem::compare(CompareFlags &aCompareFlags)
         }
         else
         {
-            FILE *sFile1 = _tfopen(aCompareFlags.mPath[0].c_str(), XPR_STRING_LITERAL("rb"));
-            FILE *sFile2 = _tfopen(aCompareFlags.mPath[1].c_str(), XPR_STRING_LITERAL("rb"));
+            xpr_rcode_t sRcode1, sRcode2;
+            xpr::FileIo sFileIo1;
+            xpr::FileIo sFileIo2;
 
-            if (XPR_IS_NOT_NULL(sFile1) && XPR_IS_NOT_NULL(sFile2))
+            sRcode1 = sFileIo1.open(aCompareFlags.mPath[0].c_str(), xpr::FileIo::OpenModeReadOnly);
+            sRcode2 = sFileIo2.open(aCompareFlags.mPath[1].c_str(), xpr::FileIo::OpenModeReadOnly);
+
+            if (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2))
             {
-                xpr_size_t sRead1, sRead2;
+                xpr_ssize_t sRead1, sRead2;
                 xpr_size_t sLen;
 
-                while (feof(sFile1) == 0 && feof(sFile2) == 0)
+                do
                 {
                     if (aCompareFlags.mStopEvent)
                     {
@@ -314,26 +318,29 @@ SyncItem::Result SyncItem::compare(CompareFlags &aCompareFlags)
                         }
                     }
 
-                    sRead1 = fread(aCompareFlags.mBuffer[0], 1, aCompareFlags.mBufferSize, sFile1);
-                    sRead2 = fread(aCompareFlags.mBuffer[1], 1, aCompareFlags.mBufferSize, sFile2);
+                    sRcode1 = sFileIo1.read(aCompareFlags.mBuffer[0], aCompareFlags.mBufferSize, &sRead1);
+                    sRcode2 = sFileIo2.read(aCompareFlags.mBuffer[1], aCompareFlags.mBufferSize, &sRead2);
 
-                    sLen = min(sRead1, sRead2);
-                    if (memcmp(aCompareFlags.mBuffer[0], aCompareFlags.mBuffer[1], sLen))
+                    if (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2) && sRead1 > 0 && sRead2 > 0)
                     {
-                        sDiff  = CompareDiffNotEqualed;
-                        sDiff |= CompareDiffContentsBytes;
-                        setDiff(sDiff);
-                        break;
+                        sLen = min(sRead1, sRead2);
+                        if (memcmp(aCompareFlags.mBuffer[0], aCompareFlags.mBuffer[1], sLen))
+                        {
+                            sDiff  = CompareDiffNotEqualed;
+                            sDiff |= CompareDiffContentsBytes;
+                            setDiff(sDiff);
+                            break;
+                        }
                     }
-                }
+                } while (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2) && sRead1 > 0 && sRead2 > 0);
             }
             else
             {
                 setDiff(CompareDiffFailed);
             }
 
-            if (XPR_IS_NOT_NULL(sFile1)) fclose(sFile1);
-            if (XPR_IS_NOT_NULL(sFile2)) fclose(sFile2);
+            sFileIo1.close();
+            sFileIo2.close();
 
             if (getDiff() != CompareDiffNone)
                 return sResult;
@@ -403,15 +410,23 @@ SyncItem::Result SyncItem::synchronize(SyncFlags &aSyncFlags, CompareFlags &aCom
     }
     else
     {
-        FILE *sFile1 = _tfopen(aSyncFlags.mPath[0].c_str(), XPR_STRING_LITERAL("rb"));
-        FILE *sFile2 = _tfopen(aSyncFlags.mPath[1].c_str(), XPR_STRING_LITERAL("wb"));
+        xpr_rcode_t sRcode1, sRcode2;
+        xpr_sint_t sOpenMode;
+        xpr::FileIo sFileIo1;
+        xpr::FileIo sFileIo2;
 
-        if (XPR_IS_NOT_NULL(sFile1) && XPR_IS_NOT_NULL(sFile2))
+        sRcode1 = sFileIo1.open(aSyncFlags.mPath[0].c_str(), xpr::FileIo::OpenModeReadOnly);
+
+        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+        sRcode2 = sFileIo2.open(aSyncFlags.mPath[1].c_str(), sOpenMode);
+
+        if (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2))
         {
-            xpr_sint64_t sTotalWrote = 0i64;
-            xpr_size_t sRead;
+            xpr_sint64_t sTotalWritten = 0;
+            xpr_ssize_t sWritten;
+            xpr_ssize_t sRead;
 
-            while (true)
+            do
             {
                 if (XPR_IS_NOT_NULL(aSyncFlags.mStopEvent))
                 {
@@ -422,22 +437,24 @@ SyncItem::Result SyncItem::synchronize(SyncFlags &aSyncFlags, CompareFlags &aCom
                     }
                 }
 
-                sRead = fread(aSyncFlags.mBuffer, 1, aSyncFlags.mBufferSize, sFile1);
-                if (sRead <= 0)
-                    break;
+                sRcode1 = sFileIo1.read(aSyncFlags.mBuffer, aSyncFlags.mBufferSize, &sRead);
+                if (XPR_RCODE_IS_SUCCESS(sRcode1) && sRead > 0)
+                {
+                    sRcode2 = sFileIo2.write(aSyncFlags.mBuffer, sRead, &sWritten);
+                    if (XPR_RCODE_IS_SUCCESS(sRcode2))
+                        sTotalWritten += sWritten;
+                }
+            } while (XPR_RCODE_IS_SUCCESS(sRcode1) && sRead > 0);
 
-                sTotalWrote += fwrite(aSyncFlags.mBuffer, 1, sRead, sFile2);
-            }
-
-            if (sTotalWrote == mFileSize[sIndex1])
+            if (sTotalWritten == mFileSize[sIndex1])
             {
                 mFileSize[sIndex2] = mFileSize[sIndex1];
                 mExist |= (sIndex2 == 1) ? CompareExistRight : CompareExistLeft;
             }
         }
 
-        if (XPR_IS_NOT_NULL(sFile1)) fclose(sFile1);
-        if (XPR_IS_NOT_NULL(sFile2)) fclose(sFile2);
+        sFileIo1.close();
+        sFileIo2.close();
 
         if (SetFileTime(aSyncFlags.mPath[1].c_str(), &mCreatedFileTime[sIndex1], &mLastAccessFileTime[sIndex1], &mModifiedFileTime[sIndex1]) == XPR_TRUE)
         {

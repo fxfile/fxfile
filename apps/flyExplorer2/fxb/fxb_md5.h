@@ -7,11 +7,9 @@ class CMD5
 public:
 	// methods for controlled operation:
 	CMD5();								// simple initializer
-	CMD5(FILE *file);					// digest file, close, finalize
 	
 	void init();						// called by all constructors
 	void update(unsigned char *input, unsigned int input_length);
-	void update(FILE *file);
 	void finalize();
 	
 	// methods to acquire finalized result

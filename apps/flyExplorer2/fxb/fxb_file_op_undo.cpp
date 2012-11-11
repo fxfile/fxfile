@@ -115,7 +115,7 @@ void FileOpUndo::deleteUndoDir(void)
 // move -> move
 // recycled bin -> restore
 
-FILE *FileOpUndo::beginAddFile(void)
+xpr_bool_t FileOpUndo::beginAddFile(xpr::FileIo &aFileIo)
 {
     validateUndoDir();
 
@@ -124,29 +124,40 @@ FILE *FileOpUndo::beginAddFile(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     _stprintf(sPath, UNDO_FILE_NAME_FORMAT, mPath, mIndex);
 
-    return _tfopen(sPath, XPR_STRING_LITERAL("wb"));
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+
+    sRcode = aFileIo.open(sPath, sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
+
+    return XPR_TRUE;
 }
 
-void FileOpUndo::endAddFile(FILE *aFile)
+void FileOpUndo::endAddFile(xpr::FileIo &aFileIo)
 {
-    if (XPR_IS_NOT_NULL(aFile))
-        fclose(aFile);
+    aFileIo.close();
 }
 
-FILE *FileOpUndo::beginUndoFile(xpr_bool_t aUpdate)
+xpr_bool_t FileOpUndo::beginUndoFile(xpr::FileIo &aFileIo, xpr_bool_t aUpdate)
 {
     validateUndoDir();
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     _stprintf(sPath, UNDO_FILE_NAME_FORMAT, mPath, mIndex);
 
-    return _tfopen(sPath, XPR_STRING_LITERAL("rb"));
+    xpr_rcode_t sRcode;
+
+    sRcode = aFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
+
+    return XPR_TRUE;
 }
 
-void FileOpUndo::endUndoFile(FILE *aFile, xpr_bool_t aUpdate)
+void FileOpUndo::endUndoFile(xpr::FileIo &aFileIo, xpr_bool_t aUpdate)
 {
-    if (XPR_IS_NOT_NULL(aFile))
-        fclose(aFile);
+    aFileIo.close();
 
     if (XPR_IS_TRUE(aUpdate))
     {
@@ -196,19 +207,22 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
 
     // ex) C:\\Documents and Settings\\Adminstrator\\Application Data\\flyExplorer\\undo0000\\undo0000.dat
 
-    FILE *sFile = beginAddFile();
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sWritten;
+    xpr::FileIo sFileIo;
+
+    if (beginAddFile(sFileIo) == XPR_FALSE)
     {
         std::swap(mMode, sMode);
         return;
     }
 
     // Undo Mode
-    fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
 
     // Temp Source Path Total Count, Length
-    fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
-    fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
+    sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
 
     HANDLE sFindFile = XPR_NULL;
     WIN32_FIND_DATA sWin32FindData = {0};
@@ -277,7 +291,7 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
     xpr_sint_t sSourceCount = (xpr_sint_t)sSourceDeque.size();
     for (i = 0; i < sSourceCount; ++i)
     {
-        fwrite(sSourceDeque[i], (_tcslen(sSourceDeque[i]) + 1)*sizeof(xpr_tchar_t), 1, sFile);
+        sRcode = sFileIo.write(sSourceDeque[i], (_tcslen(sSourceDeque[i]) + 1)*sizeof(xpr_tchar_t), &sWritten);
         sSourceLen += (xpr_sint_t)_tcslen(sSourceDeque[i]) + 1;
 
         delete[] sSourceDeque[i];
@@ -286,26 +300,26 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
     if (mMode == MODE_TRASH)
     {
         for (i = 0; i < sSourceCount; ++i)
-            fwrite(&sTimeDeque[i], sizeof(FILETIME), 1, sFile);
+            sRcode = sFileIo.write(&sTimeDeque[i], sizeof(FILETIME), &sWritten);
     }
 
     sSourceDeque.clear();
     sTimeDeque.clear();
 
-    fseek(sFile, sizeof(xpr_sint_t), SEEK_SET);
+    sRcode = sFileIo.seekFromBegin(sizeof(xpr_sint_t));
 
     // Source Path Count, Total Length
-    fwrite(&sSourceCount, sizeof(xpr_sint_t), 1, sFile);
-    fwrite(&sSourceLen,   sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&sSourceCount, sizeof(xpr_sint_t), &sWritten);
+    sRcode = sFileIo.write(&sSourceLen,   sizeof(xpr_sint_t), &sWritten);
 
     if (XPR_IS_NOT_NULL(sTarget))
     {
-        fseek(sFile, 0, SEEK_END);
+        sRcode = sFileIo.seekToEnd();
 
         // Temp Target Path Total Count, Length
-        xpr_slong_t sPos = ftell(sFile);
-        fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
-        fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
+        xpr_sint64_t sPos = sFileIo.tell();
+        sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
+        sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
 
         // Targer Path
         xpr_sint_t sTargetLen = 0;
@@ -313,23 +327,23 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
         sParsing = sTarget;
         while (*(sParsing) != '\0')
         {
-            fwrite(sTarget, (_tcslen(sParsing)+1) * sizeof(xpr_tchar_t), 1, sFile);
+            sRcode = sFileIo.write(sTarget, (_tcslen(sParsing)+1) * sizeof(xpr_tchar_t), &sWritten);
             sTargetLen += (xpr_sint_t)_tcslen(sParsing) + 1;
 
             sParsing += _tcslen(sParsing) + 1;
             sTargetCount++;
         }
 
-        fseek(sFile, sPos, SEEK_SET);
+        sRcode = sFileIo.seekFromBegin(sPos);
 
         // Target Path Count
-        fwrite(&sTargetCount, sizeof(xpr_sint_t), 1, sFile);
+        sRcode = sFileIo.write(&sTargetCount, sizeof(xpr_sint_t), &sWritten);
 
         // Target Path Total Length
-        fwrite(&sTargetLen,   sizeof(xpr_sint_t), 1, sFile);
+        sRcode = sFileIo.write(&sTargetLen,   sizeof(xpr_sint_t), &sWritten);
     }
 
-    endAddFile(sFile);
+    endAddFile(sFileIo);
 }
 
 void FileOpUndo::addRename(const std::tstring &aSource, const std::tstring &aTarget)
@@ -339,38 +353,41 @@ void FileOpUndo::addRename(const std::tstring &aSource, const std::tstring &aTar
 
 void FileOpUndo::addRename(const xpr_tchar_t *aSource, const xpr_tchar_t *aTarget)
 {
-    FILE *sFile = beginAddFile();
-    if (XPR_IS_NULL(sFile))
+    xpr::FileIo sFileIo;
+    if (beginAddFile(sFileIo) == XPR_FALSE)
         return;
+
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sWritten;
 
     mMode = MODE_RENAME;
 
     // Undo Mode
-    fwrite(&mMode, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&mMode, sizeof(xpr_sint_t), &sWritten);
 
     // Source Path Count
     xpr_sint_t sSourceCount = 1;
-    fwrite(&sSourceCount, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&sSourceCount, sizeof(xpr_sint_t), &sWritten);
 
     // Source Path Length
     xpr_sint_t sSourceLen = (xpr_sint_t)_tcslen(aSource) + 1;
-    fwrite(&sSourceLen, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&sSourceLen, sizeof(xpr_sint_t), &sWritten);
 
     // Source Path
-    fwrite(aSource, sSourceLen * sizeof(xpr_tchar_t), 1, sFile);
+    sRcode = sFileIo.write(aSource, sSourceLen * sizeof(xpr_tchar_t), &sWritten);
 
     // Target Path Count
     xpr_sint_t sTargetCount = 1;
-    fwrite(&sTargetCount, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&sTargetCount, sizeof(xpr_sint_t), &sWritten);
 
     // Target Path Length
     xpr_sint_t sTargetLen = (xpr_sint_t)_tcslen(aTarget) + 1;
-    fwrite(&sTargetLen, sizeof(xpr_sint_t), 1, sFile);
+    sRcode = sFileIo.write(&sTargetLen, sizeof(xpr_sint_t), &sWritten);
 
     // Target Path
-    fwrite(aTarget, sTargetLen * sizeof(xpr_tchar_t), 1, sFile);
+    sRcode = sFileIo.write(aTarget, sTargetLen * sizeof(xpr_tchar_t), &sWritten);
 
-    endAddFile(sFile);
+    endAddFile(sFileIo);
 }
 
 xpr_bool_t FileOpUndo::isUndo(void)
@@ -390,19 +407,22 @@ xpr_sint_t FileOpUndo::getCount(void)
 
 void FileOpUndo::start(void)
 {
-    FILE *sFile = beginUndoFile();
-    if (XPR_IS_NULL(sFile))
+    xpr::FileIo sFileIo;
+    if (beginUndoFile(sFileIo) == XPR_FALSE)
         return;
 
-    fread(&mMode, sizeof(xpr_sint_t), 1, sFile);
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+
+    sRcode = sFileIo.read(&mMode, sizeof(xpr_sint_t), &sRead);
 
     SHFILEOPSTRUCT *sShFileOpStruct = XPR_NULL;
     switch (mMode)
     {
-    case MODE_COPY:   sShFileOpStruct = startCopy(sFile);       break;
-    case MODE_MOVE:   sShFileOpStruct = startMove(sFile);       break;
-    case MODE_RENAME: sShFileOpStruct = startRename(sFile);     break;
-    case MODE_TRASH:  sShFileOpStruct = startRecycleBin(sFile); break;
+    case MODE_COPY:   sShFileOpStruct = startCopy(sFileIo);       break;
+    case MODE_MOVE:   sShFileOpStruct = startMove(sFileIo);       break;
+    case MODE_RENAME: sShFileOpStruct = startRename(sFileIo);     break;
+    case MODE_TRASH:  sShFileOpStruct = startRecycleBin(sFileIo); break;
     }
 
     if (XPR_IS_NOT_NULL(sShFileOpStruct))
@@ -413,26 +433,27 @@ void FileOpUndo::start(void)
         sFileOpThread->start(sShFileOpStruct);
     }
 
-    endUndoFile(sFile);
+    endUndoFile(sFileIo);
 
     // Update Mode
-    sFile = beginUndoFile(XPR_FALSE);
-
-    if (XPR_IS_NOT_NULL(sFile))
-        fread(&mMode, sizeof(xpr_sint_t), 1, sFile);
+    if (beginUndoFile(sFileIo, XPR_FALSE) == XPR_TRUE)
+        sRcode = sFileIo.read(&mMode, sizeof(xpr_sint_t), &sRead);
     else
         mMode = -1;
 
-    endUndoFile(sFile, XPR_FALSE);
+    endUndoFile(sFileIo, XPR_FALSE);
 }
 
-SHFILEOPSTRUCT *FileOpUndo::startCopy(FILE *aFile)
+SHFILEOPSTRUCT *FileOpUndo::startCopy(xpr::FileIo &aFileIo)
 {
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+
     xpr_sint_t sSourceCount = 0;
-    fread(&sSourceCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceCount, sizeof(xpr_sint_t), &sRead);
 
     xpr_sint_t sSourceLen = 0;
-    fread(&sSourceLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceLen, sizeof(xpr_sint_t), &sRead);
 
     if (sSourceCount <= 0 || sSourceLen <= 0)
         return XPR_NULL;
@@ -440,7 +461,7 @@ SHFILEOPSTRUCT *FileOpUndo::startCopy(FILE *aFile)
     xpr_tchar_t *sSource2 = new xpr_tchar_t[sSourceLen + XPR_MAX_PATH + 1];
     sSource2[0] = '\0';
 
-    fread(sSource2, sSourceLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sSource2, sSourceLen * sizeof(xpr_tchar_t), &sRead);
     sSource2[sSourceLen  ] = '\0';
     sSource2[sSourceLen+1] = '\0';
 
@@ -463,32 +484,35 @@ SHFILEOPSTRUCT *FileOpUndo::startCopy(FILE *aFile)
     return sShFileOpStruct;
 }
 
-SHFILEOPSTRUCT *FileOpUndo::startMove(FILE *aFile)
+SHFILEOPSTRUCT *FileOpUndo::startMove(xpr::FileIo &aFileIo)
 {
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+
     xpr_sint_t sSourceCount = 0;
-    fread(&sSourceCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceCount, sizeof(xpr_sint_t), &sRead);
 
     xpr_sint_t sSourceLen = 0;
-    fread(&sSourceLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceLen, sizeof(xpr_sint_t), &sRead);
 
     if (sSourceCount <= 0 || sSourceLen <= 0)
         return XPR_NULL;
 
     xpr_tchar_t *sSourceTemp = new xpr_tchar_t[sSourceLen + XPR_MAX_PATH + 1];
-    fread(sSourceTemp, sSourceLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sSourceTemp, sSourceLen * sizeof(xpr_tchar_t), &sRead);
     sSourceTemp[sSourceLen  ] = '\0';
     sSourceTemp[sSourceLen+1] = '\0';
 
     xpr_sint_t sTargetCount = 0;
-    fread(&sTargetCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sTargetCount, sizeof(xpr_sint_t), &sRead);
     if (sSourceCount != sTargetCount)
         sTargetCount = 1;
 
     xpr_sint_t sTargetLen = 0;
-    fread(&sTargetLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sTargetLen, sizeof(xpr_sint_t), &sRead);
 
     xpr_tchar_t *sTargetTemp = new xpr_tchar_t[sTargetLen + XPR_MAX_PATH + 1];
-    fread(sTargetTemp, sTargetLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sTargetTemp, sTargetLen * sizeof(xpr_tchar_t), &sRead);
 
     xpr_tchar_t *sSource2 = new xpr_tchar_t[(XPR_MAX_PATH + 1) * sSourceCount];
     xpr_tchar_t *sTarget2 = new xpr_tchar_t[(XPR_MAX_PATH + 1) * sSourceCount];
@@ -584,13 +608,16 @@ SHFILEOPSTRUCT *FileOpUndo::startMove(FILE *aFile)
     return sShFileOpStruct;
 }
 
-SHFILEOPSTRUCT *FileOpUndo::startRename(FILE *aFile)
+SHFILEOPSTRUCT *FileOpUndo::startRename(xpr::FileIo &aFileIo)
 {
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+
     xpr_sint_t sSourceCount = 0;
-    fread(&sSourceCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceCount, sizeof(xpr_sint_t), &sRead);
 
     xpr_sint_t sSourceLen = 0;
-    fread(&sSourceLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceLen, sizeof(xpr_sint_t), &sRead);
 
     if (sSourceCount <= 0 || sSourceLen <= 0)
         return XPR_NULL;
@@ -598,18 +625,18 @@ SHFILEOPSTRUCT *FileOpUndo::startRename(FILE *aFile)
     xpr_tchar_t *sSource2 = new xpr_tchar_t[sSourceLen + XPR_MAX_PATH + 1];
     sSource2[0] = '\0';
 
-    fread(sSource2, sSourceLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sSource2, sSourceLen * sizeof(xpr_tchar_t), &sRead);
 
     xpr_sint_t sTargetCount = 0;
-    fread(&sTargetCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sTargetCount, sizeof(xpr_sint_t), &sRead);
 
     xpr_sint_t sTargetLen = 0;
-    fread(&sTargetLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sTargetLen, sizeof(xpr_sint_t), &sRead);
 
     xpr_tchar_t *sTarget2 = new xpr_tchar_t[sTargetLen + XPR_MAX_PATH + 1];
     sTarget2[0] = '\0';
 
-    fread(sTarget2, sTargetLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sTarget2, sTargetLen * sizeof(xpr_tchar_t), &sRead);
 
     sSource2[_tcslen(sSource2) + 1] = '\0';
     sTarget2[_tcslen(sTarget2) + 1] = '\0';
@@ -634,24 +661,27 @@ SHFILEOPSTRUCT *FileOpUndo::startRename(FILE *aFile)
     return sShFileOpStruct;
 }
 
-SHFILEOPSTRUCT *FileOpUndo::startRecycleBin(FILE *aFile)
+SHFILEOPSTRUCT *FileOpUndo::startRecycleBin(xpr::FileIo &aFileIo)
 {
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+
     xpr_sint_t sSourceCount = 0;
-    fread(&sSourceCount, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceCount, sizeof(xpr_sint_t), &sRead);
 
     xpr_sint_t sSourceLen = 0;
-    fread(&sSourceLen, sizeof(xpr_sint_t), 1, aFile);
+    sRcode = aFileIo.read(&sSourceLen, sizeof(xpr_sint_t), &sRead);
 
     if (sSourceCount <= 0 || sSourceLen <= 0)
         return XPR_NULL;
 
     xpr_tchar_t *sSource = new xpr_tchar_t[sSourceLen + XPR_MAX_PATH + 1];
-    fread(sSource, sSourceLen * sizeof(xpr_tchar_t), 1, aFile);
+    sRcode = aFileIo.read(sSource, sSourceLen * sizeof(xpr_tchar_t), &sRead);
     sSource[sSourceLen  ] = '\0';
     sSource[sSourceLen+1] = '\0';
 
     FILETIME *sFileTime = new FILETIME[sSourceCount];
-    fread(sFileTime, sizeof(FILETIME)*sSourceCount, 1, aFile);
+    sRcode = aFileIo.read(sFileTime, sizeof(FILETIME)*sSourceCount, &sRead);
 
     xpr_sint_t i = 0;
     xpr_tchar_t **sSourceElem = new xpr_tchar_t *[sSourceCount];

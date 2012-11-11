@@ -18,6 +18,7 @@
 #include "xpr_math.h"
 #include "xpr_time.h"
 #include "xpr_memory.h"
+#include "xpr_system.h"
 #include "xpr_file_sys.h"
 #include "xpr_file_io.h"
 #include "xpr_string.h"

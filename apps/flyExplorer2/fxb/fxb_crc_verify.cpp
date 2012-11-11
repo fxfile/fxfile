@@ -63,8 +63,8 @@ void CrcVerify::init(void)
     std::tstring sCrcFileName;
     xpr_char_t sBuffer[BUFFER_SIZE + 1];
     xpr_sint_t sLen, sCount2 = 0;
-    xpr_sint_t sMethod[2];
     VerifyFile sVerifyFile;
+    const xpr_char_t *sWhitespace;
 
     CrcFileDeque::iterator sIterator;
 
@@ -73,17 +73,16 @@ void CrcVerify::init(void)
     {
         CrcFile &sCrcFile = *sIterator;
 
-        xpr_size_t nFind = sCrcFile.mPath.rfind(XPR_STRING_LITERAL('\\'));
+        xpr_size_t sFind = sCrcFile.mPath.rfind(XPR_STRING_LITERAL('\\'));
 
-        sCrcDir      = sCrcFile.mPath.substr(0, nFind);
-        sCrcFileName = sCrcFile.mPath.substr(nFind+1);
+        sCrcDir      = sCrcFile.mPath.substr(0, sFind);
+        sCrcFileName = sCrcFile.mPath.substr(sFind + 1);
 
         sFile = _tfopen(sCrcFile.mPath.c_str(), XPR_STRING_LITERAL("rt"));
         sVerifyFile.clear();
 
         // Get CRC CheckSum Method
         sCount2 = 0;
-        sMethod[0] = sMethod[1] = 0;
         while (fgets(sBuffer, BUFFER_SIZE, sFile) != XPR_NULL)
         {
             if (sCount2 > 20)
@@ -94,16 +93,15 @@ void CrcVerify::init(void)
 
             sLen = (xpr_sint_t)strlen(sBuffer);
 
-            if (sBuffer[sLen-10] == ' ')
-                sMethod[0]++;
-            if (sBuffer[32] == ' ')
-                sMethod[1]++;
+            sWhitespace = strchr(sBuffer, ' ');
+            if (XPR_IS_NOT_NULL(sWhitespace))
+            {
+                if ((sWhitespace - sBuffer) == 32)
+                    sVerifyFile.mMethod = 1;
+            }
 
             sCount2++;
         }
-
-        if (sMethod[1] > sMethod[0])
-            sVerifyFile.mMethod = 1;
 
         // Get File List, CRC Code
         fseek(sFile, 0, SEEK_SET);
@@ -228,7 +226,7 @@ unsigned CrcVerify::OnEntryProc(void)
         sFileIterator = sCrcFile.mVerifyFileDeque.begin();
         for (; sFileIterator != sCrcFile.mVerifyFileDeque.end(); ++sFileIterator)
         {
-            if (IsStop())
+            if (IsStop() == XPR_TRUE)
                 break;
 
             sFile   = sFileIterator->mPath;

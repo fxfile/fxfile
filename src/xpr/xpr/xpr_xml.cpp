@@ -9,6 +9,7 @@
 #include "xpr_memory.h"
 #include "xpr_math.h"
 #include "xpr_debug.h"
+#include "xpr_file_io.h"
 #include "xpr_file_sys.h"
 #include "xpr_rcode.h"
 
@@ -648,12 +649,22 @@ xpr_bool_t XmlWriter::save(const xpr_tchar_t *aPath) const
     if (mObject->mXmlBuffer == XPR_NULL)
         return XPR_FALSE;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("wb"));
-    if (sFile == XPR_NULL)
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sWritten;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(aPath, sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
-    fwrite(mObject->mXmlBuffer->content, mObject->mXmlBuffer->use, 1, sFile);
-    fclose(sFile);
+    sRcode = sFileIo.write(mObject->mXmlBuffer->content, mObject->mXmlBuffer->use, &sWritten);
+
+    sFileIo.close();
+
+    if (XPR_RCODE_IS_ERROR(sRcode) || mObject->mXmlBuffer->use != sWritten)
+        return XPR_FALSE;
 
     return XPR_TRUE;
 }

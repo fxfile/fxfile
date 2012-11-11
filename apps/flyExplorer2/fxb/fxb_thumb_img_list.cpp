@@ -194,31 +194,39 @@ void ThumbImgList::save(void)
 
         // Save Index
         {
-            CFile sFile(sIndexPath, CFile::modeCreate | CFile::modeWrite);
+            xpr_rcode_t sRcode;
+            xpr_ssize_t sWritten;
+            xpr_sint_t sOpenMode;
+            xpr::FileIo sFileIo;
 
-            xpr_sint_t sSize;
-            ThumbDeque::iterator sIterator;
-            xpr_wchar_t sPathW[XPR_MAX_PATH + 1] = {0};
-            xpr_size_t sOutputBytes;
-
-            sIterator = mThumbDeque.begin();
-            for (; sIterator != mThumbDeque.end(); ++sIterator)
+            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+            sRcode = sFileIo.open(sIndexPath, sOpenMode);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
             {
-                ThumbElement &sThumbElement = *sIterator;
+                xpr_sint_t sSize;
+                ThumbDeque::iterator sIterator;
+                xpr_wchar_t sPathW[XPR_MAX_PATH + 1] = {0};
+                xpr_size_t sOutputBytes;
 
-                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sThumbElement.mPath.c_str(), sThumbElement.mPath.length() * sizeof(xpr_tchar_t), sPathW, &sOutputBytes);
-                sPathW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+                sIterator = mThumbDeque.begin();
+                for (; sIterator != mThumbDeque.end(); ++sIterator)
+                {
+                    ThumbElement &sThumbElement = *sIterator;
 
-                sSize = (xpr_sint_t)((sThumbElement.mPath.length() + 1) * sizeof(xpr_wchar_t));
+                    sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
+                    XPR_TCS_TO_UTF16(sThumbElement.mPath.c_str(), sThumbElement.mPath.length() * sizeof(xpr_tchar_t), sPathW, &sOutputBytes);
+                    sPathW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
-                sFile.Write(&sSize,                           sizeof(xpr_sint_t));
-                sFile.Write(sPathW,                           sSize);
-                sFile.Write(&sThumbElement.mImageIndex,       sizeof(xpr_sint_t));
-                sFile.Write(&sThumbElement.mWidth,            sizeof(xpr_sint_t));
-                sFile.Write(&sThumbElement.mHeight,           sizeof(xpr_sint_t));
-                sFile.Write(&sThumbElement.mDepth,            sizeof(xpr_sint_t));
-                sFile.Write(&sThumbElement.mModifiedFileTime, sizeof(FILETIME));
+                    sSize = (xpr_sint_t)((sThumbElement.mPath.length() + 1) * sizeof(xpr_wchar_t));
+
+                    sRcode = sFileIo.write(&sSize,                           sizeof(xpr_sint_t), &sWritten);
+                    sRcode = sFileIo.write(sPathW,                           sSize,              &sWritten);
+                    sRcode = sFileIo.write(&sThumbElement.mImageIndex,       sizeof(xpr_sint_t), &sWritten);
+                    sRcode = sFileIo.write(&sThumbElement.mWidth,            sizeof(xpr_sint_t), &sWritten);
+                    sRcode = sFileIo.write(&sThumbElement.mHeight,           sizeof(xpr_sint_t), &sWritten);
+                    sRcode = sFileIo.write(&sThumbElement.mDepth,            sizeof(xpr_sint_t), &sWritten);
+                    sRcode = sFileIo.write(&sThumbElement.mModifiedFileTime, sizeof(FILETIME),   &sWritten);
+                }
             }
         }
     }
@@ -249,27 +257,35 @@ xpr_bool_t ThumbImgList::load(void)
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         xpr_size_t sOutputBytes;
 
-        CFile sFile(sIndexPath, CFile::modeRead);
-        while (XPR_IS_NOT_NULL(sFile.m_hFile))
+        xpr_rcode_t sRcode;
+        xpr_ssize_t sRead;
+        xpr::FileIo sFileIo;
+
+        sRcode = sFileIo.open(sIndexPath, xpr::FileIo::OpenModeReadOnly);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
-            if (sFile.Read(&sSize, sizeof(xpr_sint_t)) <= 0)
-                break;
+            do
+            {
+                sRcode = sFileIo.read(&sSize, sizeof(xpr_sint_t), &sRead);
+                if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0)
+                {
+                    sRcode = sFileIo.read(sPathW,                           sSize,              &sRead);
+                    sRcode = sFileIo.read(&sThumbElement.mImageIndex,       sizeof(xpr_sint_t), &sRead);
+                    sRcode = sFileIo.read(&sThumbElement.mWidth,            sizeof(xpr_sint_t), &sRead);
+                    sRcode = sFileIo.read(&sThumbElement.mHeight,           sizeof(xpr_sint_t), &sRead);
+                    sRcode = sFileIo.read(&sThumbElement.mDepth,            sizeof(xpr_sint_t), &sRead);
+                    sRcode = sFileIo.read(&sThumbElement.mModifiedFileTime, sizeof(FILETIME),   &sRead);
 
-            sFile.Read(sPathW,                           sSize);
-            sFile.Read(&sThumbElement.mImageIndex,       sizeof(xpr_sint_t));
-            sFile.Read(&sThumbElement.mWidth,            sizeof(xpr_sint_t));
-            sFile.Read(&sThumbElement.mHeight,           sizeof(xpr_sint_t));
-            sFile.Read(&sThumbElement.mDepth,            sizeof(xpr_sint_t));
-            sFile.Read(&sThumbElement.mModifiedFileTime, sizeof(FILETIME));
+                    sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                    XPR_UTF16_TO_TCS(sPathW, sSize, sPath, &sOutputBytes);
+                    sPath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
-            sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_UTF16_TO_TCS(sPathW, sSize, sPath, &sOutputBytes);
-            sPath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+                    sThumbElement.mPath         = sPath;
+                    sThumbElement.mThumbImageId = (xpr_uint_t)sThumbElement.mImageIndex;
 
-            sThumbElement.mPath         = sPath;
-            sThumbElement.mThumbImageId = (xpr_uint_t)sThumbElement.mImageIndex;
-
-            mThumbDeque.push_back(sThumbElement);
+                    mThumbDeque.push_back(sThumbElement);
+                }
+            } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead > 0);
         }
     }
 

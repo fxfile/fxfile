@@ -206,12 +206,14 @@ xpr_bool_t BBInfoFile::open(xpr_tchar_t aDriveChar)
 {
     mDirPath[0] = '\0';
 
+    xpr_uint_t sOsVer = xpr::getOsVer();
+
     if (IsDriveSecure(aDriveChar) == XPR_TRUE)
     {
         xpr_tchar_t sUserSid[XPR_MAX_PATH + 1] = {0};
         if (GetUserSid(XPR_NULL, sUserSid, XPR_MAX_PATH))
         {
-            if (UserEnv::instance().mWinVer >= UserEnv::WinVista)
+            if (sOsVer >= xpr::kOsVerWinVista)
             {
                 _stprintf(mDirPath, XPR_STRING_LITERAL("%c:\\$Recycle.Bin\\%s"), aDriveChar, sUserSid);
             }
@@ -229,7 +231,7 @@ xpr_bool_t BBInfoFile::open(xpr_tchar_t aDriveChar)
     if (mDirPath[0] == '\0')
         return XPR_FALSE;
 
-    if (UserEnv::instance().mWinVer >= UserEnv::WinVista)
+    if (sOsVer >= xpr::kOsVerWinVista)
     {
         readVistaIndex();
     }
@@ -266,17 +268,21 @@ void BBInfoFile::readINFO2Index(void)
     xpr_tchar_t sINFO2FilePath[XPR_MAX_PATH + 1] = {0};
     _stprintf(sINFO2FilePath, XPR_STRING_LITERAL("%s\\INFO2"), mDirPath);
 
-    FILE *sFile = _tfopen(sINFO2FilePath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(sINFO2FilePath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
-    xpr_size_t sRead;
+    xpr_ssize_t sRead;
     xpr_size_t sSize;
     xpr_bool_t sUnicode;
-
     BitBucketInfoHeader sBitBucketInfoHeader = {0};
-    sRead = fread(&sBitBucketInfoHeader, sizeof(BitBucketInfoHeader), 1, sFile);
-    if (sRead == 1)
+
+    sSize = sizeof(BitBucketInfoHeader);
+    sRcode = sFileIo.read(&sBitBucketInfoHeader, sSize, &sRead);
+    if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead == sSize)
     {
         sUnicode = XPR_FALSE;
 
@@ -296,8 +302,8 @@ void BBInfoFile::readINFO2Index(void)
         {
             do
             {
-                sRead = fread(&sBitBucketDataEntryW, sSize, 1, sFile);
-                if (sRead == 1)
+                sRcode = sFileIo.read(&sBitBucketDataEntryW, sSize, &sRead);
+                if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead == sSize)
                 {
                     sIndex = new Index;
                     if (XPR_IS_NOT_NULL(sIndex))
@@ -315,15 +321,14 @@ void BBInfoFile::readINFO2Index(void)
                         mIndexDeque.push_back(sIndex);
                     }
                 }
-            }
-            while (sRead == 1);
+            } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead == sSize);
         }
         else
         {
             do
             {
-                sRead = fread(&sBitBucketDataEntryA, sSize, 1, sFile);
-                if (sRead == 1)
+                sRcode = sFileIo.read(&sBitBucketDataEntryA, sSize, &sRead);
+                if (XPR_RCODE_IS_SUCCESS(sRcode) && sRead == sSize)
                 {
                     sIndex = new Index;
                     if (XPR_IS_NOT_NULL(sIndex))
@@ -341,13 +346,11 @@ void BBInfoFile::readINFO2Index(void)
                         mIndexDeque.push_back(sIndex);
                     }
                 }
-            }
-           while (sRead == 1);
+            } while (XPR_RCODE_IS_SUCCESS(sRcode) && sRead == sSize);
         }
     }
 
-    fclose(sFile);
-    sFile = XPR_NULL;
+    sFileIo.close();
 }
 
 void BBInfoFile::readVistaIndex(void)
@@ -356,7 +359,9 @@ void BBInfoFile::readVistaIndex(void)
     _tcscpy(sFindPath, mDirPath);
     _tcscat(sFindPath, XPR_STRING_LITERAL("\\*.*"));
 
-    FILE *sFile;
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+    xpr::FileIo sFileIo;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     xpr_sint64_t sFileSize;
     xpr_wchar_t sOriginalFile[XPR_MAX_PATH * 2 + 1] = {0};
@@ -381,19 +386,19 @@ void BBInfoFile::readVistaIndex(void)
             _tcscat(sPath, XPR_STRING_LITERAL("\\"));
             _tcscat(sPath, sWin32FindData.cFileName);
 
-            sFile = _tfopen(sPath, XPR_STRING_LITERAL("rb"));
-            if (XPR_IS_NOT_NULL(sFile))
+            sRcode = sFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
             {
                 sIndex = new Index;
                 if (XPR_IS_NOT_NULL(sIndex))
                 {
-                    fseek(sFile, 0, SEEK_END);
-                    sFileSize = _ftelli64(sFile);
-                    fseek(sFile, 8, SEEK_SET);
+                    sRcode = sFileIo.seekToEnd();
+                    sFileSize = sFileIo.tell();
+                    sRcode = sFileIo.seekFromBegin(8);
 
-                    fread(&sIndex->mFileSize, (sFileSize == 544) ? 8 : 7, 1, sFile);
-                    fread(&sIndex->mDeleteFileTime, sizeof(FILETIME), 1, sFile);
-                    fread(&sOriginalFile, sFileSize - _ftelli64(sFile), 1, sFile);
+                    sRcode = sFileIo.read(&sIndex->mFileSize, (sFileSize == 544) ? 8 : 7, &sRead);
+                    sRcode = sFileIo.read(&sIndex->mDeleteFileTime, sizeof(FILETIME), &sRead);
+                    sRcode = sFileIo.read(&sOriginalFile, sFileSize - sFileIo.tell(), &sRead);
 
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
                     XPR_UTF16_TO_TCS(sOriginalFile, wcslen(sOriginalFile) * sizeof(xpr_wchar_t), sIndex->mOriginalFilePath, &sOutputBytes);
@@ -406,7 +411,7 @@ void BBInfoFile::readVistaIndex(void)
                     mIndexDeque.push_back(sIndex);
                 }
 
-                fclose(sFile);
+                sFileIo.close();
             }
         }
         while (::FindNextFile(sFindFile, &sWin32FindData) == XPR_TRUE);

@@ -42,18 +42,18 @@ public:
     static xpr_sint_t getCount(void);
 
 protected:
-    SHFILEOPSTRUCT *startCopy(FILE *aFile);
-    SHFILEOPSTRUCT *startMove(FILE *aFile);
-    SHFILEOPSTRUCT *startRename(FILE *aFile);
-    SHFILEOPSTRUCT *startRecycleBin(FILE *aFile);
+    SHFILEOPSTRUCT *startCopy(xpr::FileIo &aFileIo);
+    SHFILEOPSTRUCT *startMove(xpr::FileIo &aFileIo);
+    SHFILEOPSTRUCT *startRename(xpr::FileIo &aFileIo);
+    SHFILEOPSTRUCT *startRecycleBin(xpr::FileIo &aFileIo);
 
     void validateUndoDir(void);
 
-    FILE *beginAddFile(void);
-    void endAddFile(FILE *aFile);
+    xpr_bool_t beginAddFile(xpr::FileIo &aFileIo);
+    void endAddFile(xpr::FileIo &aFileIo);
 
-    FILE *beginUndoFile(xpr_bool_t aUpdate = XPR_TRUE);
-    void endUndoFile(FILE *aFile, xpr_bool_t aUpdate = XPR_TRUE);
+    xpr_bool_t beginUndoFile(xpr::FileIo &aFileIo, xpr_bool_t aUpdate = XPR_TRUE);
+    void endUndoFile(xpr::FileIo &aFileIo, xpr_bool_t aUpdate = XPR_TRUE);
 
 protected:
     static xpr_tchar_t *mPath;

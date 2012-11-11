@@ -5,6 +5,7 @@
 // found in the LICENSE file.
 
 #include "xpr_init.h"
+#include "xpr_system.h"
 
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
@@ -19,6 +20,8 @@ namespace xpr
 {
 void initialize(void)
 {
+    initSystemInfo();
+
     ::xmlInitParser();
 }
 

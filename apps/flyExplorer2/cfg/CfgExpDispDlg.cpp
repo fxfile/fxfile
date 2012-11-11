@@ -200,13 +200,18 @@ xpr_bool_t CfgExpDispDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, std::
 
     aPath = sFileDialog.GetPathName();
 
-    CFile sFile;
-    BITMAPINFOHEADER sBitmapInfoHeader = {0};
-    if (sFile.Open(aPath.c_str(), CFile::modeRead | CFile::typeBinary))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sRead;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(aPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        sFile.Seek(sizeof(BITMAPFILEHEADER), CFile::begin);
-        sFile.Read(&sBitmapInfoHeader, sizeof(BITMAPINFOHEADER));
-        sFile.Close();
+        BITMAPINFOHEADER sBitmapInfoHeader = {0};
+
+        sRcode = sFileIo.seekFromBegin(sizeof(BITMAPFILEHEADER));
+        sRcode = sFileIo.read(&sBitmapInfoHeader, sizeof(BITMAPINFOHEADER), &sRead);
+        sFileIo.close();
 
         if (sBitmapInfoHeader.biBitCount == 16 && (sBitmapInfoHeader.biWidth % aWidth) == 0 && sBitmapInfoHeader.biHeight == aHeight)
         {
