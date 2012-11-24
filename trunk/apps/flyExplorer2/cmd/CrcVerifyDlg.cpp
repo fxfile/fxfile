@@ -122,7 +122,8 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
     const xpr_tchar_t *sCrcPath;
     fxb::CrcVerify::VerifyFile *sVerifyFile;
     xpr_tchar_t sCrcCode[0xff] = {0};
-    xpr_size_t sCrcCodeBytes;
+    xpr_size_t sInputBytes;
+    xpr_size_t sOutputBytes;
 
     sIndex = 0;
 
@@ -168,9 +169,10 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
             sLvItem.pszText  = (xpr_tchar_t *)sText;
             mListCtrl.SetItem(&sLvItem);
 
-            sCrcCodeBytes = 0xff * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sVerifyFile->mCrcCode, strlen(sVerifyFile->mCrcCode), sCrcCode, &sCrcCodeBytes);
-            sCrcCode[sCrcCodeBytes / sizeof(xpr_tchar_t)] = 0;
+            sInputBytes = strlen(sVerifyFile->mCrcCode);
+            sOutputBytes = 0xff * sizeof(xpr_tchar_t);
+            XPR_MBS_TO_TCS(sVerifyFile->mCrcCode, &sInputBytes, sCrcCode, &sOutputBytes);
+            sCrcCode[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
             sLvItem.mask     = LVIF_TEXT;
             sLvItem.iItem    = sIndex;

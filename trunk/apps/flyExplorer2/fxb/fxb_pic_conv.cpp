@@ -98,6 +98,7 @@ unsigned PicConv::OnEntryProc(void)
 
     std::tstring sPath;
     xpr_char_t sPathA[XPR_MAX_PATH + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     PathDeque::iterator sIterator;
 
@@ -109,8 +110,9 @@ unsigned PicConv::OnEntryProc(void)
 
         sPath = *sIterator;
 
+        sInputBytes = sPath.length() * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-        XPR_TCS_TO_MBS(sPath.c_str(), sPath.length() * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+        XPR_TCS_TO_MBS(sPath.c_str(), &sInputBytes, sPathA, &sOutputBytes);
         sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         gflGetDefaultLoadParams(&sGflLoadParams);

@@ -92,10 +92,12 @@ HRESULT SHGetSimplePidlFromPath(const xpr_tchar_t *aPath, LPITEMIDLIST *aPidl)
         return sHResult;
 
     OLECHAR sWidePath[XPR_MAX_PATH + 1] = {0};
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
+    sInputBytes = _tcslen(aPath) * sizeof(xpr_tchar_t);
     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(aPath, _tcslen(aPath) * sizeof(xpr_tchar_t), sWidePath, &sOutputBytes);
+    XPR_TCS_TO_UTF16(aPath, &sInputBytes, sWidePath, &sOutputBytes);
     sWidePath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
     sHResult = sShellFolder->ParseDisplayName(XPR_NULL, XPR_NULL, sWidePath, XPR_NULL, aPidl, 0);
@@ -385,10 +387,12 @@ LPITEMIDLIST GetFullPidl(const xpr_tchar_t *aFullPath)
     if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sShellFolder))
     {
         xpr_wchar_t sWideFullPath[XPR_MAX_PATH + 1] = {0};
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
+        sInputBytes = _tcslen(aFullPath) * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-        XPR_TCS_TO_UTF16(aFullPath, _tcslen(aFullPath) * sizeof(xpr_tchar_t), sWideFullPath, &sOutputBytes);
+        XPR_TCS_TO_UTF16(aFullPath, &sInputBytes, sWideFullPath, &sOutputBytes);
         sWideFullPath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
         sHResult = sShellFolder->ParseDisplayName(XPR_NULL, XPR_NULL, sWideFullPath, XPR_NULL, &sFullPidl, XPR_NULL);
@@ -1104,8 +1108,9 @@ xpr_bool_t GetInfotip(HWND aHwnd, LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
         {
             if (sWideInfotip[0] != 0)
             {
+                xpr_size_t sInputBytes = wcslen(sWideInfotip) * sizeof(xpr_wchar_t);
                 xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_UTF16_TO_TCS(sWideInfotip, wcslen(sWideInfotip) * sizeof(xpr_wchar_t), aInfotip, &sOutputBytes);
+                XPR_UTF16_TO_TCS(sWideInfotip, &sInputBytes, aInfotip, &sOutputBytes);
                 aInfotip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                 sResult = XPR_TRUE;
@@ -2559,11 +2564,13 @@ xpr_bool_t CreateShortcut(const xpr_tchar_t *aLinkFile, const xpr_tchar_t *aTarg
         sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile));
         if (SUCCEEDED(sHResult))
         {
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+            sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+            XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
             sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             sPersistFile->Save(sWideLinkFile, XPR_TRUE);
@@ -2602,11 +2609,13 @@ xpr_bool_t CreateShortcut(const xpr_tchar_t *aLinkFile, LPCITEMIDLIST aPidl)
         sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile));
         if (SUCCEEDED(sHResult))
         {
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+            sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+            XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
             sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             sHResult = sPersistFile->Save(sWideLinkFile, XPR_TRUE);
@@ -2655,11 +2664,13 @@ xpr_bool_t CreateShortcut(const xpr_tchar_t *aLinkFile,
         sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile));
         if (SUCCEEDED(sHResult))
         {
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+            sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+            XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
             sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             sHResult = sPersistFile->Save(sWideLinkFile, XPR_TRUE);
@@ -2708,11 +2719,13 @@ xpr_bool_t CreateShortcut(const xpr_tchar_t *aLinkFile,
         sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile));
         if (SUCCEEDED(sHResult))
         {
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+            sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+            XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
             sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             sHResult = sPersistFile->Save(sWideLinkFile, XPR_TRUE);
@@ -2728,12 +2741,12 @@ xpr_bool_t CreateShortcut(const xpr_tchar_t *aLinkFile,
 }
 
 xpr_bool_t ResolveShortcut(HWND         aHwnd,
-                             xpr_tchar_t *aLinkFile,
-                             xpr_tchar_t *aPath,
-                             xpr_tchar_t *aParameter,
-                             xpr_tchar_t *aStartup,
-                             xpr_tchar_t *aIcon,
-                             xpr_sint_t  *aIconIndex)
+                           xpr_tchar_t *aLinkFile,
+                           xpr_tchar_t *aPath,
+                           xpr_tchar_t *aParameter,
+                           xpr_tchar_t *aStartup,
+                           xpr_tchar_t *aIcon,
+                           xpr_sint_t  *aIconIndex)
 {
     IShellLink *sShellLink = XPR_NULL;
     IPersistFile *sPersistFile = XPR_NULL;
@@ -2751,11 +2764,13 @@ xpr_bool_t ResolveShortcut(HWND         aHwnd,
     sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile)); 
     if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sPersistFile))
     {
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
         xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+        sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-        XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+        XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
         sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
         sHResult = sPersistFile->Load(sWideLinkFile, STGM_READ);
@@ -2808,11 +2823,13 @@ xpr_bool_t ResolveShortcut(HWND          aHwnd,
     sHResult = sShellLink->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID *>(&sPersistFile)); 
     if (SUCCEEDED(sHResult) && sPersistFile)
     {
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
         xpr_wchar_t sWideLinkFile[XPR_MAX_PATH + 1];
 
+        sInputBytes = _tcslen(aLinkFile) * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-        XPR_TCS_TO_UTF16(aLinkFile, _tcslen(aLinkFile) * sizeof(xpr_tchar_t), sWideLinkFile, &sOutputBytes);
+        XPR_TCS_TO_UTF16(aLinkFile, &sInputBytes, sWideLinkFile, &sOutputBytes);
         sWideLinkFile[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
         sHResult = sPersistFile->Load(sWideLinkFile, STGM_READ);

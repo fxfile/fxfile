@@ -329,6 +329,7 @@ DWORD PicViewer::OnImgLoadProc(void)
     CBitmap *sBitmap;
     xpr_bool_t sPicture;
     xpr_char_t sPathA[XPR_MAX_PATH + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
     xpr_uchar_t *sDibData = XPR_NULL;
@@ -369,8 +370,9 @@ DWORD PicViewer::OnImgLoadProc(void)
 
         sPicture = XPR_FALSE;
 
+        sInputBytes = _tcslen(sPictureItem->mPath) * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-        XPR_TCS_TO_MBS(sPictureItem->mPath, _tcslen(sPictureItem->mPath) * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+        XPR_TCS_TO_MBS(sPictureItem->mPath, &sInputBytes, sPathA, &sOutputBytes);
         sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         sBitmap = XPR_NULL;

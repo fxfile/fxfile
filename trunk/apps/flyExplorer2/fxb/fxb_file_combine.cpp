@@ -116,6 +116,7 @@ unsigned FileCombine::OnEntryProc(void)
         xpr_ssize_t sWritten;
         xpr_tchar_t sIndexText[0xff] = {0};
         std::tstring sPath;
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         sBuffer = new xpr_char_t[mBufferSize];
@@ -184,8 +185,9 @@ unsigned FileCombine::OnEntryProc(void)
                         xpr_char_t sCrcCode1[0xff] = {0};
                         xpr_char_t sCrcCode2[0xff] = {0};
 
+                        sInputBytes = _tcslen(sCrcCode) * sizeof(xpr_tchar_t);
                         sOutputBytes = 0xff * sizeof(xpr_char_t);
-                        XPR_TCS_TO_MBS(sCrcCode, _tcslen(sCrcCode) * sizeof(xpr_tchar_t), sCrcCode1, &sOutputBytes);
+                        XPR_TCS_TO_MBS(sCrcCode, &sInputBytes, sCrcCode1, &sOutputBytes);
                         sCrcCode1[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                         sCrcCode2[0] = XPR_STRING_LITERAL('\0');

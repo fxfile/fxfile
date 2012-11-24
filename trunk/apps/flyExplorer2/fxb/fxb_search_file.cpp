@@ -162,6 +162,7 @@ void SearchFile::setText(const xpr_tchar_t *aText)
         return;
 
     xpr_size_t sLen = _tcslen(aText);
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
     XPR_SAFE_DELETE_ARRAY(mTextA);
@@ -170,12 +171,14 @@ void SearchFile::setText(const xpr_tchar_t *aText)
     mTextA = new xpr_char_t[sLen + 1];
     mTextW = new xpr_wchar_t[sLen + 1];
 
+    sInputBytes = sLen * sizeof(xpr_tchar_t);
     sOutputBytes = sLen * sizeof(xpr_char_t);
-    XPR_TCS_TO_MBS(aText, sLen * sizeof(xpr_tchar_t), mTextA, &sOutputBytes);
+    XPR_TCS_TO_MBS(aText, &sInputBytes, mTextA, &sOutputBytes);
     mTextA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
+    sInputBytes = sLen * sizeof(xpr_tchar_t);
     sOutputBytes = sLen * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(aText, sLen * sizeof(xpr_tchar_t), mTextW, &sOutputBytes);
+    XPR_TCS_TO_UTF16(aText, &sInputBytes, mTextW, &sOutputBytes);
     mTextW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
     _strlwr(mTextA);

@@ -227,8 +227,9 @@ xpr_bool_t ContextMenu::invokeCommand(const xpr_tchar_t *aVerb)
 
     xpr_char_t sVerb[0xff] = {0};
 #ifdef XPR_CFG_UNICODE
+    xpr_size_t sInputBytes = _tcslen(aVerb) * sizeof(xpr_tchar_t);
     xpr_size_t sOutputBytes = 0xfe;
-    XPR_UTF16_TO_MBS(aVerb, _tcslen(aVerb) * sizeof(xpr_tchar_t), sVerb, &sOutputBytes);
+    XPR_UTF16_TO_MBS(aVerb, &sInputBytes, sVerb, &sOutputBytes);
     sVerb[sOutputBytes / sizeof(xpr_char_t)] = 0;
 #else
     strcpy(sVerb, aVerb);

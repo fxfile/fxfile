@@ -98,11 +98,13 @@ unsigned FileList::OnEntryProc(void)
     xpr_bool_t sAttribute = XPR_TEST_BITS(mFlags, FlagsAttribute);
     xpr_bool_t sSplitChar = XPR_TEST_BITS(mFlags, FlagsSplitChar);
 
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     xpr_char_t sAnsiSeparator[0xff] = {0};
 
+    sInputBytes = mSplitChar.length() * sizeof(xpr_tchar_t);
     sOutputBytes = sizeof(0xfe) * sizeof(xpr_tchar_t);
-    XPR_TCS_TO_MBS(mSplitChar.c_str(), mSplitChar.length() * sizeof(xpr_tchar_t), sAnsiSeparator, &sOutputBytes);
+    XPR_TCS_TO_MBS(mSplitChar.c_str(), &sInputBytes, sAnsiSeparator, &sOutputBytes);
     sAnsiSeparator[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
     FILE *sFile = _tfopen(mTextFilePath.c_str(), XPR_STRING_LITERAL("wt"));
@@ -145,8 +147,9 @@ unsigned FileList::OnEntryProc(void)
                     *sExt = 0;
             }
 
+            sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+            XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
             sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
             if (XPR_IS_TRUE(sAttribute))
@@ -161,8 +164,9 @@ unsigned FileList::OnEntryProc(void)
                 else
                     GetFileSize(sPath.c_str(), sName, XPR_MAX_PATH);
 
+                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
                 sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
@@ -171,8 +175,9 @@ unsigned FileList::OnEntryProc(void)
                 // file type
                 GetFileType(sPath.c_str(), sName);
 
+                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
                 sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
@@ -181,8 +186,9 @@ unsigned FileList::OnEntryProc(void)
                 // file time
                 GetFileTime(sPath.c_str(), sName);
 
+                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, _tcslen(sName) * sizeof(xpr_tchar_t), sAnsiName, &sOutputBytes);
+                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
                 sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);

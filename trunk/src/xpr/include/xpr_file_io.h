@@ -77,6 +77,7 @@ public:
 public:
     virtual xpr_rcode_t open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode);
     virtual xpr_bool_t isOpened(void) const;
+    virtual xpr_sint_t getOpenMode(void) const;
     virtual void close(void);
 
 public:
@@ -107,8 +108,9 @@ public:
     virtual xpr_rcode_t unlock(void);
 
 protected:
-    Handle mHandle;
+    Handle      mHandle;
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
+    xpr_sint_t  mOpenMode;
 };
 } // namespace xpr
 

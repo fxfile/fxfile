@@ -128,6 +128,7 @@ unsigned FileSplit::OnEntryProc(void)
         xpr::FileIo sTargetFileIo;
         std::tstring sFileName;
         xpr_char_t sFileNameA[XPR_MAX_PATH + 1];
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         xpr_sint_t sIndex;
@@ -144,8 +145,9 @@ unsigned FileSplit::OnEntryProc(void)
         sFileName = mPath.substr(mPath.rfind(XPR_STRING_LITERAL('\\'))+1);
         sIndex = 1;
 
+        sInputBytes = sFileName.length() * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-        XPR_TCS_TO_MBS(sFileName.c_str(), sFileName.length() * sizeof(xpr_tchar_t), sFileNameA, &sOutputBytes);
+        XPR_TCS_TO_MBS(sFileName.c_str(), &sInputBytes, sFileNameA, &sOutputBytes);
         sFileNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         while (IsStop() == XPR_FALSE)

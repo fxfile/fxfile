@@ -109,10 +109,10 @@ xpr_bool_t XmlReader::load(const xpr_tchar_t *aPath)
     LIBXML_TEST_VERSION;
 
     xpr_char_t sAnsiPath[XPR_MAX_PATH + 1] = {0};
-    xpr_size_t sAnsiPathByte = sizeof(xpr_char_t) * XPR_MAX_PATH;
-
-    XPR_TCS_TO_MBS(aPath, _tcslen(aPath) * sizeof(xpr_tchar_t), sAnsiPath, &sAnsiPathByte);
-    sAnsiPath[sAnsiPathByte] = '\0';
+    xpr_size_t sInputBytes = _tcslen(aPath) * sizeof(xpr_tchar_t);
+    xpr_size_t sOutputBytes = sizeof(xpr_char_t) * XPR_MAX_PATH;
+    XPR_TCS_TO_MBS(aPath, &sInputBytes, sAnsiPath, &sOutputBytes);
+    sAnsiPath[sOutputBytes] = '\0';
 
     // parse the file and get the DOM
     mObject->mXmlDoc = ::xmlReadFile(sAnsiPath, XPR_NULL, 0);
@@ -217,25 +217,25 @@ xpr_rcode_t XmlReader::getEncoding(xpr_char_t *aEncoding, xpr_size_t aMaxLength)
     return XPR_RCODE_SUCCESS;
 }
 
-CodePage XmlReader::getEncoding(void) const
+CharSet XmlReader::getEncoding(void) const
 {
     xpr_char_t sEncoding[0xff] = {0};
     xpr_rcode_t sRcode = getEncoding(sEncoding, 0xfe);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         if (_stricmp(sEncoding, "") == 0)
-            return CodePageMultibytes;
+            return CharSetMultiBytes;
         else if (_stricmp(sEncoding, "utf-8") == 0)
-            return CodePageUtf8;
+            return CharSetUtf8;
         else if (_stricmp(sEncoding, "utf-16") == 0)
-            return CodePageUtf16;
+            return CharSetUtf16;
         else if (_stricmp(sEncoding, "utf-32") == 0)
-            return CodePageUtf32;
+            return CharSetUtf32;
         else
-            return CodePageNone;
+            return CharSetNone;
     }
 
-    return CodePageNone;
+    return CharSetNone;
 }
 
 XmlReader::Element *XmlReader::getRootElement(void) const

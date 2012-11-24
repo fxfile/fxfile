@@ -231,6 +231,7 @@ xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             xpr_tchar_t sKey[0xff];
             const xpr_tchar_t *sValue;
             xpr_tchar_t sValueW[0xff];
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             HRESULT sHResult;
 
@@ -241,8 +242,9 @@ xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
 
             sValue = sIniFile.getValueS(kViewSetKey, kSortFormatIdEntry, XPR_STRING_LITERAL(""));
 
+            sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
             sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(sValue, _tcslen(sValue) * sizeof(xpr_tchar_t), sValueW, &sOutputBytes);
+            XPR_TCS_TO_UTF16(sValue, &sInputBytes, sValueW, &sOutputBytes);
             sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnSortInfo.mFormatId);
@@ -265,8 +267,9 @@ xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
 
                 sValue = sIniFile.getValueS(sKey, kFormatIdEntry, XPR_STRING_LITERAL(""));
 
+                sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
                 sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sValue, _tcslen(sValue) * sizeof(xpr_tchar_t), sValueW, &sOutputBytes);
+                XPR_TCS_TO_UTF16(sValue, &sInputBytes, sValueW, &sOutputBytes);
                 sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
                 sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnItem[i].mFormatId);
@@ -343,8 +346,9 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
         const xpr_char_t *sMd5CrcVal = sMd5.hex_digest();
         if (XPR_IS_NOT_NULL(sMd5CrcVal))
         {
+            xpr_size_t sInputBytes = strlen(sMd5CrcVal) * sizeof(xpr_char_t);
             xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sMd5CrcVal, strlen(sMd5CrcVal) * sizeof(xpr_char_t), sCrcVal, &sOutputBytes);
+            XPR_MBS_TO_TCS(sMd5CrcVal, &sInputBytes, sCrcVal, &sOutputBytes);
             sCrcVal[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
         }
 
@@ -378,14 +382,16 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
         xpr_sint_t i;
         xpr_tchar_t sKey[0xff];
         xpr_tchar_t sValue[0xff];
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
         OLECHAR *sFormatIdValue;
 
         sFormatIdValue = XPR_NULL;
         ::StringFromIID(aFolderViewSet->mColumnSortInfo.mFormatId, &sFormatIdValue);
 
+        sInputBytes = wcslen(sFormatIdValue) * sizeof(xpr_wchar_t);
         sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-        XPR_TCS_TO_UTF16(sFormatIdValue, wcslen(sFormatIdValue) * sizeof(xpr_wchar_t), sValue, &sOutputBytes);
+        XPR_TCS_TO_UTF16(sFormatIdValue, &sInputBytes, sValue, &sOutputBytes);
         sValue[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
         sIniFile.setValueI(kViewSetKey, kVersionEntry,        1);
@@ -407,8 +413,9 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             sFormatIdValue = XPR_NULL;
             ::StringFromIID(aFolderViewSet->mColumnItem[i].mFormatId, &sFormatIdValue);
 
+            sInputBytes = wcslen(sFormatIdValue) * sizeof(xpr_wchar_t);
             sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-            XPR_TCS_TO_UTF16(sFormatIdValue, wcslen(sFormatIdValue) * sizeof(xpr_wchar_t), sValue, &sOutputBytes);
+            XPR_TCS_TO_UTF16(sFormatIdValue, &sInputBytes, sValue, &sOutputBytes);
             sValue[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
             sIniFile.setValueS(sKey, kFormatIdEntry,   sValue);

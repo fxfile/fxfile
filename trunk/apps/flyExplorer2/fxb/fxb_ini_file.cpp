@@ -70,6 +70,7 @@ xpr_bool_t IniFile::readFileA(void)
     xpr_char_t sLineA[MAX_FGETS_LINE + 1] = {0};
     xpr_tchar_t sLine[MAX_FGETS_LINE + 1] = {0};
     xpr_tchar_t sKey[MAX_KEY + 1] = {0};
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     xpr_char_t sKeyA[MAX_KEY + 1] = {0};
     xpr_char_t *sSubA, *sSub2A;
@@ -103,8 +104,9 @@ xpr_bool_t IniFile::readFileA(void)
 
                     strcpy(sKeyA, sLineA+1);
 
+                    sInputBytes = strlen(sLineA + 1) * sizeof(xpr_char_t);
                     sOutputBytes = MAX_KEY * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA + 1, strlen(sLineA + 1) * sizeof(xpr_char_t), sKey, &sOutputBytes);
+                    XPR_MBS_TO_TCS(sLineA + 1, &sInputBytes, sKey, &sOutputBytes);
                     sKey[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     addKeyName(sKey);
@@ -114,8 +116,9 @@ xpr_bool_t IniFile::readFileA(void)
             case ';':
             case '#':
                 {
+                    sInputBytes = strlen(sLineA + 1) * sizeof(xpr_char_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA + 1, strlen(sLineA + 1) * sizeof(xpr_char_t), sLine, &sOutputBytes);
+                    XPR_MBS_TO_TCS(sLineA + 1, &sInputBytes, sLine, &sOutputBytes);
                     sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     setComment(sLine);
@@ -140,12 +143,14 @@ xpr_bool_t IniFile::readFileA(void)
                         sSubA++;
                     sSubA++;
 
+                    sInputBytes = strlen(sLineA) * sizeof(xpr_char_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA, strlen(sLineA) * sizeof(xpr_char_t), sLine, &sOutputBytes);
+                    XPR_MBS_TO_TCS(sLineA, &sInputBytes, sLine, &sOutputBytes);
                     sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
+                    sInputBytes = strlen(sSubA) * sizeof(xpr_char_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sSubA, strlen(sSubA) * sizeof(xpr_char_t), sSub, &sOutputBytes);
+                    XPR_MBS_TO_TCS(sSubA, &sInputBytes, sSub, &sOutputBytes);
                     sSub[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     setValueS(sKey, sLine, sSub);
@@ -179,6 +184,7 @@ xpr_bool_t IniFile::readFileW(void)
     xpr_size_t sLen;
     xpr_size_t sRead;
     xpr_tchar_t sKey[MAX_KEY + 1] = {0};
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     xpr_wchar_t *sSubW, *sSub2W;
     xpr_tchar_t sSub[MAX_FGETS_LINE + 1] = {0};
@@ -223,8 +229,9 @@ xpr_bool_t IniFile::readFileW(void)
                 {
                     sSubW[0] = XPR_STRING_LITERAL('\0');
 
+                    sInputBytes = wcslen(sLineW + 1) * sizeof(xpr_wchar_t);
                     sOutputBytes = MAX_KEY * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW + 1, wcslen(sLineW + 1) * sizeof(xpr_wchar_t), sKey, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sLineW + 1, &sInputBytes, sKey, &sOutputBytes);
                     sKey[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     addKeyName(sKey);
@@ -234,8 +241,9 @@ xpr_bool_t IniFile::readFileW(void)
             case L';':
             case L'#':
                 {
+                    sInputBytes = wcslen(sLineW + 1) * sizeof(xpr_wchar_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW + 1, wcslen(sLineW + 1) * sizeof(xpr_wchar_t), sLine, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sLineW + 1, &sInputBytes, sLine, &sOutputBytes);
                     sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     setComment(sLine);
@@ -260,12 +268,14 @@ xpr_bool_t IniFile::readFileW(void)
                         sSubW++;
                     sSubW++;
 
+                    sInputBytes = wcslen(sLineW) * sizeof(xpr_wchar_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW, wcslen(sLineW) * sizeof(xpr_wchar_t), sLine, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sLineW, &sInputBytes, sLine, &sOutputBytes);
                     sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
+                    sInputBytes = wcslen(sSubW) * sizeof(xpr_wchar_t);
                     sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sSubW, wcslen(sSubW) * sizeof(xpr_wchar_t), sSub, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sSubW, &sInputBytes, sSub, &sOutputBytes);
                     sSub[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     setValueS(sKey, sLine, sSub);
@@ -292,6 +302,7 @@ xpr_bool_t IniFile::writeFileA(void)
     {
         xpr_tchar_t *sComment;
         xpr_char_t sCommentA[MAX_FGETS_LINE + 1];
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         std::vector<xpr_tchar_t *>::iterator sIterator = mComments.begin();
@@ -299,8 +310,9 @@ xpr_bool_t IniFile::writeFileA(void)
         {
             sComment = *sIterator;
 
+            sInputBytes = _tcslen(sComment) * sizeof(xpr_tchar_t);
             sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-            XPR_TCS_TO_MBS(sComment, _tcslen(sComment) * sizeof(xpr_tchar_t), sCommentA, &sOutputBytes);
+            XPR_TCS_TO_MBS(sComment, &sInputBytes, sCommentA, &sOutputBytes);
             sCommentA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
             fprintf(sFile, ";%s%s", sCommentA, XPR_EOLA);
@@ -317,13 +329,15 @@ xpr_bool_t IniFile::writeFileA(void)
         xpr_char_t sNameA[MAX_FGETS_LINE + 1];
         xpr_char_t sEntryA[MAX_FGETS_LINE + 1];
         xpr_char_t sValueA[MAX_FGETS_LINE + 1];
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         sIterator = mKeys.begin();
         for (; sIterator != mKeys.end(); ++sIterator)
         {
+            sInputBytes = _tcslen(sIterator->mName) * sizeof(xpr_tchar_t);
             sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-            XPR_TCS_TO_MBS(sIterator->mName, _tcslen(sIterator->mName) * sizeof(xpr_tchar_t), sNameA, &sOutputBytes);
+            XPR_TCS_TO_MBS(sIterator->mName, &sInputBytes, sNameA, &sOutputBytes);
             sNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
             fprintf(sFile, "[%s]%s", sNameA, XPR_EOLA);
@@ -331,12 +345,14 @@ xpr_bool_t IniFile::writeFileA(void)
             sEntryIterator = sIterator->mEntryVector.begin();
             for (; sEntryIterator != sIterator->mEntryVector.end(); ++sEntryIterator)
             {
+                sInputBytes = _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t);
                 sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-                XPR_TCS_TO_MBS(sEntryIterator->mEntry, _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t), sEntryA, &sOutputBytes);
+                XPR_TCS_TO_MBS(sEntryIterator->mEntry, &sInputBytes, sEntryA, &sOutputBytes);
                 sEntryA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
+                sInputBytes = _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t);
                 sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-                XPR_TCS_TO_MBS(sEntryIterator->mValue, _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t), sValueA, &sOutputBytes);
+                XPR_TCS_TO_MBS(sEntryIterator->mValue, &sInputBytes, sValueA, &sOutputBytes);
                 sValueA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 fprintf(sFile, "%s=%s%s", sEntryA, sValueA, XPR_EOLA);
@@ -366,6 +382,7 @@ xpr_bool_t IniFile::writeFileW(void)
     xpr_wchar_t sValueW[MAX_VALUE + 1];
     xpr_wchar_t sCommentW[MAX_FGETS_LINE + 1];
     xpr_wchar_t sLineW[MAX_FGETS_LINE + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
     {
@@ -374,8 +391,9 @@ xpr_bool_t IniFile::writeFileW(void)
         {
             sComment = *sIterator;
 
+            sInputBytes = _tcslen(sComment) * sizeof(xpr_tchar_t);
             sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(sComment, _tcslen(sComment) * sizeof(xpr_tchar_t), sCommentW, &sOutputBytes);
+            XPR_TCS_TO_UTF16(sComment, &sInputBytes, sCommentW, &sOutputBytes);
             sCommentW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             swprintf(sLineW, XPR_WIDE_STRING_LITERAL(";%s%s"), sCommentW, XPR_EOLW);
@@ -396,8 +414,9 @@ xpr_bool_t IniFile::writeFileW(void)
         sIterator = mKeys.begin();
         for (; sIterator != mKeys.end(); ++sIterator)
         {
+            sInputBytes = _tcslen(sIterator->mName) * sizeof(xpr_tchar_t);
             sOutputBytes = MAX_KEY * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(sIterator->mName, _tcslen(sIterator->mName) * sizeof(xpr_tchar_t), sKeyW, &sOutputBytes);
+            XPR_TCS_TO_UTF16(sIterator->mName, &sInputBytes, sKeyW, &sOutputBytes);
             sKeyW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
             swprintf(sLineW, XPR_WIDE_STRING_LITERAL("[%s]%s"), sKeyW, XPR_EOLW);
@@ -406,12 +425,14 @@ xpr_bool_t IniFile::writeFileW(void)
             sEntryIterator = sIterator->mEntryVector.begin();
             for (; sEntryIterator != sIterator->mEntryVector.end(); ++sEntryIterator)
             {
+                sInputBytes = _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t);
                 sOutputBytes = MAX_ENTRY * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sEntryIterator->mEntry, _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t), sEntryW, &sOutputBytes);
+                XPR_TCS_TO_UTF16(sEntryIterator->mEntry, &sInputBytes, sEntryW, &sOutputBytes);
                 sEntryW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
+                sInputBytes = _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t);
                 sOutputBytes = MAX_VALUE * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sEntryIterator->mValue, _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t), sValueW, &sOutputBytes);
+                XPR_TCS_TO_UTF16(sEntryIterator->mValue, &sInputBytes, sValueW, &sOutputBytes);
                 sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
                 swprintf(sLineW, XPR_WIDE_STRING_LITERAL("%s=%s%s"), sEntryW, sValueW, XPR_EOLW);
@@ -855,10 +876,12 @@ xpr_double_t IniFile::getValueF(const xpr_tchar_t *aKey, const xpr_tchar_t *aEnt
         return 0.0;
 
     xpr_char_t sValueA[MAX_VALUE + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
+    sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
     sOutputBytes = MAX_VALUE * sizeof(xpr_char_t);
-    XPR_TCS_TO_MBS(sValue, _tcslen(sValue) * sizeof(xpr_tchar_t), sValueA, &sOutputBytes);
+    XPR_TCS_TO_MBS(sValue, &sInputBytes, sValueA, &sOutputBytes);
     sValueA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
     return atof(sValueA);

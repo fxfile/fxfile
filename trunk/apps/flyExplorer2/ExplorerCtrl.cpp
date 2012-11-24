@@ -1654,8 +1654,9 @@ xpr_bool_t ExplorerCtrl::getDescription(LPLVITEMDATA aLvItemData, xpr_tchar_t *a
             sInfoTip = new xpr_tchar_t[sInfoTipLen * 2 + 1];
             if (XPR_IS_NOT_NULL(sInfoTip))
             {
+                xpr_size_t sInputBytes = wcslen(sInfoTipW) * sizeof(xpr_char_t);
                 xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-                XPR_MBS_TO_TCS(sInfoTipW, wcslen(sInfoTipW) * sizeof(xpr_char_t), sInfoTip, &sOutputBytes);
+                XPR_MBS_TO_TCS(sInfoTipW, &sInputBytes, sInfoTip, &sOutputBytes);
                 sInfoTip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
             }
         }

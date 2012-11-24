@@ -386,6 +386,7 @@ unsigned Thumbnail::OnEntryProc(void)
     xpr_uint_t sMsg;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     xpr_char_t sPathA[XPR_MAX_PATH + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     CSize sThumbSize;
     ThumbItem *sThumbItem = XPR_NULL;
@@ -437,8 +438,9 @@ unsigned Thumbnail::OnEntryProc(void)
         sThumbSize = sThumbItem->mThumbSize;
 
         _tcscpy(sPath, sThumbItem->mPath.c_str());
+        sInputBytes = _tcslen(sPath) * sizeof(xpr_tchar_t);
         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-        XPR_TCS_TO_MBS(sPath, _tcslen(sPath) * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+        XPR_TCS_TO_MBS(sPath, &sInputBytes, sPathA, &sOutputBytes);
         sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         XPR_TRACE(XPR_STRING_LITERAL("Thumbnail Thread, path=%s\n"), sPath);
