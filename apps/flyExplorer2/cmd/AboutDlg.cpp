@@ -91,9 +91,10 @@ xpr_bool_t AboutDlg::OnInitDialog(void)
 
     xpr_tchar_t sGflVersion[0xff] = {0};
 #ifdef XPR_CFG_UNICODE
-    xpr_size_t sGflVersionBytes = 0xfe * sizeof(xpr_tchar_t);
-    XPR_MBS_TO_TCS(gflGetVersion(), strlen(gflGetVersion()), sGflVersion, &sGflVersionBytes);
-    sGflVersion[sGflVersionBytes / sizeof(xpr_tchar_t)] = 0;
+    xpr_size_t sInputBytes = strlen(gflGetVersion());
+    xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
+    XPR_MBS_TO_TCS(gflGetVersion(), &sInputBytes, sGflVersion, &sOutputBytes);
+    sGflVersion[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 #else
     strcpy(sGflVersion, gflGetVersion());
 #endif

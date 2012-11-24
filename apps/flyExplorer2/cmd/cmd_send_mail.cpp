@@ -58,6 +58,7 @@ void SendMailCommand::execute(CommandContext &aContext)
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             xpr_char_t sPathA[XPR_MAX_PATH + 1];
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             SrItemData *sSrItemData;
             DWORD sFileAttributes;
@@ -76,8 +77,9 @@ void SendMailCommand::execute(CommandContext &aContext)
                 sFileAttributes = ::GetFileAttributes(sPath);
                 if (!XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
                 {
+                    sInputBytes = _tcslen(sPath) * sizeof(xpr_tchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-                    XPR_TCS_TO_MBS(sPath, _tcslen(sPath) * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+                    XPR_TCS_TO_MBS(sPath, &sInputBytes, sPathA, &sOutputBytes);
                     sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                     sPathes[sCount] = new xpr_char_t[XPR_MAX_PATH + 1];
@@ -121,6 +123,7 @@ void SendMailCommand::execute(CommandContext &aContext)
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             xpr_char_t sPathA[XPR_MAX_PATH + 1];
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
             LPLVITEMDATA sLvItemData;
             xpr_sint_t sIndex;
@@ -137,8 +140,9 @@ void SendMailCommand::execute(CommandContext &aContext)
                     {
                         fxb::GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
+                        sInputBytes = _tcslen(sPath) * sizeof(xpr_tchar_t);
                         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-                        XPR_TCS_TO_MBS(sPath, _tcslen(sPath) * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+                        XPR_TCS_TO_MBS(sPath, &sInputBytes, sPathA, &sOutputBytes);
                         sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                         sPathes[sCount] = new xpr_char_t[XPR_MAX_PATH + 1];

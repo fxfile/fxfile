@@ -28,7 +28,7 @@ public:
 
 public:
     xpr_rcode_t getEncoding(xpr_char_t *aEncoding, xpr_size_t aMaxLength) const;
-    CodePage getEncoding(void) const;
+    CharSet getEncoding(void) const;
 
     struct Element;
     struct Attribute;

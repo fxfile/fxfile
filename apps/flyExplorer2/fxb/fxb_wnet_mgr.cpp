@@ -48,6 +48,7 @@ static xpr_bool_t WINAPI EnumerateFunc(LPNETRESOURCE lpnr2, LPNETRESOURCE aNetRe
     xpr_tchar_t sFullName[XPR_MAX_URL_LENGTH + 1] = {0};
     xpr_char_t sAnsiFullName[XPR_MAX_URL_LENGTH + 1] = {0};
     xpr_char_t sHostName[XPR_MAX_URL_LENGTH + 1] = {0};
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
     sWNetResult = WNetOpenEnum(RESOURCE_GLOBALNET, RESOURCETYPE_ANY, 0, lpnr2, &sWNetEnum);
@@ -78,8 +79,9 @@ static xpr_bool_t WINAPI EnumerateFunc(LPNETRESOURCE lpnr2, LPNETRESOURCE aNetRe
                     sFullName[sLen] = '\0';
                 }
 
+                sInputBytes = _tcslen(sFullName) * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_URL_LENGTH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sFullName, _tcslen(sFullName) * sizeof(xpr_tchar_t), sAnsiFullName, &sOutputBytes);
+                XPR_TCS_TO_MBS(sFullName, &sInputBytes, sAnsiFullName, &sOutputBytes);
                 sAnsiFullName[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 gethostname(sHostName, (xpr_sint_t)strlen(sHostName));

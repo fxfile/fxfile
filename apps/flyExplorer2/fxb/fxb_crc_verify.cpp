@@ -58,6 +58,7 @@ void CrcVerify::init(void)
     xpr_char_t *sCode;
     xpr_char_t *sFileNameA;
     xpr_tchar_t sFileName[XPR_MAX_PATH + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     std::tstring sCrcDir;
     std::tstring sCrcFileName;
@@ -130,8 +131,9 @@ void CrcVerify::init(void)
                 sFileNameA[sLen - 1] = '\0';
             }
 
+            sInputBytes = strlen(sFileNameA) * sizeof(xpr_char_t);
             sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sFileNameA, strlen(sFileNameA) * sizeof(xpr_char_t), sFileName, &sOutputBytes);
+            XPR_MBS_TO_TCS(sFileNameA, &sInputBytes, sFileName, &sOutputBytes);
             sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
             sVerifyFile.mPath  = sCrcDir;

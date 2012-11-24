@@ -121,10 +121,12 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
 
     mNewName += mKeepExt.c_str();
 
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     xpr_wchar_t sUtf16NewName[XPR_MAX_PATH + 1] = {0};
+    sInputBytes = mNewName.length() * sizeof(xpr_tchar_t);
     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(mNewName.c_str(), mNewName.length() * sizeof(xpr_tchar_t), sUtf16NewName, &sOutputBytes);
+    XPR_TCS_TO_UTF16(mNewName.c_str(), &sInputBytes, sUtf16NewName, &sOutputBytes);
     sUtf16NewName[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
     std::tstring sOldPath;

@@ -296,6 +296,7 @@ void BBInfoFile::readINFO2Index(void)
         Index *sIndex;
         BitBucketDataEntryA sBitBucketDataEntryA;
         BitBucketDataEntryW sBitBucketDataEntryW;
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         if (XPR_IS_TRUE(sUnicode))
@@ -314,8 +315,9 @@ void BBInfoFile::readINFO2Index(void)
                         sIndex->mDeleteFileTime = sBitBucketDataEntryW.mDeleteTime;
                         sIndex->mFileSize       = sBitBucketDataEntryW.mSize;
 
+                        sInputBytes = wcslen(sBitBucketDataEntryW.mOriginal) * sizeof(xpr_wchar_t);
                         sOutputBytes = sizeof(sIndex->mOriginalFilePath) - sizeof(xpr_tchar_t);
-                        XPR_UTF16_TO_TCS(sBitBucketDataEntryW.mOriginal, wcslen(sBitBucketDataEntryW.mOriginal) * sizeof(xpr_wchar_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                        XPR_UTF16_TO_TCS(sBitBucketDataEntryW.mOriginal, &sInputBytes, sIndex->mOriginalFilePath, &sOutputBytes);
                         sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                         mIndexDeque.push_back(sIndex);
@@ -339,8 +341,9 @@ void BBInfoFile::readINFO2Index(void)
                         sIndex->mDeleteFileTime = sBitBucketDataEntryA.mDeleteTime;
                         sIndex->mFileSize       = sBitBucketDataEntryA.mSize;
 
+                        sInputBytes = strlen(sBitBucketDataEntryA.mOriginal) * sizeof(xpr_char_t);
                         sOutputBytes = sizeof(sIndex->mOriginalFilePath) - sizeof(xpr_tchar_t);
-                        XPR_MBS_TO_TCS(sBitBucketDataEntryA.mOriginal, strlen(sBitBucketDataEntryA.mOriginal) * sizeof(xpr_char_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                        XPR_MBS_TO_TCS(sBitBucketDataEntryA.mOriginal, &sInputBytes, sIndex->mOriginalFilePath, &sOutputBytes);
                         sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                         mIndexDeque.push_back(sIndex);
@@ -365,6 +368,7 @@ void BBInfoFile::readVistaIndex(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     xpr_sint64_t sFileSize;
     xpr_wchar_t sOriginalFile[XPR_MAX_PATH * 2 + 1] = {0};
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     Index *sIndex;
 
@@ -400,8 +404,9 @@ void BBInfoFile::readVistaIndex(void)
                     sRcode = sFileIo.read(&sIndex->mDeleteFileTime, sizeof(FILETIME), &sRead);
                     sRcode = sFileIo.read(&sOriginalFile, sFileSize - sFileIo.tell(), &sRead);
 
+                    sInputBytes = wcslen(sOriginalFile) * sizeof(xpr_wchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sOriginalFile, wcslen(sOriginalFile) * sizeof(xpr_wchar_t), sIndex->mOriginalFilePath, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sOriginalFile, &sInputBytes, sIndex->mOriginalFilePath, &sOutputBytes);
                     sIndex->mOriginalFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     sIndex->mInfo2Mode = XPR_FALSE;

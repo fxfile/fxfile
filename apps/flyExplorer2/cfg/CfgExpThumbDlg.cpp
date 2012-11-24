@@ -68,6 +68,7 @@ xpr_bool_t CfgExpThumbDlg::OnInitDialog(void)
     xpr_tchar_t sDesc[0xff] = {0};
     xpr_tchar_t sExt[0xff] = {0};
     GFL_FORMAT_INFORMATION sGflFormatInformation;
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
     sCount = gflGetNumberOfFormat();
@@ -77,12 +78,14 @@ xpr_bool_t CfgExpThumbDlg::OnInitDialog(void)
         if (gflGetFormatInformationByIndex(i, &sGflFormatInformation) != GFL_NO_ERROR)
             continue;
 
+        sInputBytes = strlen(sGflFormatInformation.Description) * sizeof(xpr_char_t);
         sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-        XPR_MBS_TO_TCS(sGflFormatInformation.Description, strlen(sGflFormatInformation.Description) * sizeof(xpr_char_t), sDesc, &sOutputBytes);
+        XPR_MBS_TO_TCS(sGflFormatInformation.Description, &sInputBytes, sDesc, &sOutputBytes);
         sDesc[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
+        sInputBytes = strlen(sGflFormatInformation.Extension[0]) * sizeof(xpr_char_t);
         sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-        XPR_MBS_TO_TCS(sGflFormatInformation.Extension[0], strlen(sGflFormatInformation.Extension[0]) * sizeof(xpr_char_t), sExt, &sOutputBytes);
+        XPR_MBS_TO_TCS(sGflFormatInformation.Extension[0], &sInputBytes, sExt, &sOutputBytes);
         sExt[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
         _stprintf(sText, XPR_STRING_LITERAL("%s (*.%s)"), sDesc, sExt);

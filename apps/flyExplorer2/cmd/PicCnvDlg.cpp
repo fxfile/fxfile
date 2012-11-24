@@ -111,6 +111,7 @@ xpr_bool_t PicCnvDlg::OnInitDialog(void)
     xpr_tchar_t sText[XPR_MAX_PATH + 1];
     xpr_tchar_t sDesc[0xff];
     xpr_tchar_t sName[0xff];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     GFL_FORMAT_INFORMATION sGflFormatInfo;
     COMBOBOXEXITEM sComboBoxExItem = {0};
@@ -127,12 +128,14 @@ xpr_bool_t PicCnvDlg::OnInitDialog(void)
         {
             sDescA = gflGetFormatDescriptionByIndex(i);
 
+            sInputBytes = strlen(sDescA) * sizeof(xpr_char_t);
             sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sDescA, strlen(sDescA) * sizeof(xpr_char_t), sDesc, &sOutputBytes);
+            XPR_MBS_TO_TCS(sDescA, &sInputBytes, sDesc, &sOutputBytes);
             sDesc[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
+            sInputBytes = strlen(sGflFormatInfo.Name) * sizeof(xpr_char_t);
             sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sGflFormatInfo.Name, strlen(sGflFormatInfo.Name) * sizeof(xpr_char_t), sName, &sOutputBytes);
+            XPR_MBS_TO_TCS(sGflFormatInfo.Name, &sInputBytes, sName, &sOutputBytes);
             sName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
             _stprintf(sText, XPR_STRING_LITERAL("[%d] %s (%s)"), sIndex + 1, sDesc, sName);
@@ -232,10 +235,12 @@ xpr_bool_t PicCnvDlg::addPath(const std::tstring &aPath)
         return XPR_FALSE;
 
     xpr_char_t sPathA[XPR_MAX_PATH + 1];
+    xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
+    sInputBytes = aPath.length() * sizeof(xpr_tchar_t);
     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-    XPR_TCS_TO_MBS(aPath.c_str(), aPath.length() * sizeof(xpr_tchar_t), sPathA, &sOutputBytes);
+    XPR_TCS_TO_MBS(aPath.c_str(), &sInputBytes, sPathA, &sOutputBytes);
     sPathA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
     GFL_FILE_INFORMATION gfi;

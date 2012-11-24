@@ -9,16 +9,11 @@
 #include "xpr_bit.h"
 #include "xpr_system.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS)
 FileIo::FileIo(void)
+    : mOpenMode(0)
 {
     mHandle.mFile = XPR_NULL;
     mPath[0] = 0;
@@ -87,11 +82,10 @@ xpr_rcode_t FileIo::open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode)
     {
         return XPR_RCODE_GET_OS_ERROR();
     }
-    else
-    {
-        mHandle.mFile = sFile;
-        _tcscpy(mPath, aPath);
-    }
+
+    mHandle.mFile = sFile;
+    _tcscpy(mPath, aPath);
+    mOpenMode = aOpenMode;
 
     return XPR_RCODE_SUCCESS;
 }
@@ -102,6 +96,11 @@ xpr_bool_t FileIo::isOpened(void) const
         return XPR_FALSE;
 
     return XPR_TRUE;
+}
+
+xpr_sint_t FileIo::getOpenMode(void) const
+{
+    return mOpenMode;
 }
 
 void FileIo::close(void)
@@ -136,7 +135,7 @@ xpr_rcode_t FileIo::read(void        *aData,
                          xpr_size_t   aSize,
                          xpr_ssize_t *aReadSize)
 {
-    if (XPR_IS_NULL(aData) || aSize < 0 || XPR_IS_NULL(aReadSize))
+    if (XPR_IS_NULL(aData) || XPR_IS_NULL(aReadSize))
         return XPR_RCODE_EINVAL;
 
     if (XPR_IS_FALSE(isOpened()))
@@ -169,7 +168,7 @@ xpr_rcode_t FileIo::write(const void  *aData,
                           xpr_size_t   aSize,
                           xpr_ssize_t *aWrittenSize)
 {
-    if (XPR_IS_NULL(aData) || aSize < 0 || XPR_IS_NULL(aWrittenSize))
+    if (XPR_IS_NULL(aData) || XPR_IS_NULL(aWrittenSize))
         return XPR_RCODE_EINVAL;
 
     if (XPR_IS_FALSE(isOpened()))

@@ -276,8 +276,9 @@ public:
     void extractFileName(const FILE_NOTIFY_INFORMATION *aFileNotifyInfo, std::tstring &aFileName)
     {
         xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
+        xpr_size_t sInputBytes = aFileNotifyInfo->FileNameLength * sizeof(xpr_wchar_t);
         xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-        XPR_UTF16_TO_TCS(aFileNotifyInfo->FileName, aFileNotifyInfo->FileNameLength * sizeof(xpr_wchar_t), sFileName, &sOutputBytes);
+        XPR_UTF16_TO_TCS(aFileNotifyInfo->FileName, &sInputBytes, sFileName, &sOutputBytes);
         sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
         aFileName = sFileName;

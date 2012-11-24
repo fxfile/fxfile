@@ -2692,8 +2692,9 @@ void FolderCtrl::OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     fxb::GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sOldPath);
 
     xpr_wchar_t sNewNameW[XPR_MAX_PATH + 1] = {0};
+    xpr_size_t sInputBytes = _tcslen(sTvDispInfo->item.pszText) * sizeof(xpr_tchar_t);
     xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(sTvDispInfo->item.pszText, _tcslen(sTvDispInfo->item.pszText) * sizeof(xpr_tchar_t), sNewNameW, &sOutputBytes);
+    XPR_TCS_TO_UTF16(sTvDispInfo->item.pszText, &sInputBytes, sNewNameW, &sOutputBytes);
     sNewNameW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
     HRESULT sHResult = sTvItemData->mShellFolder->SetNameOf(m_hWnd, sTvItemData->mPidl, sNewNameW, SHGDN_INFOLDER, &sNewPidl);

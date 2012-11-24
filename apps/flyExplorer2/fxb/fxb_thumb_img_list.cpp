@@ -206,6 +206,7 @@ void ThumbImgList::save(void)
                 xpr_sint_t sSize;
                 ThumbDeque::iterator sIterator;
                 xpr_wchar_t sPathW[XPR_MAX_PATH + 1] = {0};
+                xpr_size_t sInputBytes;
                 xpr_size_t sOutputBytes;
 
                 sIterator = mThumbDeque.begin();
@@ -213,8 +214,9 @@ void ThumbImgList::save(void)
                 {
                     ThumbElement &sThumbElement = *sIterator;
 
+                    sInputBytes = sThumbElement.mPath.length() * sizeof(xpr_tchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-                    XPR_TCS_TO_UTF16(sThumbElement.mPath.c_str(), sThumbElement.mPath.length() * sizeof(xpr_tchar_t), sPathW, &sOutputBytes);
+                    XPR_TCS_TO_UTF16(sThumbElement.mPath.c_str(), &sInputBytes, sPathW, &sOutputBytes);
                     sPathW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
                     sSize = (xpr_sint_t)((sThumbElement.mPath.length() + 1) * sizeof(xpr_wchar_t));
@@ -255,6 +257,7 @@ xpr_bool_t ThumbImgList::load(void)
         ThumbElement sThumbElement;
         xpr_wchar_t sPathW[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         xpr_rcode_t sRcode;
@@ -276,8 +279,9 @@ xpr_bool_t ThumbImgList::load(void)
                     sRcode = sFileIo.read(&sThumbElement.mDepth,            sizeof(xpr_sint_t), &sRead);
                     sRcode = sFileIo.read(&sThumbElement.mModifiedFileTime, sizeof(FILETIME),   &sRead);
 
+                    sInputBytes = sSize;
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sPathW, sSize, sPath, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sPathW, &sInputBytes, sPath, &sOutputBytes);
                     sPath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
                     sThumbElement.mPath         = sPath;

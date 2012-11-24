@@ -124,8 +124,9 @@ xpr_bool_t Guid::fromString(const xpr_tchar_t *aGuid)
         xpr_wchar_t sStringWithBrace[0xff] = {0};
         wcscpy(sStringWithBrace, XPR_WIDE_STRING_LITERAL("{"));
 
+        xpr_size_t sInputBytes = _tcslen(aGuid) * sizeof(xpr_tchar_t);
         xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
-        XPR_TCS_TO_UTF16(aGuid, _tcslen(aGuid) * sizeof(xpr_tchar_t), sStringWithBrace + 1, &sOutputBytes);
+        XPR_TCS_TO_UTF16(aGuid, &sInputBytes, sStringWithBrace + 1, &sOutputBytes);
         wcscat(sStringWithBrace, XPR_WIDE_STRING_LITERAL("}"));
 
         HRESULT hr = ::IIDFromString((LPOLESTR)sStringWithBrace, (LPIID)this);

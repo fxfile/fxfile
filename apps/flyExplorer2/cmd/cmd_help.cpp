@@ -19,6 +19,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#include "xpr_text_file_io.h"
+
 namespace cmd
 {
 xpr_sint_t HelpCommand::canExecute(CommandContext &aContext)

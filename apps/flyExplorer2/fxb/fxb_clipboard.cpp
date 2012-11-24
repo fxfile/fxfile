@@ -680,6 +680,7 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
             xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
+            xpr_size_t sInputBytes;
             xpr_size_t sOutputBytes;
 
             sCount = XPR_IS_TRUE(aUnicode) ? sFileGroupDescW->cItems : sFileGroupDescA->cItems;
@@ -697,14 +698,16 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
                 {
                     if (XPR_IS_TRUE(aUnicode))
                     {
+                        sInputBytes = wcslen(sFileDescW->cFileName) * sizeof(xpr_wchar_t);
                         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                        XPR_UTF16_TO_TCS(sFileDescW->cFileName, wcslen(sFileDescW->cFileName) * sizeof(xpr_wchar_t), sFileName, &sOutputBytes);
+                        XPR_UTF16_TO_TCS(sFileDescW->cFileName, &sInputBytes, sFileName, &sOutputBytes);
                         sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
                     }
                     else
                     {
+                        sInputBytes = strlen(sFileDescA->cFileName) * sizeof(xpr_char_t);
                         sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                        XPR_MBS_TO_TCS(sFileDescA->cFileName, strlen(sFileDescA->cFileName) * sizeof(xpr_char_t), sFileName, &sOutputBytes);
+                        XPR_MBS_TO_TCS(sFileDescA->cFileName, &sInputBytes, sFileName, &sOutputBytes);
                         sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
                     }
 
@@ -812,6 +815,7 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         sCount = XPR_IS_TRUE(aUnicode) ? sFileGroupDescW->cItems : sFileGroupDescA->cItems;
@@ -829,14 +833,16 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
             {
                 if (XPR_IS_TRUE(aUnicode))
                 {
+                    sInputBytes = wcslen(sFileDescW->cFileName) * sizeof(xpr_wchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sFileDescW->cFileName, wcslen(sFileDescW->cFileName) * sizeof(xpr_wchar_t), sFileName, &sOutputBytes);
+                    XPR_UTF16_TO_TCS(sFileDescW->cFileName, &sInputBytes, sFileName, &sOutputBytes);
                     sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
                 }
                 else
                 {
+                    sInputBytes = strlen(sFileDescA->cFileName) * sizeof(xpr_char_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sFileDescA->cFileName, strlen(sFileDescA->cFileName) * sizeof(xpr_char_t), sFileName, &sOutputBytes);
+                    XPR_MBS_TO_TCS(sFileDescA->cFileName, &sInputBytes, sFileName, &sOutputBytes);
                     sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
                 }
 

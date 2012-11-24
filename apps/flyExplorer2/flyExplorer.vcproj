@@ -3193,6 +3193,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\xpr\include\xpr_text_file_io.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\xpr\include\xpr_thread.h"
 				>
 			</File>
@@ -3633,6 +3637,18 @@
 				</File>
 				<File
 					RelativePath="..\..\src\xpr\xpr\xpr_system_win.cpp"
+					>
+					<FileConfiguration
+						Name="Debug-x86-Unicode|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\src\xpr\xpr\xpr_text_file_io.cpp"
 					>
 					<FileConfiguration
 						Name="Debug-x86-Unicode|Win32"

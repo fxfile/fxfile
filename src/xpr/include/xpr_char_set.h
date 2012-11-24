@@ -12,36 +12,38 @@
 
 namespace xpr
 {
-enum CodePage
+enum CharSet
 {
-    CodePageNone,
-    CodePageMultibytes,
-    CodePageUtf8,
-    CodePageUtf16,
-    CodePageUtf32,
+    CharSetNone,
+    CharSetMultiBytes,
+    CharSetUtf8,
+    CharSetUtf16,
+    CharSetUtf16be,
+    CharSetUtf32,
+    CharSetUtf32be,
 };
 
-xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t  aInputBytes,  CodePage aInputCodePage,
-                                 void *aOutput, xpr_size_t *aOutputBytes, CodePage aOutputCodePage);
+xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
+                                 void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet);
 
 #define XPR_MBS_TO_MBS(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageMultibytes, aOutput, aOutputBytes, xpr::CodePageMultibytes)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetMultiBytes, aOutput, aOutputBytes, xpr::CharSetMultiBytes)
 #define XPR_MBS_TO_UTF8(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageMultibytes, aOutput, aOutputBytes, xpr::CodePageUtf8)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetMultiBytes, aOutput, aOutputBytes, xpr::CharSetUtf8)
 #define XPR_MBS_TO_UTF16(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageMultibytes, aOutput, aOutputBytes, xpr::CodePageUtf16)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetMultiBytes, aOutput, aOutputBytes, xpr::CharSetUtf16)
 #define XPR_UTF16_TO_MBS(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf16, aOutput, aOutputBytes, xpr::CodePageMultibytes)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf16, aOutput, aOutputBytes, xpr::CharSetMultiBytes)
 #define XPR_UTF16_TO_UTF8(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf16, aOutput, aOutputBytes, xpr::CodePageUtf8)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf16, aOutput, aOutputBytes, xpr::CharSetUtf8)
 #define XPR_UTF16_TO_UTF16(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf16, aOutput, aOutputBytes, xpr::CodePageUtf16)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf16, aOutput, aOutputBytes, xpr::CharSetUtf16)
 #define XPR_UTF8_TO_MBS(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf8, aOutput, aOutputBytes, xpr::CodePageMultibytes)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf8, aOutput, aOutputBytes, xpr::CharSetMultiBytes)
 #define XPR_UTF8_TO_UTF8(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf8, aOutput, aOutputBytes, xpr::CodePageUtf8)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf8, aOutput, aOutputBytes, xpr::CharSetUtf8)
 #define XPR_UTF8_TO_UTF16(aInput, aInputBytes, aOutput, aOutputBytes) \
-    xpr::convertCharSet(aInput, aInputBytes, xpr::CodePageUtf8, aOutput, aOutputBytes, xpr::CodePageUtf16)
+    xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetUtf8, aOutput, aOutputBytes, xpr::CharSetUtf16)
 
 #if defined(XPR_CFG_UNICODE)
 #define XPR_TCS_TO_MBS    XPR_UTF16_TO_MBS

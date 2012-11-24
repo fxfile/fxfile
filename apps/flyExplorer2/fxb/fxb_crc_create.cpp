@@ -109,6 +109,7 @@ unsigned CrcCreate::OnEntryProc(void)
         xpr_bool_t sResult = XPR_TRUE;
         const xpr_tchar_t *sExt;
         xpr_char_t sFileNameA[XPR_MAX_PATH + 1];
+        xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
         std::tstring sPath;
         std::tstring sFileName;
@@ -153,8 +154,9 @@ unsigned CrcCreate::OnEntryProc(void)
 
             if (mMethod == 0)
             {
+                sInputBytes = sFileName.length() * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-                XPR_TCS_TO_MBS(sFileName.c_str(), sFileName.length() * sizeof(xpr_tchar_t), sFileNameA, &sOutputBytes);
+                XPR_TCS_TO_MBS(sFileName.c_str(), &sInputBytes, sFileNameA, &sOutputBytes);
                 sFileNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                 fprintf(sFile, "%s %08X\n", sFileNameA, sCrcSfv);
@@ -163,8 +165,9 @@ unsigned CrcCreate::OnEntryProc(void)
             {
                 if (sCrcMd5[0] != '\0')
                 {
+                    sInputBytes = sFileName.length() * sizeof(xpr_tchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-                    XPR_TCS_TO_MBS(sFileName.c_str(), sFileName.length() * sizeof(xpr_tchar_t), sFileNameA, &sOutputBytes);
+                    XPR_TCS_TO_MBS(sFileName.c_str(), &sInputBytes, sFileNameA, &sOutputBytes);
                     sFileNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
                     fprintf(sFile, "%s %s\n", _strupr(sCrcMd5), sFileNameA);
