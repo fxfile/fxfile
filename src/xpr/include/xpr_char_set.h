@@ -23,6 +23,25 @@ enum CharSet
     CharSetUtf32be,
 };
 
+class CharSetConverter
+{
+public:
+    CharSetConverter(void);
+    virtual ~CharSetConverter(void);
+
+public:
+    virtual xpr_rcode_t open(CharSet aInputCharSet, CharSet aOutputCharSet);
+    virtual void getCharSet(CharSet &aInputCharSet, CharSet &aOutputCharSet) const;
+    virtual xpr_rcode_t convert(const void *aInput,  xpr_size_t *aInputBytes,
+                                      void *aOutput, xpr_size_t *aOutputBytes);
+    virtual void close(void);
+
+protected:
+    void    *mHandle;
+    CharSet  mInputCharSet;
+    CharSet  mOutputCharSet;
+};
+
 xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
                                  void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet);
 

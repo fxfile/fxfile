@@ -29,18 +29,19 @@ static const xpr_char_t *kCharSets[] = {
     "utf-32be",     // CharSetUtf32be
 };
 
-xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
-                                 void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet)
+CharSetConverter::CharSetConverter(void)
+    : mHandle(XPR_NULL)
+    , mInputCharSet(CharSetNone), mOutputCharSet(CharSetNone)
 {
-    if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
-        return XPR_RCODE_EINVAL;
+}
 
-    if (*aInputBytes == 0)
-    {
-        *aOutputBytes = 0;
-        return XPR_RCODE_SUCCESS;
-    }
+CharSetConverter::~CharSetConverter(void)
+{
+    close();
+}
 
+xpr_rcode_t CharSetConverter::open(CharSet aInputCharSet, CharSet aOutputCharSet)
+{
     static const xpr_size_t sCharSetCount = XPR_COUNT_OF(kCharSets);
     if (!XPR_IS_RANGE(0, (xpr_size_t)aInputCharSet,  sCharSetCount-1) ||
         !XPR_IS_RANGE(0, (xpr_size_t)aOutputCharSet, sCharSetCount-1))
@@ -48,7 +49,42 @@ xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSe
         return XPR_RCODE_EINVAL;
     }
 
-    if (aInputCharSet == aOutputCharSet)
+    const xpr_char_t *sInputEncoding = kCharSets[aInputCharSet];
+    const xpr_char_t *sOutputEncoding = kCharSets[aOutputCharSet];
+
+    iconv_t sHandle = ::iconv_open(sOutputEncoding, sInputEncoding);
+    if (sHandle == (iconv_t)-1)
+        return XPR_RCODE_ENOTSUP;
+
+    mHandle        = sHandle;
+    mInputCharSet  = aInputCharSet;
+    mOutputCharSet = aOutputCharSet;
+
+    return XPR_RCODE_SUCCESS;
+}
+
+void CharSetConverter::getCharSet(CharSet &aInputCharSet, CharSet &aOutputCharSet) const
+{
+    aInputCharSet = mInputCharSet;
+    aOutputCharSet = mOutputCharSet;
+}
+
+xpr_rcode_t CharSetConverter::convert(const void *aInput,  xpr_size_t *aInputBytes,
+                                            void *aOutput, xpr_size_t *aOutputBytes)
+{
+    if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
+        return XPR_RCODE_EINVAL;
+
+    if (XPR_IS_NULL(mHandle))
+        return XPR_RCODE_EBADF;
+
+    if (*aInputBytes == 0)
+    {
+        *aOutputBytes = 0;
+        return XPR_RCODE_SUCCESS;
+    }
+
+    if (mInputCharSet == mOutputCharSet)
     {
         if (*aInputBytes > *aOutputBytes)
         {
@@ -64,19 +100,16 @@ xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSe
         return XPR_RCODE_SUCCESS;
     }
 
-    const xpr_char_t *sFromEncoding = kCharSets[aInputCharSet];
-    const xpr_char_t *sToEncoding = kCharSets[aOutputCharSet];
-
-    iconv_t sDecoder = ::iconv_open(sToEncoding, sFromEncoding);
-    if (sDecoder == (iconv_t)-1)
-        return XPR_RCODE_ENOTSUP;
+    iconv_t sIconv = (iconv_t)mHandle;
 
     xpr_size_t sInputBytesLeft = *aInputBytes;
     xpr_size_t sOutputBytesLeft = *aOutputBytes;
 
-    xpr_size_t sResult = ::iconv(sDecoder, (const xpr_char_t **)&aInput, &sInputBytesLeft, (xpr_char_t **)&aOutput, &sOutputBytesLeft);
-
-    ::iconv_close(sDecoder);
+    xpr_size_t sResult = ::iconv(sIconv,
+                                 (const xpr_char_t **)&aInput,
+                                 &sInputBytesLeft,
+                                 (xpr_char_t **)&aOutput,
+                                 &sOutputBytesLeft);
 
     xpr_rcode_t sRcode = XPR_RCODE_SUCCESS;
     if (sResult == (xpr_size_t)-1)
@@ -96,6 +129,38 @@ xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSe
         *aInputBytes -= sInputBytesLeft;
         *aOutputBytes -= sOutputBytesLeft;
     }
+
+    return sRcode;
+}
+
+void CharSetConverter::close(void)
+{
+    if (XPR_IS_NOT_NULL(mHandle))
+    {
+        iconv_t sIconv = (iconv_t)mHandle;
+
+        ::iconv_close(sIconv);
+
+        mHandle = XPR_NULL;
+    }
+}
+
+xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
+                                 void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet)
+{
+    if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
+        return XPR_RCODE_EINVAL;
+
+    xpr_rcode_t sRcode;
+
+    CharSetConverter sCharSetConverter;
+    sRcode = sCharSetConverter.open(aInputCharSet, aOutputCharSet);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    sRcode = sCharSetConverter.convert(aInput, aInputBytes, aOutput, aOutputBytes);
+
+    sCharSetConverter.close();
 
     return sRcode;
 }
