@@ -21,6 +21,8 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
+static const xpr_size_t kTextBufferSize = 16 * 1024; // 16KB
+
 TextMerge::TextMerge(void)
     : mHwnd(NULL), mMsg(NULL)
     , mStatus(StatusNone)
@@ -68,130 +70,70 @@ xpr_bool_t TextMerge::OnPreEntry(void)
 
 unsigned TextMerge::OnEntryProc(void)
 {
-    FILE *sFile, *sMergeFile;
-    xpr_char_t *sTextA = new xpr_char_t[XPR_MAX_PATH * 6 + 1];
-    xpr_wchar_t *sTextW = new xpr_wchar_t[XPR_MAX_PATH * 6 + 1];
-    xpr_size_t sLen;
-    xpr_bool_t sFileUnicode;
-    xpr_ushort_t sCode;
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sMergeFileIo;
 
-    sMergeFile = _tfopen(mTextFile.c_str(), XPR_STRING_LITERAL("wt"));
-
-    if (XPR_IS_TRUE(mEncoding))
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sMergeFileIo.open(mTextFile.c_str(), sOpenMode);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _setmode(_fileno(sMergeFile), _O_BINARY);
+        xpr::TextFileWriter sTextFileWriter(sMergeFileIo);
 
-        sCode = 0xFEFF;
-        fwrite(&sCode, 2, 1, sMergeFile);
-    }
+        sTextFileWriter.setEncoding(XPR_IS_TRUE(mEncoding) ? xpr::CharSetUtf16 : xpr::CharSetMultiBytes);
+        sTextFileWriter.setEndOfLine(xpr::TextFileWriter::kUnixStyle);
+        sTextFileWriter.writeBom();
 
-    PathDeque::iterator sIterator;
-    std::tstring sPath;
+        PathDeque::iterator sIterator;
+        std::tstring sPath;
+        xpr_tchar_t *sText = new xpr_tchar_t[kTextBufferSize + 1];
+        xpr_ssize_t sTextReadLen;
 
-    sIterator = mPathDeque.begin();
-    for (; sIterator != mPathDeque.end(); ++sIterator)
-    {
-        if (IsStop() == XPR_TRUE)
-            break;
-
-        sPath = *sIterator;
-
-        sFile = _tfopen(sPath.c_str(), XPR_STRING_LITERAL("rt"));
-        if (XPR_IS_NULL(sFile))
-            continue;
-
-        fread(&sCode, 2, 1, sFile);
-
-        sFileUnicode = XPR_FALSE;
-        if (sCode == 0xFEFF)
-            sFileUnicode = XPR_TRUE;
-        else
-            fseek(sFile, 0, SEEK_SET);
-
-        while (true)
+        sIterator = mPathDeque.begin();
+        for (; sIterator != mPathDeque.end(); ++sIterator)
         {
             if (IsStop() == XPR_TRUE)
                 break;
 
-            if (feof(sFile) != 0)
-                break;
+            sPath = *sIterator;
 
-            if (XPR_IS_FALSE(mEncoding)) // ANSI
+            xpr::FileIo sFileIo;
+
+            sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+            if (XPR_RCODE_IS_ERROR(sRcode))
+                continue;
+
+            xpr::TextFileReader sTextFileReader(sFileIo);
+
+            if (sTextFileReader.detectEncoding() == xpr::CharSetNone)
+                sTextFileReader.setEncoding(xpr::CharSetMultiBytes);
+
+            do
             {
-                if (XPR_IS_FALSE(sFileUnicode))
-                {
-                    if (fgets(sTextA, XPR_MAX_PATH * 6, sFile) == NULL)
-                        break;
-                }
-                else
-                {
-                    sLen = fread(sTextW, 1, XPR_MAX_PATH, sFile);
-                    if (sLen <= 0)
-                        break;
+                sRcode = sTextFileReader.read(sText, kTextBufferSize, &sTextReadLen);
+                if (XPR_RCODE_IS_ERROR(sRcode) || sTextReadLen == 0)
+                    break;
 
-                    sLen /= 2;
-                    sTextW[sLen] = '\0';
+                sText[sTextReadLen] = 0;
 
-                    WideCharToMultiByte(CP_ACP, 0, sTextW, -1, sTextA, XPR_MAX_PATH * 6, NULL, NULL);
+                sTextFileWriter.write(sText,
+                                      sTextReadLen * sizeof(xpr_tchar_t),
+                                      (sizeof(xpr_tchar_t) == 2) ? xpr::CharSetUtf16 : xpr::CharSetMultiBytes);
 
-                    while (true)
-                    {
-                        xpr_char_t *s0D = strchr(sTextA, 0x0D);
-                        if (XPR_IS_NULL(s0D))
-                            break;
+            } while (IsStop() == XPR_FALSE);
 
-                        memmove(sTextA, sTextA+1, strlen(sTextA)+1);
-                    }
-                }
+            sFileIo.close();
 
-                fprintf(sMergeFile, "%s", sTextA);
-            }
-            else // UNICODE
             {
-                if (XPR_IS_FALSE(sFileUnicode))
-                {
-                    if (fgets(sTextA, XPR_MAX_PATH, sFile) == NULL)
-                        break;
-
-                    MultiByteToWideChar(CP_ACP, 0, sTextA, -1, sTextW, XPR_MAX_PATH * 6);
-                    xpr_wchar_t *s0D = sTextW;
-                    while (true)
-                    {
-                        s0D = wcschr(s0D, 0x000A);
-                        if (XPR_IS_NULL(s0D))
-                            break;
-
-                        memmove(s0D+1, s0D, (wcslen(s0D)+1) * sizeof(xpr_wchar_t));
-                        s0D[0] = 0x000D;
-                        s0D += 2;
-                    }
-                }
-                else
-                {
-                    sLen = fread(sTextW, 1, XPR_MAX_PATH, sFile);
-                    if (sLen <= 0)
-                        break;
-
-                    sLen /= 2;
-                    sTextW[sLen] = '\0';
-                }
-
-                fwrite(sTextW, wcslen(sTextW) * sizeof(xpr_wchar_t), 1, sMergeFile);
+                CsLocker sLocker(mCs);
+                mSucceededCount++;
             }
         }
 
-        fclose(sFile);
+        sMergeFileIo.close();
 
-        {
-            CsLocker sLocker(mCs);
-            mSucceededCount++;
-        }
+        XPR_SAFE_DELETE_ARRAY(sText);
     }
-
-    fclose(sMergeFile);
-
-    XPR_SAFE_DELETE_ARRAY(sTextA);
-    XPR_SAFE_DELETE_ARRAY(sTextW);
 
     {
         CsLocker sLocker(mCs);

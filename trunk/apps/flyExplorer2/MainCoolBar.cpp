@@ -460,17 +460,17 @@ void MainCoolBar::saveStateFile(void)
 
 typedef struct CoolBarStateHeader
 {
-    xpr_sint_t  cbSize;
-    xpr_uint_t nBandCount;
+    xpr_sint32_t cbSize;
+    xpr_uint32_t nBandCount;
 } CoolBarStateHeader;
 
 typedef struct CoolBarState
 {
-    xpr_sint_t cbSize;
-    xpr_uint_t wID;
-    xpr_uint_t cx;
-    xpr_uint_t fStyle;
-    xpr_uint_t cxMinChild;
+    xpr_sint32_t cbSize;
+    xpr_uint32_t wID;
+    xpr_uint32_t cx;
+    xpr_uint32_t fStyle;
+    xpr_uint32_t cxMinChild;
 } CoolBarState;
 
 #pragma pack(pop)
@@ -480,13 +480,19 @@ xpr_bool_t MainCoolBar::loadStateFile(const xpr_tchar_t *aPath)
     if (XPR_IS_NULL(aPath))
         return XPR_FALSE;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sReadSize;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(aPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
     CoolBarStateHeader sCoolBarStateHeader;
     sCoolBarStateHeader.cbSize = sizeof(sCoolBarStateHeader);
-    fread(&sCoolBarStateHeader, sCoolBarStateHeader.cbSize, 1, sFile);
+    sRcode = sFileIo.read(&sCoolBarStateHeader, sCoolBarStateHeader.cbSize, &sReadSize);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
 
     RebarBandInfo sRebarBandInfo;
     sRebarBandInfo.fMask = RBBIM_STYLE | RBBIM_SIZE | RBBIM_ID | RBBIM_CHILDSIZE;
@@ -499,7 +505,9 @@ xpr_bool_t MainCoolBar::loadStateFile(const xpr_tchar_t *aPath)
     sCount = (xpr_sint_t)sCoolBarStateHeader.nBandCount;
     for (i = 0; i < sCount; ++i)
     {
-        fread(&sCoolBarState, sizeof(sCoolBarState), 1, sFile);
+        sRcode = sFileIo.read(&sCoolBarState, sizeof(sCoolBarState), &sReadSize);
+        if (XPR_RCODE_IS_ERROR(sRcode))
+            break;
 
         sReBarCtrl.MoveBand(sReBarCtrl.IDToIndex(sCoolBarState.wID), i);
 
@@ -510,7 +518,7 @@ xpr_bool_t MainCoolBar::loadStateFile(const xpr_tchar_t *aPath)
         sReBarCtrl.SetBandInfo(i, &sRebarBandInfo);
     }
 
-    fclose(sFile);
+    sFileIo.close();
 
     return XPR_TRUE;
 }
@@ -520,8 +528,14 @@ void MainCoolBar::saveStateFile(const xpr_tchar_t *aPath)
     if (XPR_IS_NULL(aPath))
         return;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("wb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sWrittenSize;
+    xpr_sint_t  sOpenMode;
+    xpr::FileIo sFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(aPath, sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
     CReBarCtrl &sReBarCtrl = GetReBarCtrl();
@@ -537,7 +551,9 @@ void MainCoolBar::saveStateFile(const xpr_tchar_t *aPath)
     sCoolBarStateHeader.cbSize = sizeof(sCoolBarStateHeader);
     sCoolBarStateHeader.nBandCount = sCount;
 
-    fwrite(&sCoolBarStateHeader, sCoolBarStateHeader.cbSize, 1, sFile);
+    sRcode = sFileIo.write(&sCoolBarStateHeader, sCoolBarStateHeader.cbSize, &sWrittenSize);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return;
 
     CoolBarState sCoolBarState;
     sCoolBarState.cbSize = sizeof(sCoolBarState);
@@ -550,8 +566,10 @@ void MainCoolBar::saveStateFile(const xpr_tchar_t *aPath)
         sCoolBarState.cx         = sRebarBandInfo.cx;
         sCoolBarState.fStyle     = sRebarBandInfo.fStyle;
         sCoolBarState.cxMinChild = sRebarBandInfo.cxMinChild;
-        fwrite(&sCoolBarState, sCoolBarState.cbSize, 1, sFile);
+        sRcode = sFileIo.write(&sCoolBarState, sCoolBarState.cbSize, &sWrittenSize);
+        if (XPR_RCODE_IS_ERROR(sRcode))
+            break;
     }
 
-    fclose(sFile);
+    sFileIo.close();
 }

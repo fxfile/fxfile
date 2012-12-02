@@ -619,7 +619,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
     SplitPathExt(aPath, sDir, sFileName, sExt);
 
     IniFile sIniFile(aPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     typedef std::map<std::tstring, xpr_uint_t> GroupIdMap;
@@ -672,7 +672,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
         _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s_%s%s"), sDir, sFileName, sIterator->first.c_str(), sExt);
 
         IniFile sIniFile(sPath);
-        if (sIniFile.readFileW() == XPR_FALSE)
+        if (sIniFile.readFile() == XPR_FALSE)
             continue;
 
         for (i = 0; ; ++i)
@@ -751,7 +751,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
         }
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
@@ -782,7 +782,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
                 sIniFile.setValueS(_fxFileScrap, sEntry, sItem->mPath.c_str());
             }
 
-            sIniFile.writeFileW();
+            sIniFile.writeFile(xpr::CharSetUtf16);
         }
     }
 

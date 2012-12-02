@@ -38,7 +38,7 @@ static const xpr_tchar_t _fx_key_history[]  = XPR_STRING_LITERAL("History");
 xpr_bool_t History::loadFromFile(const xpr_tchar_t *aPath)
 {
     IniFile sIniFile(aPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t i, j;
@@ -141,7 +141,7 @@ void History::saveToFile(const xpr_tchar_t *aPath)
         sIniFile.setValueS(_fx_key_history, sEntry, sPath);
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 xpr_bool_t History::addBackward(LPITEMIDLIST aFullPidl)

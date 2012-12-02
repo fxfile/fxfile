@@ -98,25 +98,27 @@ unsigned FileList::OnEntryProc(void)
     xpr_bool_t sAttribute = XPR_TEST_BITS(mFlags, FlagsAttribute);
     xpr_bool_t sSplitChar = XPR_TEST_BITS(mFlags, FlagsSplitChar);
 
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-    xpr_char_t sAnsiSeparator[0xff] = {0};
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sFileIo;
+    const xpr_tchar_t *sSeparator = mSplitChar.c_str();
 
-    sInputBytes = mSplitChar.length() * sizeof(xpr_tchar_t);
-    sOutputBytes = sizeof(0xfe) * sizeof(xpr_tchar_t);
-    XPR_TCS_TO_MBS(mSplitChar.c_str(), &sInputBytes, sAnsiSeparator, &sOutputBytes);
-    sAnsiSeparator[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-    FILE *sFile = _tfopen(mTextFilePath.c_str(), XPR_STRING_LITERAL("wt"));
-    if (XPR_IS_NOT_NULL(sFile))
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(mTextFilePath.c_str(), sOpenMode);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
+        xpr::TextFileWriter sTextFileWriter(sFileIo);
+
+        sTextFileWriter.setEncoding((sizeof(xpr_tchar_t) == 2) ? xpr::CharSetUtf16 : xpr::CharSetMultiBytes);
+        sTextFileWriter.setEndOfLine(xpr::TextFileWriter::kUnixStyle);
+        sTextFileWriter.writeBom();
+
         mPathMaxLen += 6;
         mFileMaxLen += 6;
-        xpr_char_t sFormat[50];
-        sprintf(sFormat, "%%-%ds", XPR_IS_TRUE(sFrontPath) ? mPathMaxLen : mFileMaxLen);
+        xpr_tchar_t sFormat[50];
+        _stprintf(sFormat, XPR_STRING_LITERAL("%%-%ds"), XPR_IS_TRUE(sFrontPath) ? mPathMaxLen : mFileMaxLen);
 
         xpr_tchar_t sName[XPR_MAX_PATH + 1];
-        xpr_char_t sAnsiName[XPR_MAX_PATH + 1];
         DWORD sFileAttributes;
 
         PathDeque::iterator sIterator;
@@ -147,16 +149,17 @@ unsigned FileList::OnEntryProc(void)
                     *sExt = 0;
             }
 
-            sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
-            sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
-            sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
             if (XPR_IS_TRUE(sAttribute))
             {
                 // file name
-                if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s", sAnsiName);
-                else                         fprintf(sFile, sFormat, sAnsiName);
+                if (XPR_IS_TRUE(sSplitChar))
+                {
+                    sTextFileWriter.write(sName);
+                }
+                else
+                {
+                    sTextFileWriter.writeFormat(sFormat, sName);
+                }
 
                 // file size
                 if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
@@ -164,46 +167,55 @@ unsigned FileList::OnEntryProc(void)
                 else
                     GetFileSize(sPath.c_str(), sName, XPR_MAX_PATH);
 
-                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
-                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
-                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-                if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
-                else                         fprintf(sFile, " %20s", sAnsiName);
+                if (XPR_IS_TRUE(sSplitChar))
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL("%s%s"), sSeparator, sName);
+                }
+                else
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL(" %20s"), sName);
+                }
 
                 // file type
                 GetFileType(sPath.c_str(), sName);
 
-                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
-                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
-                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-                if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
-                else                         fprintf(sFile, " %-20s", sAnsiName);
+                if (XPR_IS_TRUE(sSplitChar))
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL("%s%s"), sSeparator, sName);
+                }
+                else
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL(" %-20s"), sName);
+                }
 
                 // file time
                 GetFileTime(sPath.c_str(), sName);
 
-                sInputBytes = _tcslen(sName) * sizeof(xpr_tchar_t);
-                sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-                XPR_TCS_TO_MBS(sName, &sInputBytes, sAnsiName, &sOutputBytes);
-                sAnsiName[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-                if (XPR_IS_TRUE(sSplitChar)) fprintf(sFile, "%s%s", sAnsiSeparator, sAnsiName);
-                else                         fprintf(sFile, " %-20s", sAnsiName);
+                if (XPR_IS_TRUE(sSplitChar))
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL("%s%s"), sSeparator, sName);
+                }
+                else
+                {
+                    sTextFileWriter.writeFormat(XPR_STRING_LITERAL(" %-20s"), sName);
+                }
             }
             else
             {
-                fprintf(sFile, "%s", sAnsiName);
+                sTextFileWriter.writeFormat(XPR_STRING_LITERAL("%s"), sName);
             }
 
-            if (XPR_IS_TRUE(sByLine)) fprintf(sFile, "\n");
-            else                      fprintf(sFile, " ");
+            if (XPR_IS_TRUE(sByLine))
+            {
+                sTextFileWriter.write(XPR_STRING_LITERAL("\n"));
+            }
+            else
+            {
+                sTextFileWriter.write(XPR_STRING_LITERAL(" "));
+            }
         }
 
-        fclose(sFile);
+        sFileIo.close();
 
         {
             CsLocker sLocker(mCs);

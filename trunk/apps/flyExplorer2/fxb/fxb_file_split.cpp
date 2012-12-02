@@ -127,9 +127,6 @@ unsigned FileSplit::OnEntryProc(void)
         xpr_sint_t sOpenMode;
         xpr::FileIo sTargetFileIo;
         std::tstring sFileName;
-        xpr_char_t sFileNameA[XPR_MAX_PATH + 1];
-        xpr_size_t sInputBytes;
-        xpr_size_t sOutputBytes;
 
         xpr_sint_t sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
@@ -144,11 +141,6 @@ unsigned FileSplit::OnEntryProc(void)
         sBuffer = new xpr_byte_t[mBufferSize];
         sFileName = mPath.substr(mPath.rfind(XPR_STRING_LITERAL('\\'))+1);
         sIndex = 1;
-
-        sInputBytes = sFileName.length() * sizeof(xpr_tchar_t);
-        sOutputBytes = XPR_MAX_PATH * sizeof(xpr_char_t);
-        XPR_TCS_TO_MBS(sFileName.c_str(), &sInputBytes, sFileNameA, &sOutputBytes);
-        sFileNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
         while (IsStop() == XPR_FALSE)
         {
@@ -227,20 +219,37 @@ unsigned FileSplit::OnEntryProc(void)
 
         sFileIo.close();
 
-        FILE *sFile = XPR_NULL;
-
         if (IsStop() == XPR_FALSE && XPR_IS_NOT_NULL(sCrcCode))
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s.crc"), mDestDir.c_str(), sFileName.c_str());
 
-            sFile = _tfopen(sPath, XPR_STRING_LITERAL("wt"));
-            if (XPR_IS_NOT_NULL(sFile))
+            xpr_tchar_t sCrcCodeString[0xff] = {0};
+            xpr_size_t sInputBytes;
+            xpr_size_t sOutputBytes;
+
+            sInputBytes = strlen(sCrcCode) * sizeof(xpr_char_t);
+            sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
+            XPR_MBS_TO_TCS(sCrcCode, &sInputBytes, sCrcCodeString, &sOutputBytes);
+            sCrcCodeString[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+            xpr::FileIo sCrcFileIo;
+
+            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+            sRcode = sCrcFileIo.open(sPath, sOpenMode);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
             {
-                fprintf(sFile, "filename=%s\n", sFileNameA);
-                fprintf(sFile, "size=%I64u\n", sFileSize);
-                fprintf(sFile, "crc32=%s\n", sCrcCode);
-                fclose(sFile);
+                xpr::TextFileWriter sTextFileWriter(sCrcFileIo);
+
+                sTextFileWriter.setEncoding((sizeof(xpr_tchar_t) == 2) ? xpr::CharSetUtf16 : xpr::CharSetMultiBytes);
+                sTextFileWriter.setEndOfLine(xpr::TextFileWriter::kUnixStyle);
+                sTextFileWriter.writeBom();
+
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("filename=%s"), sFileName.c_str());
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("size=%I64u"), sFileSize);
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("crc32=%s"), sCrcCodeString);
+
+                sFileIo.close();
             }
         }
 
@@ -249,27 +258,36 @@ unsigned FileSplit::OnEntryProc(void)
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s.bat"), mDestDir.c_str(), sFileName.c_str());
 
-            sFile = _tfopen(sPath, XPR_STRING_LITERAL("wt"));
-            if (XPR_IS_NOT_NULL(sFile))
-            {
-                const xpr_char_t *sTempFile = "fxCombine.tmp";
+            xpr::FileIo sBatFileIo;
 
-                fprintf(sFile, "@echo off\n");
-                fprintf(sFile, "echo.\n");
-                fprintf(sFile, "echo Created by flyExplorer (http://www.flychk.com)\n");
-                fprintf(sFile, "echo.\n");
-                fprintf(sFile, "echo File Combine...\n");
-                fprintf(sFile, "echo.\n");
-                fprintf(sFile, "copy /b \"%s.001\" \"%s\"\n", sFileNameA, sTempFile);
+            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+            sRcode = sBatFileIo.open(sPath, sOpenMode);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                xpr::TextFileWriter sTextFileWriter(sBatFileIo);
+
+                sTextFileWriter.setEncoding(xpr::CharSetMultiBytes);
+                sTextFileWriter.setEndOfLine(xpr::TextFileWriter::kUnixStyle);
+                sTextFileWriter.writeBom();
+
+                const xpr_tchar_t *sTempFile = XPR_STRING_LITERAL("fxCombine.tmp");
+
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("@echo off"));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo."));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo Created by flyExplorer (http://www.flychk.com)"));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo."));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo File Combine..."));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo."));
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("copy /b \"%s.001\" \"%s\""), sFileName.c_str(), sTempFile);
 
                 xpr_size_t j;
                 for (j = 2; j <= mSplitedCount; ++j)
-                    fprintf(sFile, "copy /b \"%s\" + \"%s.%03d\" \"%s\"\n", sTempFile, sFileNameA, j, sTempFile);
+                    sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("copy /b \"%s\" + \"%s.%03d\" \"%s\""), sTempFile, sFileName.c_str(), j, sTempFile);
 
-                fprintf(sFile, "ren \"%s\" \"%s\"\n", sTempFile, sFileNameA);
-                fprintf(sFile, "echo Done...\n");
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("ren \"%s\" \"%s\""), sTempFile, sFileName.c_str());
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("echo Done..."));
 
-                fclose(sFile);
+                sBatFileIo.close();
             }
         }
 

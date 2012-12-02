@@ -1233,7 +1233,7 @@ void CSizingControlBar::LoadStateIni(LPCTSTR lpszProfileName)
 	_stprintf(szPath+_tcslen(szPath), _T("\\%s\\Bar-%d.ini"), lpszProfileName, GetDlgCtrlID());
 
 	fxb::IniFile sIniFile(szPath);
-	sIniFile.readFileW();
+	sIniFile.readFile();
 
 	LoadStateIni(&sIniFile);
 }
@@ -1257,7 +1257,7 @@ void CSizingControlBar::SaveStateIni(LPCTSTR lpszProfileName)
 
 	SaveStateIni(&sIniFile);
 
-	sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 void CSizingControlBar::GlobalLoadStateIni(CFrameWnd* pFrame, LPCTSTR lpszProfileName)

@@ -600,7 +600,7 @@ void SearchDlg::loadUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
     CfgPath::instance().getLoadPath(CfgPath::TypeSearchDir, sPath, XPR_MAX_PATH);
 
     fxb::IniFile sIniFile(sPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return;
 
     xpr_size_t i, j;
@@ -712,7 +712,7 @@ void SearchDlg::saveUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
         i++;
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 void SearchDlg::getUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)

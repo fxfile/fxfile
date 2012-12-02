@@ -410,7 +410,7 @@ xpr_bool_t CfgPath::load(void)
     _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer\\cfgpath.ini"));
 
     fxb::IniFile sIniFile(sPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
     {
         const xpr_tchar_t *sDefPath = CfgPath::getDefPath(TypeAll);
         if (XPR_IS_NOT_NULL(sDefPath))
@@ -518,7 +518,7 @@ xpr_bool_t CfgPath::save(void)
         }
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }

@@ -161,7 +161,7 @@ unsigned FileCombine::OnEntryProc(void)
             if (IsStop() == XPR_FALSE && IsExistFile(sCrcFile.c_str()) == XPR_TRUE)
             {
                 IniFile sIniFile(sCrcFile.c_str());
-                sIniFile.readFileA();
+                sIniFile.readFile();
 
                 const xpr_tchar_t *sTargetFileName = sIniFile.getValueS(XPR_STRING_LITERAL(""), XPR_STRING_LITERAL("filename"), XPR_NULL);
                 const xpr_tchar_t *sFileSize       = sIniFile.getValueS(XPR_STRING_LITERAL(""), XPR_STRING_LITERAL("size"),     XPR_NULL);

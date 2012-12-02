@@ -367,7 +367,7 @@ xpr_bool_t SizeFormat::loadFromFile(const xpr_tchar_t *aPath)
     clear();
 
     IniFile sIniFile(aPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t sCount = sIniFile.getKeyCount();
@@ -435,7 +435,7 @@ xpr_bool_t SizeFormat::saveToFile(const xpr_tchar_t *aPath)
         sIniFile.setValueB  (sKey, kRoundOff,            sItem->mRoundOff);
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }
