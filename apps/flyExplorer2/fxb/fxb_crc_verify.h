@@ -32,7 +32,7 @@ public:
         VerifyResultEqualed,
     };
 
-    typedef char CrcVal[64];
+    typedef xpr_char_t CrcVal[64];
 
     typedef struct VerifyFile
     {

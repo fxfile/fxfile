@@ -20,8 +20,6 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-#define BUFFER_SIZE 260
-
 CrcVerify::CrcVerify(void)
     : mHwnd(XPR_NULL), mMsg(XPR_NULL)
     , mStatus(StatusNone)
@@ -54,18 +52,20 @@ void CrcVerify::addCrcPath(const xpr_tchar_t *aPath)
 
 void CrcVerify::init(void)
 {
-    FILE *sFile;
-    xpr_char_t *sCode;
-    xpr_char_t *sFileNameA;
-    xpr_tchar_t sFileName[XPR_MAX_PATH + 1];
+    xpr_rcode_t sRcode;
+    xpr::FileIo sFileIo;
+    xpr_tchar_t *sCode;
+    xpr_tchar_t *sFileName;
     xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
     std::tstring sCrcDir;
     std::tstring sCrcFileName;
-    xpr_char_t sBuffer[BUFFER_SIZE + 1];
-    xpr_sint_t sLen, sCount2 = 0;
+    const xpr_size_t sMaxTextLineLen = 1024;
+    xpr_tchar_t sTextLine[sMaxTextLineLen + 1];
+    xpr_ssize_t sTextReadLen = 0;
+    xpr_sint_t sCount2 = 0;
     VerifyFile sVerifyFile;
-    const xpr_char_t *sWhitespace;
+    const xpr_tchar_t *sWhitespace;
 
     CrcFileDeque::iterator sIterator;
 
@@ -79,73 +79,91 @@ void CrcVerify::init(void)
         sCrcDir      = sCrcFile.mPath.substr(0, sFind);
         sCrcFileName = sCrcFile.mPath.substr(sFind + 1);
 
-        sFile = _tfopen(sCrcFile.mPath.c_str(), XPR_STRING_LITERAL("rt"));
+        sRcode = sFileIo.open(sCrcFile.mPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+        if (XPR_RCODE_IS_ERROR(sRcode))
+            continue;
+
         sVerifyFile.clear();
 
         // Get CRC CheckSum Method
-        sCount2 = 0;
-        while (fgets(sBuffer, BUFFER_SIZE, sFile) != XPR_NULL)
         {
-            if (sCount2 > 20)
-                break;
+            xpr::TextFileReader sTextFileReader(sFileIo);
 
-            if (sBuffer[0] == ';')
-                continue;
+            if (sTextFileReader.detectEncoding() == xpr::CharSetNone)
+                sTextFileReader.setEndOfLine(xpr::CharSetMultiBytes);
 
-            sLen = (xpr_sint_t)strlen(sBuffer);
+            sCount2 = 0;
 
-            sWhitespace = strchr(sBuffer, ' ');
-            if (XPR_IS_NOT_NULL(sWhitespace))
+            do
             {
-                if ((sWhitespace - sBuffer) == 32)
-                    sVerifyFile.mMethod = 1;
-            }
+                sRcode = sTextFileReader.readLine(sTextLine, sMaxTextLineLen, &sTextReadLen);
+                if (XPR_RCODE_IS_ERROR(sRcode) || sTextReadLen < 0)
+                    break;
 
-            sCount2++;
+                if (sCount2 > 20)
+                    break;
+
+                if (sTextLine[0] == ';')
+                    continue;
+
+                sWhitespace = _tcschr(sTextLine, ' ');
+                if (XPR_IS_NOT_NULL(sWhitespace))
+                {
+                    if ((sWhitespace - sTextLine) == 32)
+                        sVerifyFile.mMethod = 1;
+                }
+
+                sCount2++;
+            } while (true);
         }
 
         // Get File List, CRC Code
-        fseek(sFile, 0, SEEK_SET);
-        while (fgets(sBuffer, BUFFER_SIZE, sFile) != XPR_NULL)
+        sFileIo.seekToBegin();
+
+        xpr::TextFileReader sTextFileReader(sFileIo);
+
+        if (sTextFileReader.detectEncoding() == xpr::CharSetMultiBytes)
+            sTextFileReader.setEncoding(xpr::CharSetMultiBytes);
+
+        do
         {
-            if (strlen(sBuffer) < 8)
+            sRcode = sTextFileReader.readLine(sTextLine, sMaxTextLineLen, &sTextReadLen);
+            if (XPR_RCODE_IS_ERROR(sRcode) || sTextReadLen < 0)
+                break;
+            
+            if (sTextReadLen < 8)
                 continue;
 
-            if (sBuffer[0] == ';')
+            if (sTextLine[0] == ';')
                 continue;
 
             if (sVerifyFile.mMethod == 0)
             {
-                sLen = (xpr_sint_t)strlen(sBuffer);
-                sFileNameA = sBuffer;
-                sFileNameA[sLen-10] = '\0';
-                sCode = sBuffer + sLen - 9;
+                sFileName = sTextLine;
+                sFileName[sTextReadLen - 9] = '\0';
+                sCode = sTextLine + sTextReadLen - 8;
                 sCode[8] = '\0';
             }
             else
             {
-                sCode = sBuffer;
+                sCode = sTextLine;
                 sCode[32] = '\0';
-                sFileNameA = sBuffer + 33;
-                sLen = (xpr_sint_t)strlen(sFileNameA);
-                sFileNameA[sLen - 1] = '\0';
+                sFileName = sTextLine + 33;
             }
-
-            sInputBytes = strlen(sFileNameA) * sizeof(xpr_char_t);
-            sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
-            XPR_MBS_TO_TCS(sFileNameA, &sInputBytes, sFileName, &sOutputBytes);
-            sFileName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
             sVerifyFile.mPath  = sCrcDir;
             sVerifyFile.mPath += XPR_STRING_LITERAL('\\');
             sVerifyFile.mPath += sFileName;
 
-            strcpy(sVerifyFile.mCrcCode, sCode);
+            sInputBytes = _tcslen(sCode) * sizeof(xpr_tchar_t);
+            sOutputBytes = sizeof(CrcVal) - sizeof(xpr_char_t);
+            XPR_TCS_TO_MBS(sCode, &sInputBytes, sVerifyFile.mCrcCode, &sOutputBytes);
+            sVerifyFile.mCrcCode[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
             sCrcFile.mVerifyFileDeque.push_back(sVerifyFile);
-        }
+        } while (true);
 
-        fclose(sFile);
+        sFileIo.close();
     }
 }
 

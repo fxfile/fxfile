@@ -45,365 +45,118 @@ void IniFile::setPath(const xpr_tchar_t *aIniPath)
 
 xpr_bool_t IniFile::readFile(void)
 {
-#ifdef XPR_CFG_UNICODE
-    return readFileW();
-#else
-    return readFileA();
-#endif
-}
+    xpr_rcode_t sRcode;
+    xpr::FileIo sFileIo;
+    xpr_ssize_t sReadLen;
 
-xpr_bool_t IniFile::writeFile(void)
-{
-#ifdef XPR_CFG_UNICODE
-    return writeFileW();
-#else
-    return writeFileA();
-#endif
-}
-
-xpr_bool_t IniFile::readFileA(void)
-{
-    FILE *sFile = _tfopen(mPath, XPR_STRING_LITERAL("rt"));
-    if (XPR_IS_NULL(sFile))
+    sRcode = sFileIo.open(mPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
-    xpr_char_t sLineA[MAX_FGETS_LINE + 1] = {0};
+    xpr::TextFileReader sTextFileReader(sFileIo);
+
+    if (sTextFileReader.detectEncoding() == xpr::CharSetNone)
+        sTextFileReader.setEncoding(xpr::CharSetMultiBytes);
+
     xpr_tchar_t sLine[MAX_FGETS_LINE + 1] = {0};
     xpr_tchar_t sKey[MAX_KEY + 1] = {0};
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-    xpr_char_t sKeyA[MAX_KEY + 1] = {0};
-    xpr_char_t *sSubA, *sSub2A;
-    xpr_tchar_t sSub[MAX_FGETS_LINE + 1] = {0};
+    xpr_tchar_t *sSub, *sSub2;
 
-    sKeyA[0] = '\0';
-
-    while (fgets(sLineA, MAX_FGETS_LINE, sFile))
+    do
     {
-        if (sLineA[strlen(sLineA) - 1] == '\r')
-            sLineA[strlen(sLineA) - 1] = '\0';
-
-        if (sLineA[strlen(sLineA) - 1] == '\n')
-            sLineA[strlen(sLineA) - 1] = '\0';
-
-        if (sLineA[0] != 0)
-        {
-            if (isprint(sLineA[0]) == XPR_FALSE)
-            {
-                fclose(sFile);
-                return XPR_FALSE;
-            }
-
-            switch (sLineA[0])
-            {
-            case '[':
-                sSubA = strchr(sLineA, ']');
-                if (XPR_IS_NOT_NULL(sSubA))
-                {
-                    sSubA[0] = '\0';
-
-                    strcpy(sKeyA, sLineA+1);
-
-                    sInputBytes = strlen(sLineA + 1) * sizeof(xpr_char_t);
-                    sOutputBytes = MAX_KEY * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA + 1, &sInputBytes, sKey, &sOutputBytes);
-                    sKey[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    addKeyName(sKey);
-                }
-                break;
-
-            case ';':
-            case '#':
-                {
-                    sInputBytes = strlen(sLineA + 1) * sizeof(xpr_char_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA + 1, &sInputBytes, sLine, &sOutputBytes);
-                    sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    setComment(sLine);
-                    break;
-                }
-
-            default:
-                sSubA = strchr(sLineA, '=');
-                if (XPR_IS_NOT_NULL(sSubA))
-                {
-                    sSub2A = sSubA;
-
-                    if (sSub2A[0] == ' ')
-                    {
-                        while (sSub2A[0] == ' ')
-                            sSub2A--;
-                        sSub2A++;
-                    }
-                    sSub2A[0] = '\0';
-
-                    while (sSubA[0] == ' ')
-                        sSubA++;
-                    sSubA++;
-
-                    sInputBytes = strlen(sLineA) * sizeof(xpr_char_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sLineA, &sInputBytes, sLine, &sOutputBytes);
-                    sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    sInputBytes = strlen(sSubA) * sizeof(xpr_char_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_MBS_TO_TCS(sSubA, &sInputBytes, sSub, &sOutputBytes);
-                    sSub[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    setValueS(sKey, sLine, sSub);
-                }
-                break;
-            }
-        }
-    }
-
-    fclose(sFile);
-
-    return mKeys.empty() ? XPR_FALSE : XPR_TRUE;
-}
-
-xpr_bool_t IniFile::readFileW(void)
-{
-    FILE *sFile = _tfopen(mPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
-        return XPR_FALSE;
-
-    xpr_wchar_t sLineW[MAX_FGETS_LINE + 1] = {0};
-    xpr_tchar_t sLine[MAX_FGETS_LINE + 1] = {0};
-
-    fread(sLineW, 2, 1, sFile);
-    if (sLineW[0] != 0xFEFF)
-    {
-        fclose(sFile);
-        return XPR_FALSE;
-    }
-
-    xpr_size_t sLen;
-    xpr_size_t sRead;
-    xpr_tchar_t sKey[MAX_KEY + 1] = {0};
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-    xpr_wchar_t *sSubW, *sSub2W;
-    xpr_tchar_t sSub[MAX_FGETS_LINE + 1] = {0};
-
-    sKey[0] = 0;
-
-    while (true)
-    {
-        sLen = 0;
-
-        while (true)
-        {
-            sRead = fread(sLineW + sLen, sizeof(xpr_wchar_t), 1, sFile);
-            if (sRead > 0)
-                sLen++;
-
-            if (sLen >= 1 && sLineW[sLen-1] == L'\n')
-            {
-                sLineW[sLen-1] = L'\0';
-                sLen--;
-
-                if (sLen >= 1 && sLineW[sLen-1] == L'\r')
-                {
-                    sLineW[sLen-1] = L'\0';
-                    sLen--;
-                }
-
-                break;
-            }
-
-            if (sRead <= 0)
-                break;
-        }
-
-        if (sLineW[0] != 0)
-        {
-            switch (sLineW[0])
-            {
-            case L'[':
-                sSubW = wcsrchr(sLineW, L']'); // ex) [c:\[123]]
-                if (XPR_IS_NOT_NULL(sSubW))
-                {
-                    sSubW[0] = XPR_STRING_LITERAL('\0');
-
-                    sInputBytes = wcslen(sLineW + 1) * sizeof(xpr_wchar_t);
-                    sOutputBytes = MAX_KEY * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW + 1, &sInputBytes, sKey, &sOutputBytes);
-                    sKey[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    addKeyName(sKey);
-                }
-                break;
-
-            case L';':
-            case L'#':
-                {
-                    sInputBytes = wcslen(sLineW + 1) * sizeof(xpr_wchar_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW + 1, &sInputBytes, sLine, &sOutputBytes);
-                    sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    setComment(sLine);
-                    break;
-                }
-
-            default:
-                sSubW = wcschr(sLineW, L'=');
-                if (XPR_IS_NOT_NULL(sSubW))
-                {
-                    sSub2W = sSubW;
-
-                    if (sSub2W[0] == L' ')
-                    {
-                        while (sSub2W[0] == L' ')
-                            sSub2W--;
-                        sSub2W++;
-                    }
-                    sSub2W[0] = L'\0';
-
-                    while (sSubW[0] == L' ')
-                        sSubW++;
-                    sSubW++;
-
-                    sInputBytes = wcslen(sLineW) * sizeof(xpr_wchar_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sLineW, &sInputBytes, sLine, &sOutputBytes);
-                    sLine[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    sInputBytes = wcslen(sSubW) * sizeof(xpr_wchar_t);
-                    sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_tchar_t);
-                    XPR_UTF16_TO_TCS(sSubW, &sInputBytes, sSub, &sOutputBytes);
-                    sSub[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-
-                    setValueS(sKey, sLine, sSub);
-                }
-                break;
-            }
-        }
-
-        if (sRead <= 0)
+        sRcode = sTextFileReader.readLine(sLine, MAX_FGETS_LINE, &sReadLen);
+        if (XPR_RCODE_IS_ERROR(sRcode) || sReadLen < 0)
             break;
-    }
 
-    fclose(sFile);
+        if (sLine[0] == 0)
+            continue;
+
+        if (_istprint(sLine[0]) == XPR_FALSE)
+        {
+            sFileIo.close();
+            return XPR_FALSE;
+        }
+
+        switch (sLine[0])
+        {
+        case '[':
+            sSub = _tcschr(sLine, ']');
+            if (XPR_IS_NOT_NULL(sSub))
+            {
+                sSub[0] = '\0';
+
+                _tcscpy(sKey, sLine + 1);
+
+                addKeyName(sKey);
+            }
+            break;
+
+        case ';':
+        case '#':
+            {
+                setComment(sLine);
+                break;
+            }
+
+        default:
+            sSub = _tcschr(sLine, '=');
+            if (XPR_IS_NOT_NULL(sSub))
+            {
+                sSub2 = sSub;
+
+                if (sSub2[0] == ' ')
+                {
+                    while (sSub2[0] == ' ')
+                        sSub2--;
+                    sSub2++;
+                }
+                sSub2[0] = '\0';
+
+                while (sSub[0] == ' ')
+                    sSub++;
+                sSub++;
+
+                setValueS(sKey, sLine, sSub);
+            }
+            break;
+        }
+    } while (true);
+
+    sFileIo.close();
 
     return mKeys.empty() ? XPR_FALSE : XPR_TRUE;
 }
 
-xpr_bool_t IniFile::writeFileA(void)
+xpr_bool_t IniFile::writeFile(xpr::CharSet aCharSet)
 {
-    FILE *sFile = _tfopen(mPath, XPR_STRING_LITERAL("wt"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_sint_t sOpenMode;
+    xpr::FileIo sFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(mPath, sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
+
+    xpr::TextFileWriter sTextFileWriter(sFileIo);
+    sTextFileWriter.setEncoding(aCharSet);
+    sTextFileWriter.setEndOfLine(xpr::TextFileWriter::kWinStyle);
+    sTextFileWriter.writeBom();
 
     {
         xpr_tchar_t *sComment;
-        xpr_char_t sCommentA[MAX_FGETS_LINE + 1];
-        xpr_size_t sInputBytes;
-        xpr_size_t sOutputBytes;
 
         std::vector<xpr_tchar_t *>::iterator sIterator = mComments.begin();
         for (; sIterator != mComments.end(); ++sIterator)
         {
             sComment = *sIterator;
 
-            sInputBytes = _tcslen(sComment) * sizeof(xpr_tchar_t);
-            sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-            XPR_TCS_TO_MBS(sComment, &sInputBytes, sCommentA, &sOutputBytes);
-            sCommentA[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-            fprintf(sFile, ";%s%s", sCommentA, XPR_EOLA);
-        }
-
-        if (mComments.empty() == false)
-            fprintf(sFile, "%s", XPR_EOLA);
-    }
-
-    {
-        std::vector<Key>::iterator sIterator;
-        std::vector<Entry>::iterator sEntryIterator;
-
-        xpr_char_t sNameA[MAX_FGETS_LINE + 1];
-        xpr_char_t sEntryA[MAX_FGETS_LINE + 1];
-        xpr_char_t sValueA[MAX_FGETS_LINE + 1];
-        xpr_size_t sInputBytes;
-        xpr_size_t sOutputBytes;
-
-        sIterator = mKeys.begin();
-        for (; sIterator != mKeys.end(); ++sIterator)
-        {
-            sInputBytes = _tcslen(sIterator->mName) * sizeof(xpr_tchar_t);
-            sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-            XPR_TCS_TO_MBS(sIterator->mName, &sInputBytes, sNameA, &sOutputBytes);
-            sNameA[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-            fprintf(sFile, "[%s]%s", sNameA, XPR_EOLA);
-
-            sEntryIterator = sIterator->mEntryVector.begin();
-            for (; sEntryIterator != sIterator->mEntryVector.end(); ++sEntryIterator)
-            {
-                sInputBytes = _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t);
-                sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-                XPR_TCS_TO_MBS(sEntryIterator->mEntry, &sInputBytes, sEntryA, &sOutputBytes);
-                sEntryA[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-                sInputBytes = _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t);
-                sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_char_t);
-                XPR_TCS_TO_MBS(sEntryIterator->mValue, &sInputBytes, sValueA, &sOutputBytes);
-                sValueA[sOutputBytes / sizeof(xpr_char_t)] = 0;
-
-                fprintf(sFile, "%s=%s%s", sEntryA, sValueA, XPR_EOLA);
-            }
-
-            fprintf(sFile, "%s", XPR_EOLA);
-        }
-    }
-
-    fclose(sFile);
-
-    return XPR_TRUE;
-}
-
-xpr_bool_t IniFile::writeFileW(void)
-{
-    FILE *sFile = _tfopen(mPath, XPR_STRING_LITERAL("wb"));
-    if (XPR_IS_NULL(sFile))
-        return XPR_FALSE;
-
-    xpr_uint_t sCode = 0xFEFF;
-    fwrite(&sCode, 2, 1, sFile);
-
-    xpr_tchar_t *sComment;
-    xpr_wchar_t sKeyW[MAX_KEY + 1];
-    xpr_wchar_t sEntryW[MAX_ENTRY + 1];
-    xpr_wchar_t sValueW[MAX_VALUE + 1];
-    xpr_wchar_t sCommentW[MAX_FGETS_LINE + 1];
-    xpr_wchar_t sLineW[MAX_FGETS_LINE + 1];
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-
-    {
-        std::vector<xpr_tchar_t *>::iterator sIterator = mComments.begin();
-        for (; sIterator != mComments.end(); ++sIterator)
-        {
-            sComment = *sIterator;
-
-            sInputBytes = _tcslen(sComment) * sizeof(xpr_tchar_t);
-            sOutputBytes = MAX_FGETS_LINE * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(sComment, &sInputBytes, sCommentW, &sOutputBytes);
-            sCommentW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
-
-            swprintf(sLineW, XPR_WIDE_STRING_LITERAL(";%s%s"), sCommentW, XPR_EOLW);
-            fwrite(sLineW, wcslen(sLineW)*sizeof(xpr_wchar_t), 1, sFile);
+            sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL(";%s"), sComment);
         }
 
         if (mComments.empty() == false)
         {
-            swprintf(sLineW, XPR_WIDE_STRING_LITERAL("%s"), XPR_EOLW);
-            fwrite(sLineW, wcslen(sLineW)*sizeof(xpr_wchar_t), 1, sFile);
+            sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL(""));
         }
     }
 
@@ -411,40 +164,31 @@ xpr_bool_t IniFile::writeFileW(void)
         std::vector<Key>::iterator sIterator;
         std::vector<Entry>::iterator sEntryIterator;
 
+        xpr_tchar_t *sName;
+        xpr_tchar_t *sEntry;
+        xpr_tchar_t *sValue;
+
         sIterator = mKeys.begin();
         for (; sIterator != mKeys.end(); ++sIterator)
         {
-            sInputBytes = _tcslen(sIterator->mName) * sizeof(xpr_tchar_t);
-            sOutputBytes = MAX_KEY * sizeof(xpr_wchar_t);
-            XPR_TCS_TO_UTF16(sIterator->mName, &sInputBytes, sKeyW, &sOutputBytes);
-            sKeyW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+            sName = sIterator->mName;
 
-            swprintf(sLineW, XPR_WIDE_STRING_LITERAL("[%s]%s"), sKeyW, XPR_EOLW);
-            fwrite(sLineW, wcslen(sLineW)*sizeof(xpr_wchar_t), 1, sFile);
+            sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("[%s]"), sName);
 
             sEntryIterator = sIterator->mEntryVector.begin();
             for (; sEntryIterator != sIterator->mEntryVector.end(); ++sEntryIterator)
             {
-                sInputBytes = _tcslen(sEntryIterator->mEntry) * sizeof(xpr_tchar_t);
-                sOutputBytes = MAX_ENTRY * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sEntryIterator->mEntry, &sInputBytes, sEntryW, &sOutputBytes);
-                sEntryW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+                sEntry = sEntryIterator->mEntry;
+                sValue = sEntryIterator->mValue;
 
-                sInputBytes = _tcslen(sEntryIterator->mValue) * sizeof(xpr_tchar_t);
-                sOutputBytes = MAX_VALUE * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sEntryIterator->mValue, &sInputBytes, sValueW, &sOutputBytes);
-                sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
-
-                swprintf(sLineW, XPR_WIDE_STRING_LITERAL("%s=%s%s"), sEntryW, sValueW, XPR_EOLW);
-                fwrite(sLineW, wcslen(sLineW)*sizeof(xpr_wchar_t), 1, sFile);
+                sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL("%s=%s"), sEntry, sValue);
             }
 
-            swprintf(sLineW, XPR_WIDE_STRING_LITERAL("%s"), XPR_EOLW);
-            fwrite(sLineW, wcslen(sLineW)*sizeof(xpr_wchar_t), 1, sFile);
+            sTextFileWriter.writeFormatLine(XPR_STRING_LITERAL(""));
         }
     }
 
-    fclose(sFile);
+    sFileIo.close();
 
     return XPR_TRUE;
 }

@@ -68,7 +68,7 @@ void RecentFileListIni::WriteList(void)
 
     delete[] sEntry;
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 void RecentFileListIni::ReadList(void)
@@ -81,7 +81,7 @@ void RecentFileListIni::ReadList(void)
     CfgPath::instance().getLoadPath(CfgPath::TypeRecent, sPath, XPR_MAX_PATH);
 
     fxb::IniFile sIniFile(sPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return;
 
     xpr_sint_t sMRU;

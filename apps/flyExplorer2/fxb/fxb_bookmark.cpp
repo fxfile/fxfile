@@ -392,7 +392,7 @@ void BookmarkMgr::clear(void)
 xpr_bool_t BookmarkMgr::loadFromFile(const xpr_tchar_t *lpcszPath)
 {
     IniFile sIniFile(lpcszPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t sCount = sIniFile.getKeyCount();
@@ -491,7 +491,7 @@ xpr_bool_t BookmarkMgr::saveToFile(const xpr_tchar_t *lpcszPath)
             sIniFile.setValueI(sKey, XPR_STRING_LITERAL("HotKey"), sHotKey);
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }

@@ -62,7 +62,7 @@ xpr_bool_t Option::loadFromFile(const xpr_tchar_t *aFileName)
         CfgPath::instance().getLoadPath(CfgPath::TypeMain, sPath, XPR_MAX_PATH);
 
         fxb::IniFile sIniFile(sPath);
-        if (sIniFile.readFileW() == XPR_FALSE)
+        if (sIniFile.readFile() == XPR_FALSE)
             sResult = XPR_FALSE;
 
         {
@@ -183,7 +183,7 @@ xpr_bool_t Option::loadFromFile(const xpr_tchar_t *aFileName)
     // config.ini
     {
         fxb::IniFile sIniFile(aFileName);
-        if (sIniFile.readFileW() == XPR_FALSE)
+        if (sIniFile.readFile() == XPR_FALSE)
             sResult = XPR_FALSE;
 
         xpr_uint_t sMajorVer = 0;
@@ -570,7 +570,7 @@ xpr_bool_t Option::saveToFile(const xpr_tchar_t *aFileName, xpr_bool_t aMainOpti
             }
         }
 
-        sIniFile.writeFileW();
+        sIniFile.writeFile(xpr::CharSetUtf16);
         return XPR_TRUE;
     }
 
@@ -806,7 +806,7 @@ xpr_bool_t Option::saveToFile(const xpr_tchar_t *aFileName, xpr_bool_t aMainOpti
 
     sIniFile.sortKey();
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }

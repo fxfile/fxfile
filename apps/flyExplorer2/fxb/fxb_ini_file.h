@@ -29,17 +29,8 @@ public:
     const xpr_tchar_t *getPath(void);
     void setPath(const xpr_tchar_t *aIniPath);
 
-    // for ansi
-    xpr_bool_t readFileA(void);
-    xpr_bool_t writeFileA(void); 
-
-    // for unicode
-    xpr_bool_t readFileW(void);
-    xpr_bool_t writeFileW(void); 
-
-    // for ansi/unicode
     xpr_bool_t readFile(void);
-    xpr_bool_t writeFile(void);
+    xpr_bool_t writeFile(xpr::CharSet aCharSet);
 
     void erase(xpr_bool_t aWithSortKey = XPR_FALSE);
     void clear(xpr_bool_t aWithSortKey = XPR_FALSE);

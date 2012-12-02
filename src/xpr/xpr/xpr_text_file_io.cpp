@@ -176,7 +176,9 @@ CharSet TextFileReader::detectEncoding(void)
     }
     else
     {
-        mFileIo.seekFromBegin(4 - gCharSetBom[i].mBomLen);
+        mFileIo.seekFromBegin(gCharSetBom[i].mBomLen);
+
+        mCharSet = sCharSet;
     }
 
     return sCharSet;
@@ -450,7 +452,7 @@ xpr_rcode_t TextFileWriter::write(const void *aText, xpr_size_t aTextBytes, Char
         return XPR_RCODE_EINVAL;
 
     const xpr_size_t sBufferNeedSize = aTextBytes * 4;
-    if (XPR_IS_NULL(mBuffer) || mBufferSize < sBufferNeedSize)
+    if (XPR_IS_NULL(mBuffer) || sBufferNeedSize > mBufferSize)
     {
         xpr_byte_t *sNewBuffer = new xpr_byte_t[sBufferNeedSize];
         if (XPR_IS_NULL(sNewBuffer))
@@ -481,7 +483,7 @@ xpr_rcode_t TextFileWriter::write(const xpr_tchar_t *aText)
 
     xpr_size_t sLen = _tcslen(aText);
 
-    return write(aText, sLen * sizeof(xpr_tchar_t), CharSetUtf16);
+    return write(aText, sLen * sizeof(xpr_tchar_t), (sizeof(xpr_tchar_t) == 2) ? CharSetUtf16 : CharSetMultiBytes);
 }
 
 xpr_rcode_t TextFileWriter::ensureBuffer(const xpr_tchar_t *aFormat, va_list aArgs)
@@ -489,9 +491,9 @@ xpr_rcode_t TextFileWriter::ensureBuffer(const xpr_tchar_t *aFormat, va_list aAr
     xpr_sint_t sLen = _vsctprintf(aFormat, aArgs);
     xpr_size_t sFormattedTextNeedLen = sLen * 3 / 2 + 10; // with end of line
 
-    if (XPR_IS_NULL(mFormattedText) || sLen > (xpr_sint_t)sFormattedTextNeedLen)
+    if (XPR_IS_NULL(mFormattedText) || (xpr_sint_t)sFormattedTextNeedLen > mFormattedTextMaxLen)
     {
-        xpr_tchar_t *sNewFormatBuffer = new xpr_tchar_t[mFormattedTextMaxLen + 1];
+        xpr_tchar_t *sNewFormatBuffer = new xpr_tchar_t[sFormattedTextNeedLen + 1];
         if (XPR_IS_NULL(sNewFormatBuffer))
             return XPR_RCODE_ENOMEM;
 

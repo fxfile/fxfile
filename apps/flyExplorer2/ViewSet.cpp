@@ -55,7 +55,7 @@ void ViewSet::readIndex(void)
     CfgPath::instance().getLoadPath(CfgPath::TypeViewSet, sPath, XPR_MAX_PATH, XPR_STRING_LITERAL("index"));
 
     fxb::IniFile sIniFile(sPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return;
 
     xpr_size_t i;
@@ -114,7 +114,7 @@ void ViewSet::saveIndex(void)
         sIniFile.setValueI(sSubPath, kAllSubApplyEntry, XPR_TRUE);
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderViewSet)
@@ -172,7 +172,7 @@ xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
         }
 
         fxb::IniFile sIniFile(sIniPath);
-        if (sIniFile.readFileW() == XPR_FALSE)
+        if (sIniFile.readFile() == XPR_FALSE)
             return XPR_FALSE;
 
         xpr_sint_t sVersion = sIniFile.getValueI(kViewSetKey, kVersionEntry, 0);
@@ -425,7 +425,7 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             ::CoTaskMemFree(sFormatIdValue);
         }
 
-        sIniFile.writeFileW();
+        sIniFile.writeFile(xpr::CharSetUtf16);
 
         if (XPR_IS_FALSE(sInstPath))
         {

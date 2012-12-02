@@ -248,7 +248,7 @@ static xpr_bool_t loadDockState(CDockState *aDockState, BarMap &aBarMap)
     CfgPath::instance().getLoadPath(CfgPath::TypeBarState, sPath, XPR_MAX_PATH);
 
     fxb::IniFile sIniFile(sPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     CSize sSize;
@@ -319,7 +319,7 @@ static xpr_bool_t saveDockState(CDockState *aDockState, BarMap &aBarMap)
     sIniFile.setSortKey(XPR_STRING_LITERAL("BarState"), -2);
     sIniFile.sortKey();
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }

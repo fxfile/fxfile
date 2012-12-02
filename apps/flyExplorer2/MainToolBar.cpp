@@ -476,8 +476,12 @@ xpr_bool_t MainToolBar::loadFromFile(const xpr_tchar_t *aPath)
     ButtonMap::iterator sIterator;
     TBBUTTONEX *sTbButtons;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("rb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sReadSize;
+    xpr::FileIo sFileIo;
+
+    sRcode = sFileIo.open(aPath, xpr::FileIo::OpenModeReadOnly);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
     // Delete all buttons
@@ -487,15 +491,21 @@ xpr_bool_t MainToolBar::loadFromFile(const xpr_tchar_t *aPath)
     xpr_sint_t sTextType = TBT_RIGHT;
     xpr_sint_t sIconType = TBI_SMALL;
 
-    fread(&sTextType, sizeof(sTextType), 1, sFile);
-    fread(&sIconType, sizeof(sIconType), 1, sFile);
+    sRcode = sFileIo.read(&sTextType, sizeof(sTextType), &sReadSize);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
+
+    sRcode = sFileIo.read(&sIconType, sizeof(sIconType), &sReadSize);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
 
     SetIconType(sIconType, XPR_FALSE);
     SetTextType(sTextType, XPR_FALSE);
 
-    while (true)
+    do
     {
-        if (fread(&sId, 1, sizeof(sId), sFile) != sizeof(sId))
+        sRcode = sFileIo.read(&sId, sizeof(sId), &sReadSize);
+        if (XPR_RCODE_IS_ERROR(sRcode) || sReadSize <= 0)
             break;
 
         if (sId == 0xffffffff)
@@ -507,9 +517,9 @@ xpr_bool_t MainToolBar::loadFromFile(const xpr_tchar_t *aPath)
             sTbButtons = sIterator->second;
             sToolBarCtrl.AddButtons(1, &sTbButtons->tbinfo);
         }
-    }
+    } while (XPR_RCODE_IS_SUCCESS(sRcode) && sReadSize > 0);
 
-    fclose(sFile);
+    sFileIo.close();
 
     UpdateToolbarSize();
 
@@ -527,12 +537,18 @@ void MainToolBar::saveToFile(const xpr_tchar_t *aPath)
     TBBUTTON sTbButton;
     xpr_sint_t i, sCount;
 
-    FILE *sFile = _tfopen(aPath, XPR_STRING_LITERAL("wb"));
-    if (XPR_IS_NULL(sFile))
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sWrittenSize;
+    xpr_sint_t  sOpenMode;
+    xpr::FileIo sFileIo;
+
+    sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+    sRcode = sFileIo.open(aPath, sOpenMode);
+    if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
-    fwrite(&m_nTextType, sizeof(m_nTextType), 1, sFile);
-    fwrite(&m_nIconType, sizeof(m_nIconType), 1, sFile);
+    sRcode = sFileIo.write(&m_nTextType, sizeof(m_nTextType), &sWrittenSize);
+    sRcode = sFileIo.write(&m_nIconType, sizeof(m_nIconType), &sWrittenSize);
 
     sCount = sToolBarCtrl.GetButtonCount();
     for (i = 0; i < sCount; ++i)
@@ -543,8 +559,8 @@ void MainToolBar::saveToFile(const xpr_tchar_t *aPath)
         if (XPR_TEST_BITS(sTbButton.fsStyle, TBSTYLE_SEP))
             sId = 0xffffffff;
 
-        fwrite(&sId, sizeof(sId), 1, sFile);
+        sRcode = sFileIo.write(&sId, sizeof(sId), &sWrittenSize);
     }
 
-    fclose(sFile);
+    sFileIo.close();
 }

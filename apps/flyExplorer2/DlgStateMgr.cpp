@@ -43,7 +43,7 @@ xpr_bool_t DlgStateMgr::load(void)
 
     fxb::IniFile sIniFile(mPath.c_str());
 
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t i, j;
@@ -131,7 +131,7 @@ void DlgStateMgr::save(void) const
         }
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 DlgState *DlgStateMgr::getDlgState(const xpr_tchar_t *aSection, xpr_bool_t aCreateIfNotExist)

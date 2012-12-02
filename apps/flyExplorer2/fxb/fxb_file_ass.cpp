@@ -248,7 +248,7 @@ static const xpr_tchar_t _fx_Program[]    = XPR_STRING_LITERAL("Program");
 xpr_bool_t FileAss::loadFromFile(const xpr_tchar_t *aPath)
 {
     IniFile sIniFile(aPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t sCount = sIniFile.getKeyCount();
@@ -314,7 +314,7 @@ xpr_bool_t FileAss::saveToFile(const xpr_tchar_t *aPath)
         sIniFile.setValueS(sKey, _fx_Program, sFileAssItem->mPath.c_str());
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }

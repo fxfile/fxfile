@@ -77,6 +77,8 @@ void OptionMgr::initDefault(void)
 
 void OptionMgr::load(xpr_bool_t &aInitCfg)
 {
+    xpr_time_t sTime1 = xpr::timer_ms();
+
     aInitCfg = XPR_FALSE;
 
     // Load Option
@@ -97,6 +99,10 @@ void OptionMgr::load(xpr_bool_t &aInitCfg)
     // Load Size Format
     if (loadSizeFormat() == XPR_FALSE)
         saveSizeFormat();
+
+    xpr_time_t sTime2 = xpr::timer_ms();
+
+    XPR_TRACE(XPR_STRING_LITERAL("Loading time of configuration file = %I64dms\n"), sTime2 - sTime1);
 }
 
 xpr_bool_t OptionMgr::save(void)

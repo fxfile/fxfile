@@ -296,7 +296,7 @@ const xpr_tchar_t _fx_Filter[] = XPR_STRING_LITERAL("Filter");
 xpr_bool_t Filter::loadFromFile(const xpr_tchar_t *aPath)
 {
     IniFile sIniFile(aPath);
-    if (sIniFile.readFileW() == XPR_FALSE)
+    if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     xpr_size_t sCount = sIniFile.getEntryCount(_fx_Filter);
@@ -387,7 +387,7 @@ xpr_bool_t Filter::saveToFile(const xpr_tchar_t *aPath)
         sIniFile.setValueS(_fx_Filter, sFilterItem->mName.c_str(), sValue);
     }
 
-    sIniFile.writeFileW();
+    sIniFile.writeFile(xpr::CharSetUtf16);
 
     return XPR_TRUE;
 }
