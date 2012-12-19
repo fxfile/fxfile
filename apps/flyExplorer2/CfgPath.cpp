@@ -361,7 +361,7 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
 
 const xpr_tchar_t *CfgPath::getDefPath(xpr_sint_t aType)
 {
-    return XPR_STRING_LITERAL("%AppData%\\flyExplorer");
+    return XPR_STRING_LITERAL("%AppData%\\flyExplorer2");
 }
 
 const xpr_tchar_t *CfgPath::getDefSubPath(xpr_sint_t aType)
@@ -407,7 +407,7 @@ xpr_bool_t CfgPath::load(void)
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     fxb::GetEnvPath(XPR_STRING_LITERAL("%AppData%"), sPath);
-    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer\\cfgpath.ini"));
+    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer2\\cfgpath.ini"));
 
     fxb::IniFile sIniFile(sPath);
     if (sIniFile.readFile() == XPR_FALSE)
@@ -479,7 +479,7 @@ xpr_bool_t CfgPath::save(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     fxb::GetEnvPath(XPR_STRING_LITERAL("%AppData%"), sPath);
-    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer\\cfgpath.ini"));
+    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer2\\cfgpath.ini"));
 
     fxb::IniFile sIniFile(sPath);
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer Configuration Path File"));
