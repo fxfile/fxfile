@@ -15,8 +15,8 @@ static const xpr_char_t kUnknownThreadName[] = XPR_MBCS_STRING_LITERAL("XPR - Un
 
 struct ThreadParam
 {
-    Thread *mThread;
-    ThreadDelegate *mDelegate;
+    Thread           *mThread;
+    Thread::Delegate *mDelegate;
 };
 
 Thread::Thread(xpr_char_t *aThreadName)
@@ -51,7 +51,7 @@ xpr_uint_t XPR_STDCALL Thread::ThreadEntry(void *sParam)
     xpr_uint_t sExitCode = 0;
 
     Thread *sThread = XPR_NULL;
-    ThreadDelegate *sDelegate = XPR_NULL;
+    Delegate *sDelegate = XPR_NULL;
 
     ThreadParam *sThreadParam = (ThreadParam *)sParam;
     if (sThreadParam != XPR_NULL)
@@ -76,7 +76,7 @@ xpr_uint_t XPR_STDCALL Thread::ThreadEntry(void *sParam)
     return 0;
 }
 
-xpr_rcode_t Thread::start(ThreadDelegate *aDelegate, xpr_size_t aStackSize)
+xpr_rcode_t Thread::start(Delegate *aDelegate, xpr_size_t aStackSize)
 {
     if (aDelegate == XPR_NULL)
         return XPR_RCODE_EINVAL;
@@ -152,7 +152,7 @@ ThreadId Thread::getThreadId(void) const
     return mThreadId;
 }
 
-ThreadState Thread::getThreadState(void) const
+Thread::ThreadState Thread::getThreadState(void) const
 {
     return mThreadState;
 }
