@@ -13,6 +13,12 @@
 
 namespace xpr
 {
+static const xpr_size_t kAllocSizeMask =
+      sizeof (xpr_char_t) <= 1 ? 15
+    : sizeof (xpr_char_t) <= 2 ? 7
+    : sizeof (xpr_char_t) <= 4 ? 3
+    : sizeof (xpr_char_t) <= 8 ? 1 : 0;
+
 String::String(void)
     : mString(XPR_NULL)
     , mLength(0)
@@ -163,6 +169,8 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
             {
                 mString[aNumber] = 0;
             }
+
+            mLength = aNumber;
         }
         else
         {
@@ -206,7 +214,7 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
 
 xpr_char_t *String::alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity) const
 {
-    xpr_size_t sNewCapacity = sMinCapacity;
+    xpr_size_t sNewCapacity = sMinCapacity | kAllocSizeMask;
 
     xpr_char_t *sNewString = new xpr_char_t[sNewCapacity];
     if (XPR_IS_NULL(sNewString))
@@ -682,8 +690,9 @@ String& String::insert(xpr_size_t aPos, const xpr_char_t *aString, xpr_size_t aL
 
     if (mCapacity > (mLength + sLength))
     {
-        memmove(mString + aPos + sLength, mString + aPos, sLength * sizeof(xpr_char_t));
+        memmove(mString + aPos + sLength, mString + aPos, (mLength - aPos) * sizeof(xpr_char_t));
         strncpy(mString + aPos, aString, sLength);
+        mString[mLength + sLength] = 0;
 
         mLength += sLength;
     }
@@ -740,8 +749,9 @@ String& String::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_char_t aChar)
 
     if (mCapacity > (mLength + aNumber))
     {
-        memmove(mString + aPos + aNumber, mString + aPos, aNumber * sizeof(xpr_char_t));
+        memmove(mString + aPos + aNumber, mString + aPos, (mLength - aPos) * sizeof(xpr_char_t));
         memset(mString + aPos, aChar, aNumber);
+        mString[mLength + aNumber] = 0;
 
         mLength += aNumber;
     }
@@ -1567,7 +1577,7 @@ xpr_sint_t String::compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char
 {
     XPR_ASSERT(aPos1 <= mLength);
 
-    if (mLength <= (aPos1 + aLength1))
+    if (mLength < (aPos1 + aLength1))
         aLength1 = mLength - aPos1;
 
     xpr_sint_t sCompare = memcmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
@@ -1619,7 +1629,7 @@ xpr_sint_t String::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const x
 {
     XPR_ASSERT(aPos1 <= mLength);
 
-    if (mLength <= (aPos1 + aLength1))
+    if (mLength < (aPos1 + aLength1))
         aLength1 = mLength - aPos1;
 
     xpr_sint_t sCompare = _memicmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
