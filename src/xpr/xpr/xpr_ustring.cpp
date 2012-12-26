@@ -5,12 +5,7 @@
 // found in the LICENSE file.
 
 #include "xpr_ustring.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "xpr_bit.h"
 
 namespace xpr
 {
@@ -32,7 +27,7 @@ namespace xpr
 //    3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,5,5,5,5,6,6,1,1
 //};
 //
-//#define XPR_UTF8_NEXT_CHAR(p) (xpr_char_t *)((p) + gUtf8SkipData[*(const xpr_char_t *)(p)])
+//#define XPR_UTF8_NEXT_CHAR(p) (xpr_char_t *)((p) + gUtf8SkipData[*(const xpr_uchar_t *)(p)])
 //
 //XPR_INLINE xpr_char32_t getUtf8Char(const xpr_char_t *aString)
 //{
@@ -94,8 +89,8 @@ namespace xpr
 //
 //XPR_INLINE xpr_size_t getUtf8ByteOffset(const xpr_char_t *aString, xpr_size_t aOffset)
 //{
-//    if (aOffset == ustring::npos)
-//        return ustring::npos;
+//    if (aOffset == string::npos)
+//        return string::npos;
 //
 //    const xpr_char_t *p = aString;
 //
@@ -103,7 +98,7 @@ namespace xpr
 //    {
 //        const xpr_uint_t c = static_cast<xpr_uint_t>(*aString);
 //        if (c == 0)
-//            return ustring::npos;
+//            return string::npos;
 //
 //        p += gUtf8SkipData[c];
 //    }
@@ -113,8 +108,8 @@ namespace xpr
 //
 //XPR_INLINE xpr_size_t getUtf8ByteOffset(const xpr_char_t *aString, xpr_size_t aOffset, xpr_size_t aMaxLength)
 //{
-//    if (aOffset == ustring::npos)
-//        return ustring::npos;
+//    if (aOffset == string::npos)
+//        return string::npos;
 //
 //    const xpr_char_t *p = aString;
 //    const xpr_char_t *sEndString = aString + aMaxLength;
@@ -122,11 +117,31 @@ namespace xpr
 //    for (; aOffset != 0; --aOffset)
 //    {
 //        if (p >= sEndString)
-//            return ustring::npos;
+//            return string::npos;
 //
 //        p += gUtf8SkipData[static_cast<xpr_uint_t>(*aString)];
 //    }
 //
 //    return (p - aString);
+//}
+//
+//XPR_INLINE xpr_ssize_t getUtf8PointerToOffset(const xpr_char_t *aString, const xpr_char_t *aPosWithinString)
+//{
+//    xpr_ssize_t sOffset = 0;
+//
+//    if (aString > aPosWithinString)
+//    {
+//        sOffset = getUtf8PointerToOffset(aPosWithinString, aString);
+//    }
+//    else
+//    {
+//        const xpr_char_t *s = aString;
+//
+//        while (s < aPosWithinString)
+//        {
+//            s = XPR_UTF8_NEXT_CHAR(s);
+//            ++sOffset;
+//        }
+//    }
 //}
 } // namespace xpr

@@ -35,14 +35,14 @@ XPR_INLINE xpr_sint32_t AtomicFetchAdd32(volatile void *aAddr, volatile xpr_sint
     }
 }
 
-xpr_sint16_t AtomicRead16(volatile void *aAddr)
+XPR_DL_API xpr_sint16_t AtomicRead16(volatile void *aAddr)
 {
     XPR_MEMORY_BARRIER();
 
     return *(volatile xpr_sint16_t *)aAddr;
 }
 
-xpr_sint16_t AtomicWrite16(volatile void *aAddr, volatile xpr_sint16_t aValue)
+XPR_DL_API xpr_sint16_t AtomicWrite16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -69,17 +69,17 @@ xpr_sint16_t AtomicWrite16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 #endif
 }
 
-xpr_sint16_t AtomicInc16(volatile void *aAddr)
+XPR_DL_API xpr_sint16_t AtomicInc16(volatile void *aAddr)
 {
     return AtomicAdd16(aAddr, 1);
 }
 
-xpr_sint16_t AtomicDec16(volatile void *aAddr)
+XPR_DL_API xpr_sint16_t AtomicDec16(volatile void *aAddr)
 {
     return AtomicAdd16(aAddr, -1);
 }
 
-xpr_sint16_t AtomicAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue)
+XPR_DL_API xpr_sint16_t AtomicAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -101,12 +101,12 @@ xpr_sint16_t AtomicAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 #endif
 }
 
-xpr_sint16_t AtomicSub16(volatile void *aAddr, volatile xpr_sint16_t aValue)
+XPR_DL_API xpr_sint16_t AtomicSub16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 {
     return AtomicAdd16(aAddr, -aValue);
 }
 
-xpr_sint16_t AtomicCas16(volatile void *aAddr, volatile xpr_sint16_t aOldValue, volatile xpr_sint16_t aNewValue)
+XPR_DL_API xpr_sint16_t AtomicCas16(volatile void *aAddr, volatile xpr_sint16_t aOldValue, volatile xpr_sint16_t aNewValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -125,14 +125,14 @@ xpr_sint16_t AtomicCas16(volatile void *aAddr, volatile xpr_sint16_t aOldValue, 
 #endif
 }
 
-xpr_sint32_t AtomicRead32(volatile void *aAddr)
+XPR_DL_API xpr_sint32_t AtomicRead32(volatile void *aAddr)
 {
     XPR_MEMORY_BARRIER();
 
     return *(volatile xpr_sint32_t *)aAddr;
 }
 
-xpr_sint32_t AtomicWrite32(volatile void *aAddr, volatile xpr_sint32_t aValue)
+XPR_DL_API xpr_sint32_t AtomicWrite32(volatile void *aAddr, volatile xpr_sint32_t aValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -150,17 +150,17 @@ xpr_sint32_t AtomicWrite32(volatile void *aAddr, volatile xpr_sint32_t aValue)
 #endif
 }
 
-xpr_sint32_t AtomicInc32(volatile void *aAddr)
+XPR_DL_API xpr_sint32_t AtomicInc32(volatile void *aAddr)
 {
     return AtomicAdd32(aAddr, 1);
 }
 
-xpr_sint32_t AtomicDec32(volatile void *aAddr)
+XPR_DL_API xpr_sint32_t AtomicDec32(volatile void *aAddr)
 {
     return AtomicAdd32(aAddr, -1);
 }
 
-xpr_sint32_t AtomicAdd32(volatile void *aAddr, volatile xpr_sint32_t aValue)
+XPR_DL_API xpr_sint32_t AtomicAdd32(volatile void *aAddr, volatile xpr_sint32_t aValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -173,12 +173,12 @@ xpr_sint32_t AtomicAdd32(volatile void *aAddr, volatile xpr_sint32_t aValue)
 #endif
 }
 
-xpr_sint32_t AtomicSub32(volatile void *aAddr, volatile xpr_sint32_t aValue)
+XPR_DL_API xpr_sint32_t AtomicSub32(volatile void *aAddr, volatile xpr_sint32_t aValue)
 {
     return AtomicAdd32(aAddr, -aValue);
 }
 
-xpr_sint32_t AtomicCas32(volatile void *aAddr, volatile xpr_sint32_t aOldValue, volatile xpr_sint32_t aNewValue)
+XPR_DL_API xpr_sint32_t AtomicCas32(volatile void *aAddr, volatile xpr_sint32_t aOldValue, volatile xpr_sint32_t aNewValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -197,7 +197,7 @@ xpr_sint32_t AtomicCas32(volatile void *aAddr, volatile xpr_sint32_t aOldValue, 
 #endif
 }
 
-xpr_sint64_t AtomicRead64(volatile void *aAddr)
+XPR_DL_API xpr_sint64_t AtomicRead64(volatile void *aAddr)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -218,7 +218,7 @@ xpr_sint64_t AtomicRead64(volatile void *aAddr)
 #endif
 }
 
-xpr_sint64_t AtomicWrite64(volatile void *aAddr, volatile xpr_sint64_t aValue)
+XPR_DL_API xpr_sint64_t AtomicWrite64(volatile void *aAddr, volatile xpr_sint64_t aValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 
@@ -240,17 +240,17 @@ xpr_sint64_t AtomicWrite64(volatile void *aAddr, volatile xpr_sint64_t aValue)
 #endif
 }
 
-xpr_sint64_t AtomicInc64(volatile void *aAddr)
+XPR_DL_API xpr_sint64_t AtomicInc64(volatile void *aAddr)
 {
     return AtomicAdd64(aAddr, 1);
 }
 
-xpr_sint64_t AtomicDec64(volatile void *aAddr)
+XPR_DL_API xpr_sint64_t AtomicDec64(volatile void *aAddr)
 {
     return AtomicAdd64(aAddr, -1);
 }
 
-xpr_sint64_t AtomicAdd64(volatile void *aAddr, volatile xpr_sint64_t aValue)
+XPR_DL_API xpr_sint64_t AtomicAdd64(volatile void *aAddr, volatile xpr_sint64_t aValue)
 {
     xpr_sint64_t sOld;
     xpr_sint64_t sTemp;
@@ -264,12 +264,12 @@ xpr_sint64_t AtomicAdd64(volatile void *aAddr, volatile xpr_sint64_t aValue)
     return sOld;
 }
 
-xpr_sint64_t AtomicSub64(volatile void *aAddr, volatile xpr_sint64_t aValue)
+XPR_DL_API xpr_sint64_t AtomicSub64(volatile void *aAddr, volatile xpr_sint64_t aValue)
 {
     return AtomicAdd64(aAddr, -aValue);
 }
 
-xpr_sint64_t AtomicCas64(volatile void *aAddr, volatile xpr_sint64_t aOldValue, volatile xpr_sint64_t aNewValue)
+XPR_DL_API xpr_sint64_t AtomicCas64(volatile void *aAddr, volatile xpr_sint64_t aOldValue, volatile xpr_sint64_t aNewValue)
 {
 #if defined(XPR_CFG_COMPILER_32BIT)
 

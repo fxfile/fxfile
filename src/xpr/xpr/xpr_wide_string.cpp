@@ -4,7 +4,7 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#include "xpr_string.h"
+#include "xpr_wide_string.h"
 #include "xpr_bit.h"
 #include "xpr_memory.h"
 #include "xpr_debug.h"
@@ -13,15 +13,15 @@
 
 namespace xpr
 {
-String::String(void)
+WideString::WideString(void)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
 {
-    assign(XPR_MBCS_STRING_LITERAL(""), 0);
+    assign(XPR_WIDE_STRING_LITERAL(""), 0);
 }
 
-String::String(const String &aString)
+WideString::WideString(const WideString &aString)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
@@ -29,7 +29,7 @@ String::String(const String &aString)
     assign(aString);
 }
 
-String::String(const String &aString, xpr_size_t aPos, xpr_size_t aLength)
+WideString::WideString(const WideString &aString, xpr_size_t aPos, xpr_size_t aLength)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
@@ -37,14 +37,14 @@ String::String(const String &aString, xpr_size_t aPos, xpr_size_t aLength)
     assign(aString, aPos, aLength);
 }
 
-String::String(const xpr_char_t *aString, xpr_size_t aLength)
+WideString::WideString(const xpr_wchar_t *aString, xpr_size_t aLength)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
 {
     if (XPR_IS_NULL(aString))
     {
-        assign(XPR_MBCS_STRING_LITERAL(""), 0);
+        assign(XPR_WIDE_STRING_LITERAL(""), 0);
     }
     else
     {
@@ -52,14 +52,14 @@ String::String(const xpr_char_t *aString, xpr_size_t aLength)
     }
 }
 
-String::String(const xpr_char_t *aString)
+WideString::WideString(const xpr_wchar_t *aString)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
 {
     if (XPR_IS_NULL(aString))
     {
-        assign(XPR_MBCS_STRING_LITERAL(""), 0);
+        assign(XPR_WIDE_STRING_LITERAL(""), 0);
     }
     else
     {
@@ -67,7 +67,7 @@ String::String(const xpr_char_t *aString)
     }
 }
 
-String::String(const xpr_size_t aNumber, xpr_char_t aChar)
+WideString::WideString(const xpr_size_t aNumber, xpr_wchar_t aChar)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
@@ -75,7 +75,7 @@ String::String(const xpr_size_t aNumber, xpr_char_t aChar)
     assign(aNumber, aChar);
 }
 
-String::String(Iterator aFirst, Iterator aLast)
+WideString::WideString(Iterator aFirst, Iterator aLast)
     : mString(XPR_NULL)
     , mLength(0)
     , mCapacity(0)
@@ -83,72 +83,72 @@ String::String(Iterator aFirst, Iterator aLast)
     assign(aFirst, aLast);
 }
 
-String::~String(void)
+WideString::~WideString(void)
 {
     clear();
 }
 
-String::Iterator String::begin(void)
+WideString::Iterator WideString::begin(void)
 {
     return Iterator(mString);
 }
 
-String::Iterator String::end(void)
+WideString::Iterator WideString::end(void)
 {
     return Iterator(mString + mLength);
 }
 
-String::ConstIterator String::begin(void) const
+WideString::ConstIterator WideString::begin(void) const
 {
     return ConstIterator(mString);
 }
 
-String::ConstIterator String::end(void) const
+WideString::ConstIterator WideString::end(void) const
 {
     return ConstIterator(mString + mLength);
 }
 
-String::ReverseIterator String::rbegin(void)
+WideString::ReverseIterator WideString::rbegin(void)
 {
     return ReverseIterator(mString + mLength - 1);
 }
 
-String::ReverseIterator String::rend(void)
+WideString::ReverseIterator WideString::rend(void)
 {
     return ReverseIterator(mString - 1);
 }
 
-String::ConstReverseIterator String::rbegin(void) const
+WideString::ConstReverseIterator WideString::rbegin(void) const
 {
     return ConstReverseIterator(mString + mLength - 1);
 }
 
-String::ConstReverseIterator String::rend(void) const
+WideString::ConstReverseIterator WideString::rend(void) const
 {
     return ConstReverseIterator(mString - 1);
 }
 
-xpr_size_t String::size(void) const
+xpr_size_t WideString::size(void) const
 {
     return mLength;
 }
 
-xpr_size_t String::length(void) const
+xpr_size_t WideString::length(void) const
 {
     return mLength;
 }
 
-xpr_size_t String::bytes(void) const
+xpr_size_t WideString::bytes(void) const
 {
-    return mLength * sizeof(xpr_char_t);
+    return mLength * sizeof(xpr_wchar_t);
 }
 
-xpr_size_t String::max_size(void) const
+xpr_size_t WideString::max_size(void) const
 {
     return (xpr_size_t)-1;
 }
 
-void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
+void WideString::resize(xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     if (aNumber == 0)
         return;
@@ -157,7 +157,7 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
     {
         if (aNumber > mLength)
         {
-            memset(mString + mLength, aChar, aNumber - mLength);
+            wmemset(mString + mLength, aChar, aNumber - mLength);
 
             if (aChar != 0)
             {
@@ -174,7 +174,7 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(aNumber + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(aNumber + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -182,8 +182,8 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
             return;
         }
 
-        strncpy(sNewString, mString, mLength);
-        memset(sNewString + mLength, aChar, aNumber - mLength);
+        wcsncpy(sNewString, mString, mLength);
+        wmemset(sNewString + mLength, aChar, aNumber - mLength);
 
         if (aChar != 0)
         {
@@ -204,11 +204,11 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
     }
 }
 
-xpr_char_t *String::alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity) const
+xpr_wchar_t *WideString::alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity) const
 {
     xpr_size_t sNewCapacity = sMinCapacity;
 
-    xpr_char_t *sNewString = new xpr_char_t[sNewCapacity];
+    xpr_wchar_t *sNewString = new xpr_wchar_t[sNewCapacity];
     if (XPR_IS_NULL(sNewString))
         return XPR_NULL;
 
@@ -217,28 +217,28 @@ xpr_char_t *String::alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity)
     return sNewString;
 }
 
-void String::resize(xpr_size_t aNumber)
+void WideString::resize(xpr_size_t aNumber)
 {
     resize(aNumber, 0);
 }
 
-xpr_size_t String::capacity(void) const
+xpr_size_t WideString::capacity(void) const
 {
     return mCapacity;
 }
 
-void String::reserve(xpr_size_t aCapacity)
+void WideString::reserve(xpr_size_t aCapacity)
 {
     if (aCapacity > mCapacity)
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(aCapacity, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(aCapacity, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
             return;
 
-        strncpy(sNewString, mString, mLength);
+        wcsncpy(sNewString, mString, mLength);
         sNewString[mLength] = 0;
 
         xpr_size_t sLength = mLength;
@@ -251,31 +251,31 @@ void String::reserve(xpr_size_t aCapacity)
     }
 }
 
-void String::reset(void)
+void WideString::reset(void)
 {
     XPR_SAFE_DELETE_ARRAY(mString);
     mLength = 0;
     mCapacity = 0;
 }
 
-void String::clear(void)
+void WideString::clear(void)
 {
     mLength = 0;
 }
 
-xpr_bool_t String::empty(void)
+xpr_bool_t WideString::empty(void)
 {
     return (XPR_IS_NULL(mString) || mLength == 0) ? XPR_TRUE : XPR_FALSE;
 }
 
-String& String::assign(const String &aString)
+WideString& WideString::assign(const WideString &aString)
 {
     return assign(aString.mString, aString.mLength);
 }
 
 // aLength may be npos.
 // aLegnth cannot be greater than length of aString.
-String& String::assign(const String &aString, xpr_size_t aPos, xpr_size_t aLength)
+WideString& WideString::assign(const WideString &aString, xpr_size_t aPos, xpr_size_t aLength)
 {
     if (aLength == 0)
     {
@@ -297,23 +297,23 @@ String& String::assign(const String &aString, xpr_size_t aPos, xpr_size_t aLengt
 }
 
 // If aLength is greater than length of aString, then memory allocate greater but mLength is length of aString.
-String& String::assign(const xpr_char_t *aString, xpr_size_t aLength)
+WideString& WideString::assign(const xpr_wchar_t *aString, xpr_size_t aLength)
 {
     if (XPR_IS_NULL(aString))
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
     xpr_size_t sActualLength = (aLength > sLength) ? sLength : aLength;
 
     if (mCapacity > aLength)
     {
-        strncpy(mString, aString, sActualLength);
+        wcsncpy(mString, aString, sActualLength);
 
         if (aLength > sLength)
         {
-            memset(mString + sLength, 0, (aLength - sLength) * sizeof(xpr_char_t));
+            memset(mString + sLength, 0, (aLength - sLength) * sizeof(xpr_wchar_t));
         }
         else
         {
@@ -325,7 +325,7 @@ String& String::assign(const xpr_char_t *aString, xpr_size_t aLength)
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(aLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(aLength + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -333,11 +333,11 @@ String& String::assign(const xpr_char_t *aString, xpr_size_t aLength)
             return *this;
         }
 
-        strncpy(sNewString, aString, sActualLength);
+        wcsncpy(sNewString, aString, sActualLength);
 
         if (aLength > sLength)
         {
-            memset(sNewString + sLength, 0, (aLength - sLength) * sizeof(xpr_char_t));
+            memset(sNewString + sLength, 0, (aLength - sLength) * sizeof(xpr_wchar_t));
         }
         else
         {
@@ -354,19 +354,19 @@ String& String::assign(const xpr_char_t *aString, xpr_size_t aLength)
     return *this;
 }
 
-String& String::assign(const xpr_char_t *aString)
+WideString& WideString::assign(const xpr_wchar_t *aString)
 {
     if (XPR_IS_NULL(aString))
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return assign(aString, sLength);
 }
 
-String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
+WideString& WideString::assign(xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     if (aNumber == 0)
     {
@@ -377,7 +377,7 @@ String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
 
     if (mCapacity > aNumber)
     {
-        memset(mString, aChar, aNumber);
+        wmemset(mString, aChar, aNumber);
 
         if (aChar != 0)
         {
@@ -389,7 +389,7 @@ String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(aNumber + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(aNumber + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -397,7 +397,7 @@ String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
             return *this;
         }
 
-        memset(sNewString, aChar, aNumber);
+        wmemset(sNewString, aChar, aNumber);
 
         if (aChar != 0)
         {
@@ -414,80 +414,80 @@ String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
     return *this;
 }
 
-String& String::assign(Iterator aFirst, Iterator aLast)
+WideString& WideString::assign(Iterator aFirst, Iterator aLast)
 {
-    xpr_char_t *sString = &(*aFirst);
+    xpr_wchar_t *sString = &(*aFirst);
     xpr_size_t  sLength = aLast - aFirst;
 
     return assign(sString, sLength);
 }
 
-const xpr_char_t& String::operator[] (xpr_size_t aPos) const
+const xpr_wchar_t& WideString::operator[] (xpr_size_t aPos) const
 {
     XPR_ASSERT(aPos < mLength);
 
     return mString[aPos];
 }
 
-xpr_char_t& String::operator[] (xpr_size_t aPos)
+xpr_wchar_t& WideString::operator[] (xpr_size_t aPos)
 {
     XPR_ASSERT(aPos < mLength);
 
     return mString[aPos];
 }
 
-const xpr_char_t& String::at(xpr_size_t aPos) const
+const xpr_wchar_t& WideString::at(xpr_size_t aPos) const
 {
     XPR_ASSERT(aPos < mLength);
 
     return mString[aPos];
 }
 
-xpr_char_t& String::at(xpr_size_t aPos)
+xpr_wchar_t& WideString::at(xpr_size_t aPos)
 {
     XPR_ASSERT(aPos < mLength);
 
     return mString[aPos];
 }
 
-String& String::operator= (const String &aString)
+WideString& WideString::operator= (const WideString &aString)
 {
     return assign(aString);
 }
 
-String& String::operator= (const xpr_char_t *aString)
+WideString& WideString::operator= (const xpr_wchar_t *aString)
 {
     return assign(aString);
 }
 
-String& String::operator= (xpr_char_t aChar)
+WideString& WideString::operator= (xpr_wchar_t aChar)
 {
     return assign(1, aChar);
 }
 
-String& String::operator+= (const String &aString)
+WideString& WideString::operator+= (const WideString &aString)
 {
     return append(aString);
 }
 
-String& String::operator+= (const xpr_char_t *aString)
+WideString& WideString::operator+= (const xpr_wchar_t *aString)
 {
     return append(aString);
 }
 
-String& String::operator+= (xpr_char_t aChar)
+WideString& WideString::operator+= (xpr_wchar_t aChar)
 {
     return append(1, aChar);
 }
 
-String& String::append(const String &aString)
+WideString& WideString::append(const WideString &aString)
 {
     return append(aString.mString, aString.mLength);
 }
 
 // aLength may be npos.
 // aLegnth cannot be greater than length of aString.
-String& String::append(const String &aString, xpr_size_t aPos, xpr_size_t aLength)
+WideString& WideString::append(const WideString &aString, xpr_size_t aPos, xpr_size_t aLength)
 {
     if (aLength == 0)
     {
@@ -509,23 +509,23 @@ String& String::append(const String &aString, xpr_size_t aPos, xpr_size_t aLengt
 }
 
 // If aLength is greater than length of aString, then memory allocate greater but mLength is length of aString.
-String& String::append(const xpr_char_t *aString, xpr_size_t aLength)
+WideString& WideString::append(const xpr_wchar_t *aString, xpr_size_t aLength)
 {
     if (XPR_IS_NULL(aString) || aLength == 0)
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
     xpr_size_t sActualLength = (aLength > sLength) ? sLength : aLength;
 
     if (mCapacity > (mLength + aLength))
     {
-        strncpy(mString + mLength, aString, sActualLength);
+        wcsncpy(mString + mLength, aString, sActualLength);
 
         if (aLength > sLength)
         {
-            memset(mString + mLength + sLength, 0, (aLength - sLength) * sizeof(xpr_char_t));
+            memset(mString + mLength + sLength, 0, (aLength - sLength) * sizeof(xpr_wchar_t));
         }
         else
         {
@@ -537,7 +537,7 @@ String& String::append(const xpr_char_t *aString, xpr_size_t aLength)
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(mLength + aLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(mLength + aLength + 1, sNewCapacity);
         xpr_size_t sNewLength = mLength + sActualLength;
 
         XPR_ASSERT(sNewString != XPR_NULL);
@@ -546,12 +546,12 @@ String& String::append(const xpr_char_t *aString, xpr_size_t aLength)
             return *this;
         }
 
-        strncpy(sNewString, mString, mLength);
-        strncpy(sNewString + mLength, aString, sActualLength);
+        wcsncpy(sNewString, mString, mLength);
+        wcsncpy(sNewString + mLength, aString, sActualLength);
 
         if (aLength > sLength)
         {
-            memset(sNewString + mLength + sLength, 0, (aLength - sLength) * sizeof(xpr_char_t));
+            memset(sNewString + mLength + sLength, 0, (aLength - sLength) * sizeof(xpr_wchar_t));
         }
         else
         {
@@ -568,19 +568,19 @@ String& String::append(const xpr_char_t *aString, xpr_size_t aLength)
     return *this;
 }
 
-String& String::append(const xpr_char_t *aString)
+WideString& WideString::append(const xpr_wchar_t *aString)
 {
     if (XPR_IS_NULL(aString))
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return append(aString, sLength);
 }
 
-String& String::append(xpr_size_t aNumber, xpr_char_t aChar)
+WideString& WideString::append(xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     if (aNumber == 0)
     {
@@ -591,7 +591,7 @@ String& String::append(xpr_size_t aNumber, xpr_char_t aChar)
 
     if (mCapacity > (mLength + aNumber))
     {
-        memset(mString + mLength, aChar, aNumber);
+        wmemset(mString + mLength, aChar, aNumber);
 
         if (aChar != 0)
         {
@@ -603,7 +603,7 @@ String& String::append(xpr_size_t aNumber, xpr_char_t aChar)
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(mLength + aNumber + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(mLength + aNumber + 1, sNewCapacity);
         xpr_size_t sNewLength = mLength + sActualLength;
 
         XPR_ASSERT(sNewString != XPR_NULL);
@@ -612,8 +612,8 @@ String& String::append(xpr_size_t aNumber, xpr_char_t aChar)
             return *this;
         }
 
-        strncpy(sNewString, mString, mLength);
-        memset(sNewString + mLength, aChar, aNumber);
+        wcsncpy(sNewString, mString, mLength);
+        wmemset(sNewString + mLength, aChar, aNumber);
 
         if (aChar != 0)
         {
@@ -630,25 +630,25 @@ String& String::append(xpr_size_t aNumber, xpr_char_t aChar)
     return *this;
 }
 
-String& String::append(Iterator aFirst, Iterator aLast)
+WideString& WideString::append(Iterator aFirst, Iterator aLast)
 {
-    xpr_char_t *sString = &(*aFirst);
+    xpr_wchar_t *sString = &(*aFirst);
     xpr_size_t  sLength = aLast - aFirst;
 
     return append(sString, sLength);
 }
 
-void String::push_back(xpr_char_t aChar)
+void WideString::push_back(xpr_wchar_t aChar)
 {
     append(1, aChar);
 }
 
-String& String::insert(xpr_size_t aPos, const String &aString)
+WideString& WideString::insert(xpr_size_t aPos, const WideString &aString)
 {
     return insert(aPos, aString.mString, aString.mLength);
 }
 
-String& String::insert(xpr_size_t aPos1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength)
+WideString& WideString::insert(xpr_size_t aPos1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength)
 {
     XPR_ASSERT(aPos2 <= aString.mLength);
 
@@ -664,7 +664,7 @@ String& String::insert(xpr_size_t aPos1, const String &aString, xpr_size_t aPos2
     return insert(aPos1, aString.mString + aPos2, aLength);
 }
 
-String& String::insert(xpr_size_t aPos, const xpr_char_t *aString, xpr_size_t aLength)
+WideString& WideString::insert(xpr_size_t aPos, const xpr_wchar_t *aString, xpr_size_t aLength)
 {
     if (XPR_IS_NULL(aString) || aLength == 0)
     {
@@ -676,21 +676,21 @@ String& String::insert(xpr_size_t aPos, const xpr_char_t *aString, xpr_size_t aL
         return append(aString, aLength);
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
     if (sLength > aLength)
         sLength = aLength;
 
     if (mCapacity > (mLength + sLength))
     {
-        memmove(mString + aPos + sLength, mString + aPos, sLength * sizeof(xpr_char_t));
-        strncpy(mString + aPos, aString, sLength);
+        memmove(mString + aPos + sLength, mString + aPos, sLength * sizeof(xpr_wchar_t));
+        wcsncpy(mString + aPos, aString, sLength);
 
         mLength += sLength;
     }
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(mLength + sLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(mLength + sLength + 1, sNewCapacity);
         xpr_size_t sNewLength = mLength + sLength;
 
         XPR_ASSERT(sNewString != XPR_NULL);
@@ -699,9 +699,9 @@ String& String::insert(xpr_size_t aPos, const xpr_char_t *aString, xpr_size_t aL
             return *this;
         }
 
-        strncpy(sNewString, mString, aPos);
-        strncpy(sNewString + aPos, aString, sLength);
-        strncpy(sNewString + aPos + sLength, mString + aPos, mLength - aPos);
+        wcsncpy(sNewString, mString, aPos);
+        wcsncpy(sNewString + aPos, aString, sLength);
+        wcsncpy(sNewString + aPos + sLength, mString + aPos, mLength - aPos);
         sNewString[mLength + sLength] = 0;
 
         reset();
@@ -714,19 +714,19 @@ String& String::insert(xpr_size_t aPos, const xpr_char_t *aString, xpr_size_t aL
     return *this;
 }
 
-String& String::insert(xpr_size_t aPos, const xpr_char_t *aString)
+WideString& WideString::insert(xpr_size_t aPos, const xpr_wchar_t *aString)
 {
     if (XPR_IS_NULL(aString))
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return insert(aPos, aString, sLength);
 }
 
-String& String::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_char_t aChar)
+WideString& WideString::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     if (aNumber == 0 || aChar == 0)
     {
@@ -740,15 +740,15 @@ String& String::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_char_t aChar)
 
     if (mCapacity > (mLength + aNumber))
     {
-        memmove(mString + aPos + aNumber, mString + aPos, aNumber * sizeof(xpr_char_t));
-        memset(mString + aPos, aChar, aNumber);
+        memmove(mString + aPos + aNumber, mString + aPos, aNumber * sizeof(xpr_wchar_t));
+        wmemset(mString + aPos, aChar, aNumber);
 
         mLength += aNumber;
     }
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(mLength + aNumber + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(mLength + aNumber + 1, sNewCapacity);
         xpr_size_t sNewLength = mLength + aNumber;
 
         XPR_ASSERT(sNewString != XPR_NULL);
@@ -757,9 +757,9 @@ String& String::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_char_t aChar)
             return *this;
         }
 
-        strncpy(sNewString, mString, aPos);
-        memset(sNewString + aPos, aChar, aNumber);
-        strncpy(sNewString + aPos + aNumber, mString + aPos, mLength - aPos);
+        wcsncpy(sNewString, mString, aPos);
+        wmemset(sNewString + aPos, aChar, aNumber);
+        wcsncpy(sNewString + aPos + aNumber, mString + aPos, mLength - aPos);
         sNewString[mLength + aNumber] = 0;
 
         reset();
@@ -772,12 +772,12 @@ String& String::insert(xpr_size_t aPos, xpr_size_t aNumber, xpr_char_t aChar)
     return *this;
 }
 
-String::Iterator String::insert(Iterator aPos, xpr_char_t aChar)
+WideString::Iterator WideString::insert(Iterator aPos, xpr_wchar_t aChar)
 {
     return insert(aPos, 1, aChar);
 }
 
-String::Iterator String::insert(Iterator aPos, xpr_size_t aNumber, xpr_char_t aChar)
+WideString::Iterator WideString::insert(Iterator aPos, xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     xpr_size_t sPos = aPos.mString - mString;
 
@@ -786,10 +786,10 @@ String::Iterator String::insert(Iterator aPos, xpr_size_t aNumber, xpr_char_t aC
     return Iterator(mString + sPos);
 }
 
-String::Iterator String::insert(Iterator aPos, Iterator aFirst, Iterator aLast)
+WideString::Iterator WideString::insert(Iterator aPos, Iterator aFirst, Iterator aLast)
 {
     xpr_size_t  sPos    = aPos.mString - mString;
-    xpr_char_t *sString = &(*aFirst);
+    xpr_wchar_t *sString = &(*aFirst);
     xpr_size_t  sLength = aLast - aFirst;
 
     insert(sPos, sString, sLength);
@@ -797,7 +797,7 @@ String::Iterator String::insert(Iterator aPos, Iterator aFirst, Iterator aLast)
     return Iterator(mString + sPos);
 }
 
-String& String::erase(xpr_size_t aPos, xpr_size_t aLength)
+WideString& WideString::erase(xpr_size_t aPos, xpr_size_t aLength)
 {
     if (aPos == 0)
     {
@@ -813,7 +813,7 @@ String& String::erase(xpr_size_t aPos, xpr_size_t aLength)
         aLength = mLength - aPos;
     }
 
-    memmove(mString + aPos, mString + aPos + aLength, (mLength - (aPos + aLength)) * sizeof(xpr_char_t));
+    memmove(mString + aPos, mString + aPos + aLength, (mLength - (aPos + aLength)) * sizeof(xpr_wchar_t));
     mString[mLength - aLength] = 0;
 
     mLength -= aLength;
@@ -821,7 +821,7 @@ String& String::erase(xpr_size_t aPos, xpr_size_t aLength)
     return *this;
 }
 
-String::Iterator String::erase(Iterator aPos)
+WideString::Iterator WideString::erase(Iterator aPos)
 {
     xpr_size_t sPos = aPos.mString - mString;
 
@@ -830,7 +830,7 @@ String::Iterator String::erase(Iterator aPos)
     return Iterator(mString + sPos);
 }
 
-String::Iterator String::erase(Iterator aFirst, Iterator aLast)
+WideString::Iterator WideString::erase(Iterator aFirst, Iterator aLast)
 {
     xpr_size_t sPos    = aFirst.mString - mString;
     xpr_size_t sLength = aLast - aFirst;
@@ -840,12 +840,12 @@ String::Iterator String::erase(Iterator aFirst, Iterator aLast)
     return Iterator(mString + sPos);
 }
 
-String& String::replace(xpr_size_t aPos, xpr_size_t aLength, const String &aString)
+WideString& WideString::replace(xpr_size_t aPos, xpr_size_t aLength, const WideString &aString)
 {
     return replace(aPos, aLength, aString.mString, aString.mLength);
 }
 
-String& String::replace(Iterator aIterator1, Iterator aIterator2, const String &aString)
+WideString& WideString::replace(Iterator aIterator1, Iterator aIterator2, const WideString &aString)
 {
     xpr_size_t sPos    = aIterator1.mString - mString;
     xpr_size_t sLength = aIterator2 - aIterator1;
@@ -853,7 +853,7 @@ String& String::replace(Iterator aIterator1, Iterator aIterator2, const String &
     return replace(sPos, sLength, aString.mString, aString.mLength);
 }
 
-String& String::replace(xpr_size_t aPos1, xpr_size_t aLength1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength2)
+WideString& WideString::replace(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2)
 {
     XPR_ASSERT(aPos2 <= aString.mLength);
 
@@ -869,14 +869,14 @@ String& String::replace(xpr_size_t aPos1, xpr_size_t aLength1, const String &aSt
     return replace(aPos1, aLength1, aString.mString + aPos2, aLength2);
 }
 
-String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *aString, xpr_size_t aLength2)
+WideString& WideString::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2)
 {
     if (aPos == npos || aPos >= mLength || XPR_IS_NULL(aString) || aLength2 == 0)
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
     if (sLength > aLength2)
         sLength = aLength2;
 
@@ -884,8 +884,8 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
 
     if (mCapacity > sNewLength)
     {
-        memmove(mString + aPos + sLength, mString + aPos + aLength1, (mLength - aPos - aLength1) * sizeof(xpr_char_t));
-        strncpy(mString + aPos, aString, sLength);
+        memmove(mString + aPos + sLength, mString + aPos + aLength1, (mLength - aPos - aLength1) * sizeof(xpr_wchar_t));
+        wcsncpy(mString + aPos, aString, sLength);
         mString[sNewLength] = 0;
 
         mLength = sNewLength;
@@ -893,7 +893,7 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -901,9 +901,9 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
             return *this;
         }
 
-        strncpy(sNewString, mString, aPos);
-        strncpy(sNewString + aPos, aString, sLength);
-        strncpy(sNewString + aPos + sLength, mString + aPos + aLength1, mLength - aPos - aLength1);
+        wcsncpy(sNewString, mString, aPos);
+        wcsncpy(sNewString + aPos, aString, sLength);
+        wcsncpy(sNewString + aPos + sLength, mString + aPos + aLength1, mLength - aPos - aLength1);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -916,7 +916,7 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
     return *this;
 }
 
-String& String::replace(Iterator aIterator1, Iterator aIterator2, const xpr_char_t *aString, xpr_size_t aLength)
+WideString& WideString::replace(Iterator aIterator1, Iterator aIterator2, const xpr_wchar_t *aString, xpr_size_t aLength)
 {
     xpr_size_t sPos    = aIterator1.mString - mString;
     xpr_size_t sLength = aIterator2 - aIterator1;
@@ -924,19 +924,19 @@ String& String::replace(Iterator aIterator1, Iterator aIterator2, const xpr_char
     return replace(sPos, sLength, aString, aLength);
 }
 
-String& String::replace(xpr_size_t aPos, xpr_size_t aLength, const xpr_char_t *aString)
+WideString& WideString::replace(xpr_size_t aPos, xpr_size_t aLength, const xpr_wchar_t *aString)
 {
     if (XPR_IS_NULL(aString))
     {
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return replace(aPos, aLength, aString, sLength);
 }
 
-String& String::replace(Iterator aIterator1, Iterator aIterator2, const xpr_char_t *aString)
+WideString& WideString::replace(Iterator aIterator1, Iterator aIterator2, const xpr_wchar_t *aString)
 {
     if (XPR_IS_NULL(aString))
     {
@@ -946,12 +946,12 @@ String& String::replace(Iterator aIterator1, Iterator aIterator2, const xpr_char
     xpr_size_t sPos     = aIterator1.mString - mString;
     xpr_size_t sLength1 = aIterator2 - aIterator1;
 
-    xpr_size_t sLength2 = strlen(aString);
+    xpr_size_t sLength2 = wcslen(aString);
 
     return replace(sPos, sLength1, aString, sLength2);
 }
 
-String& String::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber, xpr_char_t aChar)
+WideString& WideString::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     if (aPos == npos || aPos >= mLength || aNumber == 0 || aChar == 0)
     {
@@ -962,9 +962,9 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber,
 
     if (mCapacity > sNewLength)
     {
-        memmove(mString + aPos + aNumber, mString + aPos + aLength, (mLength - aPos - aLength) * sizeof(xpr_char_t));
-        memset(mString + aPos, 0, aNumber);
-        memset(mString + aPos, aChar, aNumber);
+        memmove(mString + aPos + aNumber, mString + aPos + aLength, (mLength - aPos - aLength) * sizeof(xpr_wchar_t));
+        wmemset(mString + aPos, 0, aNumber);
+        wmemset(mString + aPos, aChar, aNumber);
         mString[sNewLength] = 0;
 
         mLength = sNewLength;
@@ -972,7 +972,7 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber,
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -980,9 +980,9 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber,
             return *this;
         }
 
-        strncpy(sNewString, mString, aPos);
-        memset(sNewString + aPos, aChar, aNumber);
-        strncpy(sNewString + aPos + aNumber, mString + aPos + aLength, mLength - aPos - aLength);
+        wcsncpy(sNewString, mString, aPos);
+        wmemset(sNewString + aPos, aChar, aNumber);
+        wcsncpy(sNewString + aPos + aNumber, mString + aPos + aLength, mLength - aPos - aLength);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -995,7 +995,7 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength, xpr_size_t aNumber,
     return *this;
 }
 
-String& String::replace(Iterator aIterator1, Iterator aIterator2, xpr_size_t aNumber, xpr_char_t aChar)
+WideString& WideString::replace(Iterator aIterator1, Iterator aIterator2, xpr_size_t aNumber, xpr_wchar_t aChar)
 {
     xpr_size_t sPos    = aIterator1.mString - mString;
     xpr_size_t sLength = aIterator2 - aIterator1;
@@ -1003,20 +1003,20 @@ String& String::replace(Iterator aIterator1, Iterator aIterator2, xpr_size_t aNu
     return replace(sPos, sLength, aNumber, aChar);
 }
 
-String& String::replace(Iterator aIterator1, Iterator aIterator2, Iterator aInputIterator1, Iterator aInputIterator2)
+WideString& WideString::replace(Iterator aIterator1, Iterator aIterator2, Iterator aInputIterator1, Iterator aInputIterator2)
 {
     xpr_size_t  sPos    = aIterator1.mString - mString;
     xpr_size_t  sLength1 = aIterator2 - aIterator1;
 
-    xpr_char_t *sString  = aInputIterator1.mString;
+    xpr_wchar_t *sString  = aInputIterator1.mString;
     xpr_size_t  sLength2 = aInputIterator2 - aInputIterator1;
 
     return replace(sPos, sLength1, sString, sLength2);
 }
 
-void String::swap(String &aString)
+void WideString::swap(WideString &aString)
 {
-    xpr_char_t *sTempString   = mString;
+    xpr_wchar_t *sTempString   = mString;
     xpr_size_t  sTempLength   = mLength;
     xpr_size_t  sTempCapacity = mCapacity;
 
@@ -1029,28 +1029,28 @@ void String::swap(String &aString)
     aString.mCapacity = sTempCapacity;
 }
 
-void String::upper_case(void)
+void WideString::upper_case(void)
 {
-    _strupr(mString);
+    _wcsupr(mString);
 }
 
-void String::lower_case(void)
+void WideString::lower_case(void)
 {
-    _strlwr(mString);
+    _wcslwr(mString);
 }
 
-void String::trim(void)
+void WideString::trim(void)
 {
     trim_right();
     trim_left();
 }
 
-void String::trim_left(void)
+void WideString::trim_left(void)
 {
     xpr_size_t i;
     for (i = 0; i < mLength; ++i)
     {
-        if (xpr::isSpace(mString[i]) == XPR_FALSE)
+        if (xpr::isSpace((xpr_char_t)mString[i]) == XPR_FALSE)
         {
             erase(0, i);
             break;
@@ -1058,12 +1058,12 @@ void String::trim_left(void)
     }
 }
 
-void String::trim_right(void)
+void WideString::trim_right(void)
 {
     xpr_size_t i;
     for (i = mLength - 1; i >= 0; --i)
     {
-        if (xpr::isSpace(mString[i]) == XPR_FALSE)
+        if (xpr::isSpace((xpr_char_t)mString[i]) == XPR_FALSE)
         {
             erase(i, mLength - i - 1);
             break;
@@ -1071,24 +1071,24 @@ void String::trim_right(void)
     }
 }
 
-void String::format(const xpr_char_t *aFormat, ...)
+void WideString::format(const xpr_wchar_t *aFormat, ...)
 {
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscprintf(aFormat, sArgs);
+    xpr_sint_t sLength = _vscwprintf(aFormat, sArgs);
     if (sLength <= 0)
         return;
 
     if (mCapacity > (xpr_size_t)sLength)
     {
-        vsprintf(mString, aFormat, sArgs);
+        vswprintf(mString, aFormat, sArgs);
         mString[sLength] = 0;
     }
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(sLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(sLength + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -1096,7 +1096,7 @@ void String::format(const xpr_char_t *aFormat, ...)
             return;
         }
 
-        vsprintf(sNewString, aFormat, sArgs);
+        vswprintf(sNewString, aFormat, sArgs);
         sNewString[sLength] = 0;
 
         reset();
@@ -1109,12 +1109,12 @@ void String::format(const xpr_char_t *aFormat, ...)
     va_end(sArgs);
 }
 
-void String::append_format(const xpr_char_t *aFormat, ...)
+void WideString::append_format(const xpr_wchar_t *aFormat, ...)
 {
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscprintf(aFormat, sArgs);
+    xpr_sint_t sLength = _vscwprintf(aFormat, sArgs);
     if (sLength <= 0)
         return;
 
@@ -1122,13 +1122,13 @@ void String::append_format(const xpr_char_t *aFormat, ...)
 
     if (mCapacity > sNewLength)
     {
-        vsprintf(mString + mLength, aFormat, sArgs);
+        vswprintf(mString + mLength, aFormat, sArgs);
         mString[sNewLength] = 0;
     }
     else
     {
         xpr_size_t sNewCapacity;
-        xpr_char_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(sNewLength + 1, sNewCapacity);
 
         XPR_ASSERT(sNewString != XPR_NULL);
         if (XPR_IS_NULL(sNewString))
@@ -1136,8 +1136,8 @@ void String::append_format(const xpr_char_t *aFormat, ...)
             return;
         }
 
-        strncpy(sNewString, mString, mLength);
-        vsprintf(sNewString + mLength, aFormat, sArgs);
+        wcsncpy(sNewString, mString, mLength);
+        vswprintf(sNewString + mLength, aFormat, sArgs);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -1150,17 +1150,17 @@ void String::append_format(const xpr_char_t *aFormat, ...)
     va_end(sArgs);
 }
 
-const xpr_char_t *String::c_str(void) const
+const xpr_wchar_t *WideString::c_str(void) const
 {
     return mString;
 }
 
-const xpr_char_t *String::data(void) const
+const xpr_wchar_t *WideString::data(void) const
 {
     return mString;
 }
 
-xpr_size_t String::copy(xpr_char_t *aString, xpr_size_t aLength, xpr_size_t aPos) const
+xpr_size_t WideString::copy(xpr_wchar_t *aString, xpr_size_t aLength, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString) || aLength == 0 || aPos == npos || aPos >= mLength)
     {
@@ -1174,31 +1174,31 @@ xpr_size_t String::copy(xpr_char_t *aString, xpr_size_t aLength, xpr_size_t aPos
         sLength = mLength - aPos;
     }
 
-    strncpy(aString, mString + aPos, sLength);
+    wcsncpy(aString, mString + aPos, sLength);
 
     return sLength;
 }
 
-xpr_size_t String::find(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::find(const WideString &aString, xpr_size_t aPos) const
 {
     return find(aString.mString, aPos, mLength);
 }
 
-xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::find(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || aPos == npos || aPos >= mLength)
     {
         return npos;
     }
 
-    const xpr_char_t *sString = mString + aPos;
-    const xpr_char_t *sSearch = aString;
-    xpr_char_t sSubStrChar, sChar;
+    const xpr_wchar_t *sString = mString + aPos;
+    const xpr_wchar_t *sSearch = aString;
+    xpr_wchar_t sSubStrChar, sChar;
     xpr_size_t sLength;
 
     if ((sSubStrChar = *sSearch++) != '\0')
     {
-        sLength = strlen(sSearch);
+        sLength = wcslen(sSearch);
         if (sLength > aLength)
             sLength = aLength;
 
@@ -1218,7 +1218,7 @@ xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t a
                 return XPR_NULL;
             }
 
-        } while (strncmp(sString, sSearch, sLength) != 0);
+        } while (wcsncmp(sString, sSearch, sLength) != 0);
 
         sString--;
     }
@@ -1228,29 +1228,29 @@ xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t a
     return sFoundIndex;
 }
 
-xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::find(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return find(aString, aPos, sLength);
 }
 
-xpr_size_t String::find(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::find(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return find(&aChar, aPos, 1);
 }
 
-xpr_size_t String::rfind(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::rfind(const WideString &aString, xpr_size_t aPos) const
 {
     return rfind(aString.mString, aPos, aString.mLength);
 }
 
-xpr_size_t String::rfind(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::rfind(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || (aPos != npos && aPos >= mLength))
     {
@@ -1267,13 +1267,13 @@ xpr_size_t String::rfind(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t 
         aPos = mLength - 1;
     }
 
-    const xpr_char_t *sSearch = aString;
-    xpr_size_t sLength = strlen(aString);
+    const xpr_wchar_t *sSearch = aString;
+    xpr_size_t sLength = wcslen(aString);
     if (sLength > aLength)
         sLength = aLength;
 
     xpr_sint_t sPos = (xpr_sint_t)aPos;
-    const xpr_char_t *sResult = XPR_NULL;
+    const xpr_wchar_t *sResult = XPR_NULL;
 
     if (mLength == 0 || mLength < sLength)
     {
@@ -1282,9 +1282,9 @@ xpr_size_t String::rfind(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t 
 
     while (sPos >= 0)
     {
-        if (strncmp(mString + sPos, sSearch, sLength) == 0)
+        if (wcsncmp(mString + sPos, sSearch, sLength) == 0)
         {
-            sResult = (xpr_char_t *)mString + sPos;
+            sResult = (xpr_wchar_t *)mString + sPos;
             break;
         }
 
@@ -1301,29 +1301,29 @@ xpr_size_t String::rfind(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t 
     return sFoundIndex;
 }
 
-xpr_size_t String::rfind(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::rfind(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return rfind(aString, aPos, sLength);
 }
 
-xpr_size_t String::rfind(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::rfind(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return rfind(&aChar, aPos, 1);
 }
 
-xpr_size_t String::find_first_of(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_of(const WideString &aString, xpr_size_t aPos) const
 {
     return find_first_of(aString.mString, aPos, aString.mLength);
 }
 
-xpr_size_t String::find_first_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::find_first_of(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || (aPos != npos && aPos >= mLength))
     {
@@ -1331,13 +1331,13 @@ xpr_size_t String::find_first_of(const xpr_char_t *aString, xpr_size_t aPos, xpr
     }
 
     xpr_size_t sFoundIndex = npos;
-    const xpr_char_t *sString = mString + aPos;
-    const xpr_char_t *sEndString = mString + mLength - 1;
-    const xpr_char_t *sResult;
+    const xpr_wchar_t *sString = mString + aPos;
+    const xpr_wchar_t *sEndString = mString + mLength - 1;
+    const xpr_wchar_t *sResult;
 
     do
     {
-        sResult = (const xpr_char_t *)memchr(aString, *sString, aLength);
+        sResult = (const xpr_wchar_t *)wmemchr(aString, *sString, aLength);
         if (XPR_IS_NOT_NULL(sResult))
         {
             sFoundIndex = (xpr_size_t)(sString - mString);
@@ -1348,29 +1348,29 @@ xpr_size_t String::find_first_of(const xpr_char_t *aString, xpr_size_t aPos, xpr
     return sFoundIndex;
 }
 
-xpr_size_t String::find_first_of(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_of(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return find_first_of(aString, aPos, sLength);
 }
 
-xpr_size_t String::find_first_of(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_of(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return find_first_of(&aChar, aPos, 1);
 }
 
-xpr_size_t String::find_last_of(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_of(const WideString &aString, xpr_size_t aPos) const
 {
     return find_last_of(aString.mString, aPos, aString.mLength);
 }
 
-xpr_size_t String::find_last_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::find_last_of(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || (aPos != npos && aPos >= mLength))
     {
@@ -1383,12 +1383,12 @@ xpr_size_t String::find_last_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_
     }
 
     xpr_size_t sFoundIndex = npos;
-    const xpr_char_t *sString = mString + aPos;
-    const xpr_char_t *sResult;
+    const xpr_wchar_t *sString = mString + aPos;
+    const xpr_wchar_t *sResult;
 
     do
     {
-        sResult = (const xpr_char_t *)memchr(aString, *sString, aLength);
+        sResult = (const xpr_wchar_t *)wmemchr(aString, *sString, aLength);
         if (XPR_IS_NOT_NULL(sResult))
         {
             sFoundIndex = (xpr_size_t)(sString - mString);
@@ -1399,29 +1399,29 @@ xpr_size_t String::find_last_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_
     return sFoundIndex;
 }
 
-xpr_size_t String::find_last_of(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_of(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return find_last_of(aString, aPos, sLength);
 }
 
-xpr_size_t String::find_last_of(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_of(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return find_last_of(&aChar, aPos, 1);
 }
 
-xpr_size_t String::find_first_not_of(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_not_of(const WideString &aString, xpr_size_t aPos) const
 {
     return find_first_not_of(aString.mString, aPos, aString.mLength);
 }
 
-xpr_size_t String::find_first_not_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::find_first_not_of(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || (aPos != npos && aPos >= mLength))
     {
@@ -1429,13 +1429,13 @@ xpr_size_t String::find_first_not_of(const xpr_char_t *aString, xpr_size_t aPos,
     }
 
     xpr_size_t sFoundIndex = npos;
-    const xpr_char_t *sString = mString + aPos;
-    const xpr_char_t *sEndString = mString + mLength - 1;
-    const xpr_char_t *sResult;
+    const xpr_wchar_t *sString = mString + aPos;
+    const xpr_wchar_t *sEndString = mString + mLength - 1;
+    const xpr_wchar_t *sResult;
 
     do
     {
-        sResult = (const xpr_char_t *)memchr(aString, *sString, aLength);
+        sResult = (const xpr_wchar_t *)wmemchr(aString, *sString, aLength);
         if (XPR_IS_NULL(sResult))
         {
             sFoundIndex = (xpr_size_t)(sString - mString);
@@ -1446,29 +1446,29 @@ xpr_size_t String::find_first_not_of(const xpr_char_t *aString, xpr_size_t aPos,
     return sFoundIndex;
 }
 
-xpr_size_t String::find_first_not_of(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_not_of(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return find_first_not_of(aString, aPos, sLength);
 }
 
-xpr_size_t String::find_first_not_of(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::find_first_not_of(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return find_first_not_of(&aChar, aPos, 1);
 }
 
-xpr_size_t String::find_last_not_of(const String &aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_not_of(const WideString &aString, xpr_size_t aPos) const
 {
     return find_last_not_of(aString.mString, aPos, aString.mLength);
 }
 
-xpr_size_t String::find_last_not_of(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
+xpr_size_t WideString::find_last_not_of(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (XPR_IS_NULL(aString) || (aPos != npos && aPos >= mLength))
     {
@@ -1481,12 +1481,12 @@ xpr_size_t String::find_last_not_of(const xpr_char_t *aString, xpr_size_t aPos, 
     }
 
     xpr_size_t sFoundIndex = npos;
-    const xpr_char_t *sString = mString + aPos;
-    const xpr_char_t *sResult;
+    const xpr_wchar_t *sString = mString + aPos;
+    const xpr_wchar_t *sResult;
 
     do
     {
-        sResult = (const xpr_char_t *)memchr(aString, *sString, aLength);
+        sResult = (const xpr_wchar_t *)wmemchr(aString, *sString, aLength);
         if (XPR_IS_NULL(sResult))
         {
             sFoundIndex = (xpr_size_t)(sString - mString);
@@ -1497,80 +1497,80 @@ xpr_size_t String::find_last_not_of(const xpr_char_t *aString, xpr_size_t aPos, 
     return sFoundIndex;
 }
 
-xpr_size_t String::find_last_not_of(const xpr_char_t *aString, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_not_of(const xpr_wchar_t *aString, xpr_size_t aPos) const
 {
     if (XPR_IS_NULL(aString))
     {
         return npos;
     }
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return find_last_not_of(aString, aPos, sLength);
 }
 
-xpr_size_t String::find_last_not_of(xpr_char_t aChar, xpr_size_t aPos) const
+xpr_size_t WideString::find_last_not_of(xpr_wchar_t aChar, xpr_size_t aPos) const
 {
     return find_last_not_of(&aChar, aPos, 1);
 }
 
-String String::substr(xpr_size_t aPos, xpr_size_t aLength) const
+WideString WideString::substr(xpr_size_t aPos, xpr_size_t aLength) const
 {
     if (aPos != npos && aPos >= mLength)
     {
-        return String();
+        return WideString();
     }
 
     xpr_size_t sLength = aLength;
     if ((aPos + sLength) > mLength)
         sLength = mLength - aPos;
 
-    return String(*this, aPos, sLength);
+    return WideString(*this, aPos, sLength);
 }
 
-xpr_sint_t String::compare(const String &aString) const
+xpr_sint_t WideString::compare(const WideString &aString) const
 {
     return compare(0, mLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare(const xpr_char_t *aString) const
+xpr_sint_t WideString::compare(const xpr_wchar_t *aString) const
 {
     if (XPR_IS_NULL(aString))
         return 1;
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return compare(0, mLength, aString, sLength);
 }
 
-xpr_sint_t String::compare(xpr_size_t aPos, xpr_size_t aLength, const String &aString) const
+xpr_sint_t WideString::compare(xpr_size_t aPos, xpr_size_t aLength, const WideString &aString) const
 {
     return compare(aPos, aLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare(xpr_size_t aPos, xpr_size_t aLength, const xpr_char_t *aString) const
+xpr_sint_t WideString::compare(xpr_size_t aPos, xpr_size_t aLength, const xpr_wchar_t *aString) const
 {
     if (XPR_IS_NULL(aString))
         return 1;
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return compare(aPos, aLength, aString, sLength);
 }
 
-xpr_sint_t String::compare(xpr_size_t aPos1, xpr_size_t aLength1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
+xpr_sint_t WideString::compare(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
 {
     return compare(aPos1, aLength1, aString.mString + aPos2, aLength2);
 }
 
-xpr_sint_t String::compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char_t *aString, xpr_size_t aLength2) const
+xpr_sint_t WideString::compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2) const
 {
     XPR_ASSERT(aPos1 <= mLength);
 
     if (mLength <= (aPos1 + aLength1))
         aLength1 = mLength - aPos1;
 
-    xpr_sint_t sCompare = memcmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
+    xpr_sint_t sCompare = wmemcmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
     if (sCompare != 0)
         return sCompare;
 
@@ -1580,49 +1580,49 @@ xpr_sint_t String::compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char
     return (aLength1 < aLength2) ? -1 : 1;
 }
 
-xpr_sint_t String::compare_incase(const String &aString) const
+xpr_sint_t WideString::compare_incase(const WideString &aString) const
 {
     return compare_incase(0, mLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare_incase(const xpr_char_t *aString) const
+xpr_sint_t WideString::compare_incase(const xpr_wchar_t *aString) const
 {
     if (XPR_IS_NULL(aString))
         return 1;
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return compare_incase(0, mLength, aString, sLength);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const String &aString) const
+xpr_sint_t WideString::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const WideString &aString) const
 {
     return compare_incase(aPos, aLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const xpr_char_t *aString) const
+xpr_sint_t WideString::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const xpr_wchar_t *aString) const
 {
     if (XPR_IS_NULL(aString))
         return 1;
 
-    xpr_size_t sLength = strlen(aString);
+    xpr_size_t sLength = wcslen(aString);
 
     return compare_incase(aPos, aLength, aString, sLength);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
+xpr_sint_t WideString::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
 {
     return compare_incase(aPos1, aLength1, aString.mString + aPos2, aLength2);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char_t *aString, xpr_size_t aLength2) const
+xpr_sint_t WideString::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2) const
 {
     XPR_ASSERT(aPos1 <= mLength);
 
     if (mLength <= (aPos1 + aLength1))
         aLength1 = mLength - aPos1;
 
-    xpr_sint_t sCompare = _memicmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
+    xpr_sint_t sCompare = _wcsnicmp(mString + aPos1, aString, (aLength1 < aLength2) ? aLength1 : aLength2);
     if (sCompare != 0)
         return sCompare;
 

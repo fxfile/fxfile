@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <winerror.h>
 #include <process.h>
+#include <wchar.h>
 #include <tchar.h>
 #endif // XPR_CFG_OS_WINDOWS
 

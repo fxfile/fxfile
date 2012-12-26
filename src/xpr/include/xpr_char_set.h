@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
@@ -23,7 +24,7 @@ enum CharSet
     CharSetUtf32be,
 };
 
-class CharSetConverter
+class XPR_DL_API CharSetConverter
 {
 public:
     CharSetConverter(void);
@@ -31,6 +32,7 @@ public:
 
 public:
     virtual xpr_rcode_t open(CharSet aInputCharSet, CharSet aOutputCharSet);
+    virtual xpr_bool_t isOpened(void) const;
     virtual void getCharSet(CharSet &aInputCharSet, CharSet &aOutputCharSet) const;
     virtual xpr_rcode_t convert(const void *aInput,  xpr_size_t *aInputBytes,
                                       void *aOutput, xpr_size_t *aOutputBytes);
@@ -42,8 +44,8 @@ protected:
     CharSet  mOutputCharSet;
 };
 
-xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
-                                 void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet);
+XPR_DL_API xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
+                                            void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet);
 
 #define XPR_MBS_TO_MBS(aInput, aInputBytes, aOutput, aOutputBytes) \
     xpr::convertCharSet(aInput, aInputBytes, xpr::CharSetMultiBytes, aOutput, aOutputBytes, xpr::CharSetMultiBytes)

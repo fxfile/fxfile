@@ -10,7 +10,7 @@
 
 namespace xpr
 {
-//class Buffer
+//class XPR_DL_API Buffer
 //{
 //    DISALLOW_COPY_AND_ASSIGN(Buffer);
 //

@@ -9,10 +9,11 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
-class ProcessMutex
+class XPR_DL_API ProcessMutex
 {
 public:
     ProcessMutex(void);

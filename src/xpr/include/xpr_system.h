@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
@@ -64,10 +65,10 @@ struct SystemInfo
     xpr_uint_t mOsVer;
 };
 
-xpr_rcode_t initSystemInfo(void);
+XPR_DL_API xpr_rcode_t initSystemInfo(void);
 
-SystemInfo *getSystemInfo(void);
-xpr_uint_t  getOsVer(void);
+XPR_DL_API SystemInfo *getSystemInfo(void);
+XPR_DL_API xpr_uint_t  getOsVer(void);
 
 } // namespace xpr
 

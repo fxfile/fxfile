@@ -14,19 +14,19 @@ static char THIS_FILE[] = __FILE__;
 
 namespace xpr
 {
-void getVer(ver_t &aVer)
+XPR_DL_API void getVer(ver_t &aVer)
 {
     aVer.mMajor = XPR_MAJOR_VER;
     aVer.mMinor = XPR_MINOR_VER;
     aVer.mPatch = XPR_PATCH_VER;
 }
 
-const xpr_char_t *getVer(void)
+XPR_DL_API const xpr_char_t *getVer(void)
 {
     return XPR_VER_STRING;
 }
 
-const xpr_char_t *getBuildTime(void)
+XPR_DL_API const xpr_char_t *getBuildTime(void)
 {
     static const xpr_char_t kBuildTime[] = XPR_DATE " " XPR_TIME " PST";
     return kBuildTime;

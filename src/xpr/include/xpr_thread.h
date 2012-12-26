@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 #include "xpr_time.h"
 
 namespace xpr
@@ -34,7 +35,7 @@ public:
     virtual xpr_sint_t onThreadMain(Thread &aThread) = 0;
 };
 
-class Thread
+class XPR_DL_API Thread
 {
     DISALLOW_COPY_AND_ASSIGN(Thread);
 
@@ -49,7 +50,7 @@ public:
     };
 
 public:
-    Thread(xpr_tchar_t *aThreadName = XPR_NULL);
+    Thread(xpr_char_t *aThreadName = XPR_NULL);
     virtual ~Thread(void);
 
 public:
@@ -59,7 +60,7 @@ public:
     virtual ThreadId     getThreadId(void) const;
     virtual ThreadState  getThreadState(void) const;
     virtual NativeHandle getThreadHandle(void) const;
-    virtual xpr_bool_t   getThreadName(xpr_tchar_t *aThreadName) const;
+    virtual xpr_bool_t   getThreadName(xpr_char_t *aThreadName) const;
     virtual xpr_sint_t   getExitCode(void) const;
     virtual xpr_bool_t   isEqual(const Thread &aThread) const;
     virtual void         swap(Thread &aThread);
@@ -82,7 +83,7 @@ protected:
 
 protected:
     NativeHandle mHandle;
-    xpr_tchar_t *mThreadName;
+    xpr_char_t  *mThreadName;
     ThreadId     mThreadId;
     ThreadState  mThreadState;
     xpr_uint_t   mExitCode;

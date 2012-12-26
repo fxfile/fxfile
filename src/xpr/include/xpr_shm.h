@@ -9,10 +9,11 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
-class Shm
+class XPR_DL_API Shm
 {
     DISALLOW_COPY_AND_ASSIGN(Shm);
 

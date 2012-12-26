@@ -34,10 +34,10 @@ typedef struct
     xpr_sint_t mPatch;
 } ver_t;
 
-void getVer(ver_t &aVer);
-const xpr_char_t *getVer(void);
-const xpr_char_t *getBuildTime(void);
-void getBuildTime(Time &aTime);
+XPR_DL_API void getVer(ver_t &aVer);
+XPR_DL_API const xpr_char_t *getVer(void);
+XPR_DL_API const xpr_char_t *getBuildTime(void);
+XPR_DL_API void getBuildTime(Time &aTime);
 } // namespace xpr
 
 #endif // __XPR_VER_H__

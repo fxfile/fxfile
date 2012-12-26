@@ -27,12 +27,12 @@ Shm::~Shm(void)
     close();
 }
 
-static void generateShmName(xpr_key_t aKey, xpr_tchar_t *aName, xpr_size_t aMaxLength)
+XPR_INLINE void generateShmName(xpr_key_t aKey, xpr_char_t *aName, xpr_size_t aMaxLength)
 {
-    _sntprintf(aName,
-               aMaxLength,
-               XPR_STRING_LITERAL("Global\\xpr::Shm_%08x"),
-               aKey);
+    _snprintf(aName,
+              aMaxLength,
+              XPR_MBCS_STRING_LITERAL("Global\\xpr::Shm_%08x"),
+              aKey);
 }
 
 xpr_rcode_t Shm::create(xpr_key_t aKey, xpr_size_t aReqSize, xpr_mode_t aPermission)
@@ -42,15 +42,15 @@ xpr_rcode_t Shm::create(xpr_key_t aKey, xpr_size_t aReqSize, xpr_mode_t aPermiss
 
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
-    xpr_tchar_t sName[0xff] = {0};
+    xpr_char_t sName[0xff] = {0};
     generateShmName(aKey, sName, XPR_COUNT_OF(sName));
 
-    mHandle.mHandle = ::CreateFileMapping(INVALID_HANDLE_VALUE,
-                                          XPR_NULL,
-                                          PAGE_READWRITE,
-                                          0,
-                                          (DWORD)aReqSize,
-                                          sName);
+    mHandle.mHandle = ::CreateFileMappingA(INVALID_HANDLE_VALUE,
+                                           XPR_NULL,
+                                           PAGE_READWRITE,
+                                           0,
+                                           (DWORD)aReqSize,
+                                           sName);
 
     if (mHandle.mHandle == XPR_NULL)
         return XPR_RCODE_GET_OS_ERROR();
@@ -62,10 +62,10 @@ xpr_rcode_t Shm::open(xpr_key_t aKey)
 {
     XPR_ASSERT(mHandle.mHandle == XPR_NULL);
 
-    xpr_tchar_t sName[0xff] = {0};
+    xpr_char_t sName[0xff] = {0};
     generateShmName(aKey, sName, XPR_COUNT_OF(sName));
 
-    mHandle.mHandle = ::OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, sName);
+    mHandle.mHandle = ::OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, sName);
 
     if (mHandle.mHandle == XPR_NULL)
         return XPR_RCODE_GET_OS_ERROR();

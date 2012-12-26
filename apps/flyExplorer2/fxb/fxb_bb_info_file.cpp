@@ -402,7 +402,7 @@ void BBInfoFile::readVistaIndex(void)
 
                     sRcode = sFileIo.read(&sIndex->mFileSize, (sFileSize == 544) ? 8 : 7, &sRead);
                     sRcode = sFileIo.read(&sIndex->mDeleteFileTime, sizeof(FILETIME), &sRead);
-                    sRcode = sFileIo.read(&sOriginalFile, sFileSize - sFileIo.tell(), &sRead);
+                    sRcode = sFileIo.read(&sOriginalFile, (xpr_size_t)(sFileSize - sFileIo.tell()), &sRead);
 
                     sInputBytes = wcslen(sOriginalFile) * sizeof(xpr_wchar_t);
                     sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);

@@ -9,7 +9,7 @@
 
 namespace xpr
 {
-xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
+XPR_DL_API xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -34,7 +34,7 @@ xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
+XPR_DL_API xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aNumber == 0 || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -59,7 +59,7 @@ xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t xpr_realloc(void **aAddr, xpr_size_t aSize)
+XPR_DL_API xpr_rcode_t xpr_realloc(void **aAddr, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return XPR_RCODE_EINVAL;
@@ -95,7 +95,7 @@ xpr_rcode_t xpr_realloc(void **aAddr, xpr_size_t aSize)
     return XPR_RCODE_SUCCESS;
 }
 
-void xpr_free(void *aAddr)
+XPR_DL_API void xpr_free(void *aAddr)
 {
     if (aAddr == XPR_NULL)
         return;
@@ -112,7 +112,7 @@ void xpr_free(void *aAddr)
 #endif
 }
 
-void xpr_memset(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
+XPR_DL_API void xpr_memset(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
 {
     if (aAddr == XPR_NULL || aSize == 0)
         return;
@@ -128,12 +128,12 @@ void xpr_memset(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
 #endif
 }
 
-void xpr_memset_zero(void *aAddr, xpr_size_t aSize)
+XPR_DL_API void xpr_memset_zero(void *aAddr, xpr_size_t aSize)
 {
     xpr_memset(aAddr, 0x00, aSize);
 }
 
-void xpr_memcpy(void *aDest, const void *aSrc, xpr_size_t aSize)
+XPR_DL_API void xpr_memcpy(void *aDest, const void *aSrc, xpr_size_t aSize)
 {
     if (aSize == 0)
         return;
@@ -149,7 +149,7 @@ void xpr_memcpy(void *aDest, const void *aSrc, xpr_size_t aSize)
 #endif
 }
 
-void xpr_memmove(void *aDest, const void *aSrc, xpr_size_t aSize)
+XPR_DL_API void xpr_memmove(void *aDest, const void *aSrc, xpr_size_t aSize)
 {
     if (aSize == 0)
         return;
@@ -165,7 +165,7 @@ void xpr_memmove(void *aDest, const void *aSrc, xpr_size_t aSize)
 #endif
 }
 
-xpr_sint_t xpr_memcmp(const void *aAddr1, const void *aAddr2, xpr_size_t aSize)
+XPR_DL_API xpr_sint_t xpr_memcmp(const void *aAddr1, const void *aAddr2, xpr_size_t aSize)
 {
     if (aSize == 0)
         return 0;
