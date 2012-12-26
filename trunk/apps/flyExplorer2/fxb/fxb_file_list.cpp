@@ -207,7 +207,7 @@ unsigned FileList::OnEntryProc(void)
 
             if (XPR_IS_TRUE(sByLine))
             {
-                sTextFileWriter.write(XPR_STRING_LITERAL("\n"));
+                sTextFileWriter.write(XPR_EOL);
             }
             else
             {

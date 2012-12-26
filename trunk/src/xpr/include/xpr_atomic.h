@@ -9,32 +9,33 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
-xpr_sint16_t AtomicRead16(volatile void *aAddr);
-xpr_sint16_t AtomicWrite16(volatile void *aAddr, volatile xpr_sint16_t aValue);
-xpr_sint16_t AtomicInc16(volatile void *aAddr);
-xpr_sint16_t AtomicDec16(volatile void *aAddr);
-xpr_sint16_t AtomicAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue);
-xpr_sint16_t AtomicSub16(volatile void *aAddr, volatile xpr_sint16_t aValue);
-xpr_sint16_t AtomicCas16(volatile void *aAddr, volatile xpr_sint16_t aOldValue, volatile xpr_sint16_t aNewValue);
+XPR_DL_API xpr_sint16_t AtomicRead16(volatile void *aAddr);
+XPR_DL_API xpr_sint16_t AtomicWrite16(volatile void *aAddr, volatile xpr_sint16_t aValue);
+XPR_DL_API xpr_sint16_t AtomicInc16(volatile void *aAddr);
+XPR_DL_API xpr_sint16_t AtomicDec16(volatile void *aAddr);
+XPR_DL_API xpr_sint16_t AtomicAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue);
+XPR_DL_API xpr_sint16_t AtomicSub16(volatile void *aAddr, volatile xpr_sint16_t aValue);
+XPR_DL_API xpr_sint16_t AtomicCas16(volatile void *aAddr, volatile xpr_sint16_t aOldValue, volatile xpr_sint16_t aNewValue);
 
-xpr_sint32_t AtomicRead32(volatile void *aAddr);
-xpr_sint32_t AtomicWrite32(volatile void *aAddr, volatile xpr_sint32_t aValue);
-xpr_sint32_t AtomicInc32(volatile void *aAddr);
-xpr_sint32_t AtomicDec32(volatile void *aAddr);
-xpr_sint32_t AtomicAdd32(volatile void *aAddr, volatile xpr_sint32_t aValue);
-xpr_sint32_t AtomicSub32(volatile void *aAddr, volatile xpr_sint32_t aValue);
-xpr_sint32_t AtomicCas32(volatile void *aAddr, volatile xpr_sint32_t aOldValue, volatile xpr_sint32_t aNewValue);
+XPR_DL_API xpr_sint32_t AtomicRead32(volatile void *aAddr);
+XPR_DL_API xpr_sint32_t AtomicWrite32(volatile void *aAddr, volatile xpr_sint32_t aValue);
+XPR_DL_API xpr_sint32_t AtomicInc32(volatile void *aAddr);
+XPR_DL_API xpr_sint32_t AtomicDec32(volatile void *aAddr);
+XPR_DL_API xpr_sint32_t AtomicAdd32(volatile void *aAddr, volatile xpr_sint32_t aValue);
+XPR_DL_API xpr_sint32_t AtomicSub32(volatile void *aAddr, volatile xpr_sint32_t aValue);
+XPR_DL_API xpr_sint32_t AtomicCas32(volatile void *aAddr, volatile xpr_sint32_t aOldValue, volatile xpr_sint32_t aNewValue);
 
-xpr_sint64_t AtomicRead64(volatile void *aAddr);
-xpr_sint64_t AtomicWrite64(volatile void *aAddr, volatile xpr_sint64_t aValue);
-xpr_sint64_t AtomicInc64(volatile void *aAddr);
-xpr_sint64_t AtomicDec64(volatile void *aAddr);
-xpr_sint64_t AtomicAdd64(volatile void *aAddr, volatile xpr_sint64_t aValue);
-xpr_sint64_t AtomicSub64(volatile void *aAddr, volatile xpr_sint64_t aValue);
-xpr_sint64_t AtomicCas64(volatile void *aAddr, volatile xpr_sint64_t aOldValue, volatile xpr_sint64_t aNewValue);
+XPR_DL_API xpr_sint64_t AtomicRead64(volatile void *aAddr);
+XPR_DL_API xpr_sint64_t AtomicWrite64(volatile void *aAddr, volatile xpr_sint64_t aValue);
+XPR_DL_API xpr_sint64_t AtomicInc64(volatile void *aAddr);
+XPR_DL_API xpr_sint64_t AtomicDec64(volatile void *aAddr);
+XPR_DL_API xpr_sint64_t AtomicAdd64(volatile void *aAddr, volatile xpr_sint64_t aValue);
+XPR_DL_API xpr_sint64_t AtomicSub64(volatile void *aAddr, volatile xpr_sint64_t aValue);
+XPR_DL_API xpr_sint64_t AtomicCas64(volatile void *aAddr, volatile xpr_sint64_t aOldValue, volatile xpr_sint64_t aNewValue);
 
 XPR_INLINE void* AtomicReadPtr(volatile void *aAddr)
 {

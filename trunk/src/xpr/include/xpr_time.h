@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 typedef xpr_sint64_t xpr_time_t; // nano-second unit, from Jan 1, 1970
 
@@ -50,9 +51,9 @@ public:
 
 const Time kInitTime = {0, 0, 0, DayOfWeekNone, 0, 0, 0, 0, XPR_FALSE};
 
-xpr_time_t timer_ms(void);
-xpr_time_t timer_us(void);
-xpr_time_t timer_ns(void);
+XPR_DL_API xpr_time_t timer_ms(void);
+XPR_DL_API xpr_time_t timer_us(void);
+XPR_DL_API xpr_time_t timer_ns(void);
 } // namespace xpr
 
 #endif // __XPR_TIME_H__

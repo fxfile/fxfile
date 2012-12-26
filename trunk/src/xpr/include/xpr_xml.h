@@ -8,12 +8,13 @@
 #define __XPR_XML_H__
 #pragma once
 
+#include "xpr_dlsym.h"
 #include "xpr_guid.h"
 #include "xpr_char_set.h"
 
 namespace xpr
 {
-class XmlReader
+class XPR_DL_API XmlReader
 {
     DISALLOW_COPY_AND_ASSIGN(XmlReader);
 
@@ -22,7 +23,8 @@ public:
     virtual ~XmlReader(void);
 
 public:
-    xpr_bool_t load(const xpr_tchar_t *aPath);
+    xpr_bool_t load(const xpr_char_t *aPath);
+    xpr_bool_t load(const xpr_wchar_t *aPath);
     xpr_bool_t load(xpr_byte_t *aBuffer, xpr_size_t aBufferSize);
     void close(void);
 
@@ -34,23 +36,31 @@ public:
     struct Attribute;
 
     virtual Element *getRootElement(void) const;
-    Element *nextElement(Element *aElement, xpr_tchar_t *aNextName = XPR_NULL, xpr_size_t aMaxNextNameLength = 0) const;
-    Element *childElement(Element *aElement, xpr_tchar_t *aChildName = XPR_NULL, xpr_size_t aMaxChildNameLength = 0) const;
-    xpr_bool_t getElement(Element *aElement, xpr_tchar_t *aName, xpr_size_t aMaxNameLength) const;
-    xpr_bool_t testElement(Element *aElement, const xpr_tchar_t *aTestName) const;
+    Element *nextElement(Element *aElement) const;
+    Element *nextElement(Element *aElement, xpr_char_t *aNextName, xpr_size_t aMaxNextNameLength) const;
+    Element *nextElement(Element *aElement, xpr_wchar_t *aNextName, xpr_size_t aMaxNextNameLength) const;
+    Element *childElement(Element *aElement) const;
+    Element *childElement(Element *aElement, xpr_char_t *aChildName, xpr_size_t aMaxChildNameLength) const;
+    Element *childElement(Element *aElement, xpr_wchar_t *aChildName, xpr_size_t aMaxChildNameLength) const;
+    xpr_bool_t getElement(Element *aElement, xpr_char_t *aName, xpr_size_t aMaxNameLength) const;
+    xpr_bool_t getElement(Element *aElement, xpr_wchar_t *aName, xpr_size_t aMaxNameLength) const;
+    xpr_bool_t testElement(Element *aElement, const xpr_char_t *aTestName) const;
+    xpr_bool_t testElement(Element *aElement, const xpr_wchar_t *aTestName) const;
 
-    xpr_bool_t getEntity(Element *aElement, xpr_tchar_t *aEntity, xpr_size_t aMaxEntityLength) const;
+    xpr_bool_t getEntity(Element *aElement, xpr_char_t *aEntity, xpr_size_t aMaxEntityLength) const;
+    xpr_bool_t getEntity(Element *aElement, xpr_wchar_t *aEntity, xpr_size_t aMaxEntityLength) const;
 
     Attribute *getFirstAttribute(Element *aElement) const;
     Attribute *nextAttribute(Attribute *aAttribute) const;
-    xpr_bool_t getAttribute(Attribute *aAttribute, xpr_tchar_t *aName, xpr_size_t aMaxNameLength, xpr_tchar_t *aValue, xpr_size_t aMaxValueLength) const;
+    xpr_bool_t getAttribute(Attribute *aAttribute, xpr_char_t *aName, xpr_size_t aMaxNameLength, xpr_char_t *aValue, xpr_size_t aMaxValueLength) const; 
+    xpr_bool_t getAttribute(Attribute *aAttribute, xpr_wchar_t *aName, xpr_size_t aMaxNameLength, xpr_wchar_t *aValue, xpr_size_t aMaxValueLength) const;
 
 protected:
     class PrivateObject;
     PrivateObject *mObject;
 };
 
-class XmlWriter
+class XPR_DL_API XmlWriter
 {
     DISALLOW_COPY_AND_ASSIGN(XmlWriter);
 
@@ -61,16 +71,23 @@ public:
 public:
     virtual xpr_bool_t beginDocument(const xpr_char_t *aEncoding);
     virtual xpr_bool_t endDocument(void);
-    xpr_bool_t beginElement(const xpr_tchar_t *aName);
+    xpr_bool_t beginElement(const xpr_char_t *aName);
+    xpr_bool_t beginElement(const xpr_wchar_t *aName);
     xpr_bool_t endElement(void);
-    xpr_bool_t writeElement(const xpr_tchar_t *aName, const xpr_tchar_t *aValue);
-    xpr_bool_t writeElementEntity(const xpr_tchar_t *aElement, const xpr_tchar_t *aEntity);
-    xpr_bool_t writeEntity(const xpr_tchar_t *aEntity);
-    xpr_bool_t writeAttribute(const xpr_tchar_t *aName, const xpr_tchar_t *aValue);
-    xpr_bool_t writeComment(const xpr_tchar_t *aComment);
+    xpr_bool_t writeElement(const xpr_char_t *aName, const xpr_char_t *aValue);
+    xpr_bool_t writeElement(const xpr_wchar_t *aName, const xpr_wchar_t *aValue);
+    xpr_bool_t writeElementEntity(const xpr_char_t *aElement, const xpr_char_t *aEntity);
+    xpr_bool_t writeElementEntity(const xpr_wchar_t *aElement, const xpr_wchar_t *aEntity);
+    xpr_bool_t writeEntity(const xpr_char_t *aEntity);
+    xpr_bool_t writeEntity(const xpr_wchar_t *aEntity);
+    xpr_bool_t writeAttribute(const xpr_char_t *aName, const xpr_char_t *aValue);
+    xpr_bool_t writeAttribute(const xpr_wchar_t *aName, const xpr_wchar_t *aValue);
+    xpr_bool_t writeComment(const xpr_char_t *aComment);
+    xpr_bool_t writeComment(const xpr_wchar_t *aComment);
 
 public:
-    xpr_bool_t save(const xpr_tchar_t *aPath) const;
+    xpr_bool_t save(const xpr_char_t *aPath) const;
+    xpr_bool_t save(const xpr_wchar_t *aPath) const;
     xpr_byte_t *getXmlBuffer(xpr_size_t &aSize) const;
     virtual void close(void);
 

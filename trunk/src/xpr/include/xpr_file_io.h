@@ -10,25 +10,27 @@
 
 #include "xpr_config.h"
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 #include "xpr_file_sys.h"
+#include "xpr_char_set.h"
 
 #if defined(XPR_CFG_OS_WINDOWS)
-#define XPR_EOLA XPR_MBCS_STRING_LITERAL("\r\n")
-#define XPR_EOLW XPR_WIDE_STRING_LITERAL("\r\n")
+#define XPR_EOL_MBCS XPR_MBCS_STRING_LITERAL("\r\n")
+#define XPR_EOL_WIDE XPR_WIDE_STRING_LITERAL("\r\n")
 #else
-#define XPR_EOLA XPR_MBCS_STRING_LITERAL("\n")
-#define XPR_EOLW XPR_WIDE_STRING_LITERAL("\n")
+#define XPR_EOL_MBCS XPR_MBCS_STRING_LITERAL("\n")
+#define XPR_EOL_WIDE XPR_WIDE_STRING_LITERAL("\n")
 #endif
 
 #if defined(XPR_CFG_UNICODE)
-#define XPR_EOL XPR_EOLW
+#define XPR_EOL XPR_EOL_WIDE
 #else
-#define XPR_EOL XPR_EOLA
+#define XPR_EOL XPR_EOL_MBCS
 #endif
 
 namespace xpr
 {
-class FileIo
+class XPR_DL_API FileIo
 {
 public:
     enum
@@ -75,14 +77,19 @@ public:
     virtual ~FileIo(void);
 
 public:
-    virtual xpr_rcode_t open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode);
+    virtual xpr_rcode_t open(const xpr_char_t *aPath, xpr_sint_t aOpenMode);
+    virtual xpr_rcode_t open(const xpr_wchar_t *aPath, xpr_sint_t aOpenMode);
+    virtual xpr_rcode_t open(const void *aPath, xpr_size_t aPathBytes, CharSet aCharSet, xpr_sint_t aOpenMode);
     virtual xpr_bool_t isOpened(void) const;
     virtual xpr_sint_t getOpenMode(void) const;
     virtual void close(void);
 
 public:
-    virtual xpr_bool_t getPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen);
-    virtual const xpr_tchar_t *getPath(void) const;
+    virtual xpr_bool_t getPath(xpr_char_t *aPath, xpr_size_t aMaxLen);
+    virtual xpr_bool_t getPath(xpr_wchar_t *aPath, xpr_size_t aMaxLen);
+    virtual CharSet getPathCharSet(void) const;
+    virtual const xpr_byte_t *getPath(void) const;
+    virtual xpr_size_t getPathBytes(void) const;
 
 public:
     virtual xpr_rcode_t read(void *aData, xpr_size_t aSize, xpr_ssize_t *aReadSize);
@@ -109,7 +116,9 @@ public:
 
 protected:
     Handle      mHandle;
-    xpr_tchar_t mPath[XPR_MAX_PATH + 1];
+    xpr_byte_t *mPath;
+    xpr_size_t  mPathBytes;
+    CharSet     mPathCharSet;
     xpr_sint_t  mOpenMode;
 };
 } // namespace xpr

@@ -18,9 +18,9 @@ namespace xpr
 {
 static SystemInfo gSystemInfo;
 
-static xpr_rcode_t initOsVer(xpr_uint_t &aOsVer);
+XPR_INLINE xpr_rcode_t initOsVer(xpr_uint_t &aOsVer);
 
-xpr_rcode_t initSystemInfo(void)
+XPR_DL_API xpr_rcode_t initSystemInfo(void)
 {
     xpr_rcode_t sRcode = initOsVer(gSystemInfo.mOsVer);
     if (sRcode != XPR_RCODE_SUCCESS)
@@ -31,7 +31,7 @@ xpr_rcode_t initSystemInfo(void)
 
 // reference:
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833(v=vs.85).aspx
-static xpr_rcode_t initOsVer(xpr_uint_t &aOsVer)
+XPR_INLINE xpr_rcode_t initOsVer(xpr_uint_t &aOsVer)
 {
     OSVERSIONINFOEX sOsVerInfo = {0,};
     sOsVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
@@ -78,7 +78,7 @@ static xpr_rcode_t initOsVer(xpr_uint_t &aOsVer)
     }
     else if (sOsVerInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
-        xpr_tchar_t *sDesc = sOsVerInfo.szCSDVersion;
+        xpr_char_t *sDesc = sOsVerInfo.szCSDVersion;
         while (*sDesc != 0 && isDigit((xpr_char_t)(*sDesc)) != XPR_TRUE)
             sDesc++;
 
@@ -219,12 +219,12 @@ static xpr_rcode_t initOsVer(xpr_uint_t &aOsVer)
     return XPR_RCODE_SUCCESS;
 }
 
-SystemInfo *getSystemInfo(void)
+XPR_DL_API SystemInfo *getSystemInfo(void)
 {
     return &gSystemInfo;
 }
 
-xpr_uint_t getOsVer(void)
+XPR_DL_API xpr_uint_t getOsVer(void)
 {
     return gSystemInfo.mOsVer;
 }

@@ -18,14 +18,14 @@ static char THIS_FILE[] = __FILE__;
 
 namespace xpr
 {
-void initialize(void)
+XPR_DL_API void initialize(void)
 {
     initSystemInfo();
 
     ::xmlInitParser();
 }
 
-void finalize(void)
+XPR_DL_API void finalize(void)
 {
     ::xmlCleanupParser();
 }

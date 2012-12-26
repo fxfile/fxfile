@@ -36,7 +36,7 @@ static HighResTimer gHighResTimer;
 
 #define XPR_HIGH_REST_TIMER_CALC(cur,freq,unit) (((cur / freq) * unit) + ((cur % freq) * unit / freq))
 
-xpr_time_t timer_ms(void)
+XPR_DL_API xpr_time_t timer_ms(void)
 {
     static const xpr_sint64_t ms = 1000;
 
@@ -45,7 +45,7 @@ xpr_time_t timer_ms(void)
     return XPR_HIGH_REST_TIMER_CALC(t, gHighResTimer.mFreq, ms);
 }
 
-xpr_time_t timer_us(void)
+XPR_DL_API xpr_time_t timer_us(void)
 {
     static const xpr_sint64_t us = 1000 * 1000;
 
@@ -54,7 +54,7 @@ xpr_time_t timer_us(void)
     return XPR_HIGH_REST_TIMER_CALC(t, gHighResTimer.mFreq, us);
 }
 
-xpr_time_t timer_ns(void)
+XPR_DL_API xpr_time_t timer_ns(void)
 {
     static const xpr_sint64_t ns = 1000 * 1000 * 1000;
 

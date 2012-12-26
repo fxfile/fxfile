@@ -11,7 +11,7 @@
 
 namespace xpr
 {
-static const xpr_tchar_t kUnknownThreadName[] = XPR_STRING_LITERAL("XPR - Unknown Thread");
+static const xpr_char_t kUnknownThreadName[] = XPR_MBCS_STRING_LITERAL("XPR - Unknown Thread");
 
 struct ThreadParam
 {
@@ -19,7 +19,7 @@ struct ThreadParam
     ThreadDelegate *mDelegate;
 };
 
-Thread::Thread(xpr_tchar_t *aThreadName)
+Thread::Thread(xpr_char_t *aThreadName)
     : mThreadId(0)
     , mThreadName(XPR_NULL)
     , mThreadState(ThreadStateNone)
@@ -29,13 +29,13 @@ Thread::Thread(xpr_tchar_t *aThreadName)
 
     if (aThreadName != XPR_NULL)
     {
-        mThreadName = new xpr_tchar_t[_tcslen(aThreadName) + 1];
-        _tcscpy(mThreadName, aThreadName);
+        mThreadName = new xpr_char_t[strlen(aThreadName) + 1];
+        strcpy(mThreadName, aThreadName);
     }
     else
     {
-        mThreadName = new xpr_tchar_t[_tcslen(kUnknownThreadName) + 1];
-        _tcscpy(mThreadName, kUnknownThreadName);
+        mThreadName = new xpr_char_t[strlen(kUnknownThreadName) + 1];
+        strcpy(mThreadName, kUnknownThreadName);
     }
 }
 
@@ -157,15 +157,15 @@ ThreadState Thread::getThreadState(void) const
     return mThreadState;
 }
 
-xpr_rcode_t Thread::getThreadName(xpr_tchar_t *aThreadName) const
+xpr_rcode_t Thread::getThreadName(xpr_char_t *aThreadName) const
 {
     if (aThreadName == XPR_NULL)
         return XPR_RCODE_EINVAL;
 
     if (mThreadName != XPR_NULL)
     {
-        aThreadName = new xpr_tchar_t[_tcslen(mThreadName) + 1];
-        _tcscpy(aThreadName, mThreadName);
+        aThreadName = new xpr_char_t[strlen(mThreadName) + 1];
+        strcpy(aThreadName, mThreadName);
     }
     else
     {

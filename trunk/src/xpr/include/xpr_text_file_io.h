@@ -13,7 +13,7 @@
 
 namespace xpr
 {
-class TextFileIo
+class XPR_DL_API TextFileIo
 {
 public:
     enum
@@ -29,18 +29,19 @@ protected:
 
 public:
     virtual void setEncoding(CharSet aCharSet);
-    virtual xpr_bool_t setEndOfLine(const xpr_tchar_t *aEndOfLine);
+    virtual xpr_bool_t setEndOfLine(const xpr_char_t *aEndOfLine);
     virtual xpr_bool_t setEndOfLine(xpr_sint_t aEndOfLineStyle);
     virtual CharSet getEncoding(void) const;
-    virtual xpr_bool_t getEndOfLine(xpr_tchar_t *aEndOfLine, xpr_size_t aMaxLen) const;
+    virtual xpr_bool_t getEndOfLine(xpr_char_t *aEndOfLine, xpr_size_t aMaxLen) const;
 
 protected:
     FileIo      &mFileIo;
     CharSet      mCharSet;
-    xpr_tchar_t  mEndOfLine[10];
+    xpr_char_t   mEndOfLine[10];
+    xpr_wchar_t  mEndOfLineW[10];
 };
 
-class TextFileReader : public TextFileIo
+class XPR_DL_API TextFileReader : public TextFileIo
 {
 public:
     explicit TextFileReader(FileIo &aFileIo);
@@ -55,24 +56,32 @@ public:
     virtual void setBufferSize(xpr_size_t aBufferSize);
 
 public:
-    virtual xpr_rcode_t read(xpr_tchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
-    virtual xpr_rcode_t readLine(xpr_tchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    virtual xpr_rcode_t read(void *aText, xpr_size_t aMaxBytes, CharSet aCharSet, xpr_ssize_t *aReadBytes);
+    virtual xpr_rcode_t read(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    virtual xpr_rcode_t read(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    virtual xpr_rcode_t readLine(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    virtual xpr_rcode_t readLine(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
 
 protected:
-    xpr_rcode_t copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    xpr_rcode_t copyToEndOfLine(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
+    xpr_rcode_t copyToEndOfLine(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen);
 
 protected:
     xpr_byte_t  *mBuffer;
     xpr_size_t   mBufferSize;
     xpr_size_t   mBufferReadSize;
     xpr_size_t   mBufferOffset;
-    xpr_tchar_t *mTextBuffer;
+
+    xpr_char_t  *mTextBuffer;
     xpr_size_t   mTextMaxLen;
     xpr_size_t   mTextLen;
+    xpr_wchar_t *mTextBufferW;
+    xpr_size_t   mTextMaxLenW;
+    xpr_size_t   mTextLenW;
     xpr_size_t   mEndOfLineLen;
 };
 
-class TextFileWriter : public TextFileIo
+class XPR_DL_API TextFileWriter : public TextFileIo
 {
 public:
     explicit TextFileWriter(FileIo &aFileIo);
@@ -82,23 +91,25 @@ public:
     virtual xpr_bool_t canWrite(void) const;
 
 public:
-
-public:
     virtual xpr_rcode_t writeBom(void);
     virtual xpr_rcode_t write(const void *aText, xpr_size_t aTextBytes, CharSet aCharSet);
-    virtual xpr_rcode_t write(const xpr_tchar_t *aText);
-    virtual xpr_rcode_t writeFormat(const xpr_tchar_t *aFormat, ...);
-    virtual xpr_rcode_t writeLine(const xpr_tchar_t *aLineText);
-    virtual xpr_rcode_t writeFormatLine(const xpr_tchar_t *aFormat, ...);
+    virtual xpr_rcode_t write(const xpr_char_t *aText);
+    virtual xpr_rcode_t write(const xpr_wchar_t *aText);
+    virtual xpr_rcode_t writeFormat(const xpr_char_t *aFormat, ...);
+    virtual xpr_rcode_t writeFormat(const xpr_wchar_t *aFormat, ...);
+    virtual xpr_rcode_t writeLine(const xpr_char_t *aLineText);
+    virtual xpr_rcode_t writeLine(const xpr_wchar_t *aLineText);
+    virtual xpr_rcode_t writeFormatLine(const xpr_char_t *aFormat, ...);
+    virtual xpr_rcode_t writeFormatLine(const xpr_wchar_t *aFormat, ...);
 
 protected:
-    xpr_rcode_t ensureBuffer(const xpr_tchar_t *aFormat, va_list aArgs);
+    xpr_rcode_t ensureBuffer(xpr_size_t aFormattedTextSize);
 
 protected:
-    xpr_byte_t  *mBuffer;
-    xpr_size_t   mBufferSize;
-    xpr_tchar_t *mFormattedText;
-    xpr_size_t   mFormattedTextMaxLen;
+    xpr_byte_t *mBuffer;
+    xpr_size_t  mBufferSize;
+    xpr_byte_t *mFormattedText;
+    xpr_size_t  mFormattedTextMaxSize;
 };
 } // namespace xpr
 

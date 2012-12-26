@@ -9,10 +9,11 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
-class Guid
+class XPR_DL_API Guid
 {
 public:
     Guid(void);
@@ -27,8 +28,10 @@ public:
     xpr_bool_t  none(void) const;
 
 public:
-    xpr_bool_t  toString(xpr_tchar_t *aGuid, xpr_bool_t aWithBrace = XPR_TRUE) const;
-    xpr_bool_t  fromString(const xpr_tchar_t *aGuid);
+    xpr_bool_t  toString(xpr_char_t *aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
+    xpr_bool_t  toString(xpr_wchar_t *aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
+    xpr_bool_t  fromString(const xpr_char_t *aString);
+    xpr_bool_t  fromString(const xpr_wchar_t *aString);
 
     void        toGuid(Guid &aGuid) const;
     void        fromGuid(const Guid &aGuid);

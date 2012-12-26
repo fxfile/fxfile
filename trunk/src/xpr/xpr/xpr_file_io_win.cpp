@@ -8,15 +8,18 @@
 #include "xpr_rcode.h"
 #include "xpr_bit.h"
 #include "xpr_system.h"
+#include "xpr_memory.h"
 
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS)
 FileIo::FileIo(void)
     : mOpenMode(0)
+    , mPath(XPR_NULL)
+    , mPathBytes(0)
+    , mPathCharSet(CharSetNone)
 {
     mHandle.mFile = XPR_NULL;
-    mPath[0] = 0;
 }
 
 FileIo::~FileIo(void)
@@ -24,9 +27,19 @@ FileIo::~FileIo(void)
     close();
 }
 
-xpr_rcode_t FileIo::open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode)
+xpr_rcode_t FileIo::open(const xpr_char_t *aPath, xpr_sint_t aOpenMode)
 {
-    if (XPR_IS_NULL(aPath))
+    return open(aPath, strlen(aPath) * sizeof(xpr_char_t), CharSetMultiBytes, CharSetMultiBytes);
+}
+
+xpr_rcode_t FileIo::open(const xpr_wchar_t *aPath, xpr_sint_t aOpenMode)
+{
+    return open(aPath, wcslen(aPath) * sizeof(xpr_wchar_t), CharSetUtf16, aOpenMode);
+}
+
+xpr_rcode_t FileIo::open(const void *aPath, xpr_size_t aPathBytes, CharSet aCharSet, xpr_sint_t aOpenMode)
+{
+    if (XPR_IS_NULL(aPath) || aPathBytes == 0 || aCharSet == CharSetNone)
         return XPR_RCODE_EINVAL;
 
     DWORD sAccessFlags    = 0;
@@ -69,22 +82,120 @@ xpr_rcode_t FileIo::open(const xpr_tchar_t *aPath, xpr_sint_t aOpenMode)
     if (XPR_TEST_BITS(aOpenMode, OpenModeSync))
         sAttributeFlags = FILE_FLAG_WRITE_THROUGH;
 
+    xpr_byte_t *sPath;
+    xpr_size_t sPathBytes;
+    CharSet sPathCharSet;
+
+    if (aCharSet == CharSetUtf16)
+    {
+        xpr_size_t sPathLen = aPathBytes / sizeof(xpr_wchar_t);
+        sPath = (xpr_byte_t *)new xpr_wchar_t[sPathLen + 1];
+        if (XPR_IS_NULL(sPath))
+            return XPR_RCODE_ENOMEM;
+
+        wcscpy((xpr_wchar_t *)sPath, (const xpr_wchar_t *)aPath);
+        sPathBytes = aPathBytes;
+        sPathCharSet = aCharSet;
+    }
+    else if (aCharSet == CharSetMultiBytes)
+    {
+        xpr_size_t sPathLen = aPathBytes / sizeof(xpr_char_t);
+        sPath = (xpr_byte_t *)new xpr_char_t[sPathLen + 1];
+        if (XPR_IS_NULL(sPath))
+            return XPR_RCODE_ENOMEM;
+
+        strcpy((xpr_char_t *)sPath, (const xpr_char_t *)aPath);
+        sPathBytes = aPathBytes;
+        sPathCharSet = aCharSet;
+    }
+    else
+    {
+        xpr_rcode_t sRcode;
+        xpr_size_t sInputBytes;
+        xpr_size_t sOutputBytes;
+
+        if (getOsVer() >= kOsVerWinNT)
+        {
+            sPath = new xpr_byte_t[(aPathBytes + 1) * 4];
+            sInputBytes = aPathBytes;
+
+            sRcode = convertCharSet(aPath,
+                                    &sInputBytes,
+                                    aCharSet,
+                                    sPath,
+                                    &sOutputBytes,
+                                    CharSetUtf16);
+
+            if (XPR_RCODE_IS_ERROR(sRcode))
+            {
+                XPR_SAFE_DELETE_ARRAY(sPath);
+                return sRcode;
+            }
+
+            sPath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+            sPathBytes = sOutputBytes;
+            sPathCharSet = CharSetUtf16;
+        }
+        else
+        {
+            sPath = new xpr_byte_t[(aPathBytes + 1) * 4];
+            sInputBytes = aPathBytes;
+
+            sRcode = convertCharSet(aPath,
+                                    &sInputBytes,
+                                    aCharSet,
+                                    sPath,
+                                    &sOutputBytes,
+                                    CharSetMultiBytes);
+
+            if (XPR_RCODE_IS_ERROR(sRcode))
+            {
+                XPR_SAFE_DELETE_ARRAY(sPath);
+                return sRcode;
+            }
+
+            sPath[sOutputBytes / sizeof(xpr_char_t)] = 0;
+            sPathBytes = sOutputBytes;
+            sPathCharSet = CharSetMultiBytes;
+        }
+    }
+
     HANDLE sFile;
-    sFile = ::CreateFile(aPath,
-                         sAccessFlags,
-                         sSharedMode,
-                         XPR_NULL,
-                         sCreateFlags,
-                         sAttributeFlags,
-                         XPR_NULL);
+
+    if (sPathCharSet == CharSetUtf16)
+    {
+        sFile = ::CreateFileW((const xpr_wchar_t *)sPath,
+                              sAccessFlags,
+                              sSharedMode,
+                              XPR_NULL,
+                              sCreateFlags,
+                              sAttributeFlags,
+                              XPR_NULL);
+    }
+    else
+    {
+        sFile = ::CreateFileA((const xpr_char_t *)sPath,
+                              sAccessFlags,
+                              sSharedMode,
+                              XPR_NULL,
+                              sCreateFlags,
+                              sAttributeFlags,
+                              XPR_NULL);
+    }
 
     if (sFile == INVALID_HANDLE_VALUE)
     {
+        XPR_SAFE_DELETE_ARRAY(sPath);
         return XPR_RCODE_GET_OS_ERROR();
     }
 
     mHandle.mFile = sFile;
-    _tcscpy(mPath, aPath);
+
+    XPR_SAFE_DELETE_ARRAY(mPath);
+    mPath = sPath;
+    mPathBytes = sPathBytes;
+    mPathCharSet = sPathCharSet;
+
     mOpenMode = aOpenMode;
 
     return XPR_RCODE_SUCCESS;
@@ -109,26 +220,82 @@ void FileIo::close(void)
     {
         ::CloseHandle(mHandle.mFile);
         mHandle.mFile = XPR_NULL;
+
+        XPR_SAFE_DELETE_ARRAY(mPath);
+        mPathBytes = 0;
+        mPathCharSet = CharSetNone;
+
+        mOpenMode = 0;
     }
 }
 
-xpr_bool_t FileIo::getPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen)
+xpr_bool_t FileIo::getPath(xpr_char_t *aPath, xpr_size_t aMaxLen)
 {
     if (XPR_IS_NULL(aPath))
         return XPR_FALSE;
 
-    xpr_size_t sLen = _tcslen(mPath);
-    if (aMaxLen < sLen)
-        return XPR_FALSE;
+    if (mPathCharSet == CharSetUtf16)
+    {
+        xpr_size_t sInputBytes = mPathBytes;
+        xpr_size_t sOutputBytes = aMaxLen * sizeof(xpr_char_t);
 
-    _tcscpy(aPath, mPath);
+        XPR_UTF16_TO_MBS(mPath, &sInputBytes, aPath, &sOutputBytes);
+
+        aPath[sOutputBytes / sizeof(xpr_char_t)] = 0;
+    }
+    else
+    {
+        xpr_size_t sInputBytes = mPathBytes;
+        xpr_size_t sOutputBytes = aMaxLen * sizeof(xpr_char_t);
+
+        XPR_MBS_TO_MBS(mPath, &sInputBytes, aPath, &sOutputBytes);
+
+        aPath[sOutputBytes / sizeof(xpr_char_t)] = 0;
+    }
 
     return XPR_TRUE;
 }
 
-const xpr_tchar_t *FileIo::getPath(void) const
+xpr_bool_t FileIo::getPath(xpr_wchar_t *aPath, xpr_size_t aMaxLen)
+{
+    if (XPR_IS_NULL(aPath))
+        return XPR_FALSE;
+
+    if (mPathCharSet == CharSetUtf16)
+    {
+        xpr_size_t sInputBytes = mPathBytes;
+        xpr_size_t sOutputBytes = aMaxLen * sizeof(xpr_wchar_t);
+
+        XPR_UTF16_TO_MBS(mPath, &sInputBytes, aPath, &sOutputBytes);
+
+        aPath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+    }
+    else
+    {
+        xpr_size_t sInputBytes = mPathBytes;
+        xpr_size_t sOutputBytes = aMaxLen * sizeof(xpr_wchar_t);
+
+        XPR_MBS_TO_MBS(mPath, &sInputBytes, aPath, &sOutputBytes);
+
+        aPath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+    }
+
+    return XPR_TRUE;
+}
+
+CharSet FileIo::getPathCharSet(void) const
+{
+    return mPathCharSet;
+}
+
+const xpr_byte_t *FileIo::getPath(void) const
 {
     return mPath;
+}
+
+xpr_size_t FileIo::getPathBytes(void) const
+{
+    return mPathBytes;
 }
 
 xpr_rcode_t FileIo::read(void        *aData,

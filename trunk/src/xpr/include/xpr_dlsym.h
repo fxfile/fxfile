@@ -8,6 +8,8 @@
 #define __XPR_DLSYM_H__
 #pragma once
 
+#include "xpr_config.h"
+
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS) && !defined(XPR_CFG_DL_STATIC)

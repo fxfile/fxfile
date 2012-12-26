@@ -23,9 +23,9 @@ static const xpr_char_t *kCharSets[] = {
     "",             // CharSetNone
     "char",         // CharSetMultiBytes
     "utf-8",        // CharSetUtf8
-    "utf-16le",     // CharSetUtf16
+    "utf-16le",     // CharSetUtf16le
     "utf-16be",     // CharSetUtf16be
-    "utf-32le",     // CharSetUtf32
+    "utf-32le",     // CharSetUtf32le
     "utf-32be",     // CharSetUtf32be
 };
 
@@ -61,6 +61,11 @@ xpr_rcode_t CharSetConverter::open(CharSet aInputCharSet, CharSet aOutputCharSet
     mOutputCharSet = aOutputCharSet;
 
     return XPR_RCODE_SUCCESS;
+}
+
+xpr_bool_t CharSetConverter::isOpened(void) const
+{
+    return XPR_IS_NOT_NULL(mHandle) ? XPR_TRUE : XPR_FALSE;
 }
 
 void CharSetConverter::getCharSet(CharSet &aInputCharSet, CharSet &aOutputCharSet) const
@@ -145,8 +150,8 @@ void CharSetConverter::close(void)
     }
 }
 
-xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
-                                 void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet)
+XPR_DL_API xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
+                                            void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet)
 {
     if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
         return XPR_RCODE_EINVAL;

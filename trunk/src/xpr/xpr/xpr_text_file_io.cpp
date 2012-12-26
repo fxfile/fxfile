@@ -49,6 +49,7 @@ TextFileIo::TextFileIo(FileIo &aFileIo)
     , mCharSet(CharSetNone)
 {
     mEndOfLine[0] = 0;
+    mEndOfLineW[0] = 0;
 }
 
 TextFileIo::~TextFileIo(void)
@@ -65,16 +66,16 @@ CharSet TextFileIo::getEncoding(void) const
     return mCharSet;
 }
 
-xpr_bool_t TextFileIo::setEndOfLine(const xpr_tchar_t *aEndOfLine)
+xpr_bool_t TextFileIo::setEndOfLine(const xpr_char_t *aEndOfLine)
 {
     if (XPR_IS_NULL(aEndOfLine))
         return XPR_FALSE;
 
-    xpr_size_t sLen = _tcslen(aEndOfLine);
+    xpr_size_t sLen = strlen(aEndOfLine);
     if (sLen == 0 || sLen > XPR_COUNT_OF(mEndOfLine))
         return XPR_FALSE;
 
-    _tcscpy(mEndOfLine, aEndOfLine);
+    strcpy(mEndOfLine, aEndOfLine);
 
     return XPR_TRUE;
 }
@@ -83,27 +84,36 @@ xpr_bool_t TextFileIo::setEndOfLine(xpr_sint_t aEndOfLineStyle)
 {
     switch (aEndOfLineStyle)
     {
-    case kUnixStyle:   _tcscpy(mEndOfLine, XPR_STRING_LITERAL("\n"));   break;
-    case kWinStyle:    _tcscpy(mEndOfLine, XPR_STRING_LITERAL("\r\n")); break;
-    case kOldMacStyle: _tcscpy(mEndOfLine, XPR_STRING_LITERAL("\r"));   break;
+    case kUnixStyle:   strcpy(mEndOfLine, XPR_MBCS_STRING_LITERAL("\n"));   break;
+    case kWinStyle:    strcpy(mEndOfLine, XPR_MBCS_STRING_LITERAL("\r\n")); break;
+    case kOldMacStyle: strcpy(mEndOfLine, XPR_MBCS_STRING_LITERAL("\r"));   break;
 
     default:
         return XPR_FALSE;
     }
 
+    xpr_size_t sInputBytes = strlen(mEndOfLine) + 1;
+    xpr_size_t sOutputBytes = (XPR_COUNT_OF(mEndOfLineW) - 1) * sizeof(xpr_wchar_t);
+
+    CharSet sCharSet = CharSetUtf16;
+    if (sizeof(xpr_wchar_t) == 4)
+        sCharSet = CharSetUtf32;
+
+    convertCharSet(mEndOfLine, &sInputBytes, CharSetMultiBytes, mEndOfLineW, &sOutputBytes, sCharSet);
+
     return XPR_TRUE;
 }
 
-xpr_bool_t TextFileIo::getEndOfLine(xpr_tchar_t *aEndOfLine, xpr_size_t aMaxLen) const
+xpr_bool_t TextFileIo::getEndOfLine(xpr_char_t *aEndOfLine, xpr_size_t aMaxLen) const
 {
     if (XPR_IS_NULL(aEndOfLine) || aMaxLen == 0)
         return XPR_FALSE;
 
-    xpr_size_t sLen = _tcslen(mEndOfLine);
+    xpr_size_t sLen = strlen(mEndOfLine);
     if (sLen > aMaxLen)
         return XPR_FALSE;
 
-    _tcscpy(aEndOfLine, mEndOfLine);
+    strcpy(aEndOfLine, mEndOfLine);
 
     return XPR_TRUE;
 }
@@ -111,7 +121,9 @@ xpr_bool_t TextFileIo::getEndOfLine(xpr_tchar_t *aEndOfLine, xpr_size_t aMaxLen)
 TextFileReader::TextFileReader(FileIo &aFileIo)
     : TextFileIo(aFileIo)
     , mBuffer(XPR_NULL), mBufferSize(kDefaultBufferSize), mBufferReadSize(0), mBufferOffset(0)
-    , mTextBuffer(XPR_NULL), mTextMaxLen(0), mTextLen(0), mEndOfLineLen(0)
+    , mTextBuffer(XPR_NULL), mTextMaxLen(0), mTextLen(0)
+    , mTextBufferW(XPR_NULL), mTextMaxLenW(0), mTextLenW(0)
+    , mEndOfLineLen(0)
 {
 }
 
@@ -119,6 +131,7 @@ TextFileReader::~TextFileReader(void)
 {
     XPR_SAFE_DELETE_ARRAY(mBuffer);
     XPR_SAFE_DELETE_ARRAY(mTextBuffer);
+    XPR_SAFE_DELETE_ARRAY(mTextBufferW);
 }
 
 xpr_bool_t TextFileReader::canRead(void) const
@@ -195,16 +208,14 @@ void TextFileReader::setBufferSize(xpr_size_t aBufferSize)
         mBufferSize = aBufferSize;
 }
 
-xpr_rcode_t TextFileReader::read(xpr_tchar_t *aText,
-                                 xpr_size_t   aMaxLen,
-                                 xpr_ssize_t *aReadLen)
+xpr_rcode_t TextFileReader::read(void *aText, xpr_size_t aMaxBytes, CharSet aCharSet, xpr_ssize_t *aReadBytes)
 {
-    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadLen))
+    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadBytes))
         return XPR_RCODE_EINVAL;
 
-    if (aMaxLen == 0)
+    if (aMaxBytes == 0)
     {
-        *aReadLen = 0;
+        *aReadBytes = 0;
         return XPR_RCODE_SUCCESS;
     }
 
@@ -222,36 +233,32 @@ xpr_rcode_t TextFileReader::read(xpr_tchar_t *aText,
 
     xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
-    xpr_size_t sReadLen;
+    xpr_size_t sReadBytes;
 
-    CharSet sToCharSet = CharSetMultiBytes;
-    if (sizeof(xpr_tchar_t) == sizeof(xpr_wchar_t))
-        sToCharSet = CharSetUtf16;
-
-    sReadLen = 0;
+    sReadBytes = 0;
 
     do
     {
         if (mBufferReadSize > 0 && mBufferOffset < mBufferReadSize)
         {
             sInputBytes = mBufferReadSize - mBufferOffset;
-            sOutputBytes = (aMaxLen - sReadLen) * sizeof(xpr_tchar_t);
+            sOutputBytes = aMaxBytes - sReadBytes;
 
             sRcode = convertCharSet(mBuffer + mBufferOffset,
                                     &sInputBytes,
                                     mCharSet,
-                                    aText + sReadLen,
+                                    (xpr_byte_t *)aText + sReadBytes,
                                     &sOutputBytes,
-                                    sToCharSet);
+                                    aCharSet);
 
             if (XPR_RCODE_IS_ERROR(sRcode))
                 break;
 
-            sReadLen += sOutputBytes / sizeof(xpr_tchar_t);
+            sReadBytes += sOutputBytes;
 
             mBufferOffset += sInputBytes;
 
-            if (sReadLen == aMaxLen)
+            if (sReadBytes == aMaxBytes)
                 break;
         }
 
@@ -264,18 +271,51 @@ xpr_rcode_t TextFileReader::read(xpr_tchar_t *aText,
 
     } while (true);
 
-    *aReadLen = sReadLen;
+    *aReadBytes = sReadBytes;
 
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
+xpr_rcode_t TextFileReader::read(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
 {
-    xpr_tchar_t *sEndOfLine;
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sReadBytes;
+
+    sRcode = read(aText, aMaxLen * sizeof(xpr_char_t), CharSetMultiBytes, &sReadBytes);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    *aReadLen = sReadBytes / sizeof(xpr_char_t);
+
+    return sRcode;
+}
+
+xpr_rcode_t TextFileReader::read(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
+{
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sReadBytes;
+    CharSet sCharSet;
+
+    sCharSet = CharSetUtf16;
+    if (sizeof(xpr_wchar_t) == 4)
+        sCharSet = CharSetUtf32;
+
+    sRcode = read(aText, aMaxLen * sizeof(xpr_wchar_t), sCharSet, &sReadBytes);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    *aReadLen = sReadBytes / sizeof(xpr_wchar_t);
+
+    return sRcode;
+}
+
+xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
+{
+    xpr_char_t *sEndOfLine;
 
     if (mEndOfLineLen == 0)
     {
-        sEndOfLine = _tcspbrk(mTextBuffer, XPR_STRING_LITERAL("\r\n"));
+        sEndOfLine = strpbrk(mTextBuffer, XPR_MBCS_STRING_LITERAL("\r\n"));
         if (XPR_IS_NULL(sEndOfLine))
             return XPR_RCODE_ENOENT;
 
@@ -290,11 +330,16 @@ xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxL
             mEndOfLine[1] = 0;
         }
 
-        mEndOfLineLen = _tcslen(mEndOfLine);
+        mEndOfLineLen = strlen(mEndOfLine);
+
+        xpr_size_t i;
+        for (i = 0; i < mEndOfLineLen; ++i)
+            mEndOfLineW[i] = mEndOfLine[i];
+        mEndOfLineW[i] = 0;
     }
     else
     {
-        sEndOfLine = _tcsstr(mTextBuffer, mEndOfLine);
+        sEndOfLine = strstr(mTextBuffer, mEndOfLine);
         if (XPR_IS_NULL(sEndOfLine))
             return XPR_RCODE_ENOENT;
     }
@@ -305,7 +350,7 @@ xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxL
     if (sCopyLen > aMaxLen)
         return XPR_RCODE_E2BIG;
 
-    _tcscpy(aText, mTextBuffer);
+    strcpy(aText, mTextBuffer);
     *aReadLen = sCopyLen;
 
     // left shift
@@ -313,7 +358,7 @@ xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxL
     xpr_size_t sMoveTextLen = mTextLen - sCopyLen - mEndOfLineLen;
     if (sMoveTextLen > 0)
     {
-        memmove(mTextBuffer, sEndOfLine + mEndOfLineLen, sMoveTextLen * sizeof(xpr_tchar_t));
+        memmove(mTextBuffer, sEndOfLine + mEndOfLineLen, sMoveTextLen * sizeof(xpr_char_t));
         mTextBuffer[sMoveTextLen] = 0;
     }
 
@@ -322,7 +367,7 @@ xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_tchar_t *aText, xpr_size_t aMaxL
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t TextFileReader::readLine(xpr_tchar_t *aText,
+xpr_rcode_t TextFileReader::readLine(xpr_char_t  *aText,
                                      xpr_size_t   aMaxLen,
                                      xpr_ssize_t *aReadLen)
 {
@@ -336,7 +381,7 @@ xpr_rcode_t TextFileReader::readLine(xpr_tchar_t *aText,
     {
         const xpr_size_t sTextBufferNeedLen = mBufferSize * 4;
 
-        xpr_tchar_t *sNewTextBuffer = new xpr_tchar_t[sTextBufferNeedLen + 1];
+        xpr_char_t *sNewTextBuffer = new xpr_char_t[sTextBufferNeedLen + 1];
         if (XPR_IS_NULL(sNewTextBuffer))
             return XPR_RCODE_ENOMEM;
 
@@ -394,10 +439,140 @@ xpr_rcode_t TextFileReader::readLine(xpr_tchar_t *aText,
     return XPR_RCODE_SUCCESS;
 }
 
+xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
+{
+    xpr_wchar_t *sEndOfLine;
+
+    if (mEndOfLineLen == 0)
+    {
+        sEndOfLine = wcspbrk(mTextBufferW, XPR_WIDE_STRING_LITERAL("\r\n"));
+        if (XPR_IS_NULL(sEndOfLine))
+            return XPR_RCODE_ENOENT;
+
+        mEndOfLine[0] = (xpr_char_t)sEndOfLine[0];
+        if (sEndOfLine[0] == '\r' && sEndOfLine[1] == '\n')
+        {
+            mEndOfLine[1] = '\n';
+            mEndOfLine[2] = 0;
+        }
+        else
+        {
+            mEndOfLine[1] = 0;
+        }
+
+        mEndOfLineLen = strlen(mEndOfLine);
+
+        xpr_size_t i;
+        for (i = 0; i < mEndOfLineLen; ++i)
+            mEndOfLineW[i] = mEndOfLine[i];
+        mEndOfLineW[i] = 0;
+    }
+    else
+    {
+        sEndOfLine = wcsstr(mTextBufferW, mEndOfLineW);
+        if (XPR_IS_NULL(sEndOfLine))
+            return XPR_RCODE_ENOENT;
+    }
+
+    *sEndOfLine = 0;
+
+    xpr_size_t sCopyLen = (xpr_size_t)(sEndOfLine - mTextBufferW);
+    if (sCopyLen > aMaxLen)
+        return XPR_RCODE_E2BIG;
+
+    wcscpy(aText, mTextBufferW);
+    *aReadLen = sCopyLen;
+
+    // left shift
+
+    xpr_size_t sMoveTextLen = mTextLenW - sCopyLen - mEndOfLineLen;
+    if (sMoveTextLen > 0)
+    {
+        memmove(mTextBufferW, sEndOfLine + mEndOfLineLen, sMoveTextLen * sizeof(xpr_wchar_t));
+        mTextBufferW[sMoveTextLen] = 0;
+    }
+
+    mTextLenW = sMoveTextLen;
+
+    return XPR_RCODE_SUCCESS;
+}
+
+xpr_rcode_t TextFileReader::readLine(xpr_wchar_t *aText,
+                                     xpr_size_t   aMaxLen,
+                                     xpr_ssize_t *aReadLen)
+{
+    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadLen))
+        return XPR_RCODE_EINVAL;
+
+    xpr_rcode_t sRcode;
+    xpr_ssize_t sReadLen;
+
+    if (XPR_IS_NULL(mTextBufferW))
+    {
+        const xpr_size_t sTextBufferNeedLen = mBufferSize * 4;
+
+        xpr_wchar_t *sNewTextBuffer = new xpr_wchar_t[sTextBufferNeedLen + 1];
+        if (XPR_IS_NULL(sNewTextBuffer))
+            return XPR_RCODE_ENOMEM;
+
+        mTextBufferW = sNewTextBuffer;
+        mTextMaxLenW = sTextBufferNeedLen;
+    }
+
+    if (mTextLenW > 0)
+    {
+        sRcode = copyToEndOfLine(aText, aMaxLen, aReadLen);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
+            return XPR_RCODE_SUCCESS;
+        else
+        {
+            if (XPR_RCODE_IS_NOT_ENOENT(sRcode))
+                return sRcode;
+        }
+    }
+
+    xpr_size_t sMaxReadLen = mTextMaxLenW - mTextLenW;
+    if (sMaxReadLen == 0)
+        return XPR_RCODE_E2BIG;
+
+    sRcode = read(mTextBufferW + mTextLenW, sMaxReadLen, &sReadLen);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    mTextLenW += sReadLen;
+
+    mTextBufferW[mTextLenW] = 0;
+
+    // end of file
+    if (sReadLen == 0)
+    {
+        if (mTextLenW == 0)
+        {
+            *aReadLen = -1;
+
+            return XPR_RCODE_SUCCESS;
+        }
+        else
+        {
+            if (mTextLenW > aMaxLen)
+                return XPR_RCODE_E2BIG;
+        }
+    }
+
+    sRcode = copyToEndOfLine(aText, aMaxLen, aReadLen);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+    {
+        if (XPR_RCODE_IS_NOT_ENOENT(sRcode))
+            return XPR_RCODE_E2BIG;
+    }
+
+    return XPR_RCODE_SUCCESS;
+}
+
 TextFileWriter::TextFileWriter(FileIo &aFileIo)
     : TextFileIo(aFileIo)
     , mBuffer(XPR_NULL), mBufferSize(0)
-    , mFormattedText(XPR_NULL), mFormattedTextMaxLen(0)
+    , mFormattedText(XPR_NULL), mFormattedTextMaxSize(0)
 {
 }
 
@@ -476,51 +651,82 @@ xpr_rcode_t TextFileWriter::write(const void *aText, xpr_size_t aTextBytes, Char
     return mFileIo.write(mBuffer, sOutputBytes, &sWrittenSize);
 }
 
-xpr_rcode_t TextFileWriter::write(const xpr_tchar_t *aText)
+xpr_rcode_t TextFileWriter::write(const xpr_char_t *aText)
 {
     if (XPR_IS_NULL(aText))
         return XPR_RCODE_EINVAL;
 
-    xpr_size_t sLen = _tcslen(aText);
+    xpr_size_t sLen = strlen(aText);
 
-    return write(aText, sLen * sizeof(xpr_tchar_t), (sizeof(xpr_tchar_t) == 2) ? CharSetUtf16 : CharSetMultiBytes);
+    return write(aText, sLen * sizeof(xpr_char_t), CharSetMultiBytes);
 }
 
-xpr_rcode_t TextFileWriter::ensureBuffer(const xpr_tchar_t *aFormat, va_list aArgs)
+xpr_rcode_t TextFileWriter::write(const xpr_wchar_t *aText)
 {
-    xpr_sint_t sLen = _vsctprintf(aFormat, aArgs);
-    xpr_size_t sFormattedTextNeedLen = sLen * 3 / 2 + 10; // with end of line
+    if (XPR_IS_NULL(aText))
+        return XPR_RCODE_EINVAL;
 
-    if (XPR_IS_NULL(mFormattedText) || (xpr_sint_t)sFormattedTextNeedLen > mFormattedTextMaxLen)
+    xpr_size_t sLen = wcslen(aText);
+
+    CharSet sCharSet = CharSetUtf16;
+    if (sizeof(xpr_wchar_t) == 4)
+        sCharSet = CharSetUtf32;
+
+    return write(aText, sLen * sizeof(xpr_wchar_t), sCharSet);
+}
+
+xpr_rcode_t TextFileWriter::ensureBuffer(xpr_size_t aFormattedTextSize)
+{
+    xpr_size_t sFormattedTextSize = aFormattedTextSize * 3 / 2 + 10; // with end of line
+
+    if (XPR_IS_NULL(mFormattedText) || (xpr_sint_t)sFormattedTextSize > mFormattedTextMaxSize)
     {
-        xpr_tchar_t *sNewFormatBuffer = new xpr_tchar_t[sFormattedTextNeedLen + 1];
+        xpr_byte_t *sNewFormatBuffer = new xpr_byte_t[sFormattedTextSize + 1];
         if (XPR_IS_NULL(sNewFormatBuffer))
             return XPR_RCODE_ENOMEM;
 
         XPR_SAFE_DELETE_ARRAY(mFormattedText);
 
         mFormattedText = sNewFormatBuffer;
-        mFormattedTextMaxLen = sFormattedTextNeedLen;
+        mFormattedTextMaxSize = sFormattedTextSize;
     }
 
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t TextFileWriter::writeFormat(const xpr_tchar_t *aFormat, ...)
+xpr_rcode_t TextFileWriter::writeFormat(const xpr_char_t *aFormat, ...)
 {
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_rcode_t sRcode = ensureBuffer(aFormat, sArgs);
+    xpr_sint_t sFormattedTextLen = _vscprintf(aFormat, sArgs);
+
+    xpr_rcode_t sRcode = ensureBuffer(sFormattedTextLen * sizeof(xpr_char_t));
     if (XPR_RCODE_IS_ERROR(sRcode))
         return sRcode;
 
-    _vstprintf(mFormattedText, aFormat, sArgs);
+    vsprintf((xpr_char_t *)mFormattedText, aFormat, sArgs);
 
-    return write(mFormattedText);
+    return write((xpr_char_t *)mFormattedText);
 }
 
-xpr_rcode_t TextFileWriter::writeLine(const xpr_tchar_t *aText)
+xpr_rcode_t TextFileWriter::writeFormat(const xpr_wchar_t *aFormat, ...)
+{
+    va_list sArgs;
+    va_start(sArgs, aFormat);
+
+    xpr_sint_t sFormattedTextLen = _vscwprintf(aFormat, sArgs);
+
+    xpr_rcode_t sRcode = ensureBuffer(sFormattedTextLen * sizeof(xpr_wchar_t));
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    _vswprintf((xpr_wchar_t *)mFormattedText, aFormat, sArgs);
+
+    return write((xpr_wchar_t *)mFormattedText);
+}
+
+xpr_rcode_t TextFileWriter::writeLine(const xpr_char_t *aText)
 {
     xpr_rcode_t sRcode;
 
@@ -535,19 +741,58 @@ xpr_rcode_t TextFileWriter::writeLine(const xpr_tchar_t *aText)
     return XPR_RCODE_SUCCESS;
 }
 
-xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_tchar_t *aFormat, ...)
+xpr_rcode_t TextFileWriter::writeLine(const xpr_wchar_t *aText)
+{
+    xpr_rcode_t sRcode;
+
+    sRcode = write(aText);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
+
+    sRcode = write(mEndOfLine);
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return XPR_FALSE;
+
+    return XPR_RCODE_SUCCESS;
+}
+
+xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_char_t *aFormat, ...)
 {
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_rcode_t sRcode = ensureBuffer(aFormat, sArgs);
+    xpr_sint_t sFormattedTextLen = _vscprintf(aFormat, sArgs);
+
+    xpr_rcode_t sRcode = ensureBuffer(sFormattedTextLen * sizeof(xpr_char_t));
     if (XPR_RCODE_IS_ERROR(sRcode))
         return sRcode;
 
-    _vstprintf(mFormattedText, aFormat, sArgs);
+    xpr_char_t *sFormattedText = (xpr_char_t *)mFormattedText;
 
-    _tcscat(mFormattedText, mEndOfLine);
+    vsprintf(sFormattedText, aFormat, sArgs);
 
-    return write(mFormattedText);
+    strcat(sFormattedText, mEndOfLine);
+
+    return write(sFormattedText);
+}
+
+xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_wchar_t *aFormat, ...)
+{
+    va_list sArgs;
+    va_start(sArgs, aFormat);
+
+    xpr_sint_t sFormattedTextLen = _vscwprintf(aFormat, sArgs);
+
+    xpr_rcode_t sRcode = ensureBuffer(sFormattedTextLen * sizeof(xpr_wchar_t));
+    if (XPR_RCODE_IS_ERROR(sRcode))
+        return sRcode;
+
+    xpr_wchar_t *sFormattedText = (xpr_wchar_t *)mFormattedText;
+
+    _vswprintf(sFormattedText, aFormat, sArgs);
+
+    wcscat(sFormattedText, mEndOfLineW);
+
+    return write(sFormattedText);
 }
 } // namespace xpr

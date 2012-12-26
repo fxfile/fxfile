@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #include "xpr_rcode.h"
-#include "xpr_string.h"
+#include "xpr_cstr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,7 +15,7 @@ static char THIS_FILE[] = __FILE__;
 
 namespace xpr
 {
-void getRcodeString(xpr_rcode_t aRcode, xpr_char_t *aBuffer, xpr_size_t aSize)
+XPR_DL_API void getRcodeString(xpr_rcode_t aRcode, xpr_char_t *aBuffer, xpr_size_t aSize)
 {
     switch (aRcode)
     {

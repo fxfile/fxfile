@@ -9,14 +9,20 @@
 #pragma once
 
 #include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS)
     #if defined(XPR_CFG_BUILD_DEBUG)
 
-void traceOut(xpr_tchar_t *format, ...);
-#define XPR_TRACE              xpr::traceOut
+XPR_DL_API void traceOutA(xpr_char_t *aFormat, ...);
+XPR_DL_API void traceOutW(xpr_wchar_t *aFormat, ...);
+#if defined(XPR_CFG_UNICODE)
+#define XPR_TRACE              xpr::traceOutW
+#else
+#define XPR_TRACE              xpr::traceOutA
+#endif
 #define XPR_ASSERT(exp)        assert(exp)
 #define XPR_VERIFY(exp)        assert(exp)
 #define XPR_WARNING(cond, msg) ((cond) ? __noop : XPR_TRACE(msg))

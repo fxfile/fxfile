@@ -8,10 +8,12 @@
 #define __XPR_INIT_H__
 #pragma once
 
+#include "xpr_dlsym.h"
+
 namespace xpr
 {
-void initialize(void);
-void finalize(void);
+XPR_DL_API void initialize(void);
+XPR_DL_API void finalize(void);
 } // namespace xpr
 
 #endif // __XPR_INIT_H__
