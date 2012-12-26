@@ -18,26 +18,27 @@ class Thread;
 
 typedef xpr_uint64_t ThreadId;
 
-enum ThreadState
-{
-    ThreadStateNone = 0,
-    ThreadStateRunning,
-    ThreadStateTerminated,
-};
-
-class ThreadDelegate
-{
-public:
-    ThreadDelegate(void) {}
-    virtual ~ThreadDelegate(void) {}
-
-public:
-    virtual xpr_sint_t onThreadMain(Thread &aThread) = 0;
-};
-
 class XPR_DL_API Thread
 {
     DISALLOW_COPY_AND_ASSIGN(Thread);
+
+public:
+    enum ThreadState
+    {
+        ThreadStateNone = 0,
+        ThreadStateRunning,
+        ThreadStateTerminated,
+    };
+
+    class XPR_DL_API Delegate
+    {
+    public:
+        Delegate(void) {}
+        virtual ~Delegate(void) {}
+
+    public:
+        virtual xpr_sint_t onThreadMain(Thread &aThread) = 0;
+    };
 
 public:
     struct NativeHandle
@@ -54,7 +55,7 @@ public:
     virtual ~Thread(void);
 
 public:
-    virtual xpr_rcode_t  start(ThreadDelegate *aDelegate, xpr_size_t aStackSize = 0);
+    virtual xpr_rcode_t  start(Delegate *aDelegate, xpr_size_t aStackSize = 0);
     virtual xpr_rcode_t  join(xpr_sint_t *aExitCode = XPR_NULL);
     virtual xpr_rcode_t  detach(void);
     virtual ThreadId     getThreadId(void) const;
