@@ -14,9 +14,9 @@
 namespace xpr
 {
 #if defined(XPR_CFG_UNICODE)
-typedef string tstring;
-#else
 typedef wstring tstring;
+#else
+typedef string tstring;
 #endif
 } // namespace xpr
 
