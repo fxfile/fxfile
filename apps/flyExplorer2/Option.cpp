@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -110,6 +110,12 @@ xpr_bool_t Option::loadFromFile(const xpr_tchar_t *aFileName)
             mPathBar[3]               = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #4"),                 XPR_FALSE);
             mPathBar[4]               = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #5"),                 XPR_FALSE);
             mPathBar[5]               = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #6"),                 XPR_FALSE);
+            mStatusBar[0]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #1"),               XPR_FALSE);
+            mStatusBar[1]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #2"),               XPR_FALSE);
+            mStatusBar[2]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #3"),               XPR_FALSE);
+            mStatusBar[3]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #4"),               XPR_FALSE);
+            mStatusBar[4]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #5"),               XPR_FALSE);
+            mStatusBar[5]             = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #6"),               XPR_FALSE);
             mBookmarkBarText          = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("BookmarkBar Text"),           XPR_TRUE);
             mBookmarkBarMultiLine     = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("BookmarkBar Multi Line"),     XPR_FALSE);
             mDriveBar                 = sIniFile.getValueB(CFG_MAIN, XPR_STRING_LITERAL("DriveBar"),                   XPR_TRUE);
@@ -517,6 +523,12 @@ xpr_bool_t Option::saveToFile(const xpr_tchar_t *aFileName, xpr_bool_t aMainOpti
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #4"),                      mPathBar[3]);
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #5"),                      mPathBar[4]);
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("PathBar #6"),                      mPathBar[5]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #1"),                    mStatusBar[0]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #2"),                    mStatusBar[1]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #3"),                    mStatusBar[2]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #4"),                    mStatusBar[3]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #5"),                    mStatusBar[4]);
+        sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("StatusBar #6"),                    mStatusBar[5]);
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("BookmarkBar Text"),                mBookmarkBarText);
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("BookmarkBar Multi Line"),          mBookmarkBarMultiLine);
         sIniFile.setValueB(CFG_MAIN, XPR_STRING_LITERAL("DriveBar"),                        mDriveBar);

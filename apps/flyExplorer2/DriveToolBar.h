@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -16,6 +16,8 @@
 #include "rgc/DragDropToolBar.h"
 #include "rgc/BCMenu.h"
 
+class DriveToolBarObserver;
+
 class DriveToolBar : public DragDropToolBar
 {
     typedef DragDropToolBar super;
@@ -23,6 +25,9 @@ class DriveToolBar : public DragDropToolBar
 public:
     DriveToolBar(void);
     virtual ~DriveToolBar(void);
+
+public:
+    void setObserver(DriveToolBarObserver *aObserver);
 
 public:
     void createDriveBar(void);
@@ -38,6 +43,8 @@ public:
     xpr_uint_t getDriveId(const xpr_tchar_t *aPath);
 
 protected:
+    DriveToolBarObserver *mObserver;
+
     CToolTipCtrl mToolTip;
     xpr_tchar_t mToolTipText[XPR_MAX_PATH * 2];
 

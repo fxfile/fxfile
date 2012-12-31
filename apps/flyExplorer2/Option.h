@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -240,6 +240,7 @@ public:
     xpr_bool_t      mActivateBar[MAX_VIEW_SPLIT];
     xpr_bool_t      mAddressBar[MAX_VIEW_SPLIT];
     xpr_bool_t      mPathBar[MAX_VIEW_SPLIT];
+    xpr_bool_t      mStatusBar[MAX_VIEW_SPLIT];
     xpr_bool_t      mViewStyle[MAX_VIEW_SPLIT];
     xpr_tchar_t     mLastFolder[MAX_VIEW_SPLIT][XPR_MAX_PATH * 2 + 1];
     xpr_tchar_t     mWorkingFolder[MAX_WORKING_FOLDER][XPR_MAX_PATH * 2 + 1];

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -518,20 +518,37 @@ void ToolBarCustomizeCommand::execute(CommandContext &aContext)
 
 xpr_sint_t ShowStatusBarCommand::canExecute(CommandContext &aContext)
 {
-    return StateEnable;
+    XPR_COMMAND_DECLARE_CTRL;
+
+    xpr_bool_t sState = StateEnable;
+
+    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
+    if (XPR_IS_NOT_NULL(sExplorerView))
+    {
+        if (sExplorerView->isVisibleStatusBar() == XPR_TRUE)
+        {
+            sState |= StateCheck;
+        }
+    }
+
+    return sState;
 }
 
 void ShowStatusBarCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    xpr_bool_t sShow = ((sMainFrame->mStatusBar.GetStyle() & WS_VISIBLE) == 0);
-    sMainFrame->ShowControlBar(&sMainFrame->mStatusBar, sShow, XPR_FALSE);
-
-    if (XPR_IS_TRUE(sShow))
+    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
+    if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            sExplorerCtrl->updateStatus();
+        xpr_bool_t sVisible = !sExplorerView->isVisibleStatusBar();
+        sExplorerView->visibleStatusBar(sVisible);
+
+        if (XPR_IS_TRUE(sVisible))
+        {
+            if (XPR_IS_NOT_NULL(sExplorerCtrl))
+                sExplorerCtrl->updateStatus();
+        }
     }
 }
 

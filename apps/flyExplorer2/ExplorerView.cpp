@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -38,6 +38,7 @@
 #include "OptionMgr.h"
 #include "CtrlId.h"
 #include "SearchResultCtrl.h"
+#include "StatusBarEx.h"
 
 #include "cmd/cmd_parameters.h"
 #include "cmd/cmd_parameter_define.h"
@@ -85,10 +86,7 @@ class ExplorerView::ExplorerTabData : public ExplorerView::TabData
 public:
     ExplorerTabData(void)
         : TabData(TabTypeExplorer)
-        , mStatusGroupIcon(XPR_NULL)
     {
-
-        mStatusGroup[0] = 0;
         mStatusPane0[0] = 0;
         mStatusPane1[0] = 0;
     }
@@ -104,8 +102,6 @@ public:
     }
 
 protected:
-    HICON       mStatusGroupIcon;
-    xpr_tchar_t mStatusGroup[XPR_MAX_PATH + 1];
     xpr_tchar_t mStatusPane0[XPR_MAX_PATH + 1];
     xpr_tchar_t mStatusPane1[XPR_MAX_PATH + 1];
 };
@@ -139,7 +135,7 @@ ExplorerView::ExplorerView(void)
     , mInit(XPR_TRUE)
     , mTabCtrl(XPR_NULL)
     , mFolderPane(XPR_NULL)
-    , mAddressBar(XPR_NULL), mPathBar(XPR_NULL), mActivateBar(XPR_NULL), mDrivePathBar(XPR_NULL), mContentsWnd(XPR_NULL)
+    , mAddressBar(XPR_NULL), mPathBar(XPR_NULL), mActivateBar(XPR_NULL), mDrivePathBar(XPR_NULL), mContentsWnd(XPR_NULL), mStatusBar(XPR_NULL)
     , mIsDrivePathBar(XPR_FALSE)
     , mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
     , mListCtrlPrint(XPR_NULL)
@@ -266,6 +262,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     visibleActivateBar(gOpt->mActivateBar[mViewIndex], XPR_TRUE);
     visibleDrivePathBar(gFrame->isDriveBar() && gFrame->isDriveViewSplit(), XPR_TRUE);
     visibleAddressBar(gOpt->mAddressBar[mViewIndex], XPR_TRUE);
+    visibleStatusBar(gOpt->mStatusBar[mViewIndex], XPR_TRUE);
 
     // folder pane
     xpr_bool_t sVisibleFolderPane = XPR_FALSE;
@@ -493,11 +490,13 @@ void ExplorerView::OnDestroy(void)
     DESTROY_DELETE(mFolderPane);
     DESTROY_DELETE(mAddressBar);
     DESTROY_DELETE(mPathBar);
+    DESTROY_DELETE(mStatusBar);
 
     destroyPathBar();
     destroyActivateBar();
     destroyDrivePathBar();
     destroyContentsWnd();
+    destroyStatusBar();
 
     super::OnDestroy();
 
@@ -581,7 +580,7 @@ void ExplorerView::recalcLayout(void)
     CRect sRect(sClientRect);
     xpr_bool_t sExplorerTabMode = isExplorerTabMode();
 
-    HDWP sHdwp = ::BeginDeferWindowPos((xpr_sint_t)mTabCtrl->getTabCount() + 5);
+    HDWP sHdwp = ::BeginDeferWindowPos((xpr_sint_t)mTabCtrl->getTabCount() + 6);
 
     // tab
     if (XPR_IS_NOT_NULL(mTabCtrl) && XPR_IS_NOT_NULL(mTabCtrl->m_hWnd))
@@ -615,9 +614,9 @@ void ExplorerView::recalcLayout(void)
     xpr_sint_t sColumn = XPR_IS_TRUE(gOpt->mLeftEachFolderPane[mViewIndex]) ? 1 : 0;
     mSplitter.getPaneRect(0, sColumn, sRect);
 
-    // address bar
     if (XPR_IS_TRUE(sExplorerTabMode))
     {
+        // address bar
         if (isVisibleAddressBar() == XPR_TRUE && XPR_IS_NOT_NULL(mAddressBar) && XPR_IS_NOT_NULL(mAddressBar->m_hWnd))
         {
             xpr_sint_t sCxEdge = ::GetSystemMetrics(SM_CXEDGE);
@@ -687,16 +686,28 @@ void ExplorerView::recalcLayout(void)
 
     if (XPR_IS_NOT_NULL(mActivateBar) && XPR_IS_NOT_NULL(mActivateBar->m_hWnd))
     {
-        CRect sActivateBar(sRect);
-        sActivateBar.bottom = sActivateBar.top + 5;
+        CRect sActivateBarRect(sRect);
+        sActivateBarRect.bottom = sActivateBarRect.top + 5;
 
-        ::DeferWindowPos(sHdwp, *mActivateBar, XPR_NULL, sActivateBar.left, sActivateBar.top, sActivateBar.Width(), sActivateBar.Height(), SWP_NOZORDER);
+        ::DeferWindowPos(sHdwp, *mActivateBar, XPR_NULL, sActivateBarRect.left, sActivateBarRect.top, sActivateBarRect.Width(), sActivateBarRect.Height(), SWP_NOZORDER);
 
-        sRect.top += sActivateBar.Height();
+        sRect.top += sActivateBarRect.Height();
     }
 
     if (XPR_IS_TRUE(sExplorerTabMode))
     {
+        // status bar
+        if (XPR_IS_NOT_NULL(mStatusBar) && XPR_IS_NOT_NULL(mStatusBar->m_hWnd))
+        {
+            CRect sStatusBarRect(sRect);
+            sStatusBarRect.top = sStatusBarRect.bottom - mStatusBar->getHeight();
+
+            ::DeferWindowPos(sHdwp, *mStatusBar, XPR_NULL, sStatusBarRect.left, sStatusBarRect.top, sStatusBarRect.Width(), sStatusBarRect.Height(), SWP_NOZORDER);
+
+            sRect.bottom -= sStatusBarRect.Height();
+        }
+
+        // contents window
         if (XPR_IS_NOT_NULL(mContentsWnd) && XPR_IS_NOT_NULL(mContentsWnd->m_hWnd))
         {
             CRect sContentsWndRect(sRect);
@@ -1054,10 +1065,8 @@ xpr_sint_t ExplorerView::newTab(const std::tstring &aInitFolder)
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
         sExplorerTabData->mTabWnd = sExplorerCtrl;
-        sExplorerTabData->mStatusGroupIcon = XPR_NULL;
-        sExplorerTabData->mStatusGroup[0]  = 0;
-        sExplorerTabData->mStatusPane0[0]  = 0;
-        sExplorerTabData->mStatusPane1[0]  = 0;
+        sExplorerTabData->mStatusPane0[0] = 0;
+        sExplorerTabData->mStatusPane1[0] = 0;
 
         sExplorerCtrl->setObserver(dynamic_cast<ExplorerCtrlObserver *>(this));
         sExplorerCtrl->setViewIndex(mViewIndex);
@@ -2136,6 +2145,66 @@ void ExplorerView::setDragContents(xpr_bool_t aDragContents)
     mDropTarget.setDragContents(aDragContents);
 }
 
+void ExplorerView::createStatusBar(void)
+{
+    if (XPR_IS_NOT_NULL(mStatusBar))
+        return;
+
+    mStatusBar = new StatusBarEx;
+    if (XPR_IS_NOT_NULL(mStatusBar))
+    {
+        mStatusBar->setObserver(dynamic_cast<StatusBarObserver *>(this));
+
+        if (mStatusBar->Create(this, CTRL_ID_STATUS_BAR, CRect(0,0,0,0)) == XPR_FALSE)
+        {
+            XPR_SAFE_DELETE(mStatusBar);
+        }
+    }
+}
+
+void ExplorerView::destroyStatusBar(void)
+{
+    if (XPR_IS_NULL(mStatusBar))
+        return;
+
+    DESTROY_DELETE(mStatusBar);
+}
+
+void ExplorerView::visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
+{
+    if (XPR_IS_TRUE(aVisible))
+    {
+        createStatusBar();
+    }
+    else
+    {
+        destroyStatusBar();
+    }
+
+    gOpt->mStatusBar[mViewIndex] = aVisible;
+
+    if (XPR_IS_TRUE(aVisible))
+    {
+        setStatusBarDrive();
+    }
+
+    if (XPR_IS_FALSE(aLoading))
+    {
+        recalcLayout();
+        RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+    }
+}
+
+xpr_bool_t ExplorerView::isVisibleStatusBar(void) const
+{
+    return gOpt->mStatusBar[mViewIndex];
+}
+
+StatusBar *ExplorerView::getStatusBar(void) const
+{
+    return mStatusBar;
+}
+
 void ExplorerView::OnUpdate(CView *aSender, LPARAM aHint, CObject *aHintObject)
 {
 }
@@ -2182,9 +2251,6 @@ void ExplorerView::OnActivateView(xpr_bool_t aActivate, CView *aActivateView, CV
                     // update title bar
                     gFrame->setMainTitle(sTvItemData->mFullPidl);
                 }
-
-                // update status bar
-                setStatusBar();
             }
         }
     }
@@ -2255,6 +2321,10 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                         setContentsNormal(sTvItemData, XPR_TRUE);
                     }
 
+                    // update status bar
+                    updateStatusBar();
+
+                    // update tab text
                     std::tstring sName;
                     fxb::GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
 
@@ -2264,9 +2334,6 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                     {
                         // update main title
                         gFrame->setMainTitle(sTvItemData->mShellFolder, sTvItemData->mPidl);
-
-                        // update status bar
-                        setStatusBar();
                     }
                 }
             }
@@ -2288,7 +2355,8 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
         mContentsWnd,
         mAddressBar,
         mPathBar,
-        mDrivePathBar
+        mDrivePathBar,
+        mStatusBar
     };
 
     xpr_size_t i;
@@ -3016,7 +3084,7 @@ void ExplorerView::OnExpSelNormal(void)
         return;
 
     xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = gFrame->isVisibleStatusBar();
+    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
 
     if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
         return;
@@ -3045,7 +3113,7 @@ void ExplorerView::OnExpSelSingleItem(void)
         return;
 
     xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = gFrame->isVisibleStatusBar();
+    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
 
     if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
         return;
@@ -3148,7 +3216,7 @@ void ExplorerView::OnExpSelMultiItem(void)
         return;
 
     xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = gFrame->isVisibleStatusBar();
+    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
 
     if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
         return;
@@ -3267,12 +3335,6 @@ void ExplorerView::updateStatusBar(xpr_sint_t aTab)
     if (XPR_IS_NULL(sExplorerTabData))
         return;
 
-    if (sExplorerTabData->mStatusGroupIcon != XPR_NULL || sExplorerTabData->mStatusGroup[0] != 0 || sExplorerTabData->mStatusPane0[0] != 0 || sExplorerTabData->mStatusPane1[0] != 0)
-    {
-        if (gFrame->isVisibleStatusBar() == XPR_FALSE)
-            return;
-    }
-
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl(sTab);
     if (XPR_IS_NULL(sExplorerCtrl))
         return;
@@ -3281,35 +3343,17 @@ void ExplorerView::updateStatusBar(xpr_sint_t aTab)
     if (XPR_IS_NULL(sTvItemData))
         return;
 
-    // Get Folder Group
-    {
-        LPITEMIDLIST sFolderGroupFullPidl = sExplorerCtrl->getFolderGroup();
-
-        if (XPR_IS_NOT_NULL(sExplorerTabData->mStatusGroupIcon))
-        {
-            DESTROY_ICON(sExplorerTabData->mStatusGroupIcon);
-        }
-
-        fxb::GetName(sFolderGroupFullPidl, SHGDN_INFOLDER, sExplorerTabData->mStatusGroup);
-
-        xpr_sint_t sIcon = fxb::GetItemIconIndex(sFolderGroupFullPidl, XPR_FALSE);
-        sExplorerTabData->mStatusGroupIcon = fxb::SysImgListMgr::instance().mSysImgList16.ExtractIcon(sIcon);
-
-        COM_FREE(sFolderGroupFullPidl);
-    }
-
-    // Get File, Folder Item Count
+    // get file, folder item count
     xpr_sint_t sCount = 0;
     xpr_sint_t sFileCount = 0, sFolderCount = 0;
     xpr_uint64_t sTotalSize = 0ui64;
 
     sTotalSize = sExplorerCtrl->getTotalFileSize(&sCount, &sFileCount, &sFolderCount);
 
-    // StatusBar Pane 1 - item Count
-    // StatusBar Pane 2 - all file item Size
+    // StatusBar Pane 1 - item count
+    // StatusBar Pane 2 - all file item size
     // StatusBar Pane 3 - current disk free size
     // StatusBar Pane 4 - current disk free size progress
-    // StatusBar Pane 5 - group
 
     if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
     {
@@ -3368,13 +3412,113 @@ void ExplorerView::updateStatusBar(xpr_sint_t aTab)
         sExplorerTabData->mStatusPane1[0] = XPR_STRING_LITERAL('\0');
     }
 
-    setStatusBar();
+    updateStatusBar();
 }
 
-void ExplorerView::setStatusBar(void)
+void ExplorerView::updateStatusBar(void)
 {
     setStatusBarDrive();
     setStatusBarText();
+}
+
+void ExplorerView::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect)
+{
+    if (XPR_IS_NULL(mStatusBar))
+        return;
+
+    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
+
+    fxb::BookmarkItem *sBookmarkItem = fxb::BookmarkMgr::instance().getBookmark(aBookmarkIndex);
+    if (XPR_IS_NOT_NULL(sBookmarkItem))
+    {
+        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY)
+        {
+            _stprintf(
+                sText,
+                XPR_STRING_LITERAL("%s: \'%s\'"),
+                (aDropEffect == DROPEFFECT_MOVE) ? theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_move")) : theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_copy")),
+                sBookmarkItem->mPath.c_str());
+        }
+        else
+        {
+            if (aDropEffect == DROPEFFECT_LINK)
+            {
+                if (fxb::IsFileSystemFolder(sBookmarkItem->mPath.c_str()) == XPR_TRUE)
+                    _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_shortcut")), sBookmarkItem->mPath.c_str());
+            }
+
+            if (sText[0] == XPR_STRING_LITERAL('\0'))
+                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.file_association")), sBookmarkItem->mPath.c_str());
+        }
+    }
+    else
+    {
+        if (aInsert == -1 || aInsert >= fxb::BookmarkMgr::instance().getCount())
+            _stprintf(sText, theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_last_insert")));
+        else
+            _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.drag_specific_insert"), XPR_STRING_LITERAL("%d")), aInsert);
+    }
+
+    mStatusBar->setPaneText(0, sText);
+}
+
+void ExplorerView::setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect)
+{
+    if (XPR_IS_NULL(mStatusBar))
+        return;
+
+    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
+    if (aDriveChar != 0)
+    {
+        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY || aDropEffect == DROPEFFECT_LINK)
+        {
+            xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
+            _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), aDriveChar);
+
+            LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sDrive);
+            if (XPR_IS_NOT_NULL(sFullPidl))
+            {
+                xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
+                fxb::GetName(sFullPidl, SHGDN_INFOLDER, sName);
+
+                switch (aDropEffect)
+                {
+                case DROPEFFECT_MOVE: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_move")),     sName); break;
+                case DROPEFFECT_COPY: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_copy")),     sName); break;
+                case DROPEFFECT_LINK: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_shortcut")), sName); break;
+                }
+            }
+
+            COM_FREE(sFullPidl);
+        }
+    }
+
+    mStatusBar->setPaneText(0, sText);
+}
+
+void ExplorerView::setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText)
+{
+    if (XPR_IS_NULL(mStatusBar))
+        return;
+
+    if (aIndex < 0 && 1 < aIndex)
+        return;
+
+    if (aIndex == 1)
+    {
+        mStatusBar->setDynamicPaneText(aIndex, aText, 0);
+        return;
+    }
+
+    mStatusBar->setPaneText(aIndex, aText);
+}
+
+void ExplorerView::setStatusDisk(const xpr_tchar_t *aPath)
+{
+    if (XPR_IS_NULL(mStatusBar))
+        return;
+
+    mStatusBar->setDiskFreeSpace(aPath);
 }
 
 void ExplorerView::setStatusBarText(void)
@@ -3388,33 +3532,26 @@ void ExplorerView::setStatusBarText(void)
     if (XPR_IS_NULL(sExplorerTabData))
         return;
 
-    if (gFrame->isVisibleStatusBar() == XPR_FALSE)
+    if (isVisibleStatusBar() == XPR_FALSE)
         return;
 
-    if (gFrame->getActiveView() != mViewIndex)
-        return;
-
-    gFrame->setStatusPaneText(0, sExplorerTabData->mStatusPane0);
-    gFrame->setStatusPaneText(1, sExplorerTabData->mStatusPane1);
-    gFrame->setStatusGroup(sExplorerTabData->mStatusGroupIcon, sExplorerTabData->mStatusGroup);
+    setStatusPaneText(0, sExplorerTabData->mStatusPane0);
+    setStatusPaneText(1, sExplorerTabData->mStatusPane1);
 }
 
 void ExplorerView::setStatusBarDrive(const xpr_tchar_t *aCurPath)
 {
-    if (gFrame->isVisibleStatusBar() == XPR_FALSE)
+    if (isVisibleStatusBar() == XPR_FALSE)
         return;
 
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
     if (XPR_IS_NULL(sExplorerCtrl))
         return;
 
-    if (gFrame->getActiveView() != mViewIndex)
-        return;
-
     if (XPR_IS_NULL(aCurPath))
         aCurPath = sExplorerCtrl->getCurPath();
 
-    gFrame->setStatusDisk(aCurPath);
+    setStatusDisk(aCurPath);
 }
 
 const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
@@ -3437,35 +3574,31 @@ const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
     return XPR_NULL;
 }
 
-const xpr_tchar_t *ExplorerView::getStatusGroupText(void) const
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return XPR_NULL;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return XPR_NULL;
-
-    return sExplorerTabData->mStatusGroup;
-}
-
-HICON ExplorerView::getStatusGroupIcon(void) const
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return XPR_NULL;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return XPR_NULL;
-
-    return sExplorerTabData->mStatusGroupIcon;
-}
-
 void ExplorerView::onSetFocus(SearchResultCtrl &aSearchResultCtrl)
 {
     gFrame->setActiveView(mViewIndex);
+}
+
+void ExplorerView::onStatusBarRemove(StatusBar &aStatusBar, xpr_size_t aIndex)
+{
+}
+
+void ExplorerView::onStatusBarRemoved(StatusBar &aStatusBar)
+{
+}
+
+void ExplorerView::onStatusBarRemoveAll(StatusBar &aStatusBar)
+{
+}
+
+void ExplorerView::onStatuBarContextMenu(StatusBar &aStatusBar, xpr_size_t aIndex, const POINT &aPoint)
+{
+}
+
+void ExplorerView::onStatusBarDoubleClicked(StatusBar &aStatusBar, xpr_size_t sIndex)
+{
+    if (sIndex == 2 || sIndex == 3)
+    {
+        mStatusBar->showDriveProperties();
+    }
 }

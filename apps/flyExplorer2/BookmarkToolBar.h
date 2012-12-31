@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -14,6 +14,8 @@
 #include "fxb/fxb_bookmark.h"
 #include "rgc/DragDropToolBar.h"
 
+class BookmarkToolBarObserver;
+
 class BookmarkToolBar : public DragDropToolBar
 {
     typedef DragDropToolBar super;
@@ -21,6 +23,9 @@ class BookmarkToolBar : public DragDropToolBar
 public:
     BookmarkToolBar(void);
     virtual ~BookmarkToolBar(void);
+
+public:
+    void setObserver(BookmarkToolBarObserver *aObserver);
 
 public:
     void createBookmarkBar(void);
@@ -35,6 +40,8 @@ public:
     void setBookmark(void);
 
 protected:
+    BookmarkToolBarObserver *mObserver;
+
     xpr_bool_t   mInit;
     CImageList   mImgList;
 

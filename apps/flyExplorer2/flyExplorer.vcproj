@@ -971,6 +971,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\rgc\StatusBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\rgc\StatusBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\rgc\StatusBarObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\rgc\SysTray.cpp"
 				>
 			</File>
@@ -1759,6 +1771,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\BookmarkToolBarObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\BookmarkWnd.cpp"
 				>
 			</File>
@@ -1824,6 +1840,10 @@
 			</File>
 			<File
 				RelativePath=".\DriveToolBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DriveToolBarObserver.h"
 				>
 			</File>
 			<File

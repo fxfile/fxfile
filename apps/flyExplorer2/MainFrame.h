@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -23,7 +23,6 @@
 #include "MainCoolBar.h"
 #include "Splitter.h"
 #include "SearchBar.h"
-#include "StatusBarEx.h"
 
 namespace fxb
 {
@@ -94,14 +93,6 @@ public:
     void minimizeToTray(void);
     void exitTrayApp(void);
     void showTrayMainFrame(void);
-
-    // StatusBar Pane 0, 1 Text
-    void setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText);
-    void setStatusDisk(const xpr_tchar_t *aPath);
-    void setStatusGroup(HICON aIcon, const xpr_tchar_t *aGroup);
-    void setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect = 0);
-    void setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect = 0);
-    xpr_bool_t isVisibleStatusBar(void) const;
 
     void splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_bool_t aLoading = XPR_FALSE);
     void setSplitEqually(void);
@@ -184,8 +175,6 @@ public:
     PicViewer        *mPicViewer;
     FileScrapDropDlg *mFileScrapDropDlg;
 
-    StatusBarEx       mStatusBar;
-
 protected:
     void loadAccelTable(void);
     void saveAccelTable(void);
@@ -267,6 +256,7 @@ public:
     virtual xpr_bool_t LoadFrame(xpr_uint_t aIdResource, DWORD aDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd *aParentWnd = XPR_NULL, CCreateContext *aCreateContext = XPR_NULL);
     virtual void RecalcLayout(xpr_bool_t aNotify = XPR_TRUE);
     virtual void OnSetPreviewMode(xpr_bool_t aPreview, CPrintPreviewState *aState);
+    virtual CWnd* GetMessageBar(void);
 
 protected:
     virtual LRESULT WindowProc(xpr_uint_t aMessage, WPARAM wParam, LPARAM lParam);

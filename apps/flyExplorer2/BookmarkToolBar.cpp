@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,13 +10,14 @@
 #include "stdafx.h"
 #include "BookmarkToolBar.h"
 
-#include "MainFrame.h"
-
 #include "fxb/fxb_file_op_thread.h"
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_wnet_mgr.h"
 
 #include "rgc/DragImage.h"
+
+#include "MainFrame.h"
+#include "BookmarkToolBarObserver.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -31,7 +32,8 @@ enum
 };
 
 BookmarkToolBar::BookmarkToolBar(void)
-    : mInit(XPR_FALSE)
+    : mObserver(XPR_NULL)
+    , mInit(XPR_FALSE)
     , mOldInsert(-1)
     , mOldBookmark(-1)
 {
@@ -40,6 +42,11 @@ BookmarkToolBar::BookmarkToolBar(void)
 
 BookmarkToolBar::~BookmarkToolBar(void)
 {
+}
+
+void BookmarkToolBar::setObserver(BookmarkToolBarObserver *aObserver)
+{
+    mObserver = aObserver;
 }
 
 BEGIN_MESSAGE_MAP(BookmarkToolBar, super)
@@ -373,7 +380,10 @@ void BookmarkToolBar::OnDragLeave(void)
         sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
     }
 
-    gFrame->setStatusPaneBookmarkText(-1, -1);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onBookmarkToolBarStatus(*this, -1, -1, DROPEFFECT_NONE);
+    }
 
     mOldInsert = -1;
     mOldBookmark = -1;
@@ -581,7 +591,10 @@ DROPEFFECT BookmarkToolBar::OnDragOver(COleDataObject* aOleDataObject, DWORD aKe
     mOldInsert = sInsert;
     mOldBookmark = sBookmark;
 
-    gFrame->setStatusPaneBookmarkText(mOldBookmark, mOldInsert, sDropEffect);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onBookmarkToolBarStatus(*this, mOldBookmark, mOldInsert, sDropEffect);
+    }
 
     return sDropEffect;
 }
@@ -625,7 +638,10 @@ void BookmarkToolBar::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEff
         sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
     }
 
-    gFrame->setStatusPaneBookmarkText(-1, -1);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onBookmarkToolBarStatus(*this, -1, -1, DROPEFFECT_NONE);
+    }
 
     COleDataObject *sOleDataObject = aOleDataObject;
     if (sOleDataObject->IsDataAvailable(mShellIDListClipFormat) == XPR_FALSE)
