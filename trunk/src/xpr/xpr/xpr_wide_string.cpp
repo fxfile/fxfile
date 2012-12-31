@@ -99,17 +99,27 @@ WideString::Iterator WideString::begin(void)
     return Iterator(mString);
 }
 
-WideString::Iterator WideString::end(void)
-{
-    return Iterator(mString + mLength);
-}
-
 WideString::ConstIterator WideString::begin(void) const
 {
     return ConstIterator(mString);
 }
 
+WideString::ConstIterator WideString::cbegin(void) const
+{
+    return ConstIterator(mString);
+}
+
+WideString::Iterator WideString::end(void)
+{
+    return Iterator(mString + mLength);
+}
+
 WideString::ConstIterator WideString::end(void) const
+{
+    return ConstIterator(mString + mLength);
+}
+
+WideString::ConstIterator WideString::cend(void) const
 {
     return ConstIterator(mString + mLength);
 }
@@ -119,17 +129,27 @@ WideString::ReverseIterator WideString::rbegin(void)
     return ReverseIterator(mString + mLength - 1);
 }
 
-WideString::ReverseIterator WideString::rend(void)
-{
-    return ReverseIterator(mString - 1);
-}
-
 WideString::ConstReverseIterator WideString::rbegin(void) const
 {
     return ConstReverseIterator(mString + mLength - 1);
 }
 
+WideString::ConstReverseIterator WideString::crbegin(void) const
+{
+    return ConstReverseIterator(mString + mLength - 1);
+}
+
+WideString::ReverseIterator WideString::rend(void)
+{
+    return ReverseIterator(mString - 1);
+}
+
 WideString::ConstReverseIterator WideString::rend(void) const
+{
+    return ConstReverseIterator(mString - 1);
+}
+
+WideString::ConstReverseIterator WideString::crend(void) const
 {
     return ConstReverseIterator(mString - 1);
 }
@@ -646,9 +666,43 @@ WideString& WideString::append(Iterator aFirst, Iterator aLast)
     return append(sString, sLength);
 }
 
+xpr_wchar_t &WideString::front(void)
+{
+    return mString[0];
+}
+
+const xpr_wchar_t &WideString::front(void) const
+{
+    return mString[0];
+}
+
+xpr_wchar_t &WideString::back(void)
+{
+    if (mLength == 0)
+        return mString[0];
+
+    return mString[mLength - 1];
+}
+
+const xpr_wchar_t &WideString::back(void) const
+{
+    if (mLength == 0)
+        return mString[0];
+
+    return mString[mLength - 1];
+}
+
 void WideString::push_back(xpr_wchar_t aChar)
 {
     append(1, aChar);
+}
+
+void WideString::pop_back(void)
+{
+    if (mLength > 0)
+    {
+        erase(mLength - 1);
+    }
 }
 
 WideString& WideString::insert(xpr_size_t aPos, const WideString &aString)
