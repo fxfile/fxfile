@@ -99,17 +99,27 @@ String::Iterator String::begin(void)
     return Iterator(mString);
 }
 
-String::Iterator String::end(void)
-{
-    return Iterator(mString + mLength);
-}
-
 String::ConstIterator String::begin(void) const
 {
     return ConstIterator(mString);
 }
 
+String::ConstIterator String::cbegin(void) const
+{
+    return ConstIterator(mString);
+}
+
+String::Iterator String::end(void)
+{
+    return Iterator(mString + mLength);
+}
+
 String::ConstIterator String::end(void) const
+{
+    return ConstIterator(mString + mLength);
+}
+
+String::ConstIterator String::cend(void) const
 {
     return ConstIterator(mString + mLength);
 }
@@ -119,17 +129,27 @@ String::ReverseIterator String::rbegin(void)
     return ReverseIterator(mString + mLength - 1);
 }
 
-String::ReverseIterator String::rend(void)
-{
-    return ReverseIterator(mString - 1);
-}
-
 String::ConstReverseIterator String::rbegin(void) const
 {
     return ConstReverseIterator(mString + mLength - 1);
 }
 
+String::ConstReverseIterator String::crbegin(void) const
+{
+    return ConstReverseIterator(mString + mLength - 1);
+}
+
+String::ReverseIterator String::rend(void)
+{
+    return ReverseIterator(mString - 1);
+}
+
 String::ConstReverseIterator String::rend(void) const
+{
+    return ConstReverseIterator(mString - 1);
+}
+
+String::ConstReverseIterator String::crend(void) const
 {
     return ConstReverseIterator(mString - 1);
 }
@@ -646,9 +666,43 @@ String& String::append(Iterator aFirst, Iterator aLast)
     return append(sString, sLength);
 }
 
+xpr_char_t &String::front(void)
+{
+    return mString[0];
+}
+
+const xpr_char_t &String::front(void) const
+{
+    return mString[0];
+}
+
+xpr_char_t &String::back(void)
+{
+    if (mLength == 0)
+        return mString[0];
+
+    return mString[mLength - 1];
+}
+
+const xpr_char_t &String::back(void) const
+{
+    if (mLength == 0)
+        return mString[0];
+
+    return mString[mLength - 1];
+}
+
 void String::push_back(xpr_char_t aChar)
 {
     append(1, aChar);
+}
+
+void String::pop_back(void)
+{
+    if (mLength > 0)
+    {
+        erase(mLength - 1);
+    }
 }
 
 String& String::insert(xpr_size_t aPos, const String &aString)

@@ -40,14 +40,18 @@ public:
 
 public:
     // iterators
-    Iterator begin(void);
-    Iterator end(void);
-    ConstIterator begin(void) const;
-    ConstIterator end(void) const;
-    ReverseIterator rbegin(void);
-    ReverseIterator rend(void);
+    Iterator             begin(void);
+    ConstIterator        begin(void) const;
+    ConstIterator        cbegin(void) const;
+    Iterator             end(void);
+    ConstIterator        end(void) const;
+    ConstIterator        cend(void) const;
+    ReverseIterator      rbegin(void);
     ConstReverseIterator rbegin(void) const;
+    ConstReverseIterator crbegin(void) const;
+    ReverseIterator      rend(void);
     ConstReverseIterator rend(void) const;
+    ConstReverseIterator crend(void) const;
 
 public:
     // capacity
@@ -86,7 +90,13 @@ public:
     String& append(xpr_size_t aNumber, xpr_char_t aChar);
     String& append(Iterator aFirst, Iterator aLast);
 
+    xpr_char_t       &front(void);
+    const xpr_char_t &front(void) const;
+    xpr_char_t       &back(void);
+    const xpr_char_t &back(void) const;
+
     void    push_back(xpr_char_t aChar);
+    void    pop_back(void);
 
     String& assign(const String &aString);
     String& assign(const String &aString, xpr_size_t aPos, xpr_size_t aLength);

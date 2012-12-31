@@ -40,14 +40,18 @@ public:
 
 public:
     // iterators
-    Iterator begin(void);
-    Iterator end(void);
-    ConstIterator begin(void) const;
-    ConstIterator end(void) const;
-    ReverseIterator rbegin(void);
-    ReverseIterator rend(void);
+    Iterator             begin(void);
+    ConstIterator        begin(void) const;
+    ConstIterator        cbegin(void) const;
+    Iterator             end(void);
+    ConstIterator        end(void) const;
+    ConstIterator        cend(void) const;
+    ReverseIterator      rbegin(void);
     ConstReverseIterator rbegin(void) const;
+    ConstReverseIterator crbegin(void) const;
+    ReverseIterator      rend(void);
     ConstReverseIterator rend(void) const;
+    ConstReverseIterator crend(void) const;
 
 public:
     // capacity
@@ -86,7 +90,13 @@ public:
     WideString& append(xpr_size_t aNumber, xpr_wchar_t aChar);
     WideString& append(Iterator aFirst, Iterator aLast);
 
-    void push_back(xpr_wchar_t aChar);
+    xpr_wchar_t       &front(void);
+    const xpr_wchar_t &front(void) const;
+    xpr_wchar_t       &back(void);
+    const xpr_wchar_t &back(void) const;
+
+    void    push_back(xpr_wchar_t aChar);
+    void    pop_back(void);
 
     WideString& assign(const WideString &aString);
     WideString& assign(const WideString &aString, xpr_size_t aPos, xpr_size_t aLength);
