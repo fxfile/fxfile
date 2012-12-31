@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -13,6 +13,7 @@
 
 #include "rgc/DropTarget.h"
 #include "rgc/TabCtrlObserver.h"
+#include "rgc/StatusBarObserver.h"
 
 #include "rgc/DropTarget.h"
 
@@ -32,6 +33,7 @@ class PathBar;
 class ActivateBar;
 class DrivePathBar;
 class ContentsWnd;
+class StatusBarEx;
 class DropTarget;
 class ListCtrlPrint;
 
@@ -44,6 +46,7 @@ class ExplorerView
     , public SearchResultCtrlObserver
     , public AddressBarObserver
     , public PathBarObserver
+    , public StatusBarObserver
 {
     typedef CView super;
 
@@ -96,6 +99,7 @@ public:
     PathBar          *getPathBar(void) const;
     ActivateBar      *getActivateBar(void) const;
     DrivePathBar     *getDrivePathBar(void) const;
+    StatusBar        *getStatusBar(void) const;
 
     xpr_bool_t visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE, xpr_bool_t aSaveFolderPaneVisible = XPR_TRUE);
     xpr_bool_t isVisibleFolderPane(void) const;
@@ -130,12 +134,9 @@ public:
     void setDragContents(xpr_bool_t aDragContents = XPR_TRUE);
     void setContentsStyle(xpr_sint_t aContentsStyle);
 
+    void visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
+    xpr_bool_t isVisibleStatusBar(void) const;
     const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
-    const xpr_tchar_t *getStatusGroupText(void) const;
-    HICON getStatusGroupIcon(void) const;
-
-    void updateStatusBar(xpr_sint_t aTab);
-    void setStatusBar(void);
 
     void print(void);
     void printPreview(void);
@@ -174,9 +175,18 @@ protected:
     void destroyDrivePathBar(void);
     void createContentsWnd(void);
     void destroyContentsWnd(void);
+    void createStatusBar(void);
+    void destroyStatusBar(void);
 
     void setStatusBarText(void);
     void setStatusBarDrive(const xpr_tchar_t *aCurPath = XPR_NULL);
+
+    void setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText);
+    void setStatusDisk(const xpr_tchar_t *aPath);
+    void setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect = 0);
+    void setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect = 0);
+    void updateStatusBar(xpr_sint_t aTab);
+    void updateStatusBar(void);
 
     xpr_bool_t isVisibleContentsWnd(void) const;
 
@@ -207,6 +217,7 @@ protected:
     PathBar       *mPathBar;
     ActivateBar   *mActivateBar;
     DrivePathBar  *mDrivePathBar;
+    StatusBarEx   *mStatusBar;
 
     CRect          mMarginRect;
     xpr_bool_t     mIsDrivePathBar;
@@ -292,6 +303,13 @@ protected:
 
     // from PathBarObserver
     virtual xpr_bool_t onExplore(PathBar &aPathBar, LPITEMIDLIST aFullPidl);
+
+    // from StatusBarObserver
+    virtual void onStatusBarRemove(StatusBar &aStatusBar, xpr_size_t aIndex);
+    virtual void onStatusBarRemoved(StatusBar &aStatusBar);
+    virtual void onStatusBarRemoveAll(StatusBar &aStatusBar);
+    virtual void onStatuBarContextMenu(StatusBar &aStatusBar, xpr_size_t aIndex, const POINT &aPoint);
+    virtual void onStatusBarDoubleClicked(StatusBar &aStatusBar, xpr_size_t sIndex);
 
 protected:
     DECLARE_MESSAGE_MAP()

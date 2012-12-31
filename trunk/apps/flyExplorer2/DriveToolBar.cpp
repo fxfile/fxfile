@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -19,6 +19,7 @@
 #include "rgc/DragImage.h"
 
 #include "MainFrame.h"
+#include "DriveToolBarObserver.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -34,7 +35,8 @@ enum
 };
 
 DriveToolBar::DriveToolBar(void)
-    : mBarCreated(XPR_FALSE)
+    : mObserver(XPR_NULL)
+    , mBarCreated(XPR_FALSE)
     , mInit(XPR_FALSE)
     , mThread(XPR_NULL)
     , mStopEvent(XPR_NULL)
@@ -44,6 +46,11 @@ DriveToolBar::DriveToolBar(void)
 
 DriveToolBar::~DriveToolBar(void)
 {
+}
+
+void DriveToolBar::setObserver(DriveToolBarObserver *aObserver)
+{
+    mObserver = aObserver;
 }
 
 BEGIN_MESSAGE_MAP(DriveToolBar, super)
@@ -521,7 +528,10 @@ void DriveToolBar::OnDragLeave()
         sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
     }
 
-    gFrame->setStatusPaneDriveText(0);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onDriveToolBarStatus(*this, 0, DROPEFFECT_NONE);
+    }
 
     mOldDrive = -1;
 }
@@ -620,7 +630,10 @@ DROPEFFECT DriveToolBar::OnDragOver(COleDataObject* pDataObject, DWORD aKeyState
 
     mOldDrive = sDriveIndex;
 
-    gFrame->setStatusPaneDriveText(sDriveChar, sDropEffect);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onDriveToolBarStatus(*this, sDriveChar, sDropEffect);
+    }
 
     return sDropEffect;
 }
@@ -657,7 +670,10 @@ void DriveToolBar::OnDrop(COleDataObject* pDataObject, DROPEFFECT aDropEffect, C
         sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
     }
 
-    gFrame->setStatusPaneDriveText(0);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onDriveToolBarStatus(*this, 0, DROPEFFECT_NONE);
+    }
 
     COleDataObject *sOleDataObject = pDataObject;
     if (sOleDataObject->IsDataAvailable(mShellIDListClipFormat) == XPR_FALSE)

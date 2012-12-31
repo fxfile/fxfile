@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,6 +27,7 @@
 #define AFX_IDW_ACTIVATE_BAR            55
 #define AFX_IDW_CONTENTS_WND            56
 #define AFX_IDW_BOOKMARK_SET_WND        57
+#define CTRL_ID_STATUS_BAR              58
 #define AFX_IDW_BOOKMARK_WND            200
 
 #endif // __FX_CTRL_ID_H__

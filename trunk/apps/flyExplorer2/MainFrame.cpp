@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -277,13 +277,6 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
     {
         RecalcLayout();
         m_wndReBar.mBookmarkToolBar.UpdateToolbarSize();
-    }
-
-    // create status bar
-    if (mStatusBar.Create(this) == XPR_FALSE || mStatusBar.init() == XPR_FALSE)
-    {
-        XPR_TRACE(XPR_STRING_LITERAL("Failed to create status bar\n"));
-        return -1;      // fail to create
     }
 
     // enable docking control bar
@@ -2027,102 +2020,13 @@ void MainFrame::minimizeToTray(void)
         mSysTray->hideToTray();
 }
 
-void MainFrame::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect)
+CWnd* MainFrame::GetMessageBar(void)
 {
-    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
+    ExplorerView *sExplorerView = getExplorerView();
+    if (XPR_IS_NULL(sExplorerView))
+        return XPR_NULL;
 
-    fxb::BookmarkItem *sBookmarkItem = fxb::BookmarkMgr::instance().getBookmark(aBookmarkIndex);
-    if (XPR_IS_NOT_NULL(sBookmarkItem))
-    {
-        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY)
-        {
-            _stprintf(
-                sText,
-                XPR_STRING_LITERAL("%s: \'%s\'"),
-                (aDropEffect == DROPEFFECT_MOVE) ? theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_move")) : theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_copy")),
-                sBookmarkItem->mPath.c_str());
-        }
-        else
-        {
-            if (aDropEffect == DROPEFFECT_LINK)
-            {
-                if (fxb::IsFileSystemFolder(sBookmarkItem->mPath.c_str()) == XPR_TRUE)
-                    _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_shortcut")), sBookmarkItem->mPath.c_str());
-            }
-
-            if (sText[0] == XPR_STRING_LITERAL('\0'))
-                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.file_association")), sBookmarkItem->mPath.c_str());
-        }
-    }
-    else
-    {
-        if (aInsert == -1 || aInsert >= fxb::BookmarkMgr::instance().getCount())
-            _stprintf(sText, theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_last_insert")));
-        else
-            _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.drag_specific_insert"), XPR_STRING_LITERAL("%d")), aInsert);
-    }
-
-    mStatusBar.SetPaneText(0, sText);
-}
-
-void MainFrame::setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect)
-{
-    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
-    if (aDriveChar != 0)
-    {
-        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY || aDropEffect == DROPEFFECT_LINK)
-        {
-            xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
-            _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), aDriveChar);
-
-            LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sDrive);
-            if (XPR_IS_NOT_NULL(sFullPidl))
-            {
-                xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
-                fxb::GetName(sFullPidl, SHGDN_INFOLDER, sName);
-
-                switch (aDropEffect)
-                {
-                case DROPEFFECT_MOVE: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_move")),     sName); break;
-                case DROPEFFECT_COPY: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_copy")),     sName); break;
-                case DROPEFFECT_LINK: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_shortcut")), sName); break;
-                }
-            }
-
-            COM_FREE(sFullPidl);
-        }
-    }
-
-    mStatusBar.SetPaneText(0, sText);
-}
-
-void MainFrame::setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText)
-{
-    if (aIndex < 0 && 1 < aIndex)
-        return;
-
-    if (aIndex == 1)
-    {
-        mStatusBar.setDynamicPaneText(aIndex, aText);
-        return;
-    }
-
-    mStatusBar.SetPaneText(aIndex, aText);
-}
-
-void MainFrame::setStatusDisk(const xpr_tchar_t *aPath)
-{
-    mStatusBar.setDiskFreeSpace(aPath);
-}
-
-void MainFrame::setStatusGroup(HICON aIcon, const xpr_tchar_t *aGroup)
-{
-    mStatusBar.setGroup(aIcon, aGroup);
-}
-
-xpr_bool_t MainFrame::isVisibleStatusBar(void) const
-{
-    return mStatusBar.IsWindowVisible();
+    return (CWnd *)sExplorerView->getStatusBar();
 }
 
 void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
@@ -2192,8 +2096,8 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
         }
     }
     else if (XPR_IS_RANGE(ID_GO_BACKWARD_FIRST, aId, ID_GO_BACKWARD_LAST) ||
-        XPR_IS_RANGE(ID_GO_FORWARD_FIRST,  aId, ID_GO_FORWARD_LAST ) ||
-        XPR_IS_RANGE(ID_GO_HISTORY_FIRST,  aId, ID_GO_HISTORY_LAST ))
+             XPR_IS_RANGE(ID_GO_FORWARD_FIRST,  aId, ID_GO_FORWARD_LAST ) ||
+             XPR_IS_RANGE(ID_GO_HISTORY_FIRST,  aId, ID_GO_HISTORY_LAST ))
     {
         // 0 - backward
         // 1 - forward
@@ -2255,20 +2159,9 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
     }
     else
     {
-        ::LoadString(AfxGetApp()->m_hInstance, aId, sMessage, XPR_MAX_PATH);
-        ::LoadString(AfxGetApp()->m_hInstance, AFX_IDS_IDLEMESSAGE, sReady, XPR_MAX_PATH);
-
-        if (_tcscmp(aMessage, sReady) == 0 ||
-            _tcscmp(sMessage, sReady) == 0 ||
-            aId == AFX_IDW_FOLDER_CTRL)
-        {
-            if (getExplorerCtrl() != XPR_NULL)
-            {
-                ExplorerView *sExplorerView = getExplorerView();
-                if (XPR_IS_NOT_NULL(sExplorerView))
-                    aMessage = sExplorerView->getStatusPaneText(0);
-            }
-        }
+        ExplorerView *sExplorerView = getExplorerView();
+        if (XPR_IS_NOT_NULL(sExplorerView))
+            aMessage = sExplorerView->getStatusPaneText(0);
     }
 
     if (aMessage.GetLength() == 0)
