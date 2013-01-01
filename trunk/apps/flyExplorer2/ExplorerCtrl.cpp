@@ -1646,17 +1646,20 @@ xpr_bool_t ExplorerCtrl::getDescription(LPLVITEMDATA aLvItemData, xpr_tchar_t *a
         xpr_sint_t   sInfoTipLen = (xpr_sint_t)wcslen(sInfoTipW);
         xpr_tchar_t *sInfoTip    = XPR_NULL;
 
-        if (sInfoTipLen > 0 && sNameLen > 0)
+        if (sInfoTipLen > 0)
         {
-            _tcscat(sName, XPR_STRING_LITERAL("\r\n"));
-            sNameLen = (xpr_sint_t)_tcslen(sName);
+            if (sNameLen > 0)
+            {
+                _tcscat(sName, XPR_STRING_LITERAL("\r\n"));
+                sNameLen = (xpr_sint_t)_tcslen(sName);
+            }
 
             sInfoTip = new xpr_tchar_t[sInfoTipLen * 2 + 1];
             if (XPR_IS_NOT_NULL(sInfoTip))
             {
-                xpr_size_t sInputBytes = wcslen(sInfoTipW) * sizeof(xpr_char_t);
+                xpr_size_t sInputBytes = wcslen(sInfoTipW) * sizeof(xpr_wchar_t);
                 xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-                XPR_MBS_TO_TCS(sInfoTipW, &sInputBytes, sInfoTip, &sOutputBytes);
+                XPR_UTF16_TO_TCS(sInfoTipW, &sInputBytes, sInfoTip, &sOutputBytes);
                 sInfoTip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
             }
         }
