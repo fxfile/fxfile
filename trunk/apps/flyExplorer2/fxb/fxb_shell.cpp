@@ -49,10 +49,12 @@ LPITEMIDLIST IL_CreateFromPath(const xpr_tchar_t *aPath)
             if (XPR_IS_TRUE(UserEnv::instance().mPlatformNT))
             {
                 xpr_wchar_t sWidePath[XPR_MAX_PATH + 1];
+                xpr_size_t sInputBytes;
                 xpr_size_t sOutputBytes;
 
+                sInputBytes = _tcslen(aPath) * sizeof(xpr_tchar_t);
                 sOutputBytes = XPR_MAX_PATH * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(aPath, _tcslen(aPath) * sizeof(xpr_tchar_t), sWidePath, &sOutputBytes);
+                XPR_TCS_TO_UTF16(aPath, &sInputBytes, sWidePath, &sOutputBytes);
                 sWidePath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
                 sPidl = sILCreateFromPathFunc((const xpr_char_t *)sWidePath);
