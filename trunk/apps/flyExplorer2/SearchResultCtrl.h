@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -88,6 +88,8 @@ public:
 
     void refresh(void);
 
+    void getResultInfo(xpr_sint_t &aResultFileCount, xpr_sint_t &aResultDirCount, xpr_uint64_t &aResultTotalSize) const;
+
     xpr_bool_t getSelFullPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLIST *aPidls, xpr_sint_t &aCount);
     xpr_bool_t getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLIST *aPidls, xpr_sint_t &aCount);
     void getDispFileName(const xpr_tchar_t *aFileName, xpr_tchar_t *aDispFileName);
@@ -135,9 +137,12 @@ protected:
     fxb::ShellIcon *mShellIcon;
 
     typedef std::deque<SrItemData *> ResultDeque;
-    ResultDeque mResultDeque;
-    fxb::Cs     mCs;
-    xpr_bool_t  mNotify;
+    ResultDeque  mResultDeque;
+    xpr_sint_t   mResultFileCount;
+    xpr_sint_t   mResultDirCount;
+    xpr_uint64_t mResultTotalSize;
+    fxb::Cs      mCs;
+    xpr_bool_t   mNotify;
 
     static xpr_uint_t mCodeMgr;
     xpr_uint_t   mCode;

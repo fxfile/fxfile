@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -65,6 +65,9 @@ SearchResultCtrl::SearchResultCtrl(void)
     mHeaderCtrl    = XPR_NULL;
     mShellIcon     = XPR_NULL;
 
+    mResultFileCount = 0;
+    mResultDirCount  = 0;
+    mResultTotalSize = 0;
     mNotify        = XPR_TRUE;
 
     mCode          = 0;
@@ -228,6 +231,10 @@ void SearchResultCtrl::onStartSearch(void)
     {
         fxb::CsLocker aLocker(mCs);
 
+        mResultFileCount = 0;
+        mResultDirCount  = 0;
+        mResultTotalSize = 0;
+
         mResultDeque.clear();
     }
 
@@ -240,6 +247,11 @@ void SearchResultCtrl::onStartSearch(void)
         mCode = mCodeMgr++;
 
     mSignature = 0;
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onStartSearch(*this);
+    }
 }
 
 void SearchResultCtrl::onSearch(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData)
@@ -269,7 +281,7 @@ void SearchResultCtrl::onSearch(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32
 
     _tcscpy(sSrItemData->mFileName, aWin32FindData->cFileName);
 
-    sSrItemData->mFileSize = (xpr_uint64_t)aWin32FindData->nFileSizeHigh * (xpr_uint64_t)kuint32max + aWin32FindData->nFileSizeLow;
+    sSrItemData->mFileSize         = (xpr_uint64_t)aWin32FindData->nFileSizeHigh * (xpr_uint64_t)kuint32max + aWin32FindData->nFileSizeLow;
     sSrItemData->mModifiedFileTime = aWin32FindData->ftLastWriteTime;
     sSrItemData->mFileAttributes   = aWin32FindData->dwFileAttributes;
 
@@ -287,14 +299,43 @@ void SearchResultCtrl::onEndSearch(void)
     {
         fxb::CsLocker aLocker(mCs);
 
-        ResultDeque::iterator sIterator = mResultDeque.begin();
+        SrItemData *sSrItemData;
+        ResultDeque::iterator sIterator;
+
+        sIterator = mResultDeque.begin();
         for (; sIterator != mResultDeque.end(); ++sIterator)
-            addList(*sIterator);
+        {
+            sSrItemData = *sIterator;
+
+            if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+            {
+                ++mResultDirCount;
+            }
+            else
+            {
+                ++mResultFileCount;
+                mResultTotalSize += sSrItemData->mFileSize;
+            }
+
+            addList(sSrItemData);
+        }
 
         mResultDeque.clear();
     }
 
     SetRedraw();
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onEndSearch(*this);
+    }
+}
+
+void SearchResultCtrl::getResultInfo(xpr_sint_t &aResultFileCount, xpr_sint_t &aResultDirCount, xpr_uint64_t &aResultTotalSize) const
+{
+    aResultFileCount = mResultFileCount;
+    aResultDirCount  = mResultDirCount;
+    aResultTotalSize = mResultTotalSize;
 }
 
 void SearchResultCtrl::addList(const xpr_tchar_t *aDir, WIN32_FIND_DATA *aWin32FindData)
@@ -467,9 +508,22 @@ void SearchResultCtrl::OnDeleteitem(NMHDR *aNmHdr, LRESULT *aResult)
     NM_LISTVIEW *sNmListView = (NM_LISTVIEW*)aNmHdr;
 
     SrItemData *sSrItemData = (SrItemData *)sNmListView->lParam;
-    XPR_SAFE_DELETE_ARRAY(sSrItemData->mDir);
-    XPR_SAFE_DELETE_ARRAY(sSrItemData->mFileName);
-    XPR_SAFE_DELETE_ARRAY(sSrItemData);
+    if (XPR_IS_NOT_NULL(sSrItemData))
+    {
+        if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+        {
+            --mResultDirCount;
+        }
+        else
+        {
+            --mResultFileCount;
+            mResultTotalSize -= sSrItemData->mFileSize;
+        }
+
+        XPR_SAFE_DELETE_ARRAY(sSrItemData->mDir);
+        XPR_SAFE_DELETE_ARRAY(sSrItemData->mFileName);
+        XPR_SAFE_DELETE_ARRAY(sSrItemData);
+    }
 
     *aResult = 0;
 }
@@ -1469,6 +1523,7 @@ void SearchResultCtrl::refresh(void)
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     SrItemData *sSrItemData = XPR_NULL;
+    xpr_bool_t sChangedItemCount = XPR_FALSE;
     WIN32_FIND_DATA sWin32FindData;
     HANDLE sFindFile;
 
@@ -1480,12 +1535,17 @@ void SearchResultCtrl::refresh(void)
             continue;
 
         sSrItemData->getPath(sPath);
+
+        // check file exist
         if (fxb::IsExistFile(sPath) == XPR_FALSE)
         {
             DeleteItem(i--);
             sCount--;
+
+            sChangedItemCount = XPR_TRUE;
         }
 
+        // check text case sensitivity
         sFindFile = ::FindFirstFile(sPath, &sWin32FindData);
         if (sFindFile != INVALID_HANDLE_VALUE)
         {
@@ -1499,6 +1559,14 @@ void SearchResultCtrl::refresh(void)
             }
 
             ::FindClose(sFindFile);
+        }
+    }
+
+    if (XPR_IS_TRUE(sChangedItemCount))
+    {
+        if (XPR_IS_NOT_NULL(mObserver))
+        {
+            mObserver->onUpdatedResultInfo(*this);
         }
     }
 }

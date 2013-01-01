@@ -19,7 +19,7 @@
 
 #include "FolderPaneObserver.h"
 #include "ExplorerCtrlObserver.h"
-#include "SearchResultCtrlObserver.h"
+#include "SearchResultPaneObserver.h"
 #include "AddressBarObserver.h"
 #include "PathBarObserver.h"
 #include "Splitter.h"
@@ -34,6 +34,7 @@ class ActivateBar;
 class DrivePathBar;
 class ContentsWnd;
 class StatusBarEx;
+class SearchResultCtrl;
 class DropTarget;
 class ListCtrlPrint;
 
@@ -43,7 +44,7 @@ class ExplorerView
     , public SplitterObserver
     , public FolderPaneObserver
     , public ExplorerCtrlObserver
-    , public SearchResultCtrlObserver
+    , public SearchResultPaneObserver
     , public AddressBarObserver
     , public PathBarObserver
     , public StatusBarObserver
@@ -293,8 +294,8 @@ protected:
     virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth);
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
 
-    // from SearchResultCtrlObserver
-    virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl);
+    // from SearchResultPaneObserver
+    virtual void onSetFocus(SearchResultPane &aSearchResultPane);
 
     // from AddressBarObserver
     virtual xpr_bool_t onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);

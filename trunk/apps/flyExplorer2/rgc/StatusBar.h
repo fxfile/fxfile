@@ -47,6 +47,9 @@ public:
     xpr_bool_t removePane(xpr_size_t aIndex);
     void       removeAllPanes(void);
 
+public:
+    xpr_sint_t getDefaultHeight(void);
+
 protected:
     struct PaneItem;
 

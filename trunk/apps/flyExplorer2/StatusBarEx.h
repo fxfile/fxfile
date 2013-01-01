@@ -32,8 +32,6 @@ public:
     virtual ~StatusBarEx(void);
 
 public:
-    xpr_sint_t getHeight(void);
-
     void setDiskFreeSpace(const xpr_tchar_t *aPath);
     void showDriveProperties(void);
 

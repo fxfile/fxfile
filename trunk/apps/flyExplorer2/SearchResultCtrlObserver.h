@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -16,6 +16,9 @@ class SearchResultCtrl;
 class SearchResultCtrlObserver
 {
 public:
+    virtual void onStartSearch(SearchResultCtrl &aSearchResultCtrl) = 0;
+    virtual void onEndSearch(SearchResultCtrl &aSearchResultCtrl) = 0;
+    virtual void onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl) = 0;
     virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl) = 0;
 };
 

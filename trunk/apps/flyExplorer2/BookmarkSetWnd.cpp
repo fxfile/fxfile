@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -25,6 +25,14 @@ static char THIS_FILE[] = __FILE__;
 static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("BookmarkSetWnd");
 static const xpr_sint_t OFFSET_MARGIN = 5;
 static const xpr_sint_t OFFSET_HEIGHT = 2;
+
+//
+// control id
+//
+enum
+{
+    CTRL_ID_BOOKMARK_WND = 50,
+};
 
 BookmarkSetWnd::BookmarkSetWnd(void)
     : mBookmarkWnd(XPR_NULL)
@@ -207,7 +215,7 @@ void BookmarkSetWnd::updateBookmark(void)
             sText = theApp.loadString(XPR_STRING_LITERAL("bookmark.no_name"));
 
         mBookmarkWnd[j].setBookmark(i, sBookmarkItem);
-        mBookmarkWnd[j].Create(sText, WS_CHILD | WS_VISIBLE | SS_LEFT, sRect, this, AFX_IDW_BOOKMARK_WND + j);
+        mBookmarkWnd[j].Create(sText, WS_CHILD | WS_VISIBLE | SS_LEFT, sRect, this, CTRL_ID_BOOKMARK_WND + j);
         mBookmarkWnd[j].adjustWindow();
         mBookmarkWnd[j].Invalidate(XPR_TRUE);
         j++;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,6 +27,14 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ContentsWnd");
+
+//
+// control id
+//
+enum
+{
+    CTRL_ID_BOOKMARK_SET_WND = 50,
+};
 
 IMPLEMENT_DYNAMIC(ContentsWnd, CWnd)
 
@@ -817,7 +825,7 @@ void ContentsWnd::updateBookmark(void)
     if (mBookmarkSetWnd == XPR_NULL)
     {
         mBookmarkSetWnd = new BookmarkSetWnd;
-        mBookmarkSetWnd->Create(this, AFX_IDW_BOOKMARK_SET_WND, CRect(0,0,0,0));
+        mBookmarkSetWnd->Create(this, CTRL_ID_BOOKMARK_SET_WND, CRect(0,0,0,0));
     }
 
     mBookmarkSetWnd->updateBookmark();

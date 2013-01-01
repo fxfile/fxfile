@@ -2059,6 +2059,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SearchResultPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SearchResultPane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SearchResultPaneObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Splitter.cpp"
 				>
 			</File>
