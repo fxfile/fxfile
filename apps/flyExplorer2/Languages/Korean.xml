@@ -1879,6 +1879,7 @@
 			<String ID="search_result.column.type">종류</String>
 			<String ID="search_result.column.date">수정한 날짜</String>
 			<String ID="search_result.msg.wrong_path">다음의 경로를 접근할 수 없습니다. 이 경로가 옮겨졌거나 삭제되었습니다.&#10;&#10;%1%</String>
+			<String ID="search_result.status.pane1.file_folder">%1% 개체(폴더 %2%, 파일 %3%)</String>
 
 			<!-- print preview -->
 			<String ID="print_preview.button.print">인쇄</String>

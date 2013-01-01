@@ -37,7 +37,7 @@
 #include "ContentsWnd.h"
 #include "OptionMgr.h"
 #include "CtrlId.h"
-#include "SearchResultCtrl.h"
+#include "SearchResultPane.h"
 #include "StatusBarEx.h"
 
 #include "cmd/cmd_parameters.h"
@@ -57,6 +57,21 @@ static const xpr_sint_t kTabHeight = 27;
 #define MAX_CONTENS_SHOW_SEL_ITEMS       17
 #define CONTENTS_EXPLORER_STYLE_WIDTH   200
 #define CONTENTS_BASIC_STYLE_HEIGHT      36
+
+//
+// control id
+//
+enum
+{
+    CTRL_ID_TAB_CTRL = 50,
+    CTRL_ID_ADDRESS_BAR,
+    CTRL_ID_FOLDER_PANE,
+    CTRL_ID_PATH_BAR,
+    CTRL_ID_ACTIVATE_BAR,
+    CTRL_ID_CONTENTS_WND,
+    CTRL_ID_STATUS_BAR,
+    CTRL_ID_EXPLORER_CTRL = 200,
+};
 
 class ExplorerView::TabData
 {
@@ -121,9 +136,9 @@ public:
     }
 
 public:
-    SearchResultCtrl *getSearchResultCtrl(void) const
+    SearchResultPane *getSearchResultPane(void) const
     {
-        return dynamic_cast<SearchResultCtrl *>(mTabWnd);
+        return dynamic_cast<SearchResultPane *>(mTabWnd);
     }
 };
 
@@ -139,7 +154,7 @@ ExplorerView::ExplorerView(void)
     , mIsDrivePathBar(XPR_FALSE)
     , mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
     , mListCtrlPrint(XPR_NULL)
-    , mNextExplorerCtrlId(AFX_IDW_EXPLORER_CTRL)
+    , mNextExplorerCtrlId(CTRL_ID_EXPLORER_CTRL)
     , mContextMenuCursor(CPoint(0, 0))
 {
 }
@@ -700,7 +715,7 @@ void ExplorerView::recalcLayout(void)
         if (XPR_IS_NOT_NULL(mStatusBar) && XPR_IS_NOT_NULL(mStatusBar->m_hWnd))
         {
             CRect sStatusBarRect(sRect);
-            sStatusBarRect.top = sStatusBarRect.bottom - mStatusBar->getHeight();
+            sStatusBarRect.top = sStatusBarRect.bottom - mStatusBar->getDefaultHeight();
 
             ::DeferWindowPos(sHdwp, *mStatusBar, XPR_NULL, sStatusBarRect.left, sStatusBarRect.top, sStatusBarRect.Width(), sStatusBarRect.Height(), SWP_NOZORDER);
 
@@ -992,7 +1007,7 @@ xpr_bool_t ExplorerView::createTabCtrl(void)
 
     mTabCtrl->setObserver(dynamic_cast<TabCtrlObserver *>(this));
 
-    if (mTabCtrl->Create(this, AFX_IDW_TAB_CTRL, CRect(0, 0, 0, 0)) == XPR_FALSE)
+    if (mTabCtrl->Create(this, CTRL_ID_TAB_CTRL, CRect(0, 0, 0, 0)) == XPR_FALSE)
     {
         XPR_SAFE_DELETE(mTabCtrl);
         return XPR_FALSE;
@@ -1019,13 +1034,13 @@ xpr_uint_t ExplorerView::generateTabWndId(void)
         }
 
         if (sWndId == kuint16max)
-            sWndId = AFX_IDW_EXPLORER_CTRL;
+            sWndId = CTRL_ID_EXPLORER_CTRL;
         else
             ++sWndId;
 
     } while (true);
 
-    return AFX_IDW_EXPLORER_CTRL;
+    return CTRL_ID_EXPLORER_CTRL;
 }
 
 xpr_sint_t ExplorerView::newTab(TabType aTabType)
@@ -1190,15 +1205,15 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
 
     xpr_size_t sInsertedTab = TabCtrl::InvalidTab;
 
-    SearchResultCtrl *sSearchResultCtrl = new SearchResultCtrl;
-    if (XPR_IS_NOT_NULL(sSearchResultCtrl))
+    SearchResultPane *sSearchResultPane = new SearchResultPane;
+    if (XPR_IS_NOT_NULL(sSearchResultPane))
     {
-        sSearchResultTabData->mTabWnd = sSearchResultCtrl;
+        sSearchResultTabData->mTabWnd = sSearchResultPane;
 
-        sSearchResultCtrl->setObserver(dynamic_cast<SearchResultCtrlObserver *>(this));
+        sSearchResultPane->setObserver(dynamic_cast<SearchResultPaneObserver *>(this));
 
-        xpr_uint_t sSearchResultCtrlId = generateTabWndId();
-        if (sSearchResultCtrl->Create(this, sSearchResultCtrlId, CRect(0,0,0,0)) == XPR_TRUE)
+        xpr_uint_t sSearchResultPaneId = generateTabWndId();
+        if (sSearchResultPane->Create(this, sSearchResultPaneId, CRect(0,0,0,0)) == XPR_TRUE)
         {
             const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("search_result.title"));
 
@@ -1212,10 +1227,6 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
 
         return -1;
     }
-
-    fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
-    sSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList16, LVSIL_SMALL);
-    sSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList32, LVSIL_NORMAL);
 
     return (xpr_sint_t)sInsertedTab;
 }
@@ -1604,7 +1615,7 @@ SearchResultCtrl *ExplorerView::getSearchResultCtrl(xpr_sint_t aTab) const
     if (XPR_IS_NULL(sSearchResultTabData))
         return XPR_NULL;
 
-    return sSearchResultTabData->getSearchResultCtrl();
+    return sSearchResultTabData->getSearchResultPane()->getSearchResultCtrl();
 }
 
 AddressBar *ExplorerView::getAddressBar(void) const
@@ -1683,7 +1694,7 @@ xpr_bool_t ExplorerView::createFolderPane(void)
     {
         mFolderPane->setObserver(dynamic_cast<FolderPaneObserver *>(this));
         mFolderPane->setViewIndex(mViewIndex);
-        if (mFolderPane->Create(this, AFX_IDW_FOLDER_PANE, CRect(0, 0, 0, 0)) == XPR_FALSE)
+        if (mFolderPane->Create(this, CTRL_ID_FOLDER_PANE, CRect(0, 0, 0, 0)) == XPR_FALSE)
         {
             XPR_SAFE_DELETE(mFolderPane);
             return XPR_FALSE;
@@ -1787,7 +1798,7 @@ void ExplorerView::createAddressBar(void)
     if (XPR_IS_NOT_NULL(mAddressBar))
     {
         mAddressBar->setObserver(dynamic_cast<AddressBarObserver *>(this));
-        mAddressBar->Create(this, AFX_IDW_ADDRESS_BAR, CRect(0,0,0,300));
+        mAddressBar->Create(this, CTRL_ID_ADDRESS_BAR, CRect(0,0,0,300));
         mAddressBar->setSystemImageList(&fxb::SysImgListMgr::instance().mSysImgList16);
         mAddressBar->setCustomFont(gOpt->mCustomFontText);
     }
@@ -1811,7 +1822,7 @@ void ExplorerView::createPathBar(void)
     {
         mPathBar->setObserver(dynamic_cast<PathBarObserver *>(this));
 
-        if (mPathBar->Create(this, AFX_IDW_PATH_BAR, CRect(0,0,0,0)) == XPR_FALSE)
+        if (mPathBar->Create(this, CTRL_ID_PATH_BAR, CRect(0,0,0,0)) == XPR_FALSE)
         {
             XPR_SAFE_DELETE(mPathBar);
         }
@@ -1880,7 +1891,7 @@ void ExplorerView::createActivateBar(void)
     mActivateBar = new ActivateBar;
     if (XPR_IS_NOT_NULL(mActivateBar))
     {
-        if (mActivateBar->Create(this, AFX_IDW_ACTIVATE_BAR, CRect(0,0,0,0)) == XPR_FALSE)
+        if (mActivateBar->Create(this, CTRL_ID_ACTIVATE_BAR, CRect(0,0,0,0)) == XPR_FALSE)
             return;
     }
 }
@@ -1994,7 +2005,7 @@ void ExplorerView::createContentsWnd(void)
     mContentsWnd = new ContentsWnd;
     if (XPR_IS_NOT_NULL(mContentsWnd))
     {
-        mContentsWnd->Create(this, AFX_IDW_CONTENTS_WND, CRect(0,0,0,0));
+        mContentsWnd->Create(this, CTRL_ID_CONTENTS_WND, CRect(0,0,0,0));
     }
 }
 
@@ -3574,7 +3585,7 @@ const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
     return XPR_NULL;
 }
 
-void ExplorerView::onSetFocus(SearchResultCtrl &aSearchResultCtrl)
+void ExplorerView::onSetFocus(SearchResultPane &aSearchResultPane)
 {
     gFrame->setActiveView(mViewIndex);
 }

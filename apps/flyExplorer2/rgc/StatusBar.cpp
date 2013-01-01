@@ -320,6 +320,21 @@ xpr_bool_t StatusBar::getPaneRect(xpr_size_t aIndex, RECT *aRect) const
     return XPR_TRUE;
 }
 
+xpr_sint_t StatusBar::getDefaultHeight(void)
+{
+    CClientDC sClientDC(this);
+
+    CFont *sOldFont = sClientDC.SelectObject(&mFont);
+
+    CSize sText = sClientDC.GetTextExtent(XPR_STRING_LITERAL("TEST"));
+
+    sClientDC.SelectObject(sOldFont);
+
+    //xpr_sint_t sCyEdge = GetSystemMetrics(SM_CYEDGE);
+
+    return sText.cy + 2;
+}
+
 xpr_size_t StatusBar::IdToIndex(xpr_size_t aPaneId) const
 {
     xpr_size_t i;

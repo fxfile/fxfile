@@ -24,6 +24,14 @@ static char THIS_FILE[]=__FILE__;
 
 static const xpr_sint_t kPaneWidth[] = { 150, 90, 70, 90 };
 
+//
+// control id
+//
+enum
+{
+    CTRL_ID_DRIVE_PROGRESS_CTRL = 50,
+};
+
 StatusBarEx::StatusBarEx(void)
     : mDriveIcon(XPR_NULL)
 {
@@ -57,7 +65,7 @@ xpr_sint_t StatusBarEx::OnCreate(LPCREATESTRUCT aCreateStruct)
     setPaneSize(2, kPaneWidth[2], kPaneWidth[2]);
     setPaneSize(3, kPaneWidth[3], kPaneWidth[3]);
 
-    mDriveProgressCtrl.Create(WS_VISIBLE | WS_CHILD | /*WS_BORDER |*/ PBS_SMOOTH, CRect(0,0,0,0), this, 200);
+    mDriveProgressCtrl.Create(WS_VISIBLE | WS_CHILD | /*WS_BORDER |*/ PBS_SMOOTH, CRect(0,0,0,0), this, CTRL_ID_DRIVE_PROGRESS_CTRL);
     mDriveProgressCtrl.setRange(0, 100);
     mDriveProgressCtrl.setProgressColor(RGB(100,100,100));
     mDriveProgressCtrl.setBackColor(::GetSysColor(COLOR_3DFACE));
@@ -76,17 +84,6 @@ void StatusBarEx::OnDestroy(void)
     DESTROY_ICON(mDriveIcon);
 
     mDriveProgressCtrl.DestroyWindow();
-}
-
-xpr_sint_t StatusBarEx::getHeight(void)
-{
-    CClientDC sClientDC(this);
-
-    CSize sText = sClientDC.GetTextExtent(XPR_STRING_LITERAL("TEST"));
-
-    //xpr_sint_t sCyEdge = GetSystemMetrics(SM_CYEDGE);
-
-    return sText.cy + 2;
 }
 
 void StatusBarEx::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)

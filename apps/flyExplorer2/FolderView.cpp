@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -25,6 +25,14 @@
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
+
+//
+// control id
+//
+enum
+{
+    CTRL_ID_FOLDER_PANE = 50,
+};
 
 FolderView::FolderView(void)
     : mObserver(XPR_NULL)
@@ -239,7 +247,7 @@ void FolderView::createFolderPane(void)
         mFolderPane->setObserver(dynamic_cast<FolderPaneObserver *>(this));
         mFolderPane->setViewIndex(0);
 
-        mFolderPane->Create(this, AFX_IDW_FOLDER_PANE, CRect(0,0,0,0));
+        mFolderPane->Create(this, CTRL_ID_FOLDER_PANE, CRect(0,0,0,0));
     }
 }
 

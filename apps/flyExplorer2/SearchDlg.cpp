@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,6 +18,7 @@
 
 #include "MainFrame.h"
 #include "ExplorerView.h"
+#include "SearchResultPane.h"
 #include "SearchResultCtrl.h"
 #include "DlgStateMgr.h"
 #include "DlgState.h"
@@ -1022,7 +1023,11 @@ SearchResultCtrl *SearchDlg::getSearchResultCtrl(void) const
 
     xpr_sint_t sTab = sExplorerView->findTabWndId(mSearchResultCtrlId);
 
-    return dynamic_cast<SearchResultCtrl *>(sExplorerView->getTabWnd(sTab));
+    SearchResultPane *sSearchResultPane = dynamic_cast<SearchResultPane *>(sExplorerView->getTabWnd(sTab));
+    if (XPR_IS_NULL(sSearchResultPane))
+        return XPR_NULL;
+
+    return sSearchResultPane->getSearchResultCtrl();
 }
 
 void SearchDlg::OnStart(void) 

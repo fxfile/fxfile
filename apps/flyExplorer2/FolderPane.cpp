@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -33,6 +33,14 @@ static char THIS_FILE[]=__FILE__;
 #endif
 
 static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("FolderPane");
+
+//
+// control id
+//
+enum
+{
+    CTRL_ID_FOLDER_CTRL = 50,
+};
 
 FolderPane::FolderPane(void)
     : mObserver(XPR_NULL)
@@ -86,7 +94,7 @@ BEGIN_MESSAGE_MAP(FolderPane, super)
     ON_WM_DESTROY()
     ON_WM_SIZE()
     ON_WM_SETFOCUS()
-    ON_NOTIFY(NM_SETFOCUS, AFX_IDW_FOLDER_CTRL, OnFolderSetFocus)
+    ON_NOTIFY(NM_SETFOCUS, CTRL_ID_FOLDER_CTRL, OnFolderSetFocus)
 END_MESSAGE_MAP()
 
 xpr_sint_t FolderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -101,7 +109,7 @@ xpr_sint_t FolderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
     mFolderCtrl->setObserver(dynamic_cast<FolderCtrlObserver *>(this));
     mFolderCtrl->setViewIndex(mViewIndex);
 
-    if (mFolderCtrl->Create(this, AFX_IDW_FOLDER_CTRL, CRect(0, 0, 0, 0)) == XPR_FALSE)
+    if (mFolderCtrl->Create(this, CTRL_ID_FOLDER_CTRL, CRect(0, 0, 0, 0)) == XPR_FALSE)
     {
         XPR_SAFE_DELETE(mFolderCtrl);
         return -1;
