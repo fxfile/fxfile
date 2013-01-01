@@ -29,12 +29,16 @@ FileIo::~FileIo(void)
 
 xpr_rcode_t FileIo::open(const xpr_char_t *aPath, xpr_sint_t aOpenMode)
 {
-    return open(aPath, strlen(aPath) * sizeof(xpr_char_t), CharSetMultiBytes, CharSetMultiBytes);
+    xpr_size_t sPathLen = strlen(aPath);
+
+    return open(aPath, sPathLen * sizeof(xpr_char_t), CharSetMultiBytes, aOpenMode);
 }
 
 xpr_rcode_t FileIo::open(const xpr_wchar_t *aPath, xpr_sint_t aOpenMode)
 {
-    return open(aPath, wcslen(aPath) * sizeof(xpr_wchar_t), CharSetUtf16, aOpenMode);
+    xpr_size_t sPathLen = wcslen(aPath);
+
+    return open(aPath, sPathLen * sizeof(xpr_wchar_t), CharSetUtf16, aOpenMode);
 }
 
 xpr_rcode_t FileIo::open(const void *aPath, xpr_size_t aPathBytes, CharSet aCharSet, xpr_sint_t aOpenMode)
