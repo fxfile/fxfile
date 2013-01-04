@@ -16,6 +16,7 @@
 #include "fxb/fxb_ini_file.h"
 #include "fxb/fxb_search_file.h"
 
+#include "SearchDlgObserver.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "SearchResultPane.h"
@@ -66,13 +67,16 @@ enum
     WM_FINALIZE = WM_USER + 100,
 };
 
+static const xpr_size_t kPaneWidth[] = { 150, 150 };
+static const CPoint     kAnimationOffset = CPoint(0, 40);
+
 SearchDlg::SearchDlg(void)
     : super(IDD_SEARCH, XPR_NULL)
+    , mObserver(XPR_NULL)
     , mSearchFile(XPR_NULL)
     , mAnimation(XPR_FALSE)
     , mDegree(0.0)
     , mCurSel(-1)
-    , mAccelTable(XPR_NULL)
     , mDlgState(XPR_NULL)
     , mSearchResultViewIndex(-1)
     , mSearchResultCtrlId(0)
@@ -84,16 +88,9 @@ SearchDlg::~SearchDlg(void)
     XPR_SAFE_DELETE(mSearchFile);
 }
 
-xpr_bool_t SearchDlg::PreCreateWindow(CREATESTRUCT &aCreateStruct) 
+void SearchDlg::setObserver(SearchDlgObserver *aObserver)
 {
-    HCURSOR sCursor = ::LoadCursor(XPR_NULL, IDC_ARROW);
-
-    aCreateStruct.lpszClass = AfxRegisterWndClass(CS_DBLCLKS, sCursor, 0, 0);
-
-    if (sCursor != XPR_NULL)
-        ::DestroyCursor(sCursor);
-
-    return super::PreCreateWindow(aCreateStruct);
+    mObserver = aObserver;
 }
 
 xpr_bool_t SearchDlg::Create(CWnd *aParentWnd)
@@ -105,14 +102,12 @@ void SearchDlg::DoDataExchange(CDataExchange *aDX)
 {
     super::DoDataExchange(aDX);
 
-    DDX_Control(aDX, IDC_SEARCH_LOC,     mLocComboBox);
-    DDX_Control(aDX, IDC_SEARCH_CUR_LOC, mCurLocButton);
+    DDX_Control(aDX, IDC_SEARCH_LOC,        mLocComboBox);
+    DDX_Control(aDX, IDC_SEARCH_CUR_LOC,    mCurLocButton);
+    DDX_Control(aDX, IDC_SEARCH_STATUS_BAR, mStatusBar);
 }
 
 BEGIN_MESSAGE_MAP(SearchDlg, super)
-    ON_WM_ERASEBKGND()
-    ON_WM_LBUTTONDOWN()
-    ON_WM_CTLCOLOR()
     ON_WM_DESTROY()
     ON_WM_PAINT()
     ON_WM_TIMER()
@@ -120,7 +115,6 @@ BEGIN_MESSAGE_MAP(SearchDlg, super)
     ON_NOTIFY(CBEN_DELETEITEM, IDC_SEARCH_LOC, OnDeleteitemLocation)
     ON_BN_CLICKED(IDC_SEARCH_CUR_LOC, OnCurLocation)
     ON_BN_CLICKED(IDC_SEARCH_START,   OnStart)
-    ON_BN_CLICKED(IDC_SEARCH_STOP,    OnStop)
     ON_COMMAND(ID_VIEW_BAR_SEARCH,    OnViewBarSearch)
     ON_MESSAGE(WM_FINALIZE, OnFinalize)
 END_MESSAGE_MAP()
@@ -136,21 +130,19 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
     //sizeResize:   The control will be stretched in the appropriate direction 
     //sizeRepos:    The control will be moved in the appropriate direction 
     //sizeRelative: The control will be moved proportionally in the appropriate direction 
-    AddControl(IDC_SEARCH_NAME,    sizeResize, sizeNone);
-    AddControl(IDC_SEARCH_TEXT,    sizeResize, sizeNone);
-    AddControl(IDC_SEARCH_LOC,     sizeResize, sizeNone);
-    AddControl(IDC_SEARCH_CUR_LOC, sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_SEARCH_START,   sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_SEARCH_STOP,    sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_SEARCH_LINE,    sizeResize, sizeNone);
-    AddControl(IDC_SEARCH_LINE2,   sizeResize, sizeNone);
+    AddControl(IDC_SEARCH_NAME,         sizeResize, sizeNone);
+    AddControl(IDC_SEARCH_TEXT,         sizeResize, sizeNone);
+    AddControl(IDC_SEARCH_LOC,          sizeResize, sizeNone);
+    AddControl(IDC_SEARCH_CUR_LOC,      sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_SEARCH_START,        sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDCANCEL,                sizeRepos,  sizeNone, XPR_FALSE);
     //------------------------------------------------------------
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_SEARCH_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("bar.search.type.folder_and_file")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("bar.search.type.only_folder")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("bar.search.type.only_file")));
+    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.search.type.folder_and_file")));
+    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.search.type.only_folder")));
+    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.search.type.only_file")));
 
     enableWindow(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_SEARCH_SUBFOLDER))->SetCheck(2);
@@ -278,7 +270,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
         xpr_tchar_t *sDrive;
         xpr_tchar_t sPaths[XPR_MAX_PATH + 1] = {0};
 
-        _stprintf(sName, XPR_STRING_LITERAL("%s ("), theApp.loadString(XPR_STRING_LITERAL("bar.search.location.local_hard_drive")));
+        _stprintf(sName, XPR_STRING_LITERAL("%s ("), theApp.loadString(XPR_STRING_LITERAL("popup.search.location.local_hard_drive")));
 
         sDrive = sDriveStrings;
         for (i = 0; ; ++i)
@@ -368,7 +360,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
         sComboBoxExItem.mask    = CBEIF_TEXT | CBEIF_INDENT | CBEIF_LPARAM;
         sComboBoxExItem.iItem   = sIndex++;
         sComboBoxExItem.iIndent = -2;
-        sComboBoxExItem.pszText = (xpr_tchar_t *)theApp.loadString(XPR_STRING_LITERAL("bar.search.location.user_defined"));
+        sComboBoxExItem.pszText = (xpr_tchar_t *)theApp.loadString(XPR_STRING_LITERAL("popup.search.location.user_defined"));
         sComboBoxExItem.lParam  = (LPARAM)sSearchLoc;
         mLocComboBox.InsertItem(&sComboBoxExItem);
     }
@@ -383,7 +375,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
         sComboBoxExItem.mask    = CBEIF_TEXT | CBEIF_INDENT | CBEIF_LPARAM;
         sComboBoxExItem.iItem   = sIndex++;
         sComboBoxExItem.iIndent = -2;
-        sComboBoxExItem.pszText = (xpr_tchar_t *)theApp.loadString(XPR_STRING_LITERAL("bar.search.location.browse"));
+        sComboBoxExItem.pszText = (xpr_tchar_t *)theApp.loadString(XPR_STRING_LITERAL("popup.search.location.browse"));
         sComboBoxExItem.lParam  = (LPARAM)sSearchLoc;
         mLocComboBox.InsertItem(&sComboBoxExItem);
     }
@@ -396,37 +388,38 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
 
     mLocComboBox.SetCurSel(3);
 
-    // update status
-    {
-        xpr_tchar_t sStatusText[0xff] = {0};
-        xpr_tchar_t sElapsedTimeText[0xff] = {0};
+    // status
+    mStatusBar.addPane(1, XPR_NULL);
+    mStatusBar.addPane(2, XPR_NULL);
+    mStatusBar.setPaneSize(0, kPaneWidth[0], kPaneWidth[0]);
+    mStatusBar.setPaneSize(1, kPaneWidth[1], kPaneWidth[1]);
 
-        getStatusText(sStatusText, sElapsedTimeText);
+    xpr_tchar_t sStatusText[0xff] = {0};
+    xpr_tchar_t sElapsedTimeText[0xff] = {0};
+    getStatusText(sStatusText, sElapsedTimeText);
 
-        SetDlgItemText(IDC_SEARCH_STATUS, sStatusText);
-        SetDlgItemText(IDC_SEARCH_TIME, sElapsedTimeText);
-    }
+    mStatusBar.setPaneText(0, sStatusText);
+    mStatusBar.setDynamicPaneText(1, sElapsedTimeText, 0);
 
-    createAccelTable();
+    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.search.title")));
+    SetDlgItemText(IDC_SEARCH_LABEL_NAME,   theApp.loadString(XPR_STRING_LITERAL("popup.search.label.name")));
+    SetDlgItemText(IDC_SEARCH_LABEL_TEXT,   theApp.loadString(XPR_STRING_LITERAL("popup.search.label.text")));
+    SetDlgItemText(IDC_SEARCH_LABEL_LOC,    theApp.loadString(XPR_STRING_LITERAL("popup.search.label.location")));
+    SetDlgItemText(IDC_SEARCH_GROUP_OPTION, theApp.loadString(XPR_STRING_LITERAL("popup.search.group.option")));
+    SetDlgItemText(IDC_SEARCH_SUBFOLDER,    theApp.loadString(XPR_STRING_LITERAL("popup.search.check.sub-folder")));
+    SetDlgItemText(IDC_SEARCH_CASE,         theApp.loadString(XPR_STRING_LITERAL("popup.search.check.case")));
+    SetDlgItemText(IDC_SEARCH_NO_WILDCARD,  theApp.loadString(XPR_STRING_LITERAL("popup.search.check.no_wildcard")));
+    SetDlgItemText(IDC_SEARCH_SYSTEM,       theApp.loadString(XPR_STRING_LITERAL("popup.search.check.system")));
+    SetDlgItemText(IDC_SEARCH_LABEL_TYPE,   theApp.loadString(XPR_STRING_LITERAL("popup.search.label.type")));
+    SetDlgItemText(IDC_SEARCH_START,        theApp.loadString(XPR_STRING_LITERAL("popup.search.button.search")));
+    SetDlgItemText(IDCANCEL,                theApp.loadString(XPR_STRING_LITERAL("popup.search.button.close")));
 
-    SetDlgItemText(IDC_SEARCH_LABEL_NAME,   theApp.loadString(XPR_STRING_LITERAL("bar.search.label.name")));
-    SetDlgItemText(IDC_SEARCH_LABEL_TEXT,   theApp.loadString(XPR_STRING_LITERAL("bar.search.label.text")));
-    SetDlgItemText(IDC_SEARCH_LABEL_LOC,    theApp.loadString(XPR_STRING_LITERAL("bar.search.label.location")));
-    SetDlgItemText(IDC_SEARCH_START,        theApp.loadString(XPR_STRING_LITERAL("bar.search.button.search")));
-    SetDlgItemText(IDC_SEARCH_STOP,         theApp.loadString(XPR_STRING_LITERAL("bar.search.button.stop")));
-    SetDlgItemText(IDC_SEARCH_LABEL_OPTION, theApp.loadString(XPR_STRING_LITERAL("bar.search.label.option")));
-    SetDlgItemText(IDC_SEARCH_SUBFOLDER,    theApp.loadString(XPR_STRING_LITERAL("bar.search.check.sub-folder")));
-    SetDlgItemText(IDC_SEARCH_CASE,         theApp.loadString(XPR_STRING_LITERAL("bar.search.check.case")));
-    SetDlgItemText(IDC_SEARCH_NO_WILDCARD,  theApp.loadString(XPR_STRING_LITERAL("bar.search.check.no_wildcard")));
-    SetDlgItemText(IDC_SEARCH_SYSTEM,       theApp.loadString(XPR_STRING_LITERAL("bar.search.check.system")));
-    SetDlgItemText(IDC_SEARCH_LABEL_TYPE,   theApp.loadString(XPR_STRING_LITERAL("bar.search.label.type")));
-    SetDlgItemText(IDC_SEARCH_LABEL_RESULT, theApp.loadString(XPR_STRING_LITERAL("bar.search.label.result")));
-    SetDlgItemText(IDC_SEARCH_LABEL_TIME,   theApp.loadString(XPR_STRING_LITERAL("bar.search.label.elapsed_time")));
+    CenterWindow();
 
     mDlgState = DlgStateMgr::instance().getDlgState(XPR_STRING_LITERAL("Search"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
-        mDlgState->setDialog(this);
+        mDlgState->setDialog(this, XPR_TRUE);
         mDlgState->setComboBoxList(XPR_STRING_LITERAL("Search"), IDC_SEARCH_NAME);
         mDlgState->setEditCtrl(XPR_STRING_LITERAL("Text"),       IDC_SEARCH_TEXT);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("Sub Folder"), IDC_SEARCH_SUBFOLDER);
@@ -437,7 +430,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
         mDlgState->load();
     }
 
-    mCurLocButton.SetTooltipText(theApp.loadString(XPR_STRING_LITERAL("bar.search.location.current_folder")));
+    mCurLocButton.SetTooltipText(theApp.loadString(XPR_STRING_LITERAL("popup.search.location.current_folder")));
     mCurLocButton.DrawTransparent(XPR_TRUE);
     mCurLocButton.SetIcon(IDI_EXPAND, IDI_EXPAND);
 
@@ -453,7 +446,14 @@ void SearchDlg::OnDestroy(void)
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
+        CRect sRect;
+        GetWindowRect(sRect);
+
+        xpr_tchar_t sPos[0xff] = {0};
+        _stprintf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), sRect.left, sRect.top, sRect.right, sRect.bottom);
+
         mDlgState->reset();
+        mDlgState->setStateS(XPR_STRING_LITERAL("Window"), sPos);
         mDlgState->save();
     }
 
@@ -463,77 +463,43 @@ void SearchDlg::OnDestroy(void)
         mSearchFile->Stop();
 }
 
-void SearchDlg::createAccelTable(void)
+void SearchDlg::OnClose(void) 
 {
-    xpr_sint_t sIds[] = { ID_VIEW_BAR_SEARCH };
-    xpr_sint_t sIdCount = XPR_COUNT_OF(sIds);
+    DestroyWindow();
+}
 
-    ACCEL sMainAccel[MAX_ACCEL] = {0};
-    HACCEL sMainAccelHandle = gFrame->getAccelTable();
-    xpr_sint_t nMainAccel = ::CopyAcceleratorTable(sMainAccelHandle, sMainAccel, MAX_ACCEL);
-
-    ACCEL sAccel[MAX_ACCEL] = {0};
-    xpr_sint_t i, j, sCount = 0;
-    for (i = 0; i < sIdCount; ++i)
+void SearchDlg::PostNcDestroy(void) 
+{
+    if (XPR_IS_NOT_NULL(mObserver))
     {
-        for (j = 0; j < nMainAccel; ++j)
-        {
-            if (sIds[i] == sMainAccel[j].cmd)
-            {
-                sAccel[sCount].cmd   = sMainAccel[j].cmd;
-                sAccel[sCount].fVirt = sMainAccel[j].fVirt;
-                sAccel[sCount].key   = sMainAccel[j].key;
-                sCount++;
-            }
-        }
+        mObserver->onPostNcDestroy(*this);
     }
 
-    if (mAccelTable != XPR_NULL)
-        ::DestroyAcceleratorTable(mAccelTable);
-
-    mAccelTable = ::CreateAcceleratorTable(sAccel, sCount);
-}
-
-void SearchDlg::setNameFocus(void)
-{
-    GetDlgItem(IDC_SEARCH_NAME)->SetFocus();
-}
-
-xpr_bool_t SearchDlg::OnEraseBkgnd(CDC *aDC)
-{
-    return super::OnEraseBkgnd(aDC);
-}
-
-HBRUSH SearchDlg::OnCtlColor(CDC *aDC, CWnd *aWnd, xpr_uint_t aCtlColor) 
-{
-    HBRUSH sBrush = super::OnCtlColor(aDC, aWnd, aCtlColor);
-
-    aDC->SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
-    aDC->SetBkColor(::GetSysColor(COLOR_WINDOW));
-
-    if (mBrush.m_hObject == XPR_NULL)
-        mBrush.CreateSolidBrush(::GetSysColor(COLOR_WINDOW));
-
-    return mBrush;
-}
-
-void SearchDlg::OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint) 
-{
-    GetDlgItem(IDC_SEARCH_NAME)->SetFocus();
-
-    super::OnLButtonDown(aFlags, aPoint);
+    delete this;
 }
 
 void SearchDlg::enableWindow(xpr_bool_t aEnable)
 {
+    GetDlgItem(IDC_SEARCH_START)->SetWindowText(
+        (aEnable == XPR_TRUE) ?
+        theApp.loadString(XPR_STRING_LITERAL("popup.search.button.search")) : theApp.loadString(XPR_STRING_LITERAL("popup.search.button.stop")));
+
     GetDlgItem(IDC_SEARCH_SUBFOLDER  )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_CASE       )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_NO_WILDCARD)->EnableWindow(aEnable);
-    GetDlgItem(IDC_SEARCH_START      )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_TYPE       )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_SYSTEM     )->EnableWindow(aEnable);
-    GetDlgItem(IDC_SEARCH_STOP       )->EnableWindow(!aEnable);
     GetDlgItem(IDC_SEARCH_CUR_LOC    )->EnableWindow(aEnable);
+    GetDlgItem(IDCANCEL              )->EnableWindow(aEnable);
+
+    // System Button
+    CMenu *sMenu = GetSystemMenu(XPR_FALSE);
+    if (sMenu != XPR_NULL)
+    {
+        xpr_uint_t sFlags = MF_BYCOMMAND;
+        if (aEnable == XPR_FALSE) sFlags |= MF_GRAYED;
+        sMenu->EnableMenuItem(SC_CLOSE, sFlags);
+    }
 }
 
 void SearchDlg::OnSelchangeLocation(void) 
@@ -576,7 +542,7 @@ void SearchDlg::OnSelchangeLocation(void)
             BROWSEINFO sBrowseInfo = {0};
             sBrowseInfo.hwndOwner = GetSafeHwnd();
             sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
-            sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("bar.search.location.browse.title"));
+            sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.search.location.browse.title"));
 
             LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
             if (sFullPidl != XPR_NULL)
@@ -799,6 +765,9 @@ void SearchDlg::updateUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
 
 xpr_bool_t SearchDlg::insertLocation(LPITEMIDLIST aFullPidl)
 {
+    if (XPR_IS_NULL(m_hWnd))
+        return XPR_FALSE;
+
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     HRESULT sHResult = ::SHGetPathFromIDList(aFullPidl, sPath);
     if (FAILED(sHResult))
@@ -862,6 +831,9 @@ xpr_bool_t SearchDlg::insertLocation(LPITEMIDLIST aFullPidl)
 xpr_sint_t SearchDlg::insertLocation(const xpr_tchar_t *aPaths)
 {
     if (aPaths == XPR_NULL)
+        return -1;
+
+    if (XPR_IS_NULL(m_hWnd))
         return -1;
 
     xpr_sint_t i, sCount;
@@ -1006,13 +978,13 @@ static xpr_size_t ValidateTarget(std::deque<std::tstring> &aTargetDeque)
     return aTargetDeque.size();
 }
 
-void WINAPI OnSearchResult(const xpr_tchar_t *aFolder, WIN32_FIND_DATA *aWfd, LPARAM lParam)
+void WINAPI OnSearchResult(const xpr_tchar_t *aFolder, WIN32_FIND_DATA *aWin32FindData, LPARAM lParam)
 {
     SearchResultCtrl *sSearchResultCtrl = (SearchResultCtrl *)lParam;
     if (XPR_IS_NULL(sSearchResultCtrl))
         return;
 
-    sSearchResultCtrl->onSearch(aFolder, aWfd);
+    sSearchResultCtrl->onSearch(aFolder, aWin32FindData);
 }
 
 SearchResultCtrl *SearchDlg::getSearchResultCtrl(void) const
@@ -1161,7 +1133,7 @@ void SearchDlg::OnStart(void)
         mLocComboBox.GetEditCtrl()->GetWindowText(sPath, sLen + 1);
 
         xpr_tchar_t sMsg[0xff + XPR_MAX_PATH] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search.msg.wrong_location"), XPR_STRING_LITERAL("%s")), sPath);
+        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.msg.wrong_location"), XPR_STRING_LITERAL("%s")), sPath);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         mLocComboBox.SetFocus();
@@ -1309,8 +1281,6 @@ void SearchDlg::OnStart(void)
     //----------------------------------------------------------------------
     sSearchResultCtrl->onStartSearch();
 
-    gFrame->mSearchBar.EnableTracking(XPR_FALSE);
-
     XPR_SAFE_DELETE(mSearchFile);
 
     mSearchFile = new fxb::SearchFile;
@@ -1353,15 +1323,26 @@ void SearchDlg::OnStart(void)
     {
         enableWindow(XPR_FALSE);
         startAnimation();
-        GetDlgItem(IDC_SEARCH_STOP)->SetFocus();
     }
+}
+
+void SearchDlg::OnCancel(void)
+{
+    if (mSearchFile != XPR_NULL)
+    {
+        if (mSearchFile->getStatus() == fxb::SearchFile::StatusSearching)
+        {
+            mSearchFile->Stop();
+        }
+    }
+
+    DestroyWindow();
 }
 
 LRESULT SearchDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
     stopAnimation();
     enableWindow(XPR_TRUE);
-    gFrame->mSearchBar.EnableTracking(XPR_TRUE);
 
     SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();
     if (XPR_IS_NOT_NULL(sSearchResultCtrl))
@@ -1370,19 +1351,51 @@ LRESULT SearchDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     }
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    xpr_tchar_t sElapsedTimeText[0xff] = {0};
+    xpr_tchar_t sStatusElapsedTimeText[0xff] = {0};
+    getStatusText(sStatusText, sStatusElapsedTimeText);
 
-    getStatusText(sStatusText, sElapsedTimeText);
+    mStatusBar.setPaneText(0, sStatusText);
+    mStatusBar.setDynamicPaneText(1, sStatusElapsedTimeText, 0);
 
-    SetDlgItemText(IDC_SEARCH_STATUS, sStatusText);
-    SetDlgItemText(IDC_SEARCH_TIME, sElapsedTimeText);
+    xpr_tchar_t sItemCountText[0xff] = {0};
+    xpr_tchar_t sElapsedMinuteTimeText[0xff] = {0};
+    xpr_tchar_t sElapsedSecondTimeText[0xff] = {0};
 
-    MessageBox(sStatusText, XPR_NULL, MB_OK | MB_ICONINFORMATION);
+    getStatusNumberFormat(
+        sItemCountText, XPR_COUNT_OF(sItemCountText) - 1,
+        sElapsedMinuteTimeText, XPR_COUNT_OF(sElapsedMinuteTimeText) - 1,
+        sElapsedSecondTimeText, XPR_COUNT_OF(sElapsedSecondTimeText) - 1);
+
+    xpr::tstring sMsg;
+    if (sElapsedMinuteTimeText[0] == 0)
+    {
+        sMsg.format(
+            theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.msg.search_result"),
+            XPR_STRING_LITERAL("%s,%s")),
+            sItemCountText,
+            sElapsedSecondTimeText);
+    }
+    else
+    {
+        sMsg.format(
+            theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.msg.search_long_result"),
+            XPR_STRING_LITERAL("%s,%s,%s")),
+            sItemCountText,
+            sElapsedMinuteTimeText,
+            sElapsedSecondTimeText);
+    }
+
+    MessageBox(sMsg.c_str(), XPR_NULL, MB_OK | MB_ICONINFORMATION);
 
     return 0;
 }
 
-void SearchDlg::getStatusText(xpr_tchar_t *aStatusText, xpr_tchar_t *aElapsedTimeText)
+void SearchDlg::getStatusNumberFormat(xpr_tchar_t *aItemCountText,
+                                      xpr_size_t   aMaxItemCountTextLen,
+                                      xpr_tchar_t *aElapsedMinuteTimeText,
+                                      xpr_size_t   aMaxElapsedMinuteTimeTextLen,
+                                      xpr_tchar_t *aElapsedSecondTimeText,
+                                      xpr_size_t   aMaxElapsedSecondTimeTextLen)
 {
     clock_t sSearchTime = 0;
     if (mSearchFile != XPR_NULL)
@@ -1394,63 +1407,66 @@ void SearchDlg::getStatusText(xpr_tchar_t *aStatusText, xpr_tchar_t *aElapsedTim
     if (XPR_IS_NOT_NULL(sSearchResultCtrl))
         sCount = sSearchResultCtrl->GetItemCount();
 
-    if (aStatusText != XPR_NULL)
+    if (XPR_IS_NOT_NULL(aItemCountText))
     {
-        xpr_tchar_t sCountText[0xff] = {0};
-        fxb::GetFormatedNumber(sCount, sCountText, 0xfe);
-
-        _stprintf(aStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search.status.count"), XPR_STRING_LITERAL("%s")), sCountText);
+        fxb::GetFormatedNumber(sCount, aItemCountText, aMaxItemCountTextLen);
     }
 
-    if (aElapsedTimeText != XPR_NULL)
+    if (XPR_IS_NOT_NULL(aElapsedMinuteTimeText) || XPR_IS_NOT_NULL(aElapsedSecondTimeText))
     {
-        xpr_double_t sSeconds = ((xpr_double_t)sSearchTime) / CLOCKS_PER_SEC;
-        if (sSeconds == 0.0)
+        xpr_double_t sElapsedSeconds = ((xpr_double_t)sSearchTime) / CLOCKS_PER_SEC;
+        if (sElapsedSeconds == 0.0)
         {
-            _stprintf(aElapsedTimeText, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search.status.elapsed_time"), XPR_STRING_LITERAL("%.0f")), sSeconds);
+            if (XPR_IS_NOT_NULL(aElapsedMinuteTimeText))
+                *aElapsedMinuteTimeText = 0;
+
+            _stprintf(aElapsedSecondTimeText, XPR_STRING_LITERAL("%.0f"), sElapsedSeconds);
         }
-        else if (sSeconds < 60.0)
+        else if (sElapsedSeconds < 60.0 || XPR_IS_NULL(aElapsedMinuteTimeText))
         {
-            _stprintf(aElapsedTimeText, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search.status.elapsed_time"), XPR_STRING_LITERAL("%.2f")), sSeconds);
+            if (XPR_IS_NOT_NULL(aElapsedMinuteTimeText))
+                *aElapsedMinuteTimeText = 0;
+
+            _stprintf(aElapsedSecondTimeText, XPR_STRING_LITERAL("%.2f"), sElapsedSeconds);
         }
         else
         {
-            xpr_sint_t sMinutes = (xpr_sint_t)(sSeconds / 60.0);
-            _stprintf(aElapsedTimeText, theApp.loadFormatString(XPR_STRING_LITERAL("bar.search.status.elapsed_long_time"), XPR_STRING_LITERAL("%d,%.2f")), sMinutes, sSeconds - (60 * sMinutes));
+            xpr_sint_t   sMinutes = (xpr_sint_t)(sElapsedSeconds / 60.0);
+            xpr_double_t sSeconds = sElapsedSeconds - (60 * sMinutes);
+
+            _stprintf(aElapsedSecondTimeText, XPR_STRING_LITERAL("%d"),   sMinutes);
+            _stprintf(aElapsedSecondTimeText, XPR_STRING_LITERAL("%.2f"), sSeconds);
         }
     }
 }
 
-void SearchDlg::OnStop(void) 
+void SearchDlg::getStatusText(xpr_tchar_t *aStatusText, xpr_tchar_t *aElapsedTimeText)
 {
-    if (mSearchFile != XPR_NULL)
-        mSearchFile->Stop();
+    xpr_tchar_t sItemCountText[0xff] = {0};
+    xpr_tchar_t sElapsedMinuteTimeText[0xff] = {0};
+    xpr_tchar_t sElapsedSecondTimeText[0xff] = {0};
+
+    getStatusNumberFormat(
+        sItemCountText, XPR_COUNT_OF(sItemCountText) - 1,
+        sElapsedMinuteTimeText, XPR_COUNT_OF(sElapsedMinuteTimeText) - 1,
+        sElapsedSecondTimeText, XPR_COUNT_OF(sElapsedSecondTimeText) - 1);
+
+    _stprintf(aStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.status.count"), XPR_STRING_LITERAL("%s")), sItemCountText);
+
+    if (sElapsedMinuteTimeText[0] == 0)
+    {
+        _stprintf(aElapsedTimeText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.status.elapsed_time"), XPR_STRING_LITERAL("%s")), sElapsedSecondTimeText);
+    }
+    else
+    {
+        _stprintf(aElapsedTimeText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search.status.elapsed_long_time"), XPR_STRING_LITERAL("%s,%s")), sElapsedMinuteTimeText, sElapsedSecondTimeText);
+    }
 }
 
 xpr_bool_t SearchDlg::PreTranslateMessage(MSG* pMsg) 
 {
-    if (pMsg->message == WM_SYSKEYDOWN)
-    {
-        if (pMsg->wParam == VK_F4)
-        {
-            if (GetAsyncKeyState(VK_MENU) < 0)
-            {
-                gFrame->PostMessage(WM_CLOSE);
-                return XPR_TRUE;
-            }
-        }
-    }
-
     if (pMsg->message == WM_KEYDOWN)
     {
-        //if ((GetKeyState(VK_CONTROL) < 0 && pMsg->wParam == 'E') ||
-        //    (GetKeyState(VK_CONTROL) < 0 && pMsg->wParam == 'e') ||
-        //    pMsg->wParam == VK_F3)
-        //{
-        //    gFrame->ShowControlBar(&gFrame->mSearchBar, XPR_FALSE, XPR_FALSE);
-        //    return XPR_TRUE;
-        //}
-
         if (pMsg->wParam == VK_ESCAPE)
         {
             if (pMsg->hwnd == mLocComboBox.GetEditCtrl()->m_hWnd)
@@ -1460,22 +1476,10 @@ xpr_bool_t SearchDlg::PreTranslateMessage(MSG* pMsg)
 
                 if (mCurSel != -1)
                     mLocComboBox.SetCurSel(mCurSel);
+
+                return XPR_TRUE;
             }
-
-            return XPR_TRUE;
         }
-
-        if (pMsg->wParam == VK_RETURN)
-        {
-            OnStart();
-            return XPR_TRUE;
-        }
-    }
-
-    if (mAccelTable != XPR_NULL)
-    {
-        if (::TranslateAccelerator(m_hWnd, mAccelTable, pMsg))
-            return XPR_TRUE;
     }
 
     return super::PreTranslateMessage(pMsg);
@@ -1523,9 +1527,9 @@ void SearchDlg::OnPaint(void)
 
     if (mAnimation == XPR_TRUE)
     {
-        CRect sRect, sRect2;
-        GetDlgItem(IDC_SEARCH_TIME)->GetWindowRect(&sRect2);
-        ScreenToClient(&sRect2);
+        CRect sRect, sCloseButtonRect;
+        GetDlgItem(IDCANCEL)->GetWindowRect(&sCloseButtonRect);
+        ScreenToClient(&sCloseButtonRect);
 
         CBitmap sBitmap;
         sBitmap.LoadBitmap(IDB_SEARCH);
@@ -1533,8 +1537,8 @@ void SearchDlg::OnPaint(void)
         sBitmap.GetBitmap(&sBitmapHeader);
 
         GetClientRect(&sRect);
-        sRect.top  = sRect2.top  + (20 + sBitmapHeader.bmHeight + 6);
-        sRect.left = sRect.right - (20 + sBitmapHeader.bmWidth  + 6);
+        sRect.top  = sCloseButtonRect.top  + kAnimationOffset.y + (sBitmapHeader.bmHeight + 6);
+        sRect.left = sCloseButtonRect.left + kAnimationOffset.x + (sBitmapHeader.bmWidth  + 6);
 
         xpr_double_t sDegree = 360.f - mDegree;
         xpr_double_t sRadian = sDegree * 3.141592 / 180.f;
@@ -1548,10 +1552,18 @@ void SearchDlg::OnPaint(void)
 
         CDC sTmpDc;
         sTmpDc.CreateCompatibleDC(&sPaintDc);
+
         CBitmap *sOldBitmap = sTmpDc.SelectObject(&sBitmap);
-        ::TransparentBlt(sPaintDc.m_hDC, sRect.left, sRect.top, sBitmapHeader.bmWidth, sBitmapHeader.bmHeight,
-            sTmpDc, 0, 0, sBitmapHeader.bmWidth, sBitmapHeader.bmHeight, RGB(255,0,255));
+
+        ::TransparentBlt(
+            sPaintDc.m_hDC,
+            sRect.left, sRect.top, sBitmapHeader.bmWidth, sBitmapHeader.bmHeight,
+            sTmpDc,
+            0, 0, sBitmapHeader.bmWidth, sBitmapHeader.bmHeight,
+            RGB(255,0,255));
+
         sTmpDc.SelectObject(sOldBitmap);
+
         sBitmap.DeleteObject();
     }
 }
@@ -1560,7 +1572,7 @@ void SearchDlg::startAnimation(void)
 {
     mDegree = 0.f;
     mAnimation = XPR_TRUE;
-    SetTimer(TM_ID_ANIMATION, 100, XPR_NULL);
+    SetTimer(TM_ID_ANIMATION, 50, XPR_NULL);
 }
 
 void SearchDlg::stopAnimation(void)
@@ -1573,16 +1585,18 @@ void SearchDlg::stopAnimation(void)
     UpdateWindow();
 }
 
-void SearchDlg::OnTimer(xpr_uint_t nIDEvent) 
+void SearchDlg::OnTimer(xpr_uint_t aIdEvent) 
 {
-    if (nIDEvent == TM_ID_ANIMATION)
+    if (aIdEvent == TM_ID_ANIMATION)
     {
-        CRect sRect, sRect2;
-        GetDlgItem(IDC_SEARCH_TIME)->GetWindowRect(&sRect2);
-        ScreenToClient(&sRect2);
+        CRect sRect, sCloseButtonRect;
+        GetDlgItem(IDCANCEL)->GetWindowRect(&sCloseButtonRect);
+        ScreenToClient(&sCloseButtonRect);
 
         GetClientRect(&sRect);
-        sRect.top = sRect2.top + 20;
+        sRect.top    = sCloseButtonRect.top  + kAnimationOffset.y;
+        sRect.left   = sCloseButtonRect.left + kAnimationOffset.x;
+        sRect.bottom = sRect.top + 100;
 
         mDegree += 10.0;
         if (mDegree >= 360.0)
@@ -1592,7 +1606,7 @@ void SearchDlg::OnTimer(xpr_uint_t nIDEvent)
         UpdateWindow();
     }
 
-    super::OnTimer(nIDEvent);
+    super::OnTimer(aIdEvent);
 }
 
 void SearchDlg::OnViewBarSearch(void) 

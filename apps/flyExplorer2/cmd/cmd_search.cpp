@@ -27,7 +27,7 @@ xpr_sint_t SearchLocationCommand::canExecute(CommandContext &aContext)
 
     xpr_sint_t sState = 0;
 
-    if (sMainFrame->mSearchBar.IsWindowVisible() == XPR_TRUE)
+    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
         sState = StateEnable;
 
     return sState;
@@ -37,7 +37,7 @@ void SearchLocationCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    if (sMainFrame->mSearchBar.IsWindowVisible() == XPR_FALSE)
+    if (sMainFrame->isVisibleSearchDlg() == XPR_FALSE)
         return;
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
@@ -49,7 +49,7 @@ void SearchLocationCommand::execute(CommandContext &aContext)
             {
                 LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(sTvItemData->mFullPidl);
 
-                if (sMainFrame->mSearchBar.getSearchDlg()->insertLocation(sFullPidl) == XPR_FALSE)
+                if (sMainFrame->insertSearchLocation(sFullPidl) == XPR_FALSE)
                 {
                     COM_FREE(sFullPidl);
                 }

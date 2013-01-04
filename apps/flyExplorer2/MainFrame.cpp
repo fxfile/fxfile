@@ -38,9 +38,9 @@
 #include "FileScrapDropDlg.h"
 #include "PathBar.h"
 #include "AddressBar.h"
-#include "BarState.h"
 #include "ViewSet.h"
 #include "PicViewer.h"
+#include "SearchDlg.h"
 #include "WaitDlg.h"
 #include "OptionMgr.h"
 #include "CfgPath.h"
@@ -94,6 +94,7 @@ MainFrame::MainFrame(void)
     , mSysTray(XPR_NULL)
     , mCompareDirs(XPR_NULL)
     , mPicViewer(XPR_NULL)
+    , mSearchDlg(XPR_NULL)
     , mFileScrapDropDlg(XPR_NULL)
     , mAccelCount(0)
     , mCommandExecutor(XPR_NULL)
@@ -281,20 +282,6 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
 
     // enable docking control bar
     EnableDocking(CBRS_ALIGN_ANY);
-
-    xpr_tchar_t sTitle[0xff] = {0};
-
-    // create search bar
-    _stprintf(sTitle, XPR_STRING_LITERAL("%s"), theApp.loadString(XPR_STRING_LITERAL("bar.search.title")));
-    mSearchBar.Create(sTitle, this, CSize(210,200), XPR_TRUE, AFX_IDW_SEARCH_BAR, WS_VISIBLE | WS_CHILD | CBRS_TOP);
-    mSearchBar.SetBarStyle(mSearchBar.GetBarStyle() | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
-    mSearchBar.EnableDocking(CBRS_ALIGN_ANY);
-    DockControlBar(&mSearchBar, AFX_IDW_DOCKBAR_RIGHT);
-
-    // load control bar state
-    loadControlBarState();
-
-    ShowControlBar(&mSearchBar, XPR_FALSE, XPR_FALSE);
 
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
@@ -569,8 +556,6 @@ void MainFrame::saveOption(void)
 
     DlgStateMgr::instance().save();
 
-    saveControlBarState();
-
     gOpt->mPicViewer = XPR_IS_NOT_NULL(mPicViewer) && XPR_IS_NOT_NULL(mPicViewer->m_hWnd);
     gOpt->mFileScrapDrop = XPR_IS_NOT_NULL(mFileScrapDropDlg) && XPR_IS_NOT_NULL(mFileScrapDropDlg->m_hWnd);
 
@@ -628,10 +613,9 @@ void MainFrame::destroy(void)
             mFolderPane[i]->DestroyWindow(); // self delete
     }
 
-    DESTROY_WINDOW(mSearchBar);
-
     DESTROY_DELETE(mFileScrapDropDlg);
     DESTROY_DELETE(mPicViewer);
+    DESTROY_DELETE(mSearchDlg);
 
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
@@ -3968,11 +3952,6 @@ void MainFrame::setAccelerator(ACCEL *aAccel, xpr_sint_t aCount)
         saveAccelTable();
     }
 
-    // update SearchBar
-    SearchDlg *sSearchDlg = mSearchBar.getSearchDlg();
-    if (sSearchDlg != XPR_NULL && sSearchDlg->m_hWnd != XPR_NULL)
-        sSearchDlg->createAccelTable();
-
     // reload menu bar for short key update
     m_wndMenuBar.ReloadMenu();
 }
@@ -4515,20 +4494,6 @@ void MainFrame::setDragContents(xpr_bool_t aDragContents)
         sDropTarget->setDragContents(aDragContents);
 }
 
-void MainFrame::loadControlBarState(void)
-{
-    BarState sBarState;
-    sBarState.addBar(&mSearchBar);
-    sBarState.loadBarState(this);
-}
-
-void MainFrame::saveControlBarState(void)
-{
-    BarState sBarState;
-    sBarState.addBar(&mSearchBar);
-    sBarState.saveBarState(this);
-}
-
 xpr_bool_t MainFrame::OnQueryRemove(xpr_sint_t aDeviceNumber, const RemovableDeviceObserver::DriveSet &aDriveSet)
 {
     xpr_sint_t i;
@@ -4909,4 +4874,42 @@ void MainFrame::OnCaptureChanged(CWnd *aWnd)
     }
 
     super::OnCaptureChanged(aWnd);
+}
+
+xpr_bool_t MainFrame::isVisibleSearchDlg(void) const
+{
+    return XPR_IS_NOT_NULL(mSearchDlg) ? XPR_TRUE : XPR_FALSE;
+}
+
+void MainFrame::showSearchDlg(LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(mSearchDlg))
+    {
+        mSearchDlg = new SearchDlg;
+        mSearchDlg->setObserver(dynamic_cast<SearchDlgObserver *>(this));
+        mSearchDlg->Create(this);
+    }
+
+    if (XPR_IS_NOT_NULL(aFullPidl))
+        mSearchDlg->insertLocation(aFullPidl);
+
+    mSearchDlg->ShowWindow(SW_SHOW);
+}
+
+xpr_bool_t MainFrame::insertSearchLocation(LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(mSearchDlg))
+        return XPR_FALSE;
+
+    return mSearchDlg->insertLocation(aFullPidl);
+}
+
+void MainFrame::destroySearchDlg(void)
+{
+    DESTROY_DELETE(mSearchDlg)
+}
+
+void MainFrame::onPostNcDestroy(SearchDlg &aSearchDlg)
+{
+    mSearchDlg = XPR_NULL;
 }

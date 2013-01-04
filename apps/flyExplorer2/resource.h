@@ -1251,6 +1251,7 @@
 #define IDC_SEARCH_LABEL_TEXT           1667
 #define IDC_SEARCH_LABEL_LOC            1668
 #define IDC_SEARCH_LABEL_OPTION         1669
+#define IDC_SEARCH_GROUP_OPTION         1669
 #define IDC_SEARCH_LABEL_TYPE           1670
 #define IDC_SEARCH_LABEL_RESULT         1671
 #define IDC_SEARCH_STATUS               1672
@@ -1350,6 +1351,8 @@
 #define IDC_FILE_SCRAP_LIST             1768
 #define IDC_FILE_SCRAP_STATUS           1769
 #define IDC_HISTORY_TAB                 1770
+#define IDC_CUSTOM1                     1770
+#define IDC_SEARCH_STATUS_BAR           1770
 #define IDC_HISTORY_TREE                1771
 #define IDC_HISTORY_STATUS              1772
 #define IDC_DRIVE_INFO_TREE             1773
@@ -1393,13 +1396,14 @@
 #define ID_FILE_RECENT_FIRST            30201
 #define ID_FILE_RECENT_LAST             30300
 #define ID_EDIT_NAME_COPY               31000
+#define ID_EDIT_FILE_SCRAP_ADD          31000
 #define ID_EDIT_FILENAME_COPY           31001
 #define ID_EDIT_PATH_COPY               31002
 #define ID_EDIT_DEV_PATH_COPY           31003
-#define ID_EDIT_URL_COPY                31024
 #define ID_EDIT_PASTE_COPY              31005
 #define ID_EDIT_FOLDER_MOVE             31006
 #define ID_EDIT_FOLDER_COPY             31007
+#define ID_EDIT_UNSEL_NAME              31007
 #define ID_EDIT_SEL_ALL                 31008
 #define ID_EDIT_SEL_REVERSAL            31009
 #define ID_EDIT_SEL_NAME                31010
@@ -1409,12 +1413,11 @@
 #define ID_EDIT_SEL_FOLDER              31014
 #define ID_EDIT_SEL_FILE                31015
 #define ID_EDIT_UNSEL_ALL               31016
-#define ID_EDIT_UNSEL_NAME              31007
 #define ID_EDIT_UNSEL_FILE              31018
 #define ID_EDIT_UNSEL_FILTER            31019
 #define ID_EDIT_UNSEL_FOLDER            31020
 #define ID_EDIT_SEARCH_LOCATION         31021
-#define ID_EDIT_FILE_SCRAP_ADD          31000
+#define ID_EDIT_URL_COPY                31024
 #define ID_EDIT_FILE_SCRAP_CUR_COPY     31101
 #define ID_EDIT_FILE_SCRAP_CUR_MOVE     31102
 #define ID_EDIT_FILE_SCRAP_DELETE       31103
@@ -1752,7 +1755,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        424
 #define _APS_NEXT_COMMAND_VALUE         50000
-#define _APS_NEXT_CONTROL_VALUE         1770
+#define _APS_NEXT_CONTROL_VALUE         1771
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

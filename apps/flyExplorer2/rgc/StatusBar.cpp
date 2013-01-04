@@ -51,20 +51,15 @@ public:
 StatusBar::StatusBar(void)
     : mObserver(XPR_NULL)
 {
+    registerWindowClass();
 }
 
 StatusBar::~StatusBar(void)
 {
 }
 
-xpr_bool_t StatusBar::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
+xpr_bool_t StatusBar::registerWindowClass(void)
 {
-    DWORD sStyle = 0;
-    sStyle |= WS_VISIBLE;
-    sStyle |= WS_CHILD;
-    sStyle |= WS_CLIPSIBLINGS;
-    sStyle |= WS_CLIPCHILDREN;
-
     WNDCLASS sWndClass = {0};
     HINSTANCE sInstance = AfxGetInstanceHandle();
 
@@ -90,7 +85,23 @@ xpr_bool_t StatusBar::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect
         }
     }
 
-    return CWnd::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
+    return XPR_TRUE;
+}
+
+xpr_bool_t StatusBar::Create(CWnd *aParentWnd, const RECT &aRect, xpr_uint_t aId, DWORD aStyle)
+{
+    return CWnd::Create(kClassName, XPR_NULL, aStyle, aRect, aParentWnd, aId);
+}
+
+xpr_bool_t StatusBar::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
+{
+    DWORD sStyle = 0;
+    sStyle |= WS_VISIBLE;
+    sStyle |= WS_CHILD;
+    sStyle |= WS_CLIPSIBLINGS;
+    sStyle |= WS_CLIPCHILDREN;
+
+    return Create(aParentWnd, aRect, aId, sStyle);
 }
 
 BEGIN_MESSAGE_MAP(StatusBar, super)
@@ -110,9 +121,14 @@ xpr_sint_t StatusBar::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
+    return 0;
+}
+
+void StatusBar::PreSubclassWindow(void)
+{
     createFont();
 
-    return 0;
+    super::PreSubclassWindow();
 }
 
 void StatusBar::OnDestroy(void)

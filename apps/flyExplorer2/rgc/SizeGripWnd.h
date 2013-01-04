@@ -14,15 +14,15 @@
 class SizeGripWnd : public CWnd
 {
 public:
-	SizeGripWnd();
-	virtual ~SizeGripWnd();
+    SizeGripWnd(void);
+    virtual ~SizeGripWnd(void);
 
 public:
-	virtual BOOL Create(CWnd* pParentWnd, CRect rc, UINT nID);
+    virtual xpr_bool_t Create(CWnd *aParentWnd, CRect aRect, xpr_uint_t aId);
 
 protected:
-	DECLARE_MESSAGE_MAP()
-	afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
+    DECLARE_MESSAGE_MAP()
+    afx_msg xpr_bool_t OnSetCursor(CWnd *aWnd, xpr_uint_t aHitTest, xpr_uint_t aMessage);
 };
 
 #endif // __FX_SIZE_GRIP_WND_H__
