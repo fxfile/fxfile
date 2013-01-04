@@ -20,9 +20,9 @@
 #include "Option.h"
 #include "FolderViewObserver.h"
 #include "ExplorerViewObserver.h"
+#include "SearchDlgObserver.h"
 #include "MainCoolBar.h"
 #include "Splitter.h"
-#include "SearchBar.h"
 
 namespace fxb
 {
@@ -34,10 +34,12 @@ class FolderPane;
 class FolderCtrl;
 class ExplorerView;
 class ExplorerCtrl;
+class SearchResultCtrl;
 class AddressBar;
 class PicViewer;
 class FileScrapDropDlg;
 class SysTray;
+class SearchDlg;
 
 namespace cmd
 {
@@ -51,6 +53,7 @@ class MainFrame
     , public FolderViewObserver
     , public ExplorerViewObserver
     , public fxb::RemovableDeviceObserver
+    , public SearchDlgObserver
 {
     typedef CFrameWndEx super;
 
@@ -161,6 +164,11 @@ public:
     xpr_bool_t isVisiblePicViewer(void) const;
     void togglePicViewer(void);
 
+    xpr_bool_t isVisibleSearchDlg(void) const;
+    void       showSearchDlg(LPITEMIDLIST aFullPidl);
+    xpr_bool_t insertSearchLocation(LPITEMIDLIST aFullPidl);
+    void       destroySearchDlg(void);
+
     void saveExplicitOption(void);
 
     xpr_bool_t isPreviewMode(void) const;
@@ -170,17 +178,13 @@ public:
     Splitter          mSplitter;
     FolderPane       *mFolderPane[MAX_VIEW_SPLIT];
 
-    SearchBar         mSearchBar;
-
     PicViewer        *mPicViewer;
+    SearchDlg        *mSearchDlg;
     FileScrapDropDlg *mFileScrapDropDlg;
 
 protected:
     void loadAccelTable(void);
     void saveAccelTable(void);
-
-    void loadControlBarState(void);
-    void saveControlBarState(void);
 
     virtual void init(void);
     void saveOption(void);
@@ -224,6 +228,9 @@ protected:
 
     // from ExplorerViewObserver
     virtual void onMoveFocus(ExplorerView &aExplorerView, xpr_sint_t aCurWnd);
+
+    // from SearchDlgObserver
+    virtual void onPostNcDestroy(SearchDlg &aSearchDlg);
 
 protected:
     cmd::CommandExecutor *mCommandExecutor;

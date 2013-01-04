@@ -16,31 +16,31 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-SizeGripWnd::SizeGripWnd()
+SizeGripWnd::SizeGripWnd(void)
 {
 }
 
-SizeGripWnd::~SizeGripWnd()
+SizeGripWnd::~SizeGripWnd(void)
 {
 }
 
 BEGIN_MESSAGE_MAP(SizeGripWnd, CWnd)
-	ON_WM_SETCURSOR()
+    ON_WM_SETCURSOR()
 END_MESSAGE_MAP()
 
-BOOL SizeGripWnd::Create(CWnd* pParentWnd, CRect rc, UINT nID) 
+xpr_bool_t SizeGripWnd::Create(CWnd *aParentWnd, CRect aRect, xpr_uint_t aId)
 {
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
-	dwStyle |= SBS_SIZEBOX;
-	dwStyle |= SBS_SIZEGRIP;
-	dwStyle |= SBS_SIZEBOXBOTTOMRIGHTALIGN;
+    DWORD sStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+    sStyle |= SBS_SIZEBOX;
+    sStyle |= SBS_SIZEGRIP;
+    sStyle |= SBS_SIZEBOXBOTTOMRIGHTALIGN;
 
-	return CWnd::Create(_T("SCROLLBAR"), NULL, dwStyle, rc, pParentWnd, nID, NULL);
+    return CWnd::Create(XPR_STRING_LITERAL("SCROLLBAR"), XPR_NULL, sStyle, aRect, aParentWnd, aId, XPR_NULL);
 }
 
-BOOL SizeGripWnd::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
+xpr_bool_t SizeGripWnd::OnSetCursor(CWnd *aWnd, xpr_uint_t aHitTest, xpr_uint_t aMessage)
 {
-	HCURSOR hCursor = AfxGetApp()->LoadStandardCursor(MAKEINTRESOURCE(IDC_SIZENWSE));
-	SetCursor(hCursor);
-	return TRUE;
+    HCURSOR sCursor = AfxGetApp()->LoadStandardCursor(MAKEINTRESOURCE(IDC_SIZENWSE));
+    SetCursor(sCursor);
+    return XPR_TRUE;
 }

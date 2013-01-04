@@ -14,6 +14,7 @@
 #include "ExplorerView.h"
 #include "ExplorerCtrl.h"
 #include "AddressBar.h"
+#include "SearchDlg.h"
 #include "CtrlId.h"
 
 #ifdef _DEBUG
@@ -657,7 +658,7 @@ xpr_sint_t ShowSearchBarCommand::canExecute(CommandContext &aContext)
 
     xpr_bool_t sState = StateEnable;
 
-    if (sMainFrame->mSearchBar.IsWindowVisible() == XPR_TRUE)
+    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
         sState |= StateCheck;
 
     return sState;
@@ -667,26 +668,24 @@ void ShowSearchBarCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    SearchBar *sSearchBar = &sMainFrame->mSearchBar;
-    sSearchBar->createChild();
-
-    if (sSearchBar->IsWindowVisible() == XPR_TRUE)
-        sMainFrame->ShowControlBar(sSearchBar, XPR_FALSE, XPR_FALSE);
+    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
+    {
+        sMainFrame->destroySearchDlg();
+    }
     else
     {
+        LPITEMIDLIST sFullPidl = XPR_NULL;
+
         if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
         {
             LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
             if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
             {
-                LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(sTvItemData->mFullPidl);
-                if (sSearchBar->getSearchDlg()->insertLocation(sFullPidl) == XPR_FALSE)
-                    COM_FREE(sFullPidl);
+                sFullPidl = fxb::CopyItemIDList(sTvItemData->mFullPidl);
             }
         }
 
-        sMainFrame->ShowControlBar(sSearchBar, XPR_TRUE, XPR_FALSE);
-        sSearchBar->getSearchDlg()->setNameFocus();
+        sMainFrame->showSearchDlg(sFullPidl);
     }
 }
 } // namespace cmd

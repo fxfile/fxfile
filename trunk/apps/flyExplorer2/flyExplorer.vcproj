@@ -939,30 +939,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rgc\scbarcf.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\scbarcf.h"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\scbarg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\scbarg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\sizecbar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\sizecbar.h"
-				>
-			</File>
-			<File
 				RelativePath=".\rgc\SizeGripWnd.cpp"
 				>
 			</File>
@@ -1739,14 +1715,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\BarState.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\BarState.h"
-				>
-			</File>
-			<File
 				RelativePath=".\BookmarkItemEditDlg.cpp"
 				>
 			</File>
@@ -2031,19 +1999,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SearchBar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SearchBar.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SearchDlg.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\SearchDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SearchDlgObserver.h"
 				>
 			</File>
 			<File

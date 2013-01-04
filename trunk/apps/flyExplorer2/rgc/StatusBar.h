@@ -26,6 +26,7 @@ public:
 
 public:
     virtual xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
+    virtual xpr_bool_t Create(CWnd *aParentWnd, const RECT &aRect, xpr_uint_t aId, DWORD aStyle);
 
 public:
     void setObserver(StatusBarObserver *aObserver);
@@ -57,6 +58,8 @@ protected:
     void recreateFont(void);
     void destroyFont(void);
 
+    xpr_bool_t registerWindowClass(void);
+    virtual void PreSubclassWindow(void);
     void recalcLayout(xpr_bool_t aRedraw = XPR_TRUE);
 
     xpr_size_t insertPaneItem(xpr_size_t aPane, PaneItem *aPaneItem);

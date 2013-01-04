@@ -1842,34 +1842,35 @@
 			<!-- bar: folder -->
 			<String ID="bar.folder.title">폴더창</String>
 
-			<!-- bar: search -->
-			<String ID="bar.search.title">검색창</String>
-			<String ID="bar.search.label.name">검색할 파일 및 폴더(&amp;N):</String>
-			<String ID="bar.search.label.text">포함하는 텍스트(&amp;P):</String>
-			<String ID="bar.search.label.location">찾는 위치(&amp;L):</String>
-			<String ID="bar.search.button.search">검색 시작(&amp;S)</String>
-			<String ID="bar.search.button.stop">검색 중지(&amp;T)</String>
-			<String ID="bar.search.label.option">고급 옵션(&amp;O)</String>
-			<String ID="bar.search.label.location">찾는 위치(&amp;L):</String>
-			<String ID="bar.search.check.sub-folder">하위 폴더 검색(&amp;C)</String>
-			<String ID="bar.search.check.case">대/소문자 구분(&amp;U)</String>
-			<String ID="bar.search.check.no_wildcard">해당 파일 및 폴더 검색(&amp;O)</String>
-			<String ID="bar.search.check.system">시스템 속성 포함(&amp;S)</String>
-			<String ID="bar.search.label.type">종류(&amp;T):</String>
-			<String ID="bar.search.label.result">검색 결과:</String>
-			<String ID="bar.search.label.elapsed_time">검색 시간:</String>
-			<String ID="bar.search.type.folder_and_file">폴더 및 파일</String>
-			<String ID="bar.search.type.only_folder">폴더만</String>
-			<String ID="bar.search.type.only_file">파일만</String>
-			<String ID="bar.search.location.local_hard_drive">로컬 하드 드라이브</String>
-			<String ID="bar.search.location.user_defined">사용자 정의...</String>
-			<String ID="bar.search.location.browse">찾아보기...</String>
-			<String ID="bar.search.location.current_folder">탐색 중인 폴더를 찾는 위치로 설정</String>
-			<String ID="bar.search.location.browse.title">검색할 폴더를 선택하여 주십시오.</String>
-			<String ID="bar.search.msg.wrong_location">&#8216;%1%&#8217; 폴더가 존재하지 않습니다.&#10;정확한 위치를 입력하여 주십시오.</String>
-			<String ID="bar.search.status.count">총 %1%개 검색되었습니다.</String>
-			<String ID="bar.search.status.elapsed_time">%1%초 걸렸습니다.</String>
-			<String ID="bar.search.status.elapsed_long_time">%1%분 %2%초 걸렸습니다.</String>
+			<!-- popup: search -->
+			<String ID="popup.search.title">검색창</String>
+			<String ID="popup.search.label.name">검색할 파일 및 폴더(&amp;N):</String>
+			<String ID="popup.search.label.text">포함하는 텍스트(&amp;X):</String>
+			<String ID="popup.search.label.location">찾는 위치(&amp;L):</String>
+			<String ID="popup.search.button.search">검색 시작(&amp;S)</String>
+			<String ID="popup.search.button.stop">검색 중지(&amp;T)</String>
+			<String ID="popup.search.button.close">닫기(&amp;C)</String>
+			<String ID="popup.search.group.option">고급 옵션(&amp;O)</String>
+			<String ID="popup.search.label.location">찾는 위치(&amp;L):</String>
+			<String ID="popup.search.check.sub-folder">하위 폴더 검색(&amp;F)</String>
+			<String ID="popup.search.check.case">대/소문자 구분(&amp;V)</String>
+			<String ID="popup.search.check.no_wildcard">해당 파일 및 폴더 검색(&amp;W)</String>
+			<String ID="popup.search.check.system">시스템 속성 포함(&amp;Y)</String>
+			<String ID="popup.search.label.type">종류(&amp;P):</String>
+			<String ID="popup.search.type.folder_and_file">폴더 및 파일</String>
+			<String ID="popup.search.type.only_folder">폴더만</String>
+			<String ID="popup.search.type.only_file">파일만</String>
+			<String ID="popup.search.location.local_hard_drive">로컬 하드 드라이브</String>
+			<String ID="popup.search.location.user_defined">사용자 정의...</String>
+			<String ID="popup.search.location.browse">찾아보기...</String>
+			<String ID="popup.search.location.current_folder">탐색 중인 폴더를 찾는 위치로 설정</String>
+			<String ID="popup.search.location.browse.title">검색할 폴더를 선택하여 주십시오.</String>
+			<String ID="popup.search.msg.wrong_location">&#8216;%1%&#8217; 폴더가 존재하지 않습니다.&#10;정확한 위치를 입력하여 주십시오.</String>
+			<String ID="popup.search.msg.search_result">총 %1%개 검색되었고, 검색 시간은 %2%초 걸렸습니다.</String>
+			<String ID="popup.search.msg.search_result_long">총 %1%개 검색되었습니다.&#10;검색 시간은 %2%분 %3%초 걸렸습니다.</String>
+			<String ID="popup.search.status.count">총 %1%개 검색되었습니다.</String>
+			<String ID="popup.search.status.elapsed_time">검색 시간: %1%초 걸렸습니다.</String>
+			<String ID="popup.search.status.elapsed_long_time">검색 시간: %1%분 %2%초 걸렸습니다.</String>
 
 			<!-- bar: search result -->
 			<String ID="search_result.title">검색 결과</String>

@@ -233,10 +233,19 @@ void SearchResultPane::onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl)
 {
     if (XPR_IS_NOT_NULL(mStatusBar))
     {
-        xpr_sint_t   sResultFileCount = 0;
-        xpr_sint_t   sResultDirCount  = 0;
-        xpr_uint64_t sResultTotalSize = 0;
+        xpr_sint_t   sResultFileCount  = 0;
+        xpr_sint_t   sResultDirCount   = 0;
+        xpr_sint_t   sResultTotalCount = 0;
+        xpr_uint64_t sResultTotalSize  = 0;
         aSearchResultCtrl.getResultInfo(sResultFileCount, sResultDirCount, sResultTotalSize);
+        sResultTotalCount = sResultFileCount + sResultDirCount;
+
+        xpr_tchar_t sResultFileCountText[0xff] = {0};
+        xpr_tchar_t sResultDirCountText [0xff] = {0};
+        xpr_tchar_t sResultTotalSizeText[0xff] = {0};
+        fxb::GetFormatedNumber(sResultFileCount,  sResultFileCountText, XPR_COUNT_OF(sResultFileCountText) - 1);
+        fxb::GetFormatedNumber(sResultDirCount,   sResultDirCountText,  XPR_COUNT_OF(sResultDirCountText)  - 1);
+        fxb::GetFormatedNumber(sResultTotalCount, sResultTotalSizeText, XPR_COUNT_OF(sResultTotalSizeText) - 1);
 
         xpr_tchar_t sStatusText0[0xff] = {0};
         xpr_tchar_t sStatusText1[0xff] = {0};
@@ -244,10 +253,10 @@ void SearchResultPane::onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl)
         _stprintf(
             sStatusText0,
             theApp.loadFormatString(XPR_STRING_LITERAL("search_result.status.pane1.file_folder"),
-            XPR_STRING_LITERAL("%d,%d,%d")),
-            sResultDirCount + sResultFileCount,
-            sResultDirCount,
-            sResultFileCount);
+            XPR_STRING_LITERAL("%s,%s,%s")),
+            sResultTotalSizeText,
+            sResultDirCountText,
+            sResultFileCountText);
 
         fxb::SizeFormat::getDefSizeFormat(sResultTotalSize, sStatusText1, XPR_COUNT_OF(sStatusText1) - 1);
 
