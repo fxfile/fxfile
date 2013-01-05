@@ -3332,7 +3332,7 @@ void ExplorerView::OnExpSelMultiItem(void)
             {
                 sIndex = sExplorerCtrl->GetNextSelectedItem(sPosition);
 
-                if (sExplorerCtrl->GetItemData(sIndex))
+                if (sExplorerCtrl->GetItemData(sIndex) != XPR_NULL)
                     _stprintf(sText+_tcslen(sText), XPR_STRING_LITERAL("\n%s"), sExplorerCtrl->GetItemText(sIndex, 0));
             }
         }
@@ -3342,18 +3342,26 @@ void ExplorerView::OnExpSelMultiItem(void)
 
     if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
     {
+        xpr_tchar_t sRealSelCountText[0xff] = {0};
+        xpr_tchar_t sRealSelFileCountText[0xff] = {0};
+        xpr_tchar_t sRealSelFolderCountText[0xff] = {0};
+
+        fxb::GetFormatedNumber(sRealSelCount,       sRealSelCountText,       XPR_COUNT_OF(sRealSelCountText      ) - 1);
+        fxb::GetFormatedNumber(sRealSelFileCount,   sRealSelFileCountText,   XPR_COUNT_OF(sRealSelFileCountText  ) - 1);
+        fxb::GetFormatedNumber(sRealSelFolderCount, sRealSelFolderCountText, XPR_COUNT_OF(sRealSelFolderCountText) - 1);
+
         switch (gOpt->mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFileCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFileCountText);
             break;
 
         default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file_folder"), XPR_STRING_LITERAL("%d,%d,%d")), sRealSelCount, sRealSelFolderCount, sRealSelFileCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sRealSelCountText, sRealSelFolderCountText, sRealSelFileCountText);
             break;
         }
     }
@@ -3416,18 +3424,26 @@ void ExplorerView::updateStatusBar(xpr_sint_t aTab)
 
     if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
     {
+        xpr_tchar_t sCountText[0xff] = {0};
+        xpr_tchar_t sFileCountText[0xff] = {0};
+        xpr_tchar_t sFolderCountText[0xff] = {0};
+
+        fxb::GetFormatedNumber(sCount,       sCountText,       XPR_COUNT_OF(sCountText      ) - 1);
+        fxb::GetFormatedNumber(sFileCount,   sFileCountText,   XPR_COUNT_OF(sFileCountText  ) - 1);
+        fxb::GetFormatedNumber(sFolderCount, sFolderCountText, XPR_COUNT_OF(sFolderCountText) - 1);
+
         switch (gOpt->mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file"), XPR_STRING_LITERAL("%d,%d")), sCount, sFileCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFileCountText);
             break;
 
         default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file_folder"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sFolderCount, sFileCount);
+            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sCountText, sFolderCountText, sFileCountText);
             break;
         }
 
