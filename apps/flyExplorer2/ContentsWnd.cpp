@@ -717,7 +717,10 @@ void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSi
     xpr_tchar_t sText[0xff] = {0};
     MultiSelItem *sMultiSelItem = new MultiSelItem;
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("contents.multi_sel.desc"), XPR_STRING_LITERAL("%d")), aCount);
+    xpr_tchar_t sCountText[0xff] = {0};
+    fxb::GetFormatedNumber(aCount, sCountText, XPR_COUNT_OF(sCountText) - 1);
+
+    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("contents.multi_sel.desc"), XPR_STRING_LITERAL("%s")), sCountText);
     sMultiSelItem->mCount = sText;
 
     if (aCount <= 100 && XPR_IS_NOT_NULL(aSize))
