@@ -97,7 +97,7 @@
 			OutputDirectory="../../bin"
 			IntermediateDirectory="../../obj/xpr/rel-x86"
 			ConfigurationType="2"
-			CharacterSet="1"
+			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
 			<Tool
