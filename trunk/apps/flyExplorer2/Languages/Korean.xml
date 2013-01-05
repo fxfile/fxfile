@@ -167,7 +167,7 @@
 			<String ID="cmd.go.system_folder.common">프로그램 공용(&amp;O)</String>
 			<String ID="cmd.go.system_folder.windows">윈도우즈(&amp;W)</String>
 			<String ID="cmd.go.system_folder.windows_system">윈도우즈 시스템(&amp;S)</String>
-			<String ID="cmd.go.system_folder.application_data">Application Data(&amp;A)</String>
+			<String ID="cmd.go.system_folder.application_data">애플리케이션 데이터(&amp;A)</String>
 			<String ID="cmd.go.system_folder.fonts">폰트(&amp;F)</String>
 			<String ID="cmd.go.system_folder.startup">시작 메뉴(&amp;U)</String>
 			<String ID="cmd.go.system_folder.temporary">임시(Temp)(&amp;M)</String>
