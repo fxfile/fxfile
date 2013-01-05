@@ -44,6 +44,8 @@ protected:
     virtual void onStartSearch(SearchResultCtrl &aSearchResultCtrl);
     virtual void onEndSearch(SearchResultCtrl &aSearchResultCtrl);
     virtual void onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl);
+    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl);
     virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl);
 
 protected:

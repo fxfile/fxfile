@@ -976,33 +976,12 @@ xpr_bool_t SearchResultCtrl::invokeCommandSelf(fxb::ContextMenu *aContextMenu, x
         SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
         if (XPR_IS_NOT_NULL(sSrItemData))
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-            _tcscpy(sPath, sSrItemData->mDir);
+            xpr_tchar_t sSelPath[XPR_MAX_PATH + 1] = {0};
+            sSrItemData->getPath(sSelPath);
 
-            ExplorerCtrl *sExplorerCtrl = gFrame->getExplorerCtrl();
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
+            if (XPR_IS_NOT_NULL(mObserver))
             {
-                LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sPath);
-                if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)
-                {
-                    sResult = XPR_TRUE;
-
-                    sExplorerCtrl->SetFocus();
-
-                    xpr_tchar_t sFindPath[XPR_MAX_PATH + 1] = {0};
-                    sSrItemData->getPath(sFindPath);
-
-                    xpr_sint_t sIndex = sExplorerCtrl->findItemPath(sFindPath);
-                    if (sIndex >= 0)
-                    {
-                        sExplorerCtrl->unselectAll();
-                        sExplorerCtrl->selectItem(sIndex);
-                    }
-                }
-                else
-                {
-                    COM_FREE(sFullPidl);
-                }
+                mObserver->onExplore(*this, sSrItemData->mDir, sSelPath);
             }
         }
     }
@@ -1136,15 +1115,14 @@ void SearchResultCtrl::beginDragDrop(NM_LISTVIEW *aNmListView)
     COM_RELEASE(sDataObject);
 }
 
-void SearchResultCtrl::executeSelFolder(LPITEMIDLIST aFullPidl)
+void SearchResultCtrl::executeSelFolder(const xpr_tchar_t *aPath)
 {
-    ExplorerCtrl *sExplorerCtrl = gFrame->getExplorerCtrl();
-    if (sExplorerCtrl->explore(fxb::CopyItemIDList(aFullPidl)) == XPR_FALSE)
+    if (XPR_IS_NOT_NULL(mObserver))
     {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
-
-        doExecuteError(sPath);
+        if (mObserver->onExplore(*this, aPath, XPR_NULL) == XPR_FALSE)
+        {
+            doExecuteError(aPath);
+        }
     }
 }
 
@@ -1236,13 +1214,15 @@ void SearchResultCtrl::executeUrl(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
 
 void SearchResultCtrl::executeLinkFolder(LPITEMIDLIST aFullPidl)
 {
-    ExplorerCtrl *sExplorerCtrl = gFrame->getExplorerCtrl();
-    if (sExplorerCtrl->explore(fxb::CopyItemIDList(aFullPidl)) == XPR_FALSE)
+    if (XPR_IS_NOT_NULL(mObserver))
     {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-        fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
+        if (mObserver->onExplore(*this, aFullPidl) == XPR_FALSE)
+        {
+            xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+            fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
-        doExecuteError(sPath);
+            doExecuteError(sPath);
+        }
     }
 }
 
@@ -1332,7 +1312,7 @@ void SearchResultCtrl::execute(xpr_sint_t aIndex)
 
     if (XPR_IS_TRUE(sFolder))
     {
-        executeSelFolder(sFullPidl);
+        executeSelFolder(sPath);
     }
     else
     {

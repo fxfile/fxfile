@@ -272,3 +272,19 @@ void SearchResultPane::onSetFocus(SearchResultCtrl &aSearchResultCtrl)
         mObserver->onSetFocus(*this);
     }
 }
+
+xpr_bool_t SearchResultPane::onExplore(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+{
+    if (XPR_IS_NULL(mObserver))
+        return XPR_FALSE;
+
+    return mObserver->onExplore(*this, aDir, aSelPath);
+}
+
+xpr_bool_t SearchResultPane::onExplore(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(mObserver))
+        return XPR_FALSE;
+
+    return mObserver->onExplore(*this, aFullPidl);
+}

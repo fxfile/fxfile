@@ -107,7 +107,7 @@ protected:
     xpr_bool_t setDataObject(LPDATAOBJECT *aDataObject, xpr_uint_t aShellAttributes);
     void beginDragDrop(NM_LISTVIEW *aNmListView);
 
-    void executeSelFolder(LPITEMIDLIST aFullPidl);
+    void executeSelFolder(const xpr_tchar_t *aPath);
     void executeLink(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl);
     void executeUrl(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl);
     void executeLinkFolder(LPITEMIDLIST aFullPidl);

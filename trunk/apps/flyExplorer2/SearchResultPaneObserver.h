@@ -16,6 +16,8 @@ class SearchResultPane;
 class SearchResultPaneObserver
 {
 public:
+    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath) = 0;
+    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl) = 0;
     virtual void onSetFocus(SearchResultPane &aSearchResultPane) = 0;
 };
 
