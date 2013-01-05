@@ -73,6 +73,7 @@ public:
     };
 
     xpr_sint_t    newTab(TabType aTabType = TabTypeExplorer);
+    xpr_sint_t    newTab(LPITEMIDLIST aInitFolder);
     xpr_sint_t    newTab(const std::tstring &aInitFolder);
     xpr_sint_t    newSearchResultTab(void);
     xpr_sint_t    duplicateTab(xpr_bool_t aOnCursor = XPR_FALSE);
@@ -83,7 +84,9 @@ public:
     CWnd         *getTabWnd(xpr_sint_t aTab) const;
     xpr_uint_t    getTabWndId(xpr_sint_t aTab) const;
     xpr_sint_t    findTabWndId(xpr_uint_t aTabWndId) const;
+    xpr_sint_t    findTabFirstExplorerCtrl(void) const;
     void          setCurTab(xpr_sint_t aTab);
+    xpr_bool_t    setCurTabLastActivedExplorerCtrl(void);
     void          firstTab(void);
     void          previousTab(void);
     void          nextTab(void);
@@ -208,6 +211,7 @@ protected:
 
     TabCtrl       *mTabCtrl;
     xpr_uint_t     mNextExplorerCtrlId;
+    xpr_uint_t     mLastActivedExplorerCtrlId;
     std::tstring   mInitTabFullPath;
     CPoint         mContextMenuCursor;
 
@@ -295,6 +299,8 @@ protected:
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
 
     // from SearchResultPaneObserver
+    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl);
     virtual void onSetFocus(SearchResultPane &aSearchResultPane);
 
     // from AddressBarObserver

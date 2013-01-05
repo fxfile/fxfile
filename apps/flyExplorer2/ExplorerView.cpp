@@ -154,7 +154,7 @@ ExplorerView::ExplorerView(void)
     , mIsDrivePathBar(XPR_FALSE)
     , mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
     , mListCtrlPrint(XPR_NULL)
-    , mNextExplorerCtrlId(CTRL_ID_EXPLORER_CTRL)
+    , mNextExplorerCtrlId(CTRL_ID_EXPLORER_CTRL), mLastActivedExplorerCtrlId(0)
     , mContextMenuCursor(CPoint(0, 0))
 {
 }
@@ -1049,8 +1049,7 @@ xpr_sint_t ExplorerView::newTab(TabType aTabType)
     {
     case TabTypeExplorer:
         {
-            std::tstring sInitFolder;
-            return newTab(sInitFolder);
+            return newTab(XPR_NULL);
         }
 
     case TabTypeSearchResult:
@@ -1063,6 +1062,17 @@ xpr_sint_t ExplorerView::newTab(TabType aTabType)
 }
 
 xpr_sint_t ExplorerView::newTab(const std::tstring &aInitFolder)
+{
+    LPITEMIDLIST sFullPidl = fxb::Path2Pidl(aInitFolder);
+
+    xpr_sint_t sTab = newTab(sFullPidl);
+
+    COM_FREE(sFullPidl);
+
+    return sTab;
+}
+
+xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
 {
     if (XPR_IS_NULL(mTabCtrl))
         return -1;
@@ -1111,9 +1121,9 @@ xpr_sint_t ExplorerView::newTab(const std::tstring &aInitFolder)
     // initailize folder location
     xpr_bool_t sExplored = XPR_FALSE;
 
-    if (aInitFolder.empty() == false)
+    if (XPR_IS_NOT_NULL(aInitFolder))
     {
-        LPITEMIDLIST sFullPidl = fxb::Path2Pidl(aInitFolder);
+        LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(aInitFolder);
         if (XPR_IS_NOT_NULL(sFullPidl))
         {
             if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)
@@ -1393,6 +1403,18 @@ void ExplorerView::setCurTab(xpr_sint_t aCurTab)
     mTabCtrl->setCurTab((xpr_size_t)aCurTab);
 }
 
+xpr_bool_t ExplorerView::setCurTabLastActivedExplorerCtrl(void)
+{
+    if (XPR_IS_NULL(mTabCtrl))
+        return XPR_FALSE;
+
+    xpr_sint_t sTab = findTabWndId(mLastActivedExplorerCtrlId);
+    if (sTab < 0)
+        return XPR_FALSE;
+
+    return mTabCtrl->setCurTab(sTab);
+}
+
 void ExplorerView::firstTab(void)
 {
     if (XPR_IS_NULL(mTabCtrl))
@@ -1475,6 +1497,30 @@ xpr_sint_t ExplorerView::findTabWndId(xpr_uint_t aTabWndId) const
                 {
                     return (xpr_sint_t)i;
                 }
+            }
+        }
+    }
+
+    return -1;
+}
+
+xpr_sint_t ExplorerView::findTabFirstExplorerCtrl(void) const
+{
+    if (XPR_IS_NULL(mTabCtrl))
+        return -1;
+
+    xpr_size_t i, sTabCount;
+    TabData *sTabData;
+
+    sTabCount = mTabCtrl->getTabCount();
+    for (i = 0; i < sTabCount; ++i)
+    {
+        sTabData = (TabData *)mTabCtrl->getTabData(i);
+        if (XPR_IS_NOT_NULL(sTabData))
+        {
+            if (sTabData->mTabType == TabTypeExplorer)
+            {
+                return (xpr_sint_t)i;
             }
         }
     }
@@ -2346,6 +2392,8 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                         // update main title
                         gFrame->setMainTitle(sTvItemData->mShellFolder, sTvItemData->mPidl);
                     }
+
+                    mLastActivedExplorerCtrlId = sNewExplorerCtrl->GetDlgCtrlID();
                 }
             }
         }
@@ -3583,6 +3631,104 @@ const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
     }
 
     return XPR_NULL;
+}
+
+xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+{
+    if (XPR_IS_NULL(aDir))
+        return XPR_FALSE;
+
+    xpr_bool_t sNewTab = XPR_FALSE;
+
+    if (setCurTabLastActivedExplorerCtrl() == XPR_FALSE)
+    {
+        xpr_sint_t sTab = findTabFirstExplorerCtrl();
+        if (sTab < 0)
+        {
+            sTab = newTab(aDir);
+
+            sNewTab = XPR_TRUE;
+        }
+
+        setCurTab(sTab);
+    }
+
+    if (XPR_IS_TRUE(sNewTab) && XPR_IS_NULL(aSelPath))
+        return XPR_TRUE;
+
+    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+    if (XPR_IS_NULL(sExplorerCtrl))
+        return XPR_FALSE;
+
+    xpr_bool_t sResult = XPR_FALSE;
+
+    if (XPR_IS_TRUE(sNewTab))
+    {
+        sResult = XPR_TRUE;
+    }
+    else
+    {
+        LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(aDir);
+
+        sResult = sExplorerCtrl->explore(sFullPidl);
+        if (XPR_IS_FALSE(sResult))
+        {
+            COM_FREE(sFullPidl);
+        }
+    }
+
+    if (XPR_IS_TRUE(sResult))
+    {
+        if (XPR_IS_NOT_NULL(aSelPath))
+        {
+            xpr_sint_t sIndex = sExplorerCtrl->findItemPath(aSelPath);
+            if (sIndex >= 0)
+            {
+                sExplorerCtrl->unselectAll();
+                sExplorerCtrl->selectItem(sIndex);
+            }
+        }
+    }
+
+    return sResult;
+}
+
+xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(aFullPidl))
+        return XPR_FALSE;
+
+    xpr_bool_t sNewTab = XPR_FALSE;
+
+    if (setCurTabLastActivedExplorerCtrl() == XPR_FALSE)
+    {
+        xpr_sint_t sTab = findTabFirstExplorerCtrl();
+        if (sTab < 0)
+        {
+            sTab = newTab(aFullPidl);
+
+            sNewTab = XPR_TRUE;
+        }
+
+        setCurTab(sTab);
+    }
+
+    if (XPR_IS_TRUE(sNewTab))
+        return XPR_TRUE;
+
+    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+    if (XPR_IS_NULL(sExplorerCtrl))
+        return XPR_FALSE;
+
+    LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(aFullPidl);
+
+    xpr_bool_t sResult = sExplorerCtrl->explore(sFullPidl);
+    if (XPR_IS_FALSE(sResult))
+    {
+        COM_FREE(sFullPidl);
+    }
+
+    return sResult;
 }
 
 void ExplorerView::onSetFocus(SearchResultPane &aSearchResultPane)
