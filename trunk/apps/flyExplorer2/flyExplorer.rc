@@ -36,7 +36,7 @@ BEGIN
     PUSHBUTTON      "&Bug Report...",IDC_ABOUT_BUG,172,161,64,13,WS_GROUP
     CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,48,79,188,43
     CONTROL         "flyExplorer",IDC_FLYEXPLORER,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,48,7,188,8
-    LTEXT           "Copyright (C) 2001-2012 Leon Lee. All rights reserved.",IDC_STATIC,48,31,176,8
+    LTEXT           "Copyright (C) 2001-2013 Leon Lee. All rights reserved.",IDC_STATIC,48,31,176,8
     LTEXT           "...",IDC_ABOUT_WINDOWS,48,41,168,8
     LTEXT           "This software accepts the following user for use.",IDC_ABOUT_LABEL_ACCEPT,7,133,161,18
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,127,230,1

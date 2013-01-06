@@ -79,7 +79,7 @@ xpr_bool_t AboutDlg::OnInitDialog(void)
         XPR_STRING_LITERAL("Ansicode")
 #endif
         );
-    _tcscat(sVersion, XPR_STRING_LITERAL(", alpha2"));
+    _tcscat(sVersion, XPR_STRING_LITERAL(", alpha3"));
     SetDlgItemText(IDC_ABOUT_VERSION, sVersion);
 
     // Get Version - Module, Dll
