@@ -17,7 +17,7 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug-x86-Unicode|Win32"
+			Name="Debug-x86|Win32"
 			OutputDirectory="../../bin"
 			IntermediateDirectory="../../obj/xpr/dbg-x86"
 			ConfigurationType="2"
@@ -93,7 +93,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release-x86-Unicode|Win32"
+			Name="Release-x86|Win32"
 			OutputDirectory="../../bin"
 			IntermediateDirectory="../../obj/xpr/rel-x86"
 			ConfigurationType="2"
@@ -168,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y&#x0D;&#x0A;xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y&#x0D;&#x0A;"
+				CommandLine="xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y&#x0D;&#x0A;xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y&#x0D;&#x0A;xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y&#x0D;&#x0A;xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
