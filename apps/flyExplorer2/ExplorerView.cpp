@@ -2242,7 +2242,7 @@ void ExplorerView::visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 
     if (XPR_IS_TRUE(aVisible))
     {
-        setStatusBarDrive();
+        updateStatusBar();
     }
 
     if (XPR_IS_FALSE(aLoading))
