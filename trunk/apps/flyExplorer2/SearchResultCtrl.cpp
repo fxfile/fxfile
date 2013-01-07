@@ -493,40 +493,40 @@ void SearchResultCtrl::OnGetdispinfo(NMHDR *aNmHdr, LRESULT *aResult)
         else
         {
             sLvItem.iImage = fxb::GetItemIconIndex(sPath);
+        }
 
-            sLvItem.state = 0;
-            sLvItem.stateMask = 0;
+        sLvItem.state = 0;
+        sLvItem.stateMask = 0;
 
-            if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN))
+        if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN))
+        {
+            sLvItem.mask      |= LVIF_STATE;
+            sLvItem.state     |= LVIS_CUT;
+            sLvItem.stateMask |= LVIS_CUT;
+        }
+
+        if (XPR_IS_NOT_NULL(sExt))
+        {
+            if (_tcsicmp(sExt, XPR_STRING_LITERAL(".lnk")) == 0 || _tcsicmp(sExt, XPR_STRING_LITERAL(".url")) == 0)
             {
                 sLvItem.mask      |= LVIF_STATE;
-                sLvItem.state     |= LVIS_CUT;
-                sLvItem.stateMask |= LVIS_CUT;
+                sLvItem.state     |= INDEXTOOVERLAYMASK(2);
+                sLvItem.stateMask |= LVIS_OVERLAYMASK;
             }
+        }
 
-            if (XPR_IS_NOT_NULL(sExt))
-            {
-                if (_tcsicmp(sExt, XPR_STRING_LITERAL(".lnk")) == 0 || _tcsicmp(sExt, XPR_STRING_LITERAL(".url")) == 0)
-                {
-                    sLvItem.mask      |= LVIF_STATE;
-                    sLvItem.state     |= INDEXTOOVERLAYMASK(2);
-                    sLvItem.stateMask |= LVIS_OVERLAYMASK;
-                }
-            }
+        // shell icon custom overlay
+        fxb::ShellIcon::AsyncIcon *sAsyncIcon = new fxb::ShellIcon::AsyncIcon;
+        sAsyncIcon->mType              = fxb::ShellIcon::TypeOverlayIndex;
+        sAsyncIcon->mCode              = mCode;
+        sAsyncIcon->mItem              = sLvItem.iItem;
+        sAsyncIcon->mSignature         = sSrItemData->mSignature;
+        sAsyncIcon->mPath              = sPath;
+        sAsyncIcon->mResult.mIconIndex = -1;
 
-            // shell icon custom overlay
-            fxb::ShellIcon::AsyncIcon *sAsyncIcon = new fxb::ShellIcon::AsyncIcon;
-            sAsyncIcon->mType              = fxb::ShellIcon::TypeOverlayIndex;
-            sAsyncIcon->mCode              = mCode;
-            sAsyncIcon->mItem              = sLvItem.iItem;
-            sAsyncIcon->mSignature         = sSrItemData->mSignature;
-            sAsyncIcon->mPath              = sPath;
-            sAsyncIcon->mResult.mIconIndex = -1;
-
-            if (mShellIcon->getAsyncIcon(sAsyncIcon) == XPR_FALSE)
-            {
-                XPR_SAFE_DELETE(sAsyncIcon);
-            }
+        if (mShellIcon->getAsyncIcon(sAsyncIcon) == XPR_FALSE)
+        {
+            XPR_SAFE_DELETE(sAsyncIcon);
         }
     }
 
