@@ -1854,10 +1854,10 @@ xpr_sint_t CALLBACK SearchResultCtrl::DefaultItemCompareProc(LPARAM lParam1, LPA
     {
         if ((sSrItemData1->mFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == (sSrItemData2->mFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
         {
-            if (sSrItemData1->mFileSize > sSrItemData2->mFileSize)
-                return -1;
-            else if (sSrItemData1->mFileSize < sSrItemData2->mFileSize)
-                return 1;
+            if (sSrItemData1->mFileSize < sSrItemData2->mFileSize)
+                sResult = -1;
+            else if (sSrItemData1->mFileSize > sSrItemData2->mFileSize)
+                sResult = 1;
             else
             {
                 sResult = lstrcmpi(sSrItemData1->mFileName, sSrItemData2->mFileName);
