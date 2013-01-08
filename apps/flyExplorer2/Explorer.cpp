@@ -225,9 +225,9 @@ xpr_bool_t ExplorerApp::InitInstance(void)
     fxb::CmdLineParser::instance().clear();
 
     // The one and only window has been initialized, so show and update it.
-    m_pMainWnd->SetForegroundWindow();
-    m_pMainWnd->ShowWindow(SW_SHOW);
-    m_pMainWnd->UpdateWindow();
+    sMainFrame->SetForegroundWindow();
+    sMainFrame->ShowWindow(m_nCmdShow);
+    sMainFrame->UpdateWindow();
 
     if (sInitCfg == XPR_TRUE)
     {
