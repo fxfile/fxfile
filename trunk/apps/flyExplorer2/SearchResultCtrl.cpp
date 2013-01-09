@@ -149,11 +149,11 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (subclassHeader() == XPR_FALSE)
         return -1;
 
-    InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  200);
+    InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  170);
     InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("search_result.column.location")), LVCFMT_LEFT,  200);
-    InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT, 100);
-    InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  100);
-    InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  100);
+    InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT,  80);
+    InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  150);
+    InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  140);
 
     //createAccelTable();
 
