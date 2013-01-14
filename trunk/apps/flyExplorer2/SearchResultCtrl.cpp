@@ -154,6 +154,7 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT,  80);
     InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  150);
     InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  140);
+    mHeaderCtrl->setSortImage(-1, XPR_TRUE);
 
     //createAccelTable();
 
