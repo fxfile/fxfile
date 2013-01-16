@@ -93,8 +93,11 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_EDIT_FILE_SCRAP_CLIPBOARD_CUT]  = XPR_STRING_LITERAL("cmd.scrap.clipboard_cut");
     mCommandString[ID_EDIT_FILE_SCRAP_CLIPBOARD_COPY] = XPR_STRING_LITERAL("cmd.scrap.clipboard_copy");
     mCommandString[ID_EDIT_FILE_SCRAP_VIEW]           = XPR_STRING_LITERAL("cmd.scrap.view");
+    mCommandString[ID_EDIT_FILE_SCRAP_GROUP_ADD]      = XPR_STRING_LITERAL("cmd.scrap.add_group");
+    mCommandString[ID_EDIT_FILE_SCRAP_GROUP_RENAME]   = XPR_STRING_LITERAL("cmd.scrap.rename_group");
+    mCommandString[ID_EDIT_FILE_SCRAP_GROUP_DELETE]   = XPR_STRING_LITERAL("cmd.scrap.delete_group");
     mCommandString[ID_EDIT_FILE_SCRAP_GROUP_DEFAULT]  = XPR_STRING_LITERAL("cmd.scrap.default_group");
-    mCommandString[ID_EDIT_FILE_SCRAP_LIST_REMOVE]    = XPR_STRING_LITERAL("cmd.scrap.remove_list");
+    mCommandString[ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST]= XPR_STRING_LITERAL("cmd.scrap.remove_all_list");
     mCommandString[ID_EDIT_FILE_SCRAP_DROP]           = XPR_STRING_LITERAL("cmd.scrap.show_floater");
     mCommandString[ID_EDIT_SEL_NAME]                  = XPR_STRING_LITERAL("cmd.select_name");
     mCommandString[ID_EDIT_UNSEL_NAME]                = XPR_STRING_LITERAL("cmd.unselect_name");
@@ -318,7 +321,7 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_FCD_CLIPBOARD_COPY]             = XPR_STRING_LITERAL("cmd.scrap.clipboard_copy");
     mCommandString[ID_FCD_VIEW]                       = XPR_STRING_LITERAL("cmd.scrap.view");
     mCommandString[ID_FCD_GROUP_DEFAULT]              = XPR_STRING_LITERAL("cmd.scrap.default_group");
-    mCommandString[ID_FCD_REMOVE]                     = XPR_STRING_LITERAL("cmd.scrap.remove_list");
+    mCommandString[ID_FCD_REMOVE]                     = XPR_STRING_LITERAL("cmd.scrap.remove_all_list");
     mCommandString[ID_FCD_ALWAYS_TOP_MOST]            = XPR_STRING_LITERAL("cmd.scrap.floater.always_topmost");
     mCommandString[ID_FCD_TRANSPARENT_20]             = XPR_STRING_LITERAL("cmd.scrap.floater.transparency.20%");
     mCommandString[ID_FCD_TRANSPARENT_40]             = XPR_STRING_LITERAL("cmd.scrap.floater.transparency.40%");
@@ -408,6 +411,9 @@ void CommandStringTable::loadCommands(void)
 
 void CommandStringTable::loadCommandButtons(void)
 {
+    //
+    // main toolbar
+    //
     mCommandButtonString[ID_GO_BACK]                  = XPR_STRING_LITERAL("tool_bar.cmd.navigate.back");
     mCommandButtonString[ID_GO_FORWARD]               = XPR_STRING_LITERAL("tool_bar.cmd.navigate.forward");
     mCommandButtonString[ID_GO_UP]                    = XPR_STRING_LITERAL("tool_bar.cmd.go.up");
@@ -456,6 +462,18 @@ void CommandStringTable::loadCommandButtons(void)
 
     mCommandButtonString[ID_TOOL_OPTION]              = XPR_STRING_LITERAL("tool_bar.cmd.preferences");
     mCommandButtonString[ID_APP_ABOUT]                = XPR_STRING_LITERAL("tool_bar.cmd.about");
+
+    //
+    // file scrap toolbar
+    //
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_GROUP_ADD]       = XPR_STRING_LITERAL("tool_bar.cmd.scrap.add_group");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_COPY_TO]         = XPR_STRING_LITERAL("tool_bar.cmd.scrap.copy_to");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_MOVE_TO]         = XPR_STRING_LITERAL("tool_bar.cmd.scrap.move_to");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_DELETE]          = XPR_STRING_LITERAL("tool_bar.cmd.scrap.delete");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_REFRESH]         = XPR_STRING_LITERAL("tool_bar.cmd.scrap.refresh");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_VALIDATE]        = XPR_STRING_LITERAL("tool_bar.cmd.scrap.validate");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_REMOVE_LIST]     = XPR_STRING_LITERAL("tool_bar.cmd.scrap.remove_list");
+    mCommandButtonString[ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST] = XPR_STRING_LITERAL("tool_bar.cmd.scrap.remove_all_list");
 }
 
 const xpr_tchar_t *CommandStringTable::loadString(xpr_uint_t aId)

@@ -12,7 +12,7 @@
 
 #include "../Option.h"
 
-#include "fxb_file_scrap_mgr.h"
+#include "fxb_file_scrap.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -192,7 +192,10 @@ xpr_bool_t ContextMenu::invokeCommand(xpr_uint_t aId)
 {
     if (XPR_IS_TRUE(gOpt->mFileScrapContextMenu) && aId == CMID_FILE_SCRAP)
     {
-        FileScrapMgr::instance().add(mShellFolder, mPidls, mCount);
+        fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+        xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+
+        sFileScrap.addItem(sGroupId, mShellFolder, mPidls, mCount);
         return XPR_TRUE;
     }
 

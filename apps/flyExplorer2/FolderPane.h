@@ -28,7 +28,7 @@ public:
     void setObserver(FolderPaneObserver *aObserver);
 
 public:
-    xpr_bool_t FolderPane::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
+    xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
 
 public:
     void setViewIndex(xpr_sint_t aViewIndex);

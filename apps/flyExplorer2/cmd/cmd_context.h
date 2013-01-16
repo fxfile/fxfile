@@ -15,6 +15,7 @@ class MainFrame;
 class FolderCtrl;
 class ExplorerCtrl;
 class SearchResultCtrl;
+class FileScrapPane;
 
 namespace cmd
 {
@@ -37,8 +38,8 @@ public:
     void setParameters(CommandParameters *aParameters);
 
 public:
-    static void getKnownCtrl(CommandContext &aContext, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl);
-    static void castKnownCtrl(CWnd *aWnd, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl);
+    static void getKnownCtrl(CommandContext &aContext, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl, FileScrapPane *&aFileScrapPane);
+    static void castKnownCtrl(CWnd *aWnd, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl, FileScrapPane *&aFileScrapPane);
 
 protected:
     xpr_uint_t         mCommandId;

@@ -944,13 +944,19 @@ xpr_bool_t GetFileSize(const xpr_tchar_t *aPath, xpr_tchar_t *aFileSizeText, xpr
     if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aFileSizeText) || aMaxLen <= 0)
         return XPR_FALSE;
 
-    aFileSizeText[0] = XPR_STRING_LITERAL('\0');
-
     xpr_uint64_t sFileSize = GetFileSize(aPath);
-    if (sFileSize < 0)
+
+    return GetFileSize(sFileSize, aFileSizeText, aMaxLen);
+}
+
+xpr_bool_t GetFileSize(xpr_uint64_t aFileSize, xpr_tchar_t *aFileSizeText, xpr_size_t aMaxLen)
+{
+    if (XPR_IS_NULL(aFileSizeText) || aMaxLen <= 0)
         return XPR_FALSE;
 
-    SizeFormat::getDefSizeFormat(sFileSize, aFileSizeText, aMaxLen);
+    aFileSizeText[0] = XPR_STRING_LITERAL('\0');
+
+    SizeFormat::getDefSizeFormat(aFileSize, aFileSizeText, aMaxLen);
 
     return XPR_TRUE;
 }
@@ -989,25 +995,30 @@ xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, xpr_tchar_t *aModifiedFileTime)
 
     ::FindClose(sFindFile);
 
-    xpr_tchar_t sDate[15];
-    xpr_tchar_t sTime[15];
+    return GetFileTime(sWin32FindData.ftLastWriteTime, aModifiedFileTime);
+}
+
+xpr_bool_t GetFileTime(const FILETIME &aFileTime, xpr_tchar_t *aFileTimeText)
+{
+    xpr_tchar_t sDate[15] = {0};
+    xpr_tchar_t sTime[15] = {0};
     FILETIME sFileTime;
     SYSTEMTIME sSystemTime;
-    if (FileTimeToLocalFileTime(&sWin32FindData.ftLastWriteTime, &sFileTime) == XPR_FALSE)
+    if (FileTimeToLocalFileTime(&aFileTime, &sFileTime) == XPR_FALSE)
     {
-        aModifiedFileTime[0] = 0;
+        aFileTimeText[0] = 0;
         return XPR_FALSE;
     }
 
     if (FileTimeToSystemTime(&sFileTime, &sSystemTime) == XPR_FALSE)
     {
-        aModifiedFileTime[0] = 0;
+        aFileTimeText[0] = 0;
         return XPR_FALSE;
     }
 
     GetDateFormat(XPR_NULL, 0, &sSystemTime, XPR_STRING_LITERAL("yyyy-MM-dd"), sDate, sizeof(sDate));
     GetTimeFormat(XPR_NULL, 0, &sSystemTime, XPR_STRING_LITERAL("tt hh:mm"), sTime, sizeof(sTime));
-    _stprintf(aModifiedFileTime, XPR_STRING_LITERAL("%s %s"), sDate, sTime);
+    _stprintf(aFileTimeText, XPR_STRING_LITERAL("%s %s"), sDate, sTime);
 
     return XPR_TRUE;
 }

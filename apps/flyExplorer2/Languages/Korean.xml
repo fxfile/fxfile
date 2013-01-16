@@ -106,8 +106,11 @@
 			<String ID="cmd.scrap.clipboard_cut">클립보드로 잘라내기(&amp;T)</String>
 			<String ID="cmd.scrap.clipboard_copy">클립보드로 복사(&amp;C)</String>
 			<String ID="cmd.scrap.view">수집함 관리(&amp;M)</String>
+			<String ID="cmd.scrap.add_group">새 그룹 만들기(&amp;N)</String>
+			<String ID="cmd.scrap.rename_group">이름 변경(&amp;R)</String>
+			<String ID="cmd.scrap.delete_group">그룹 삭제(&amp;D)</String>
 			<String ID="cmd.scrap.default_group">기본 수집 그룹 설정(&amp;G)</String>
-			<String ID="cmd.scrap.remove_list">수집함 목록 제거(&amp;R)</String>
+			<String ID="cmd.scrap.remove_all_list">수집된 목록 제거(&amp;R)</String>
 			<String ID="cmd.scrap.show_floater">수집함(&amp;O)</String>
 			<String ID="cmd.select_name">이름으로 선택(&amp;N)...</String>
 			<String ID="cmd.unselect_name">이름으로 해제(&amp;Q)...</String>
@@ -439,7 +442,7 @@
 			<String ID="cmd.sync.none">동기화 안함(&amp;N)</String>
 			<String ID="cmd.sync.restore">비교 원래대로(&amp;O)</String>
 
-			<!-- tool bar -->
+			<!-- main tool bar -->
 			<String ID="tool_bar.cmd.navigate.back">뒤로</String>
 			<String ID="tool_bar.cmd.navigate.forward">앞으로</String>
 			<String ID="tool_bar.cmd.go.up">위로</String>
@@ -481,6 +484,16 @@
 			<String ID="tool_bar.cmd.file_edit">파일편집</String>
 			<String ID="tool_bar.cmd.preferences">환경설정</String>
 			<String ID="tool_bar.cmd.about">정보</String>
+
+			<!-- file scrap toolbar -->
+			<String ID="tool_bar.cmd.scrap.add_group">새 그룹 만들기</String>
+			<String ID="tool_bar.cmd.scrap.copy_to">폴더로 복사</String>
+			<String ID="tool_bar.cmd.scrap.move_to">폴더로 이동</String>
+			<String ID="tool_bar.cmd.scrap.delete">삭제</String>
+			<String ID="tool_bar.cmd.scrap.refresh">새로 고침</String>
+			<String ID="tool_bar.cmd.scrap.validate">유효성 검사</String>
+			<String ID="tool_bar.cmd.scrap.remove_list">지우기</String>
+			<String ID="tool_bar.cmd.scrap.remove_all_list">모두 지우기</String>
 
 			<!-- popup common -->
 			<String ID="popup.common.button.ok">확인</String>
@@ -1293,42 +1306,6 @@
 			<String ID="popup.file_ass_set.msg.select_filter">필터링을 선택하여 주십시오.</String>
 			<String ID="popup.file_ass_set.msg.input_program">파일 연동 프로그램을 설정해 주십시오.</String>
 
-			<!-- popup: file scrap -->
-			<String ID="popup.file_scrap.title">수집함 관리</String>
-			<String ID="popup.file_scrap.label.group">그룹(&amp;G):</String>
-			<String ID="popup.file_scrap.group.no_group">미분류 수집함</String>
-			<String ID="popup.file_scrap.group.default"> (기본)</String>
-			<String ID="popup.file_scrap.button.new_group">새로 만들기(&amp;N)</String>
-			<String ID="popup.file_scrap.new_group.title">새로 만들기</String>
-			<String ID="popup.file_scrap.new_group.desc">새로 만들 수집함의 그룹 이름을 입력하십시오.</String>
-			<String ID="popup.file_scrap.group_rename.title">이름 변경</String>
-			<String ID="popup.file_scrap.group_rename.desc">수집함의 새 그룹 이름을 입력하십시오.</String>
-			<String ID="popup.file_scrap.label.list">수집한 파일 및 폴더(&amp;L):</String>
-			<String ID="popup.file_scrap.list.column.no">No</String>
-			<String ID="popup.file_scrap.list.column.filename">파일명</String>
-			<String ID="popup.file_scrap.list.column.location">위치</String>
-			<String ID="popup.file_scrap.list.column.full_path">전체 경로</String>
-			<String ID="popup.file_scrap.button.copy_to">폴더로 복사(&amp;C)</String>
-			<String ID="popup.file_scrap.button.move_to">폴더로 이동(&amp;M)</String>
-			<String ID="popup.file_scrap.folder_browse.title">아래에서 대상을 선택하여 주십시오.</String>
-			<String ID="popup.file_scrap.button.delete">삭제(&amp;D)</String>
-			<String ID="popup.file_scrap.button.validate">유효성 검사(&amp;V)</String>
-			<String ID="popup.file_scrap.button.clear">목록 지우기(&amp;E)</String>
-			<String ID="popup.file_scrap.button.clear_all">모두 지우기(&amp;A)</String>
-			<String ID="popup.file_scrap.button.close">닫기</String>
-			<String ID="popup.file_scrap.status.count">총 %1%개를 수집되었습니다.</String>
-			<String ID="popup.file_scrap.msg.limit_group_count">수집 그룹의 제한은 %1%개 입니다.</String>
-			<String ID="popup.file_scrap.msg.wrong_group_name">수집함 그룹 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
-			<String ID="popup.file_scrap.msg.duplicated_group_name">중복된 이름을 입력하실 수 없습니다.</String>
-			<String ID="popup.file_scrap.msg.confirm_delete">정말로 삭제하시겠습니까?</String>
-			<String ID="popup.file_scrap.msg.confirm_clear">선택된 목록을 정말로 삭제하시겠습니까?</String>
-			<String ID="popup.file_scrap.msg.confirm_clear_all">모든 목록을 정말로 삭제하시겠습니까?</String>
-			<String ID="popup.file_scrap.msg.no_file">수집된 파일이 없습니다.</String>
-			<String ID="popup.file_scrap.msg.confirm_delete_or_trash">여러 수집한 파일 및 폴더을 영원히 삭제하겠습니까?&#10;&#10;&#8216;예&#8217;를 선택하시면 영원히 삭제하고, &#8216;아니요&#8217;를 선택하시면 휴지통으로 보냅니다.&#10;그리고 &#8216;취소&#8217;를 선택하시면 삭제하기가 취소됩니다.</String>
-			<String ID="popup.file_scrap.msg.validated">수집된 파일이 모두 존재합니다.</String>
-			<String ID="popup.file_scrap.msg.some_invalidated">수집된 파일들 중에 %1%개 파일이 존재하지 않습니다.&#10;존재하지 않은 파일을 목록에서 제거하시겠습니까?</String>
-			<String ID="popup.file_scrap.msg.removed_invalidated_items">존재하지 않은 모든 파일을 목록에서 제거하였습니다.</String>
-			
 			<!-- popup: file scrap drop-->
 			<String ID="popup.file_scrap_drop.folder_browse.title">아래에서 대상을 선택하여 주십시오.</String>
 
@@ -1872,7 +1849,7 @@
 			<String ID="popup.search.status.elapsed_time">검색 시간: %1%초 걸렸습니다.</String>
 			<String ID="popup.search.status.elapsed_long_time">검색 시간: %1%분 %2%초 걸렸습니다.</String>
 
-			<!-- bar: search result -->
+			<!-- pane: search result -->
 			<String ID="search_result.title">검색 결과</String>
 			<String ID="search_result.column.name">이름</String>
 			<String ID="search_result.column.location">위치</String>
@@ -1881,6 +1858,34 @@
 			<String ID="search_result.column.date">수정한 날짜</String>
 			<String ID="search_result.msg.wrong_path">다음의 경로를 접근할 수 없습니다. 이 경로가 옮겨졌거나 삭제되었습니다.&#10;&#10;%1%</String>
 			<String ID="search_result.status.pane1.file_folder">%1% 개체(폴더 %2%, 파일 %3%)</String>
+
+			<!-- pane: file scrap -->
+			<String ID="file_scrap.title">수집함 관리</String>
+			<String ID="file_scrap.label.group">그룹:</String>
+			<String ID="file_scrap.group.no_group">미분류 수집함</String>
+			<String ID="file_scrap.group.default"> (기본)</String>
+			<String ID="file_scrap.new_group.title">새로 만들기</String>
+			<String ID="file_scrap.new_group.desc">새로 만들 수집함의 그룹 이름을 입력하십시오.</String>
+			<String ID="file_scrap.group_rename.title">이름 변경</String>
+			<String ID="file_scrap.group_rename.desc">수집함의 새 그룹 이름을 입력하십시오.</String>
+			<String ID="file_scrap.list.column.name">이름</String>
+			<String ID="file_scrap.list.column.location">위치</String>
+			<String ID="file_scrap.list.column.size">크기</String>
+			<String ID="file_scrap.list.column.type">종류</String>
+			<String ID="file_scrap.list.column.date">수정한 날짜</String>
+			<String ID="file_scrap.folder_browse.title">아래에서 대상을 선택하여 주십시오.</String>
+			<String ID="file_scrap.status.count">%1% 개체(%2% 폴더, %3% 파일)</String>
+			<String ID="file_scrap.msg.limit_group_count">수집 그룹의 제한은 %1%개 입니다.</String>
+			<String ID="file_scrap.msg.wrong_group_name">수집함 그룹 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="file_scrap.msg.duplicated_group_name">중복된 이름을 입력하실 수 없습니다.</String>
+			<String ID="file_scrap.msg.confirm_delete">정말로 삭제하시겠습니까?</String>
+			<String ID="file_scrap.msg.confirm_clear">선택된 목록을 정말로 삭제하시겠습니까?</String>
+			<String ID="file_scrap.msg.confirm_clear_all">모든 목록을 정말로 삭제하시겠습니까?</String>
+			<String ID="file_scrap.msg.no_file">수집된 파일이 없습니다.</String>
+			<String ID="file_scrap.msg.some_invalidated">수집된 파일들 중에 %1%개 파일이 존재하지 않습니다.&#10;존재하지 않은 파일을 이 목록에서 모두 제거하시겠습니까?</String>
+			<String ID="file_scrap.msg.confirm_delete_or_trash">여러 수집한 파일 및 폴더을 영원히 삭제하겠습니까?&#10;&#10;&#8216;예&#8217;를 선택하시면 영원히 삭제하고, &#8216;아니요&#8217;를 선택하시면 휴지통으로 보냅니다.&#10;그리고 &#8216;취소&#8217;를 선택하시면 삭제하기가 취소됩니다.</String>
+			<String ID="file_scrap.msg.validated">수집된 파일이 모두 존재합니다.</String>
+			<String ID="file_scrap.msg.removed_invalidated_items">존재하지 않은 모든 파일을 목록에서 제거하였습니다.</String>
 
 			<!-- print preview -->
 			<String ID="print_preview.button.print">인쇄</String>

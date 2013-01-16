@@ -369,27 +369,6 @@ BEGIN
     LTEXT           "",IDC_FILEASS_STATUS,0,130,154,11,SS_CENTERIMAGE | SS_PATHELLIPSIS
 END
 
-IDD_FILE_SCRAP DIALOGEX 0, 0, 250, 225
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
-CAPTION "File scrap management"
-FONT 9, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    LTEXT           "&Group:",IDC_FILE_SCRAP_GROUP_LABEL,7,7,95,8
-    CONTROL         "",IDC_FILE_SCRAP_GROUP,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,7,17,97,97
-    CONTROL         "&New",IDC_FILE_SCRAP_NEW_GROUP,"Button",BS_OWNERDRAW | WS_TABSTOP,106,16,71,15
-    LTEXT           "Scrapped file &list:",IDC_FILE_SCRAP_LIST_LABEL,7,40,157,8
-    CONTROL         "List2",IDC_FILE_SCRAP_LIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,52,170,130
-    PUSHBUTTON      "&Copy to folder",IDC_FILE_SCRAP_COPY_TO_FOLDER,182,50,61,14
-    PUSHBUTTON      "&Move to folder",IDC_FILE_SCRAP_MOVE_TO_FOLDER,182,66,61,14
-    PUSHBUTTON      "&Delete",IDC_FILE_SCRAP_DELETE,182,82,61,14
-    PUSHBUTTON      "&Validate",IDC_FILE_SCRAP_VALIDATE,182,113,61,14
-    PUSHBUTTON      "&Clear",IDC_FILE_SCRAP_CLEAR,182,129,61,14
-    PUSHBUTTON      "Clear &all",IDC_FILE_SCRAP_CLEAR_ALL,182,145,61,14
-    LTEXT           "Total 0 item.",IDC_FILE_SCRAP_STATUS,7,183,236,15,SS_CENTERIMAGE
-    CONTROL         "",IDC_FILE_SCRAP_UNDERLINE,"Static",SS_ETCHEDHORZ,7,199,236,1
-    DEFPUSHBUTTON   "Close",IDCANCEL,188,204,55,14
-END
-
 IDD_GO_PATH DIALOGEX 0, 0, 251, 78
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Go path"
@@ -1773,14 +1752,6 @@ BEGIN
         BOTTOMMARGIN, 142
     END
 
-    IDD_FILE_SCRAP, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 243
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 218
-    END
-
     IDD_GO_PATH, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -2187,7 +2158,7 @@ BEGIN
         MENUITEM "&Move to folder...",          ID_EDIT_FOLDER_MOVE
         MENUITEM "Copy to folder(&V)...",       ID_EDIT_FOLDER_COPY
         MENUITEM SEPARATOR
-        MENUITEM "Scrap(&F)",                   ID_EDIT_NAME_COPY
+        MENUITEM "Add to scrap(&F)",       ID_EDIT_FILE_SCRAP_ADD
         POPUP "cmd.scrap.popup"
         BEGIN
             MENUITEM "Copy to current &folder",     ID_EDIT_FILE_SCRAP_CUR_COPY
@@ -2200,12 +2171,12 @@ BEGIN
             MENUITEM "Scrap &management...",        ID_EDIT_FILE_SCRAP_VIEW
             MENUITEM "Set default scrap &group...", ID_EDIT_FILE_SCRAP_GROUP_DEFAULT
             MENUITEM SEPARATOR
-            MENUITEM "&Remove scrap list",          ID_EDIT_FILE_SCRAP_LIST_REMOVE
+            MENUITEM "&Remove all list",            ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST
         END
         MENUITEM "Scrap b&ox",                  ID_EDIT_FILE_SCRAP_DROP
         MENUITEM SEPARATOR
         MENUITEM "Select by &name...",          ID_EDIT_SEL_NAME
-        MENUITEM "Unselect by name(&Q)...",     ID_EDIT_FOLDER_COPY
+        MENUITEM "Unselect by name(&Q)...",     ID_EDIT_UNSEL_NAME
         MENUITEM "Select as the same file &extension", ID_EDIT_SEL_SAME_EXT
         MENUITEM "Select as the same filte&r",  ID_EDIT_SEL_SAME_FILTER
         POPUP "cmd.select_special.popup"
@@ -2585,7 +2556,7 @@ BEGIN
         MENUITEM "Move the scrap items to current folder(&V)", ID_EDIT_FILE_SCRAP_CUR_MOVE
         MENUITEM "&Delete the scrap items",     ID_EDIT_FILE_SCRAP_DELETE
         MENUITEM "Scrap &management...",        ID_EDIT_FILE_SCRAP_VIEW
-        MENUITEM "&Remove the scrap list",      ID_EDIT_FILE_SCRAP_LIST_REMOVE
+        MENUITEM "&Remove all list",            ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST
         MENUITEM SEPARATOR
         POPUP "cmd.new.popup"
         BEGIN
@@ -3035,11 +3006,11 @@ IDR_FILE_SCRAP MENU
 BEGIN
     POPUP "Context Menu"
     BEGIN
-        MENUITEM "&New",                        ID_SCRAP_GROUP_NEW
-        MENUITEM "&Modify",                     ID_SCRAP_GROUP_MODIFY
-        MENUITEM "&Delete",                     ID_SCRAP_GROUP_DELETE
+        MENUITEM "&New group",                  ID_EDIT_FILE_SCRAP_GROUP_ADD
+        MENUITEM "&Rename group",               ID_EDIT_FILE_SCRAP_GROUP_RENAME
+        MENUITEM "&Delete group",               ID_EDIT_FILE_SCRAP_GROUP_DELETE
         MENUITEM SEPARATOR
-        MENUITEM "Set de&fault group",          ID_SCRAP_GROUP_DEFAULT
+        MENUITEM "Set de&fault group",          ID_EDIT_FILE_SCRAP_GROUP_DEFAULT
     END
 END
 

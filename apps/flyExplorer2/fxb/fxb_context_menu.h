@@ -29,7 +29,7 @@ namespace fxb
 #define CMID_VERB_LINK       XPR_STRING_LITERAL("link")
 #define CMID_VERB_PROPERTIES XPR_STRING_LITERAL("properties")
 
-#define CMID_FILE_SCRAP         0xFFFF
+#define CMID_FILE_SCRAP         0xFFFE
 #define CMID_OPEN_PARENT_FOLDER 0xFFFF
 
 typedef struct tagSubClassData

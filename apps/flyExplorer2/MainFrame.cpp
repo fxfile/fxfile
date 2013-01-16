@@ -95,6 +95,7 @@ MainFrame::MainFrame(void)
     , mCompareDirs(XPR_NULL)
     , mPicViewer(XPR_NULL)
     , mSearchDlg(XPR_NULL)
+    , mFileScrapPane(XPR_NULL)
     , mFileScrapDropDlg(XPR_NULL)
     , mAccelCount(0)
     , mCommandExecutor(XPR_NULL)
@@ -1819,6 +1820,16 @@ SearchResultCtrl *MainFrame::getSearchResultCtrl(xpr_sint_t aIndex) const
     return XPR_IS_NOT_NULL(sExplorerView) ? sExplorerView->getSearchResultCtrl() : XPR_NULL;
 }
 
+FileScrapPane *MainFrame::getFileScrapPane(void) const
+{
+    return mFileScrapPane;
+}
+
+void MainFrame::setFileScrapPane(FileScrapPane *aFileScrapPane)
+{
+    mFileScrapPane = aFileScrapPane;
+}
+
 FolderView *MainFrame::getFolderView(void) const
 {
     xpr_sint_t sRow = 0, sColumn = 0;
@@ -2431,6 +2442,52 @@ void MainFrame::setLeftFolderPane(xpr_bool_t aLeft)
     }
 }
 
+xpr_bool_t MainFrame::canExecute(xpr_uint_t aCommandId, CCmdUI *aCmdUI, CWnd *aTargetWnd, cmd::CommandParameters *aParameters)
+{
+    if (mCommandExecutor == XPR_NULL)
+        return XPR_FALSE;
+
+    cmd::CommandContext sCommandContext;
+    sCommandContext.setCommandId(aCommandId);
+    sCommandContext.setMainFrame(this);
+    sCommandContext.setTargetWnd(aTargetWnd);
+    sCommandContext.setParameters(aParameters);
+
+    xpr_sint_t sCommandState = mCommandExecutor->canExecute(sCommandContext);
+    if (sCommandState != cmd::Command::StateUnbinded)
+    {
+        if (sCommandState == cmd::Command::StateDisable)
+        {
+            aCmdUI->Enable(XPR_FALSE);
+        }
+        else
+        {
+            if (XPR_TEST_BITS(sCommandState, cmd::Command::StateEnable))
+            {
+                aCmdUI->Enable(XPR_TRUE);
+            }
+            else if (XPR_TEST_BITS(sCommandState, cmd::Command::StateDisable))
+            {
+                aCmdUI->Enable(XPR_FALSE);
+            }
+
+            if (XPR_TEST_BITS(sCommandState, cmd::Command::StateCheck) || XPR_TEST_BITS(sCommandState, cmd::Command::StateRadio))
+            {
+                if (XPR_TEST_BITS(sCommandState, cmd::Command::StateCheck)) aCmdUI->SetCheck(XPR_TRUE);
+                if (XPR_TEST_BITS(sCommandState, cmd::Command::StateRadio)) aCmdUI->SetRadio(XPR_TRUE);
+            }
+            else
+            {
+                aCmdUI->SetCheck(XPR_FALSE);
+            }
+        }
+
+        return XPR_TRUE;
+    }
+
+    return XPR_FALSE;
+}
+
 xpr_bool_t MainFrame::executeCommand(xpr_uint_t aCommandId, CWnd *aTargetWnd, cmd::CommandParameters *aParameters)
 {
     if (mCommandExecutor == XPR_NULL)
@@ -2466,51 +2523,19 @@ xpr_bool_t MainFrame::OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, A
 
         if (sCode == CN_UPDATE_COMMAND_UI)
         {
-            if (mCommandExecutor != XPR_NULL)
+            CCmdUI *sCmdUI = (CCmdUI *)aExtra;
+
+            if (canExecute(aId, sCmdUI, this) == XPR_TRUE)
             {
-                CCmdUI *sCmdUI = (CCmdUI *)aExtra;
-
-                cmd::CommandContext sCommandContext;
-                sCommandContext.setCommandId(aId);
-                sCommandContext.setMainFrame(this);
-
-                xpr_sint_t sCommandState = mCommandExecutor->canExecute(sCommandContext);
-                if (sCommandState != cmd::Command::StateUnbinded)
-                {
-                    if (sCommandState == cmd::Command::StateDisable)
-                    {
-                        sCmdUI->Enable(XPR_FALSE);
-                    }
-                    else
-                    {
-                        if (XPR_TEST_BITS(sCommandState, cmd::Command::StateEnable))
-                        {
-                            sCmdUI->Enable(XPR_TRUE);
-                        }
-                        else if (XPR_TEST_BITS(sCommandState, cmd::Command::StateDisable))
-                        {
-                            sCmdUI->Enable(XPR_FALSE);
-                        }
-
-                        if (XPR_TEST_BITS(sCommandState, cmd::Command::StateCheck) || XPR_TEST_BITS(sCommandState, cmd::Command::StateRadio))
-                        {
-                            if (XPR_TEST_BITS(sCommandState, cmd::Command::StateCheck)) sCmdUI->SetCheck(XPR_TRUE);
-                            if (XPR_TEST_BITS(sCommandState, cmd::Command::StateRadio)) sCmdUI->SetRadio(XPR_TRUE);
-                        }
-                        else
-                        {
-                            sCmdUI->SetCheck(XPR_FALSE);
-                        }
-                    }
-
-                    return XPR_TRUE;
-                }
+                return XPR_TRUE;
             }
         }
         else if (sCode == CN_COMMAND)
         {
             if (executeCommand(aId) == XPR_TRUE)
+            {
                 return XPR_TRUE;
+            }
         }
     }
 
