@@ -78,6 +78,7 @@ void       PathToNormal(const xpr_tchar_t *aPath, xpr_tchar_t *aNormal);
 // file time
 //
 xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, xpr_tchar_t *aLastWriteDateTime);
+xpr_bool_t GetFileTime(const FILETIME &aFileTime, xpr_tchar_t *aFileTimeText);
 xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aModifiedFileTime);
 xpr_bool_t SetFileTime(const xpr_tchar_t *aPath,
                        FILETIME          *aCreatedFileTime = XPR_NULL,
@@ -96,6 +97,7 @@ xpr_bool_t   GetFileType(const xpr_tchar_t *aPath, xpr_tchar_t *aTypeName);
 xpr_uint64_t GetFileSize(const std::tstring &aPath);
 xpr_uint64_t GetFileSize(const xpr_tchar_t *aPath);
 xpr_bool_t   GetFileSize(const xpr_tchar_t *aPath, xpr_tchar_t *aFileSize, xpr_size_t aMaxLen);
+xpr_bool_t   GetFileSize(xpr_uint64_t aFileSize, xpr_tchar_t *aFileSizeText, xpr_size_t aMaxLen);
 
 //
 // info tip

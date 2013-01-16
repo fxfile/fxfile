@@ -20,6 +20,7 @@
 #include "FolderPaneObserver.h"
 #include "ExplorerCtrlObserver.h"
 #include "SearchResultPaneObserver.h"
+#include "FileScrapPaneObserver.h"
 #include "AddressBarObserver.h"
 #include "PathBarObserver.h"
 #include "Splitter.h"
@@ -35,6 +36,7 @@ class DrivePathBar;
 class ContentsWnd;
 class StatusBarEx;
 class SearchResultCtrl;
+class FileScrapPane;
 class DropTarget;
 class ListCtrlPrint;
 
@@ -45,6 +47,7 @@ class ExplorerView
     , public FolderPaneObserver
     , public ExplorerCtrlObserver
     , public SearchResultPaneObserver
+    , public FileScrapPaneObserver
     , public AddressBarObserver
     , public PathBarObserver
     , public StatusBarObserver
@@ -76,6 +79,7 @@ public:
     xpr_sint_t    newTab(LPITEMIDLIST aInitFolder);
     xpr_sint_t    newTab(const std::tstring &aInitFolder);
     xpr_sint_t    newSearchResultTab(void);
+    xpr_sint_t    newFileScrapTab(void);
     xpr_sint_t    duplicateTab(xpr_bool_t aOnCursor = XPR_FALSE);
     xpr_bool_t    canDuplicateTab(xpr_bool_t aOnCursor = XPR_FALSE) const;
     xpr_bool_t    isExplorerTabMode(void) const;
@@ -99,6 +103,7 @@ public:
     FolderCtrl       *getFolderCtrl(void) const;
     ExplorerCtrl     *getExplorerCtrl(xpr_sint_t aTab = -1) const;
     SearchResultCtrl *getSearchResultCtrl(xpr_sint_t aTab = -1) const;
+    FileScrapPane    *getFileScrapPane(xpr_sint_t aTab = -1) const;
     AddressBar       *getAddressBar(void) const;
     PathBar          *getPathBar(void) const;
     ActivateBar      *getActivateBar(void) const;
@@ -164,6 +169,9 @@ protected:
     };
 
     LPITEMIDLIST getInitFolder(xpr_sint_t aIndex, std::tstring &aSelFile, xpr_uint_t aFlags = InitFolderAll, xpr_uint_t *aInitFolderType = XPR_NULL) const;
+
+    xpr_bool_t openFolder(const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    xpr_bool_t openFolder(LPITEMIDLIST aFullPidl);
 
     xpr_bool_t createTabCtrl(void);
     xpr_bool_t createSplitter(void);
@@ -234,6 +242,7 @@ protected:
     class TabData;
     class ExplorerTabData;
     class SearchResultTabData;
+    class FileScrapTabData;
 
 protected:
     virtual xpr_bool_t PreCreateWindow(CREATESTRUCT &aCreateStruct);
@@ -302,6 +311,13 @@ protected:
     virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
     virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl);
     virtual void onSetFocus(SearchResultPane &aSearchResultPane);
+
+    // from FileScrapPaneObserver
+    virtual void onCreated(FileScrapPane &aFileScrapPane);
+    virtual void onDestroyed(FileScrapPane &aFileScrapPane);
+    virtual void onSetFocus(FileScrapPane &aFileScrapPane);
+    virtual xpr_bool_t onExplore(FileScrapPane &aFileScrapPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onExplore(FileScrapPane &aFileScrapPane, LPITEMIDLIST aFullPidl);
 
     // from AddressBarObserver
     virtual xpr_bool_t onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);

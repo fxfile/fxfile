@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "fxb_file_scrap.h"
+#include "fxb_file_scrap_observer.h"
 
 #include "fxb_context_menu.h"
 #include "fxb_ini_file.h"
@@ -26,11 +27,12 @@ enum
     MODE_COPY,
     MODE_MOVE,
     MODE_DELETE,
-    MODE_RECYCLEBIN,
+    MODE_TRASH,
 };
 
 FileScrap::FileScrap(void)
-    : mIdMgr(InvalidGroupId)
+    : mObserver(XPR_NULL)
+    , mGroupIdMgr(InvalidGroupId)
     , mFileOpPath(XPR_NULL)
 {
     mCurGroupId = mDefGroupId = setDefGroup();
@@ -45,6 +47,11 @@ FileScrap::~FileScrap(void)
         HeapFree(GetProcessHeap(), 0, mFileOpPath);
         mFileOpPath = XPR_NULL;
     }
+}
+
+void FileScrap::setObserver(FileScrapObserver *aObserver)
+{
+    mObserver = aObserver;
 }
 
 xpr_uint_t FileScrap::setDefGroup(void)
@@ -69,37 +76,41 @@ xpr_uint_t FileScrap::addGroup(const xpr_tchar_t *aGroupName)
 
     sGroup->mGroupId   = sGroupId;
     sGroup->mGroupName = aGroupName;
+    sGroup->mIdMgr     = 0;
     mGroupDeque.push_back(sGroup);
 
     mGroupMap[aGroupName] = sGroup;
     mGroupIdMap[sGroupId] = sGroup;
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onAddGroup(*this, sGroup);
 
     return sGroupId;
 }
 
 xpr_uint_t FileScrap::generateGroupId(void)
 {
-    xpr_uint_t sGroupId = mIdMgr;
+    xpr_uint_t sGroupId = mGroupIdMgr;
 
-    while (true)
+    do
     {
-        sGroupId = ++mIdMgr;
+        sGroupId = ++mGroupIdMgr;
         if (sGroupId == InvalidGroupId)
-            sGroupId = ++mIdMgr;
+            sGroupId = ++mGroupIdMgr;
 
         if (mGroupIdMap.find(sGroupId) == mGroupIdMap.end())
             break;
-    }
+    } while (true);
 
     return sGroupId;
 }
 
-xpr_size_t FileScrap::getGroupCount(void)
+xpr_size_t FileScrap::getGroupCount(void) const
 {
     return mGroupDeque.size();
 }
 
-FileScrap::Group *FileScrap::getGroup(xpr_size_t aIndex)
+FileScrap::Group *FileScrap::getGroup(xpr_size_t aIndex) const
 {
     if (!XPR_STL_IS_INDEXABLE(aIndex, mGroupDeque))
         return XPR_NULL;
@@ -107,28 +118,28 @@ FileScrap::Group *FileScrap::getGroup(xpr_size_t aIndex)
     return mGroupDeque[aIndex];
 }
 
-FileScrap::Group *FileScrap::findGroup(xpr_uint_t aGroupId)
+FileScrap::Group *FileScrap::findGroup(xpr_uint_t aGroupId) const
 {
-    GroupIdMap::iterator sIterator = mGroupIdMap.find(aGroupId);
+    GroupIdMap::const_iterator sIterator = mGroupIdMap.find(aGroupId);
     if (sIterator == mGroupIdMap.end())
         return XPR_NULL;
 
     return sIterator->second;
 }
 
-FileScrap::Group *FileScrap::findGroup(const xpr_tchar_t *aGroupName)
+FileScrap::Group *FileScrap::findGroup(const xpr_tchar_t *aGroupName) const
 {
     if (XPR_IS_NULL(aGroupName))
         return XPR_NULL;
 
-    GroupMap::iterator sIterator = mGroupMap.find(aGroupName);
+    GroupMap::const_iterator sIterator = mGroupMap.find(aGroupName);
     if (sIterator == mGroupMap.end())
         return XPR_NULL;
 
     return sIterator->second;
 }
 
-xpr_uint_t FileScrap::findGroupId(const xpr_tchar_t *aGroupName)
+xpr_uint_t FileScrap::findGroupId(const xpr_tchar_t *aGroupName) const
 {
     Group *sGroup = findGroup(aGroupName);
     if (XPR_IS_NULL(sGroup))
@@ -157,6 +168,9 @@ xpr_bool_t FileScrap::renameGroup(const xpr_tchar_t *aOldGroupName, const xpr_tc
     mGroupMap.erase(sOldIterator);
 
     mGroupMap[sGroup->mGroupName] = sGroup;
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onRenameGroup(*this, sGroup);
 
     return XPR_TRUE;
 }
@@ -189,12 +203,29 @@ void FileScrap::removeGroup(xpr_uint_t aGroupId)
         }
     }
 
-    XPR_SAFE_DELETE(sGroup);
-
     mGroupIdMap.erase(sIterator);
 
+    xpr_bool_t sCurGroupChanged = XPR_FALSE;
     if (aGroupId == mCurGroupId)
+    {
         mCurGroupId = mDefGroupId;
+        sCurGroupChanged = XPR_TRUE;
+    }
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onRemoveGroup(*this, sGroup);
+
+    if (XPR_IS_TRUE(sCurGroupChanged))
+    {
+        if (XPR_IS_NOT_NULL(mObserver))
+        {
+            Group *sCurGroup = findGroup(mCurGroupId);
+
+            mObserver->onSetCurGroup(*this, sCurGroup);
+        }
+    }
+
+    XPR_SAFE_DELETE(sGroup);
 }
 
 void FileScrap::removeAllGroups(void)
@@ -213,10 +244,22 @@ void FileScrap::removeAllGroups(void)
     mGroupMap.clear();
     mGroupIdMap.clear();
 
-    mIdMgr = InvalidGroupId;
+    mGroupIdMgr = InvalidGroupId;
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onRemoveAllGroups(*this);
 }
 
-xpr_size_t FileScrap::getItemCount(xpr_uint_t aGroupId)
+xpr_bool_t FileScrap::isItemEmpty(xpr_uint_t aGroupId) const
+{
+    Group *sGroup = findGroup(aGroupId);
+    if (XPR_IS_NULL(sGroup))
+        return 0;
+
+    return (sGroup->mItemDeque.empty() == true) ? XPR_TRUE : XPR_FALSE;
+}
+
+xpr_size_t FileScrap::getItemCount(xpr_uint_t aGroupId) const
 {
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
@@ -225,12 +268,19 @@ xpr_size_t FileScrap::getItemCount(xpr_uint_t aGroupId)
     return sGroup->mItemDeque.size();
 }
 
-void FileScrap::setCurGourpId(xpr_uint_t aGroupId)
+void FileScrap::setCurGroupId(xpr_uint_t aGroupId)
 {
-    if (findGroup(aGroupId) == XPR_NULL)
+    Group *sGroup = findGroup(aGroupId);
+    if (XPR_IS_NULL(sGroup))
+        return;
+
+    if (mCurGroupId == aGroupId)
         return;
 
     mCurGroupId = aGroupId;
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onSetCurGroup(*this, sGroup);
 }
 
 xpr_uint_t FileScrap::getCurGroupId(void) const
@@ -243,39 +293,132 @@ xpr_uint_t FileScrap::getDefGroupId(void) const
     return mDefGroupId;
 }
 
-void FileScrap::addItem(xpr_uint_t aGroupId, const xpr_tchar_t *aPath)
+xpr_bool_t FileScrap::addItem(xpr_uint_t aGroupId, LPSHELLFOLDER aShellFolder, LPITEMIDLIST *aPidls, xpr_sint_t aCount)
 {
-    if (aGroupId == InvalidGroupId || XPR_IS_NULL(aPath))
-        return;
-
-    if (isItemExist(aGroupId, aPath) == XPR_TRUE)
-        return;
-
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
+        return XPR_FALSE;
+
+    xpr_sint_t i;
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+    LPITEMIDLIST sPidl = XPR_NULL;
+    xpr_ulong_t sShellAttributes;
+
+    for (i = 0; i < aCount; ++i)
+    {
+        sPidl = aPidls[i];
+
+        sShellAttributes = SFGAO_FILESYSTEM;
+        GetItemAttributes(aShellFolder, sPidl, sShellAttributes);
+
+        if (!XPR_TEST_BITS(sShellAttributes, SFGAO_FILESYSTEM))
+            continue;
+
+        fxb::GetName(aShellFolder, sPidl, SHGDN_FORPARSING, sPath);
+
+        addItem(sGroup, sPath);
+    }
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onUpdateList(*this, sGroup);
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t FileScrap::addItem(xpr_uint_t aGroupId, const xpr_tchar_t *aPath, xpr_sint_t aCount)
+{
+    Group *sGroup = findGroup(aGroupId);
+    if (XPR_IS_NULL(sGroup))
+        return XPR_FALSE;
+
+    xpr_sint_t i;
+    xpr_tchar_t *sPathEnum = (xpr_tchar_t *)aPath;
+
+    for (i = 0; i < aCount; ++i)
+    {
+        addItem(sGroup, sPathEnum);
+
+        sPathEnum += _tcslen(sPathEnum) + 1;
+    }
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onUpdateList(*this, sGroup);
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t FileScrap::addItem(xpr_uint_t aGroupId, const xpr_tchar_t *aPath)
+{
+    Group *sGroup = findGroup(aGroupId);
+    if (XPR_IS_NULL(sGroup))
+        return XPR_FALSE;
+
+    addItem(sGroup, aPath);
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onUpdateList(*this, sGroup);
+
+    return XPR_TRUE;
+}
+
+void FileScrap::addItem(Group *aGroup, const xpr_tchar_t *aPath)
+{
+    if (XPR_IS_NULL(aGroup))
+        return;
+
+    if (isItemExist(aGroup, aPath) == XPR_TRUE)
         return;
 
     Item *sItem = new Item;
     if (XPR_IS_NULL(sItem))
         return;
 
-    sItem->mGroupId = aGroupId;
+    sItem->mGroupId = aGroup->mGroupId;
+    sItem->mId      = ++aGroup->mIdMgr;
     sItem->mPath    = aPath;
 
-    sGroup->mItemDeque.push_back(sItem);
+    aGroup->mItemDeque.push_back(sItem);
 }
 
-xpr_bool_t FileScrap::isItemExist(xpr_uint_t aGroupId, const xpr_tchar_t *aPath)
+xpr_bool_t FileScrap::regenerate(xpr_uint_t aGroupId)
 {
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
         return XPR_FALSE;
+
+    sGroup->mIdMgr = 0;
 
     Item *sItem;
     ItemDeque::iterator sIterator;
 
     sIterator = sGroup->mItemDeque.begin();
     for (; sIterator != sGroup->mItemDeque.end(); ++sIterator)
+    {
+        sItem = *sIterator;
+
+        sItem->mId = ++sGroup->mIdMgr;
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t FileScrap::isItemExist(xpr_uint_t aGroupId, const xpr_tchar_t *aPath) const
+{
+    Group *sGroup = findGroup(aGroupId);
+
+    return isItemExist(sGroup, aPath);
+}
+
+xpr_bool_t FileScrap::isItemExist(Group *aGroup, const xpr_tchar_t *aPath) const
+{
+    if (XPR_IS_NULL(aGroup))
+        return XPR_FALSE;
+
+    Item *sItem;
+    ItemDeque::iterator sIterator;
+
+    sIterator = aGroup->mItemDeque.begin();
+    for (; sIterator != aGroup->mItemDeque.end(); ++sIterator)
     {
         sItem = *sIterator;
         if (XPR_IS_NULL(sItem))
@@ -306,6 +449,38 @@ void FileScrap::removeItem(xpr_uint_t aGroupId, xpr_size_t aIndex)
     sGroup->mItemDeque.erase(sIterator);
 }
 
+void FileScrap::removeItems(xpr_uint_t aGroupId, const IdSet &aIdSet)
+{
+    if (aIdSet.empty() == true)
+        return;
+
+    Group *sGroup = findGroup(aGroupId);
+    if (XPR_IS_NULL(sGroup))
+        return;
+
+    ItemDeque::iterator sIterator;
+    Item *sItem;
+
+    sIterator = sGroup->mItemDeque.begin();
+    while (sIterator != sGroup->mItemDeque.end())
+    {
+        sItem = *sIterator;
+
+        if (aIdSet.find(sItem->mId) != aIdSet.end())
+        {
+            XPR_SAFE_DELETE(sItem);
+
+            sIterator = sGroup->mItemDeque.erase(sIterator);
+            continue;
+        }
+
+        sIterator++;
+    }
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onRemovedItems(*this, sGroup, aIdSet);
+}
+
 void FileScrap::removeAllItems(xpr_uint_t aGroupId)
 {
     Group *sGroup = findGroup(aGroupId);
@@ -323,9 +498,12 @@ void FileScrap::removeAllItems(xpr_uint_t aGroupId)
     }
 
     sGroup->mItemDeque.clear();
+
+    if (XPR_IS_NOT_NULL(mObserver))
+        mObserver->onRemovedAllItems(*this, sGroup);
 }
 
-void FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex, xpr_tchar_t *aPath)
+void FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex, xpr_tchar_t *aPath) const
 {
     if (XPR_IS_NULL(aPath))
         return;
@@ -337,7 +515,7 @@ void FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex, xpr_tchar_t 
     _tcscpy(aPath, sPath);
 }
 
-const xpr_tchar_t *FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex)
+const xpr_tchar_t *FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex) const
 {
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
@@ -353,7 +531,7 @@ const xpr_tchar_t *FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex
     return sItem->mPath.c_str();
 }
 
-FileScrap::Item *FileScrap::getItem(xpr_uint_t aGroupId, xpr_size_t aIndex)
+FileScrap::Item *FileScrap::getItem(xpr_uint_t aGroupId, xpr_size_t aIndex) const
 {
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
@@ -422,26 +600,47 @@ void FileScrap::copyOperation(xpr_uint_t aGroupId, const xpr_tchar_t *aTarget)
 void FileScrap::moveOperation(xpr_uint_t aGroupId, const xpr_tchar_t *aTarget)
 {
     doOperation(aGroupId, MODE_MOVE, aTarget);
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        Group *sGroup = findGroup(aGroupId);
+
+        mObserver->onUpdateList(*this, sGroup);
+    }
 }
 
 void FileScrap::deleteOperation(xpr_uint_t aGroupId)
 {
     doOperation(aGroupId, MODE_DELETE, XPR_NULL);
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        Group *sGroup = findGroup(aGroupId);
+
+        mObserver->onUpdateList(*this, sGroup);
+    }
 }
 
-void FileScrap::recycleBinOperation(xpr_uint_t aGroupId)
+void FileScrap::trashOperation(xpr_uint_t aGroupId)
 {
-    doOperation(aGroupId, MODE_RECYCLEBIN, XPR_NULL);
+    doOperation(aGroupId, MODE_TRASH, XPR_NULL);
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        Group *sGroup = findGroup(aGroupId);
+
+        mObserver->onUpdateList(*this, sGroup);
+    }
 }
 
 void FileScrap::doOperation(xpr_uint_t aGroupId, xpr_sint_t aMode, const xpr_tchar_t *aTarget)
 {
     xpr_sint_t sFunc, sFlags = 0;
 
-    if (aMode == MODE_COPY)            { sFunc = FO_COPY; }
-    else if (aMode == MODE_MOVE)       { sFunc = FO_MOVE; }
-    else if (aMode == MODE_DELETE)     { sFunc = FO_DELETE; sFlags = FOF_NOCONFIRMATION; }
-    else if (aMode == MODE_RECYCLEBIN) { sFunc = FO_DELETE; sFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION; }
+    if (aMode == MODE_COPY)        { sFunc = FO_COPY; }
+    else if (aMode == MODE_MOVE)   { sFunc = FO_MOVE; }
+    else if (aMode == MODE_DELETE) { sFunc = FO_DELETE; sFlags = FOF_NOCONFIRMATION; }
+    else if (aMode == MODE_TRASH)  { sFunc = FO_DELETE; sFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION; }
     else return;
 
     // windows vista bug
@@ -529,30 +728,7 @@ xpr_bool_t FileScrap::setClipboard(xpr_uint_t aGroupId, xpr_bool_t aCopy)
     return XPR_TRUE;
 }
 
-xpr_bool_t FileScrap::isItemFileAllExist(xpr_uint_t aGroupId)
-{
-    Group *sGroup = findGroup(aGroupId);
-    if (XPR_IS_NULL(sGroup))
-        return XPR_TRUE;
-
-    ItemDeque::iterator sIterator;
-    Item *sItem;
-
-    sIterator = sGroup->mItemDeque.begin();
-    for (; sIterator != sGroup->mItemDeque.end(); ++sIterator)
-    {
-        sItem = *sIterator;
-        if (XPR_IS_NULL(sItem))
-            continue;
-
-        if (IsExistFile(sItem->mPath.c_str()) == XPR_FALSE)
-            return XPR_FALSE;
-    }
-
-    return XPR_TRUE;
-}
-
-xpr_size_t FileScrap::getItemCountNotExist(xpr_uint_t aGroupId)
+xpr_size_t FileScrap::getItemCountNotExist(xpr_uint_t aGroupId) const
 {
     xpr_size_t sNotExist = 0;
 
@@ -577,14 +753,15 @@ xpr_size_t FileScrap::getItemCountNotExist(xpr_uint_t aGroupId)
     return sNotExist;
 }
 
-void FileScrap::removeItemNotExist(xpr_uint_t aGroupId)
+xpr_size_t FileScrap::removeItemNotExist(xpr_uint_t aGroupId)
 {
     Group *sGroup = findGroup(aGroupId);
     if (XPR_IS_NULL(sGroup))
-        return;
+        return 0;
 
     ItemDeque::iterator sIterator;
     Item *sItem;
+    IdSet sIdSet;
 
     sIterator = sGroup->mItemDeque.begin();
     while (sIterator != sGroup->mItemDeque.end())
@@ -594,6 +771,10 @@ void FileScrap::removeItemNotExist(xpr_uint_t aGroupId)
         {
             if (IsExistFile(sItem->mPath) == XPR_FALSE)
             {
+                sIdSet.insert(sItem->mId);
+
+                XPR_SAFE_DELETE(sItem);
+
                 sIterator = sGroup->mItemDeque.erase(sIterator);
                 continue;
             }
@@ -601,12 +782,20 @@ void FileScrap::removeItemNotExist(xpr_uint_t aGroupId)
 
         sIterator++;
     }
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        if (sIdSet.empty() == false)
+            mObserver->onRemovedItems(*this, sGroup, sIdSet);
+    }
+
+    return sIdSet.size();
 }
 
-static const xpr_tchar_t _fxFileScrap[] = XPR_STRING_LITERAL("FileScrap");
-static const xpr_tchar_t _fxDefault[]   = XPR_STRING_LITERAL("Default");
-static const xpr_tchar_t _fxNoGroup[]   = XPR_STRING_LITERAL("NoGroup");
-static const xpr_tchar_t _fxVersion[]   = XPR_STRING_LITERAL("version");
+static const xpr_tchar_t kFileScrap[] = XPR_STRING_LITERAL("FileScrap");
+static const xpr_tchar_t kDefault[]   = XPR_STRING_LITERAL("Default");
+static const xpr_tchar_t kNoGroup[]   = XPR_STRING_LITERAL("NoGroup");
+static const xpr_tchar_t kVersion[]   = XPR_STRING_LITERAL("version");
 
 xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
 {
@@ -635,7 +824,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
     {
         _stprintf(sEntry, XPR_STRING_LITERAL("Group%d"), i);
 
-        sGroup = sIniFile.getValueS(_fxFileScrap, sEntry);
+        sGroup = sIniFile.getValueS(kFileScrap, sEntry);
         if (XPR_IS_NULL(sGroup))
             break;
 
@@ -644,10 +833,10 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
             sGroupIdMap[sGroup] = sGroupId;
     }
 
-    const xpr_tchar_t *sDefGroup = sIniFile.getValueS(_fxFileScrap, _fxDefault, XPR_NULL);
-    if (XPR_IS_NOT_NULL(sDefGroup))
+    const xpr_tchar_t *sDefGroupName = sIniFile.getValueS(kFileScrap, kDefault, XPR_NULL);
+    if (XPR_IS_NOT_NULL(sDefGroupName))
     {
-        sGroupId = findGroupId(sDefGroup);
+        sGroupId = findGroupId(sDefGroupName);
         if (sGroupId != InvalidGroupId)
             mCurGroupId = sGroupId;
     }
@@ -656,7 +845,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
     {
         _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), i);
 
-        sFile = sIniFile.getValueS(_fxNoGroup, sEntry);
+        sFile = sIniFile.getValueS(kNoGroup, sEntry);
         if (XPR_IS_NULL(sFile))
             break;
 
@@ -679,7 +868,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
         {
             _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), i);
 
-            sFile = sIniFile.getValueS(_fxFileScrap, sEntry);
+            sFile = sIniFile.getValueS(kFileScrap, sEntry);
             if (XPR_IS_NULL(sFile))
                 break;
 
@@ -701,7 +890,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer FileScrap File"));
 
     // version
-    sIniFile.setValueS(_fxFileScrap, _fxVersion, XPR_STRING_LITERAL("1.2"));
+    sIniFile.setValueS(kFileScrap, kVersion, XPR_STRING_LITERAL("1.2"));
 
     xpr_sint_t sIndex;
     xpr_tchar_t sEntry[0xff];
@@ -717,9 +906,9 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
     {
         _tcscpy(sValue, sGroup->mGroupName.c_str());
         if (mCurGroupId == mDefGroupId)
-            _tcscpy(sValue, _fxNoGroup);
+            _tcscpy(sValue, kNoGroup);
 
-        sIniFile.setValueS(_fxFileScrap, _fxDefault, sValue);
+        sIniFile.setValueS(kFileScrap, kDefault, sValue);
     }
 
     sGroupIterator = mGroupDeque.begin();
@@ -733,7 +922,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
             continue;
 
         _stprintf(sEntry, XPR_STRING_LITERAL("Group%d"), sIndex++);
-        sIniFile.setValueS(_fxFileScrap, sEntry, sGroup->mGroupName.c_str());
+        sIniFile.setValueS(kFileScrap, sEntry, sGroup->mGroupName.c_str());
     }
 
     sGroup = findGroup(mDefGroupId);
@@ -747,7 +936,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
                 continue;
 
             _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), sIndex++);
-            sIniFile.setValueS(_fxNoGroup, sEntry, sItem->mPath.c_str());
+            sIniFile.setValueS(kNoGroup, sEntry, sItem->mPath.c_str());
         }
     }
 
@@ -779,7 +968,7 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
                     continue;
 
                 _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), sIndex++);
-                sIniFile.setValueS(_fxFileScrap, sEntry, sItem->mPath.c_str());
+                sIniFile.setValueS(kFileScrap, sEntry, sItem->mPath.c_str());
             }
 
             sIniFile.writeFile(xpr::CharSetUtf16);

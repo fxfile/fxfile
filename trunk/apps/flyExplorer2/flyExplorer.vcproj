@@ -1299,11 +1299,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fxb\fxb_file_scrap_mgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\fxb\fxb_file_scrap_mgr.h"
+				RelativePath=".\fxb\fxb_file_scrap_observer.h"
 				>
 			</File>
 			<File
@@ -1855,11 +1851,43 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FileScrapCtrl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapCtrl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapCtrlObserver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FileScrapDropDlg.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\FileScrapDropDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapPane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapPaneObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapToolBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileScrapToolBar.h"
 				>
 			</File>
 			<File
@@ -2794,14 +2822,6 @@
 			</File>
 			<File
 				RelativePath=".\cmd\FileMergeDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\FileScrapDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\FileScrapDlg.h"
 				>
 			</File>
 			<File

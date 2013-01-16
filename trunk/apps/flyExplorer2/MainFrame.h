@@ -35,6 +35,7 @@ class FolderCtrl;
 class ExplorerView;
 class ExplorerCtrl;
 class SearchResultCtrl;
+class FileScrapPane;
 class AddressBar;
 class PicViewer;
 class FileScrapDropDlg;
@@ -78,6 +79,8 @@ public:
     ExplorerCtrl     *getExplorerCtrl(xpr_sint_t aIndex = -1) const;
     ExplorerCtrl     *getExplorerCtrl(FolderCtrl *aFolderCtrl) const;
     SearchResultCtrl *getSearchResultCtrl(xpr_sint_t aIndex = -1) const;
+    FileScrapPane    *getFileScrapPane(void) const;
+    void              setFileScrapPane(FileScrapPane *aFileScrapPane);
     DriveToolBar     *getDriveBar(void) const;
 
     void ShowControlBar(CControlBar *aControlBar, xpr_bool_t aShow, xpr_bool_t aDelay);
@@ -153,6 +156,7 @@ public:
     void moveFocus(xpr_sint_t aCurWnd);
     void moveFocus(xpr_sint_t aCurWnd, xpr_bool_t aShift, xpr_bool_t aCtrl);
 
+    xpr_bool_t canExecute(xpr_uint_t aCommandId, CCmdUI *aCmdUI, CWnd *aTargetWnd = XPR_NULL, cmd::CommandParameters *aParameters = XPR_NULL);
     xpr_bool_t executeCommand(xpr_uint_t aCommandId, CWnd *aTargetWnd = XPR_NULL, cmd::CommandParameters *aParameters = XPR_NULL);
 
     xpr_bool_t isShowFileScrapDrop(void) const;
@@ -243,6 +247,8 @@ protected:
     SysTray    *mSysTray;
     xpr_bool_t  mExit;
     xpr_bool_t  mPreviewMode;
+
+    FileScrapPane *mFileScrapPane;
 
     // Compare Directories
     fxb::SyncDirs *mCompareDirs;

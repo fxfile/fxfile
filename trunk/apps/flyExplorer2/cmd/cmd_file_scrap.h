@@ -16,11 +16,19 @@
 namespace cmd
 {
 XPR_COMMAND_DECLARE_CLASS(FileScrapAddCommand);
-XPR_COMMAND_DECLARE_CLASS(FileScrapToCopyCommand);
-XPR_COMMAND_DECLARE_CLASS(FileScrapToMoveCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapCurCopyCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapCurMoveCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapCopyToCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapMoveToCommand);
 XPR_COMMAND_DECLARE_CLASS(FileScrapDeleteCommand);
-XPR_COMMAND_DECLARE_CLASS(FileScrapListRemoveCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapValidateCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapRemoveListCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapRemoveAllListCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapRefreshCommand);
 XPR_COMMAND_DECLARE_CLASS(FileScrapViewCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapGroupAddCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapGroupRenameCommand);
+XPR_COMMAND_DECLARE_CLASS(FileScrapGroupDeleteCommand);
 XPR_COMMAND_DECLARE_CLASS(FileScrapGroupDefaultCommand);
 XPR_COMMAND_DECLARE_CLASS(FileScrapClipboardCutCommand);
 XPR_COMMAND_DECLARE_CLASS(FileScrapClipboardCopyCommand);

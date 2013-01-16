@@ -141,14 +141,22 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_EDIT_FOLDER_MOVE,                 new cmd::FolderMoveCommand);
 
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_ADD,              new cmd::FileScrapAddCommand);
-    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CUR_COPY,         new cmd::FileScrapToCopyCommand);
-    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CUR_MOVE,         new cmd::FileScrapToMoveCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CUR_COPY,         new cmd::FileScrapCurCopyCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CUR_MOVE,         new cmd::FileScrapCurMoveCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_COPY_TO,          new cmd::FileScrapCopyToCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_MOVE_TO,          new cmd::FileScrapMoveToCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_DELETE,           new cmd::FileScrapDeleteCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CLIPBOARD_CUT,    new cmd::FileScrapClipboardCutCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_CLIPBOARD_COPY,   new cmd::FileScrapClipboardCopyCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_VIEW,             new cmd::FileScrapViewCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_GROUP_DEFAULT,    new cmd::FileScrapGroupDefaultCommand);
-    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_LIST_REMOVE,      new cmd::FileScrapListRemoveCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_GROUP_ADD,        new cmd::FileScrapGroupAddCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_GROUP_RENAME,     new cmd::FileScrapGroupRenameCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_GROUP_DELETE,     new cmd::FileScrapGroupDeleteCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_VALIDATE,         new cmd::FileScrapValidateCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_REMOVE_LIST,      new cmd::FileScrapRemoveListCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST,  new cmd::FileScrapRemoveAllListCommand);
+    aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_REFRESH,          new cmd::FileScrapRefreshCommand);
     aExecutor.bindCommand(ID_EDIT_FILE_SCRAP_DROP,             new cmd::FileScrapDropCommand);
 
     aExecutor.bindCommand(ID_EDIT_SEL_NAME,                    new cmd::SelectNameCommand);

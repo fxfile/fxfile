@@ -38,6 +38,7 @@
 #include "OptionMgr.h"
 #include "CtrlId.h"
 #include "SearchResultPane.h"
+#include "FileScrapPane.h"
 #include "StatusBarEx.h"
 
 #include "cmd/cmd_parameters.h"
@@ -139,6 +140,27 @@ public:
     SearchResultPane *getSearchResultPane(void) const
     {
         return dynamic_cast<SearchResultPane *>(mTabWnd);
+    }
+};
+
+class ExplorerView::FileScrapTabData : public ExplorerView::TabData
+{
+    friend class ExplorerView;
+
+public:
+    FileScrapTabData(void)
+        : TabData(TabTypeFileScrap)
+    {
+    }
+
+    virtual ~FileScrapTabData(void)
+    {
+    }
+
+public:
+    FileScrapPane *getFileScrapPane(void) const
+    {
+        return dynamic_cast<FileScrapPane *>(mTabWnd);
     }
 };
 
@@ -941,11 +963,11 @@ void ExplorerView::OnContextMenu(CWnd *aWnd, CPoint aPoint)
                         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(14);
                     else
                     {
-                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_COPY,    MF_BYCOMMAND);
-                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_MOVE,    MF_BYCOMMAND);
-                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_DELETE,      MF_BYCOMMAND);
-                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_VIEW,        MF_BYCOMMAND);
-                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_LIST_REMOVE, MF_BYCOMMAND);
+                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_COPY,        MF_BYCOMMAND);
+                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_MOVE,        MF_BYCOMMAND);
+                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_DELETE,          MF_BYCOMMAND);
+                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_VIEW,            MF_BYCOMMAND);
+                        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST, MF_BYCOMMAND);
                         sPopupMenu->DeleteMenu(8, MF_BYPOSITION);
 
                         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(8);
@@ -1055,6 +1077,11 @@ xpr_sint_t ExplorerView::newTab(TabType aTabType)
     case TabTypeSearchResult:
         {
             return newSearchResultTab();
+        }
+
+    case TabTypeFileScrap:
+        {
+            return newFileScrapTab();
         }
     }
 
@@ -1229,11 +1256,53 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
 
             sInsertedTab = mTabCtrl->addTab(sTitle, -1, sSearchResultTabData);
         }
+        else
+        {
+            XPR_SAFE_DELETE(sSearchResultPane);
+        }
     }
 
     if (sInsertedTab == TabCtrl::InvalidTab)
     {
         XPR_SAFE_DELETE(sSearchResultTabData);
+
+        return -1;
+    }
+
+    return (xpr_sint_t)sInsertedTab;
+}
+
+xpr_sint_t ExplorerView::newFileScrapTab(void)
+{
+    FileScrapTabData *sFileScrapTabData = new FileScrapTabData;
+    if (XPR_IS_NULL(sFileScrapTabData))
+        return -1;
+
+    xpr_size_t sInsertedTab = TabCtrl::InvalidTab;
+
+    FileScrapPane *sFileScrapPane = new FileScrapPane;
+    if (XPR_IS_NOT_NULL(sFileScrapPane))
+    {
+        sFileScrapTabData->mTabWnd = sFileScrapPane;
+
+        sFileScrapPane->setObserver(dynamic_cast<FileScrapPaneObserver *>(this));
+
+        xpr_uint_t sFileScrapPaneId = generateTabWndId();
+        if (sFileScrapPane->Create(this, sFileScrapPaneId, CRect(0,0,0,0)) == XPR_TRUE)
+        {
+            const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("file_scrap.title"));
+
+            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sFileScrapTabData);
+        }
+        else
+        {
+            XPR_SAFE_DELETE(sFileScrapPane);
+        }
+    }
+
+    if (sInsertedTab == TabCtrl::InvalidTab)
+    {
+        XPR_SAFE_DELETE(sFileScrapTabData);
 
         return -1;
     }
@@ -1662,6 +1731,22 @@ SearchResultCtrl *ExplorerView::getSearchResultCtrl(xpr_sint_t aTab) const
         return XPR_NULL;
 
     return sSearchResultTabData->getSearchResultPane()->getSearchResultCtrl();
+}
+
+FileScrapPane *ExplorerView::getFileScrapPane(xpr_sint_t aTab) const
+{
+    if (XPR_IS_NULL(mTabCtrl))
+        return XPR_NULL;
+
+    xpr_sint_t sTab = aTab;
+    if (sTab == -1)
+        sTab = (xpr_sint_t)mTabCtrl->getCurTab();
+
+    FileScrapTabData *sFileScrapTabData = dynamic_cast<FileScrapTabData *>((TabData *)mTabCtrl->getTabData(sTab));
+    if (XPR_IS_NULL(sFileScrapTabData))
+        return XPR_NULL;
+
+    return sFileScrapTabData->getFileScrapPane();
 }
 
 AddressBar *ExplorerView::getAddressBar(void) const
@@ -2270,9 +2355,15 @@ void ExplorerView::OnSetFocus(CWnd *aOldWnd)
 {
     super::OnSetFocus(aOldWnd);
 
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        sExplorerCtrl->SetFocus();
+    xpr_sint_t sCurTab = (xpr_sint_t)mTabCtrl->getCurTab();
+    if (sCurTab >= 0)
+    {
+        CWnd *sTabWnd = getTabWnd(sCurTab);
+        if (XPR_IS_NOT_NULL(sTabWnd))
+        {
+            sTabWnd->SetFocus();
+        }
+    }
 }
 
 void ExplorerView::setActivateBarStatus(xpr_bool_t aActivate, xpr_bool_t aLastActivated)
@@ -2320,6 +2411,8 @@ void ExplorerView::onTabInserted(TabCtrl &aTabCtrl, xpr_size_t aTab)
     xpr_size_t sTabCount = aTabCtrl.getTabCount();
     if (sTabCount > 1)
         aTabCtrl.ShowWindow(SW_SHOW);
+
+    recalcLayout();
 }
 
 xpr_bool_t ExplorerView::onTabChangingCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr_size_t aNewTab)
@@ -3649,7 +3742,7 @@ const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
     return XPR_NULL;
 }
 
-xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+xpr_bool_t ExplorerView::openFolder(const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
 {
     if (XPR_IS_NULL(aDir))
         return XPR_FALSE;
@@ -3709,7 +3802,7 @@ xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, const xp
     return sResult;
 }
 
-xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl)
+xpr_bool_t ExplorerView::openFolder(LPITEMIDLIST aFullPidl)
 {
     if (XPR_IS_NULL(aFullPidl))
         return XPR_FALSE;
@@ -3747,9 +3840,44 @@ xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, LPITEMID
     return sResult;
 }
 
+xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+{
+    return openFolder(aDir, aSelPath);
+}
+
+xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl)
+{
+    return openFolder(aFullPidl);
+}
+
 void ExplorerView::onSetFocus(SearchResultPane &aSearchResultPane)
 {
     gFrame->setActiveView(mViewIndex);
+}
+
+void ExplorerView::onCreated(FileScrapPane &aFileScrapPane)
+{
+    gFrame->setFileScrapPane(&aFileScrapPane);
+}
+
+void ExplorerView::onDestroyed(FileScrapPane &aFileScrapPane)
+{
+    gFrame->setFileScrapPane(XPR_NULL);
+}
+
+void ExplorerView::onSetFocus(FileScrapPane &aFileScrapPane)
+{
+    gFrame->setActiveView(mViewIndex);
+}
+
+xpr_bool_t ExplorerView::onExplore(FileScrapPane &aFileScrapPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+{
+    return openFolder(aDir, aSelPath);
+}
+
+xpr_bool_t ExplorerView::onExplore(FileScrapPane &aFileScrapPane, LPITEMIDLIST aFullPidl)
+{
+    return openFolder(aFullPidl);
 }
 
 void ExplorerView::onStatusBarRemove(StatusBar &aStatusBar, xpr_size_t aIndex)

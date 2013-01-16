@@ -62,17 +62,18 @@ public: \
     FolderCtrl        *sFolderCtrl       = XPR_NULL; \
     ExplorerCtrl      *sExplorerCtrl     = XPR_NULL; \
     SearchResultCtrl  *sSearchResultCtrl = XPR_NULL; \
+    FileScrapPane     *sFileScrapPane    = XPR_NULL; \
      \
     do \
     { \
         if (sTargetWnd != XPR_NULL) \
         { \
-            aContext.castKnownCtrl(sTargetWnd, sFolderCtrl, sExplorerCtrl, sSearchResultCtrl); \
+            aContext.castKnownCtrl(sTargetWnd, sFolderCtrl, sExplorerCtrl, sSearchResultCtrl, sFileScrapPane); \
         } \
          \
-        if (sFolderCtrl == XPR_NULL && sExplorerCtrl == XPR_NULL && sSearchResultCtrl == XPR_NULL) \
+        if (sFolderCtrl == XPR_NULL && sExplorerCtrl == XPR_NULL && sSearchResultCtrl == XPR_NULL && sFileScrapPane == XPR_NULL) \
         { \
-            aContext.getKnownCtrl(aContext, sFolderCtrl, sExplorerCtrl, sSearchResultCtrl); \
+            aContext.getKnownCtrl(aContext, sFolderCtrl, sExplorerCtrl, sSearchResultCtrl, sFileScrapPane); \
             sTargetWnd = XPR_NULL; \
         } \
     } \
@@ -86,6 +87,12 @@ public: \
 
 #define XPR_COMMAND_IF_SEARCH_RESULT_CTRL \
     if ((sSearchResultCtrl != XPR_NULL) && ((sFocusWnd == sSearchResultCtrl->m_hWnd) || (sTargetWnd != XPR_NULL && sTargetWnd->m_hWnd == sSearchResultCtrl->m_hWnd)))
+
+#define XPR_COMMAND_ELSE_IF_FILE_SCRAP_PANE \
+    else if (sFileScrapPane != XPR_NULL)
+
+#define XPR_COMMAND_IF_FILE_SCRAP_PANE \
+    if (sFileScrapPane != XPR_NULL)
 
 #define XPR_COMMAND_ELSE_IF_SEARCH_RESULT_CTRL \
     else if ((sSearchResultCtrl != XPR_NULL) && ((sFocusWnd == sSearchResultCtrl->m_hWnd) || (sTargetWnd != XPR_NULL && sTargetWnd->m_hWnd == sSearchResultCtrl->m_hWnd)))

@@ -11,7 +11,6 @@
 #include "FileScrapDropDlg.h"
 
 #include "fxb/fxb_file_scrap.h"
-#include "fxb/fxb_file_scrap_mgr.h"
 
 #include "rgc/DragImage.h"
 
@@ -23,7 +22,6 @@
 
 #include "command_string_table.h"
 #include "cmd/FileScrapGrpDlg.h"
-#include "cmd/FileScrapDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -531,7 +529,9 @@ void FileScrapDropDlg::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEf
             }
         }
 
-        fxb::FileScrapMgr::instance().add(sGroupId, sShellFolder, sPidls, sCount2);
+        fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+
+        sFileScrap.addItem(sGroupId, sShellFolder, sPidls, sCount2);
 
         XPR_SAFE_DELETE_ARRAY(sPidls);
 
@@ -558,7 +558,10 @@ void FileScrapDropDlg::OnFileScrapCopy(void)
     xpr_tchar_t sTarget[XPR_MAX_PATH + 1];
     if (browse(sTarget) == XPR_TRUE)
     {
-        fxb::FileScrapMgr::instance().doCopyOperation(sTarget);
+        fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+
+        xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+        sFileScrap.copyOperation(sGroupId, sTarget);
     }
 }
 
@@ -573,7 +576,10 @@ void FileScrapDropDlg::OnFileScrapMove(void)
     xpr_tchar_t sTarget[XPR_MAX_PATH + 1];
     if (browse(sTarget) == XPR_TRUE)
     {
-        fxb::FileScrapMgr::instance().doMoveOperation(sTarget);
+        fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+
+        xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+        sFileScrap.moveOperation(sGroupId, sTarget);
     }
 }
 
@@ -585,7 +591,21 @@ void FileScrapDropDlg::OnUpdateFcdMove(CCmdUI* pCmdUI)
 
 void FileScrapDropDlg::OnFileScrapDelete(void) 
 {
-    fxb::FileScrapMgr::instance().doDeleteOperation();
+    fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+
+    xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+
+    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
+    xpr_sint_t sMsgId = AfxGetMainWnd()->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2);
+
+    if (sMsgId == IDYES)
+    {
+        sFileScrap.deleteOperation(sGroupId);
+    }
+    else if (sMsgId == IDNO)
+    {
+        sFileScrap.trashOperation(sGroupId);
+    }
 }
 
 void FileScrapDropDlg::OnUpdateFcdDelete(CCmdUI* pCmdUI) 
@@ -596,7 +616,10 @@ void FileScrapDropDlg::OnUpdateFcdDelete(CCmdUI* pCmdUI)
 
 void FileScrapDropDlg::OnFileScrapClipboardCut(void) 
 {
-    fxb::FileScrapMgr::instance().cutToClipboard();
+    fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+    xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+
+    sFileScrap.setClipboardCut(sGroupId);
 }
 
 void FileScrapDropDlg::OnUpdateFcdClipboardCut(CCmdUI* pCmdUI) 
@@ -607,7 +630,10 @@ void FileScrapDropDlg::OnUpdateFcdClipboardCut(CCmdUI* pCmdUI)
 
 void FileScrapDropDlg::OnFileScrapClipboardCopy(void) 
 {
-    fxb::FileScrapMgr::instance().copyToClipboard();
+    fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+    xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+
+    sFileScrap.setClipboardCopy(sGroupId);
 }
 
 void FileScrapDropDlg::OnUpdateFcdClipboardCopy(CCmdUI* pCmdUI) 
@@ -616,10 +642,9 @@ void FileScrapDropDlg::OnUpdateFcdClipboardCopy(CCmdUI* pCmdUI)
     pCmdUI->Enable(sFileScrap.getItemCount(sFileScrap.getCurGroupId()) > 0);
 }
 
-void FileScrapDropDlg::OnFileScrapView() 
+void FileScrapDropDlg::OnFileScrapView(void) 
 {
-    FileScrapDlg sDlg;
-    sDlg.DoModal();
+    gFrame->executeCommand(ID_EDIT_FILE_SCRAP_VIEW);
 }
 
 void FileScrapDropDlg::OnUpdateFcdView(CCmdUI* pCmdUI) 
@@ -629,7 +654,10 @@ void FileScrapDropDlg::OnUpdateFcdView(CCmdUI* pCmdUI)
 
 void FileScrapDropDlg::OnFileScrapRemove(void) 
 {
-    fxb::FileScrapMgr::instance().removeList();
+    fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+    xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
+
+    sFileScrap.removeAllItems(sGroupId);
 }
 
 void FileScrapDropDlg::OnUpdateFcdRemove(CCmdUI* pCmdUI) 
@@ -761,5 +789,5 @@ void FileScrapDropDlg::OnFileScrapGroupDefault(void)
     if (sGroupId == fxb::FileScrap::InvalidGroupId)
         return;
 
-    fxb::FileScrap::instance().setCurGourpId(sGroupId);
+    fxb::FileScrap::instance().setCurGroupId(sGroupId);
 }

@@ -4000,11 +4000,11 @@ xpr_bool_t ExplorerCtrl::OnContextMenuBkgnd(CWnd *aWnd, CPoint aPoint, CRect aWi
         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(14);
     else
     {
-        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_COPY,    MF_BYCOMMAND);
-        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_MOVE,    MF_BYCOMMAND);
-        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_DELETE,      MF_BYCOMMAND);
-        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_VIEW,        MF_BYCOMMAND);
-        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_LIST_REMOVE, MF_BYCOMMAND);
+        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_COPY,        MF_BYCOMMAND);
+        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_CUR_MOVE,        MF_BYCOMMAND);
+        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_DELETE,          MF_BYCOMMAND);
+        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_VIEW,            MF_BYCOMMAND);
+        sPopupMenu->DeleteMenu(ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST, MF_BYCOMMAND);
         sPopupMenu->DeleteMenu(8, MF_BYPOSITION); // seperator
 
         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(8);

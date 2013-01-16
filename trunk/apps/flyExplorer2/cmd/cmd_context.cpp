@@ -14,6 +14,7 @@
 #include "FolderCtrl.h"
 #include "ExplorerCtrl.h"
 #include "SearchResultCtrl.h"
+#include "FileScrapPane.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -72,7 +73,7 @@ void CommandContext::setParameters(CommandParameters *aParameters)
     mParameters = aParameters;
 }
 
-void CommandContext::getKnownCtrl(CommandContext &aContext, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl)
+void CommandContext::getKnownCtrl(CommandContext &aContext, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl, FileScrapPane *&aFileScrapPane)
 {
     if (aContext.mMainFrame == XPR_NULL)
         return;
@@ -80,12 +81,14 @@ void CommandContext::getKnownCtrl(CommandContext &aContext, FolderCtrl *&aFolder
     aFolderCtrl       = aContext.mMainFrame->getFolderCtrl();
     aExplorerCtrl     = aContext.mMainFrame->getExplorerCtrl();
     aSearchResultCtrl = aContext.mMainFrame->getSearchResultCtrl();
+    aFileScrapPane    = aContext.mMainFrame->getFileScrapPane();
 }
 
-void CommandContext::castKnownCtrl(CWnd *aWnd, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl)
+void CommandContext::castKnownCtrl(CWnd *aWnd, FolderCtrl *&aFolderCtrl, ExplorerCtrl *&aExplorerCtrl, SearchResultCtrl *&aSearchResultCtrl, FileScrapPane *&aFileScrapPane)
 {
     aFolderCtrl       = dynamic_cast<FolderCtrl       *>(aWnd);
     aExplorerCtrl     = dynamic_cast<ExplorerCtrl     *>(aWnd);
     aSearchResultCtrl = dynamic_cast<SearchResultCtrl *>(aWnd);
+    aFileScrapPane    = dynamic_cast<FileScrapPane    *>(aWnd);
 }
 } // namespace cmd
