@@ -33,6 +33,7 @@ class FolderView;
 class FolderPane;
 class FolderCtrl;
 class ExplorerView;
+class ExplorerPane;
 class ExplorerCtrl;
 class SearchResultCtrl;
 class FileScrapPane;
@@ -73,6 +74,7 @@ public:
     FolderView       *getFolderView(void) const;
     FolderPane       *getFolderPane(xpr_sint_t aIndex = -1) const;
     ExplorerView     *getExplorerView(xpr_sint_t aIndex = -1) const;
+    ExplorerPane     *getExplorerPane(xpr_sint_t aIndex = -1) const;
 
     AddressBar       *getAddressBar(xpr_sint_t aIndex = -1) const;
     FolderCtrl       *getFolderCtrl(xpr_sint_t aIndex = -1) const;

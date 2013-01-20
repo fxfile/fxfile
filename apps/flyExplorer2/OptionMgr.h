@@ -56,7 +56,6 @@ public:
     void applyFolderCtrl(FolderCtrl *aFolderCtrl, xpr_bool_t aLoading);
 
     // Apply to ExplorerView
-    void setOnlyExplorerViewApply(xpr_bool_t aOnlyExplorerView) { mOnlyExplorerView = aOnlyExplorerView; }
     void applyExplorerView(xpr_bool_t aLoading);
     void applyExplorerView(xpr_sint_t aIndex, xpr_bool_t aLoading);
     void applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex, xpr_bool_t aLoading);
@@ -78,8 +77,6 @@ private:
 
     xpr_bool_t mModifiedHidden;
     xpr_bool_t mModifiedSystem;
-
-    xpr_bool_t mOnlyExplorerView;
 };
 
 #endif // __FX_OPTION_MGR_H__

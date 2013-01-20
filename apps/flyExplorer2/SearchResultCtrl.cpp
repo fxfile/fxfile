@@ -1012,7 +1012,7 @@ xpr_bool_t SearchResultCtrl::invokeCommandSelf(fxb::ContextMenu *aContextMenu, x
 
             if (XPR_IS_NOT_NULL(mObserver))
             {
-                mObserver->onExplore(*this, sSrItemData->mDir, sSelPath);
+                mObserver->onOpenFolder(*this, sSrItemData->mDir, sSelPath);
             }
         }
     }
@@ -1150,7 +1150,7 @@ void SearchResultCtrl::executeSelFolder(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        if (mObserver->onExplore(*this, aPath, XPR_NULL) == XPR_FALSE)
+        if (mObserver->onOpenFolder(*this, aPath, XPR_NULL) == XPR_FALSE)
         {
             doExecuteError(aPath);
         }
@@ -1247,7 +1247,7 @@ void SearchResultCtrl::executeLinkFolder(LPITEMIDLIST aFullPidl)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        if (mObserver->onExplore(*this, aFullPidl) == XPR_FALSE)
+        if (mObserver->onOpenFolder(*this, aFullPidl) == XPR_FALSE)
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
@@ -1952,6 +1952,13 @@ void SearchResultCtrl::OnSetFocus(CWnd *aOldWnd)
 
 void SearchResultCtrl::OnKeyDown(xpr_uint_t aChar, xpr_uint_t aRepCnt, xpr_uint_t aFlags) 
 {
+    if (aChar == VK_TAB)
+    {
+        if (XPR_IS_NOT_NULL(mObserver))
+            mObserver->onMoveFocus(*this);
+        return;
+    }
+
     super::OnKeyDown(aChar, aRepCnt, aFlags);
 }
 

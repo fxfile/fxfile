@@ -16,10 +16,11 @@ class FileScrapCtrl;
 class FileScrapCtrlObserver
 {
 public:
-    virtual void onSetFocus(FileScrapCtrl &aFileScrapCtrl) = 0;
-    virtual xpr_bool_t onExplore(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath) = 0;
-    virtual xpr_bool_t onExplore(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPid) = 0;
+    virtual xpr_bool_t onOpenFolder(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath) = 0;
+    virtual xpr_bool_t onOpenFolder(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPid) = 0;
     virtual void onUpdateStatus(FileScrapCtrl &aFileScrapCtrl) = 0;
+    virtual void onSetFocus(FileScrapCtrl &aFileScrapCtrl) = 0;
+    virtual void onMoveFocus(FileScrapCtrl &aFileScrapCtrl) = 0;
 };
 
 #endif // __FX_FILE_SCRAP_CTRL_OBSERVER_H__

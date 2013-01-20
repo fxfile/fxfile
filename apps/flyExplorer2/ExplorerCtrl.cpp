@@ -396,6 +396,12 @@ xpr_sint_t ExplorerCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     sEventMask |= SHCNE_RENAMEFOLDER;
     fxb::DriveShcn::instance().registerWatch(*this, WM_DRIVE_SHELL_CHANGE_NOTIFY, sEventMask);
 
+    // thumbnail
+    fxb::Thumbnail &sThumbnail = fxb::Thumbnail::instance();
+
+    sThumbnail.setThumbSize(CSize(gOpt->mThumbnailWidth, gOpt->mThumbnailHeight));
+    sThumbnail.setThumbPriority(gOpt->mThumbnailPriority);
+
     return 0;
 }
 

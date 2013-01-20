@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -84,7 +84,7 @@ protected:
     xpr_sint_t   mCurSel;
 
     xpr_sint_t mSearchResultViewIndex;
-    xpr_sint_t mSearchResultCtrlId;
+    xpr_sint_t mSearchResultPaneId;
 
 protected:
     CImageList mLocImageList;

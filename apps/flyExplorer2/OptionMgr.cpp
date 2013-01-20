@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -20,6 +20,7 @@
 #include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
+#include "ExplorerPane.h"
 #include "ExplorerCtrl.h"
 #include "FolderCtrl.h"
 #include "PathBar.h"
@@ -51,7 +52,6 @@ OptionMgr::OptionMgr(void)
     : mOption(new Option)
     , mModifiedHidden(XPR_TRUE)
     , mModifiedSystem(XPR_TRUE)
-    , mOnlyExplorerView(XPR_FALSE)
 {
 }
 
@@ -387,29 +387,29 @@ void OptionMgr::applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex
 
     xpr_sint_t i, sTabCount;
     ExplorerCtrl *sExplorerCtrl = XPR_NULL;
-    AddressBar   *sAddressBar   = aExplorerView->getAddressBar();
-    PathBar      *sPathBar      = aExplorerView->getPathBar();
+    ExplorerPane *sExplorerPane = aExplorerView->getExplorerPane();
+    AddressBar   *sAddressBar   = XPR_IS_NOT_NULL(sExplorerPane) ? sExplorerPane->getAddressBar() : XPR_NULL;
+    PathBar      *sPathBar      = XPR_IS_NOT_NULL(sExplorerPane) ? sExplorerPane->getPathBar()    : XPR_NULL;
     ActivateBar  *sActivateBar  = aExplorerView->getActivateBar();
 
     if (aIndex == 0) // general
     {
-        if (XPR_IS_FALSE(mOnlyExplorerView))
+        sTabCount = aExplorerView->getTabCount();
+        for (i = 0; i < sTabCount; ++i)
         {
-            sTabCount = aExplorerView->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
-            {
-                sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
-                if (XPR_IS_NULL(sExplorerCtrl))
-                    continue;
+            sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
+            if (XPR_IS_NULL(sExplorerCtrl))
+                continue;
 
-                applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
-            }
+            applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
         }
     }
     else if (aIndex == 1) // contents
     {
-        aExplorerView->setContentsStyle(mOption->mContentsStyle);
+        if (XPR_IS_NOT_NULL(sExplorerPane))
+            sExplorerPane->setContentsStyle(mOption->mContentsStyle);
 
+        // TODO
         if (XPR_IS_FALSE(aLoading))
             gFrame->updateBookmark();
 
@@ -419,38 +419,38 @@ void OptionMgr::applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex
                 gFrame->mPicViewer->setDocking(XPR_FALSE);
         }
 
-        aExplorerView->recalcLayout();
-        aExplorerView->invalidateContentsWnd();
-
-        if (XPR_IS_FALSE(mOnlyExplorerView))
+        if (XPR_IS_NOT_NULL(sExplorerPane))
         {
-            sTabCount = aExplorerView->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
-            {
-                sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
-                if (XPR_IS_NULL(sExplorerCtrl))
-                    continue;
+            sExplorerPane->recalcLayout();
+            sExplorerPane->invalidateContentsWnd();
+        }
 
-                applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
-            }
+        sTabCount = aExplorerView->getTabCount();
+        for (i = 0; i < sTabCount; ++i)
+        {
+            sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
+            if (XPR_IS_NULL(sExplorerCtrl))
+                continue;
+
+            applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
         }
     }
     else if (aIndex == 2) // explorer
     {
-        if (XPR_IS_FALSE(mOnlyExplorerView))
+        if (XPR_IS_NOT_NULL(sPathBar))
         {
-            sTabCount = aExplorerView->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
-            {
-                sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
-                if (XPR_IS_NULL(sExplorerCtrl))
-                    continue;
-
-                applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
-            }
+            sPathBar->setMode(mOption->mPathBarRealPath);
         }
 
-        aExplorerView->setPathBarMode(mOption->mPathBarRealPath);
+        sTabCount = aExplorerView->getTabCount();
+        for (i = 0; i < sTabCount; ++i)
+        {
+            sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
+            if (XPR_IS_NULL(sExplorerCtrl))
+                continue;
+
+            applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
+        }
 
         if (XPR_IS_NOT_NULL(sAddressBar))
         {
@@ -483,20 +483,17 @@ void OptionMgr::applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex
         if (XPR_IS_NOT_NULL(sAddressBar) && XPR_IS_NOT_NULL(sAddressBar->m_hWnd))
             sAddressBar->setAutoComplete();
 
-        if (XPR_IS_FALSE(mOnlyExplorerView))
+        sTabCount = aExplorerView->getTabCount();
+        for (i = 0; i < sTabCount; ++i)
         {
-            sTabCount = aExplorerView->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
-            {
-                sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
-                if (XPR_IS_NULL(sExplorerCtrl))
-                    continue;
+            sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
+            if (XPR_IS_NULL(sExplorerCtrl))
+                continue;
 
-                applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
-            }
-
-            aExplorerView->setDragContents(!mOption->mDragNoContents);
+            applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
         }
+
+        aExplorerView->setDragContents(!mOption->mDragNoContents);
     }
     else if (aIndex == 5)
     {
@@ -505,17 +502,14 @@ void OptionMgr::applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex
         sThumbnail.setThumbSize(CSize(mOption->mThumbnailWidth, mOption->mThumbnailHeight));
         sThumbnail.setThumbPriority(mOption->mThumbnailPriority);
 
-        if (XPR_IS_FALSE(mOnlyExplorerView))
+        sTabCount = aExplorerView->getTabCount();
+        for (i = 0; i < sTabCount; ++i)
         {
-            sTabCount = aExplorerView->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
-            {
-                sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
-                if (XPR_IS_NULL(sExplorerCtrl))
-                    continue;
+            sExplorerCtrl = aExplorerView->getExplorerCtrl(i);
+            if (XPR_IS_NULL(sExplorerCtrl))
+                continue;
 
-                applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
-            }
+            applyExplorerCtrl(sExplorerCtrl, aIndex, aLoading);
         }
     }
 }

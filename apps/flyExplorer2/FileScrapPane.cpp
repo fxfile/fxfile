@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "FileScrapPane.h"
 
-#include "FileScrapPaneObserver.h"
+#include "TabPaneObserver.h"
 #include "FileScrapCtrl.h"
 #include "FileScrapToolBar.h"
 #include "MainFrame.h"
@@ -51,46 +51,18 @@ enum
 };
 
 FileScrapPane::FileScrapPane(void)
-    : mObserver(XPR_NULL)
-    , mViewIndex(-1)
+    : TabPane(TabTypeFileScrap)
     , mFileScrapCtrl(XPR_NULL), mGroupComboBox(XPR_NULL), mToolBar(XPR_NULL), mStatusBar(XPR_NULL)
     , mGroupLabelText(XPR_NULL), mGroupLabelRect(CRect(0,0,0,0))
 {
-    registerWindowClass();
+    mStatusText0[0] = 0;
+    mStatusText1[0] = 0;
+
+    registerWindowClass(kClassName);
 }
 
 FileScrapPane::~FileScrapPane(void)
 {
-}
-
-xpr_bool_t FileScrapPane::registerWindowClass(void)
-{
-    WNDCLASS sWndClass = {0};
-    HINSTANCE sInstance = AfxGetInstanceHandle();
-
-    //Check weather the class is registerd already
-    if (::GetClassInfo(sInstance, kClassName, &sWndClass) == XPR_FALSE)
-    {
-        //If not then we have to register the new class
-        sWndClass.style         = CS_DBLCLKS;
-        sWndClass.lpfnWndProc   = ::DefWindowProc;
-        sWndClass.cbClsExtra    = 0;
-        sWndClass.cbWndExtra    = 0;
-        sWndClass.hInstance     = sInstance;
-        sWndClass.hIcon         = XPR_NULL;
-        sWndClass.hCursor       = AfxGetApp()->LoadStandardCursor(IDC_ARROW);
-        sWndClass.hbrBackground = ::GetSysColorBrush(COLOR_WINDOW);
-        sWndClass.lpszMenuName  = XPR_NULL;
-        sWndClass.lpszClassName = kClassName;
-
-        if (AfxRegisterClass(&sWndClass) == XPR_FALSE)
-        {
-            AfxThrowResourceException();
-            return XPR_FALSE;
-        }
-    }
-
-    return XPR_TRUE;
 }
 
 xpr_bool_t FileScrapPane::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
@@ -236,19 +208,52 @@ void FileScrapPane::OnDestroy(void)
     super::OnDestroy();
 }
 
-void FileScrapPane::setObserver(FileScrapPaneObserver *aObserver)
+CWnd * FileScrapPane::newSubPane(xpr_uint_t aId)
 {
-    mObserver = aObserver;
+    return mFileScrapCtrl;
 }
 
-void FileScrapPane::setViewIndex(xpr_sint_t aViewIndex)
+CWnd * FileScrapPane::getSubPane(xpr_uint_t aId) const
 {
-    mViewIndex = aViewIndex;
+    return mFileScrapCtrl;
 }
 
-xpr_sint_t FileScrapPane::getViewIndex(void) const
+xpr_size_t FileScrapPane::getSubPaneCount(void) const
 {
-    return mViewIndex;
+    return 1;
+}
+
+xpr_uint_t FileScrapPane::getCurSubPaneId(void) const
+{
+    return mSubPaneId;
+}
+
+xpr_uint_t FileScrapPane::setCurSubPane(xpr_uint_t aId)
+{
+    mSubPaneId = aId;
+
+    return mSubPaneId;
+}
+
+void FileScrapPane::destroySubPane(xpr_uint_t aId)
+{
+}
+
+void FileScrapPane::destroySubPane(void)
+{
+}
+
+StatusBar *FileScrapPane::getStatusBar(void) const
+{
+    return mStatusBar;
+}
+
+const xpr_tchar_t *FileScrapPane::getStatusPaneText(xpr_sint_t aIndex) const
+{
+    if (aIndex == 1)
+        return mStatusText1;
+
+    return mStatusText0;
 }
 
 void FileScrapPane::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
@@ -673,21 +678,29 @@ void FileScrapPane::onSetFocus(FileScrapCtrl &aFileScrapCtrl)
     }
 }
 
-xpr_bool_t FileScrapPane::onExplore(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+void FileScrapPane::onMoveFocus(FileScrapCtrl &aFileScrapCtrl)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        return mObserver->onExplore(*this, aDir, aSelPath);
+        mObserver->onMoveFocus(*this, 1);
+    }
+}
+
+xpr_bool_t FileScrapPane::onOpenFolder(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+{
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        return mObserver->onOpenFolder(*this, aDir, aSelPath);
     }
 
     return XPR_FALSE;
 }
 
-xpr_bool_t FileScrapPane::onExplore(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPidl)
+xpr_bool_t FileScrapPane::onOpenFolder(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPidl)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        return mObserver->onExplore(*this, aFullPidl);
+        return mObserver->onOpenFolder(*this, aFullPidl);
     }
 
     return XPR_FALSE;
@@ -700,32 +713,30 @@ void FileScrapPane::onUpdateStatus(FileScrapCtrl &aFileScrapCtrl)
 
 void FileScrapPane::updateStatus(void)
 {
+    xpr_sint_t sFileCount  = 0;
+    xpr_sint_t sDirCount   = 0;
+    xpr_sint_t sTotalCount = 0;
+    mFileScrapCtrl->getStatus(sFileCount, sDirCount);
+    sTotalCount = sFileCount + sDirCount;
+
+    xpr_tchar_t sFileCountText[0xff] = {0};
+    xpr_tchar_t sDirCountText [0xff] = {0};
+    xpr_tchar_t sTotalCountText[0xff] = {0};
+    fxb::GetFormatedNumber(sFileCount,  sFileCountText,  XPR_COUNT_OF(sFileCountText)  - 1);
+    fxb::GetFormatedNumber(sDirCount,   sDirCountText,   XPR_COUNT_OF(sDirCountText)   - 1);
+    fxb::GetFormatedNumber(sTotalCount, sTotalCountText, XPR_COUNT_OF(sTotalCountText) - 1);
+
+    _stprintf(
+        mStatusText0,
+        theApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.status.count"),
+        XPR_STRING_LITERAL("%s,%s,%s")),
+        sTotalCountText,
+        sDirCountText,
+        sFileCountText);
+
     if (XPR_IS_NOT_NULL(mStatusBar))
     {
-        xpr_sint_t sFileCount  = 0;
-        xpr_sint_t sDirCount   = 0;
-        xpr_sint_t sTotalCount = 0;
-        mFileScrapCtrl->getStatus(sFileCount, sDirCount);
-        sTotalCount = sFileCount + sDirCount;
-
-        xpr_tchar_t sFileCountText[0xff] = {0};
-        xpr_tchar_t sDirCountText [0xff] = {0};
-        xpr_tchar_t sTotalCountText[0xff] = {0};
-        fxb::GetFormatedNumber(sFileCount,  sFileCountText,  XPR_COUNT_OF(sFileCountText)  - 1);
-        fxb::GetFormatedNumber(sDirCount,   sDirCountText,   XPR_COUNT_OF(sDirCountText)   - 1);
-        fxb::GetFormatedNumber(sTotalCount, sTotalCountText, XPR_COUNT_OF(sTotalCountText) - 1);
-
-        xpr_tchar_t sStatusText[0xff] = {0};
-
-        _stprintf(
-            sStatusText,
-            theApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.status.count"),
-            XPR_STRING_LITERAL("%s,%s,%s")),
-            sTotalCountText,
-            sDirCountText,
-            sFileCountText);
-
-        mStatusBar->setPaneText(0, sStatusText);
+        mStatusBar->setPaneText(0, mStatusText0);
     }
 }
 

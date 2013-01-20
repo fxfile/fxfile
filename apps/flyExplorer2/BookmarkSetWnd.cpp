@@ -14,7 +14,6 @@
 
 #include "Option.h"
 #include "BookmarkWnd.h"
-#include "CtrlId.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -179,7 +178,7 @@ void BookmarkSetWnd::updateBookmark(void)
         if (sBookmarkItem == XPR_NULL)
             continue;
 
-        if (sBookmarkItem->isSeparator())
+        if (sBookmarkItem->isSeparator() == XPR_TRUE)
             continue;
 
         sCountExceptForSeparator++;
@@ -204,7 +203,7 @@ void BookmarkSetWnd::updateBookmark(void)
         if (sBookmarkItem == XPR_NULL)
             continue;
 
-        if (sBookmarkItem->isSeparator())
+        if (sBookmarkItem->isSeparator() == XPR_TRUE)
             continue;
 
         sRect.top    = sRect.bottom + OFFSET_HEIGHT;

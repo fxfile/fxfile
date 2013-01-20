@@ -11,8 +11,6 @@
 #define __FX_CTRL_ID_H__
 #pragma once
 
-#define AFX_IDW_SEARCH_BAR              (AFX_IDW_CONTROLBAR_FIRST + 35)
-
 #define AFX_IDW_FOLDER_VIEW             50
 #define AFX_IDW_EXPLORER_VIEW           51
 #define AFX_IDW_DRIVE_BAR               53

@@ -19,27 +19,23 @@
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_size_format.h"
 
-#include "rgc/DropTarget.h"
 #include "rgc/MemDC.h"
 #include "rgc/TabCtrl.h"
 
 #include "ExplorerViewObserver.h"
 #include "MainFrame.h"
+#include "ExplorerPane.h"
 #include "ExplorerCtrl.h"
 #include "ExplorerCtrlPrint.h"
 #include "FolderPane.h"
 #include "FolderCtrl.h"
 #include "PreviewViewEx.h"
-#include "PathBar.h"
 #include "ActivateBar.h"
-#include "DrivePathBar.h"
-#include "AddressBar.h"
-#include "ContentsWnd.h"
 #include "OptionMgr.h"
-#include "CtrlId.h"
 #include "SearchResultPane.h"
+#include "SearchResultCtrl.h"
 #include "FileScrapPane.h"
-#include "StatusBarEx.h"
+#include "TabPane.h"
 
 #include "cmd/cmd_parameters.h"
 #include "cmd/cmd_parameter_define.h"
@@ -55,23 +51,15 @@ static char THIS_FILE[] = __FILE__;
 
 static const xpr_sint_t kTabHeight = 27;
 
-#define MAX_CONTENS_SHOW_SEL_ITEMS       17
-#define CONTENTS_EXPLORER_STYLE_WIDTH   200
-#define CONTENTS_BASIC_STYLE_HEIGHT      36
-
 //
 // control id
 //
 enum
 {
     CTRL_ID_TAB_CTRL = 50,
-    CTRL_ID_ADDRESS_BAR,
     CTRL_ID_FOLDER_PANE,
-    CTRL_ID_PATH_BAR,
     CTRL_ID_ACTIVATE_BAR,
-    CTRL_ID_CONTENTS_WND,
-    CTRL_ID_STATUS_BAR,
-    CTRL_ID_EXPLORER_CTRL = 200,
+    CTRL_ID_TAB_PANE = 200,
 };
 
 class ExplorerView::TabData
@@ -80,91 +68,61 @@ class ExplorerView::TabData
 
 public:
     TabData(TabType aTabType)
-        : mTabWnd(XPR_NULL)
-        , mTabType(aTabType)
+        : mTabPane(XPR_NULL), mTabPaneId(0)
     {
     }
 
     virtual ~TabData(void)
     {
-        DESTROY_DELETE(mTabWnd);
+        if (XPR_IS_NOT_NULL(mTabPane))
+        {
+            if (mTabPane->isSharedPane() == XPR_FALSE)
+            {
+                DESTROY_DELETE(mTabPane);
+            }
+            else
+            {
+                mTabPane->destroySubPane(mTabPaneId);
+                mTabPane->ShowWindow(SW_HIDE);
+                mTabPane = XPR_NULL;
+            }
+        }
     }
 
 protected:
-    TabType  mTabType;
-    CWnd    *mTabWnd;
-};
-
-class ExplorerView::ExplorerTabData : public ExplorerView::TabData
-{
-    friend class ExplorerView;
-
-public:
-    ExplorerTabData(void)
-        : TabData(TabTypeExplorer)
+    xpr_bool_t canDuplicatePane(void) const
     {
-        mStatusPane0[0] = 0;
-        mStatusPane1[0] = 0;
+        if (XPR_IS_NULL(mTabPane))
+            return XPR_FALSE;
+
+        return mTabPane->canDuplicatePane();
     }
 
-    virtual ~ExplorerTabData(void)
+    TabType getTabType(void) const
     {
+        if (XPR_IS_NULL(mTabPane))
+            return TabTypeNone;
+
+        return mTabPane->getTabType();
     }
 
-public:
-    ExplorerCtrl *getExplorerCtrl(void) const
+    xpr_bool_t isTabType(TabType aTabType) const
     {
-        return dynamic_cast<ExplorerCtrl *>(mTabWnd);
+        return (getTabType() == aTabType) ? XPR_TRUE : XPR_FALSE;
+    }
+
+    CWnd *getSubPaneWnd(void) const
+    {
+        if (XPR_IS_NULL(mTabPane))
+            return XPR_NULL;
+
+        return mTabPane->getSubPane(mTabPaneId);
     }
 
 protected:
-    xpr_tchar_t mStatusPane0[XPR_MAX_PATH + 1];
-    xpr_tchar_t mStatusPane1[XPR_MAX_PATH + 1];
+    TabPane    *mTabPane;
+    xpr_uint_t  mTabPaneId;
 };
-
-class ExplorerView::SearchResultTabData : public ExplorerView::TabData
-{
-    friend class ExplorerView;
-
-public:
-    SearchResultTabData(void)
-        : TabData(TabTypeSearchResult)
-    {
-    }
-
-    virtual ~SearchResultTabData(void)
-    {
-    }
-
-public:
-    SearchResultPane *getSearchResultPane(void) const
-    {
-        return dynamic_cast<SearchResultPane *>(mTabWnd);
-    }
-};
-
-class ExplorerView::FileScrapTabData : public ExplorerView::TabData
-{
-    friend class ExplorerView;
-
-public:
-    FileScrapTabData(void)
-        : TabData(TabTypeFileScrap)
-    {
-    }
-
-    virtual ~FileScrapTabData(void)
-    {
-    }
-
-public:
-    FileScrapPane *getFileScrapPane(void) const
-    {
-        return dynamic_cast<FileScrapPane *>(mTabWnd);
-    }
-};
-
-IMPLEMENT_DYNCREATE(ExplorerView, CView)
 
 ExplorerView::ExplorerView(void)
     : mObserver(XPR_NULL)
@@ -172,11 +130,10 @@ ExplorerView::ExplorerView(void)
     , mInit(XPR_TRUE)
     , mTabCtrl(XPR_NULL)
     , mFolderPane(XPR_NULL)
-    , mAddressBar(XPR_NULL), mPathBar(XPR_NULL), mActivateBar(XPR_NULL), mDrivePathBar(XPR_NULL), mContentsWnd(XPR_NULL), mStatusBar(XPR_NULL)
-    , mIsDrivePathBar(XPR_FALSE)
-    , mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
+    , mActivateBar(XPR_NULL)
+    , mExplorerPane(XPR_NULL)
     , mListCtrlPrint(XPR_NULL)
-    , mNextExplorerCtrlId(CTRL_ID_EXPLORER_CTRL), mLastActivedExplorerCtrlId(0)
+    , mNextTabPaneId(CTRL_ID_TAB_PANE), mLastActivedExplorerPaneId(0)
     , mContextMenuCursor(CPoint(0, 0))
 {
 }
@@ -294,12 +251,8 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (mTabCtrl->setCurTab(gOpt->mViewSplitTab[mViewIndex].mCurTab) == XPR_FALSE)
         mTabCtrl->setCurTab(0);
 
-    // etc control
-    visiblePathBar(gOpt->mPathBar[mViewIndex], XPR_TRUE);
+    // activate bar
     visibleActivateBar(gOpt->mActivateBar[mViewIndex], XPR_TRUE);
-    visibleDrivePathBar(gFrame->isDriveBar() && gFrame->isDriveViewSplit(), XPR_TRUE);
-    visibleAddressBar(gOpt->mAddressBar[mViewIndex], XPR_TRUE);
-    visibleStatusBar(gOpt->mStatusBar[mViewIndex], XPR_TRUE);
 
     // folder pane
     xpr_bool_t sVisibleFolderPane = XPR_FALSE;
@@ -336,26 +289,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     // register for drag and drop
     mDropTarget.Register(this);
 
-    // apply configuration
-    OptionMgr &sOptionMgr = OptionMgr::instance();
-
-    sOptionMgr.setOnlyExplorerViewApply(XPR_TRUE);
-    sOptionMgr.applyExplorerView(this, XPR_TRUE);
-    sOptionMgr.setOnlyExplorerViewApply(XPR_FALSE);
-
-    if (XPR_IS_NOT_NULL(sExplorerCtrl))
-    {
-        if (XPR_IS_NOT_NULL(mContentsWnd) && XPR_IS_NOT_NULL(mContentsWnd->m_hWnd))
-        {
-            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-            if (XPR_IS_NOT_NULL(sTvItemData))
-            {
-
-                setContentsFolder(sTvItemData);
-                setContentsNormal(sTvItemData, XPR_TRUE);
-            }
-        }
-    }
+    setDragContents(!gOpt->mDragNoContents);
 
     mInit = XPR_FALSE;
 
@@ -525,15 +459,9 @@ void ExplorerView::OnDestroy(void)
 
     DESTROY_DELETE(mTabCtrl);
     DESTROY_DELETE(mFolderPane);
-    DESTROY_DELETE(mAddressBar);
-    DESTROY_DELETE(mPathBar);
-    DESTROY_DELETE(mStatusBar);
+    DESTROY_DELETE(mExplorerPane);
 
-    destroyPathBar();
     destroyActivateBar();
-    destroyDrivePathBar();
-    destroyContentsWnd();
-    destroyStatusBar();
 
     super::OnDestroy();
 
@@ -544,10 +472,10 @@ void ExplorerView::OnDestroy(void)
 
 void ExplorerView::saveOption(void)
 {
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    ExplorerPane *sExplorerPane = getExplorerPane();
+    if (XPR_IS_NOT_NULL(sExplorerPane))
     {
-        sExplorerCtrl->saveOption();
+        sExplorerPane->saveOption();
     }
 
     if (XPR_IS_NOT_NULL(mTabCtrl))
@@ -561,16 +489,11 @@ void ExplorerView::saveOption(void)
 
             xpr_size_t i, sTabCount;
             ExplorerCtrl *sExplorerCtrl;
-            ExplorerTabData *sExplorerTabData;
 
             sTabCount = mTabCtrl->getTabCount();
             for (i = 0; i < sTabCount; ++i)
             {
-                sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(i));
-                if (XPR_IS_NULL(sExplorerTabData))
-                    continue;
-
-                sExplorerCtrl = sExplorerTabData->getExplorerCtrl();
+                sExplorerCtrl = getExplorerCtrl((xpr_sint_t)i);
                 if (XPR_IS_NOT_NULL(sExplorerCtrl))
                 {
                     LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
@@ -617,7 +540,7 @@ void ExplorerView::recalcLayout(void)
     CRect sRect(sClientRect);
     xpr_bool_t sExplorerTabMode = isExplorerTabMode();
 
-    HDWP sHdwp = ::BeginDeferWindowPos((xpr_sint_t)mTabCtrl->getTabCount() + 6);
+    HDWP sHdwp = ::BeginDeferWindowPos((xpr_sint_t)mTabCtrl->getTabCount() + 3);
 
     // tab
     if (XPR_IS_NOT_NULL(mTabCtrl) && XPR_IS_NOT_NULL(mTabCtrl->m_hWnd))
@@ -651,76 +574,7 @@ void ExplorerView::recalcLayout(void)
     xpr_sint_t sColumn = XPR_IS_TRUE(gOpt->mLeftEachFolderPane[mViewIndex]) ? 1 : 0;
     mSplitter.getPaneRect(0, sColumn, sRect);
 
-    if (XPR_IS_TRUE(sExplorerTabMode))
-    {
-        // address bar
-        if (isVisibleAddressBar() == XPR_TRUE && XPR_IS_NOT_NULL(mAddressBar) && XPR_IS_NOT_NULL(mAddressBar->m_hWnd))
-        {
-            xpr_sint_t sCxEdge = ::GetSystemMetrics(SM_CXEDGE);
-            xpr_sint_t sCyEdge = ::GetSystemMetrics(SM_CYEDGE);
-
-            ::DeferWindowPos(sHdwp, *mAddressBar, XPR_NULL, sRect.left - sCxEdge, sRect.top - sCyEdge, sRect.Width() + (sCxEdge * 2), 1000, SWP_NOZORDER);
-
-            CRect sAddressWindowRect;
-            mAddressBar->GetWindowRect(&sAddressWindowRect);
-
-            sRect.top += sAddressWindowRect.Height();
-            sRect.top -= sCyEdge;
-        }
-
-        // path bar and drive bar
-        xpr_sint_t sDriveWidth = 0;
-        xpr_sint_t sDriveHeight = 0;
-        CRect sDriveBarRect(0,0,0,0);
-        CRect sPathRect(0,0,0,0);
-
-        xpr_sint_t sTop = sRect.top;
-        if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
-        {
-            sPathRect = sRect;
-            sPathRect.bottom = sPathRect.top + mPathBar->getHeight();
-        }
-
-        if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd))
-        {
-            sDriveBarRect = sRect;
-
-            mDrivePathBar->getToolBarSize(&sDriveWidth, &sDriveHeight);
-            if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
-            {
-                if (gFrame->isDriveViewSplitLeft() == XPR_TRUE)
-                {
-                    sDriveBarRect.left  = sRect.left;
-                    sDriveBarRect.right = sDriveBarRect.left + sDriveWidth;
-                    sPathRect.left = sDriveBarRect.right;
-                }
-                else
-                {
-                    sDriveBarRect.left  = sRect.right - sDriveWidth;
-                    sDriveBarRect.right = sRect.right;
-                    sPathRect.right -= sDriveWidth;
-                }
-            }
-
-            sDriveBarRect.bottom = sRect.top + sDriveHeight;
-        }
-
-        sTop = max(sPathRect.bottom, sDriveBarRect.bottom);
-        sPathRect.bottom  = sTop;
-        sDriveBarRect.bottom = sTop;
-        if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
-        {
-            ::DeferWindowPos(sHdwp, *mPathBar, XPR_NULL, sPathRect.left, sPathRect.top, sPathRect.Width(), sPathRect.Height(), SWP_NOZORDER);
-        }
-
-        if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd))
-        {
-            ::DeferWindowPos(sHdwp, *mDrivePathBar, XPR_NULL, sDriveBarRect.left, sDriveBarRect.top, sDriveBarRect.Width(), sDriveBarRect.Height(), SWP_NOZORDER);
-        }
-
-        sRect.top = max(sRect.top, sTop);
-    }
-
+    // activate bar
     if (XPR_IS_NOT_NULL(mActivateBar) && XPR_IS_NOT_NULL(mActivateBar->m_hWnd))
     {
         CRect sActivateBarRect(sRect);
@@ -731,44 +585,17 @@ void ExplorerView::recalcLayout(void)
         sRect.top += sActivateBarRect.Height();
     }
 
-    if (XPR_IS_TRUE(sExplorerTabMode))
-    {
-        // status bar
-        if (XPR_IS_NOT_NULL(mStatusBar) && XPR_IS_NOT_NULL(mStatusBar->m_hWnd))
-        {
-            CRect sStatusBarRect(sRect);
-            sStatusBarRect.top = sStatusBarRect.bottom - mStatusBar->getDefaultHeight();
-
-            ::DeferWindowPos(sHdwp, *mStatusBar, XPR_NULL, sStatusBarRect.left, sStatusBarRect.top, sStatusBarRect.Width(), sStatusBarRect.Height(), SWP_NOZORDER);
-
-            sRect.bottom -= sStatusBarRect.Height();
-        }
-
-        // contents window
-        if (XPR_IS_NOT_NULL(mContentsWnd) && XPR_IS_NOT_NULL(mContentsWnd->m_hWnd))
-        {
-            CRect sContentsWndRect(sRect);
-            if (mMarginRect.left > 0) sContentsWndRect.right  = sContentsWndRect.left + mMarginRect.left;
-            if (mMarginRect.top  > 0) sContentsWndRect.bottom = sContentsWndRect.top  + mMarginRect.top;
-
-            ::DeferWindowPos(sHdwp, *mContentsWnd, XPR_NULL, sContentsWndRect.left, sContentsWndRect.top, sContentsWndRect.Width(), sContentsWndRect.Height(), SWP_NOZORDER);
-
-            sRect.left   += mMarginRect.left;
-            sRect.top    += mMarginRect.top;
-            sRect.right  -= mMarginRect.right;
-            sRect.bottom -= mMarginRect.bottom;
-        }
-    }
-
-    // tab based window (such as ExplorerCtrl, SearchResultCtrl and so on...)
+    // tab based window (such as ExplorerPane, SearchResultPane, FileScrapPane and so on...)
     if (XPR_IS_NOT_NULL(mTabCtrl) && XPR_IS_NOT_NULL(mTabCtrl->m_hWnd))
     {
-        TabData *sTabData = (TabData *)mTabCtrl->getTabData(mTabCtrl->getCurTab());
+        xpr_sint_t sCurTab = (xpr_sint_t)mTabCtrl->getCurTab();
+
+        TabData *sTabData = (TabData *)mTabCtrl->getTabData(sCurTab);
         if (XPR_IS_NOT_NULL(sTabData))
         {
-            if (XPR_IS_NOT_NULL(sTabData->mTabWnd))
+            if (XPR_IS_NOT_NULL(sTabData->mTabPane))
             {
-                ::DeferWindowPos(sHdwp, *sTabData->mTabWnd, XPR_NULL, sRect.left, sRect.top, sRect.Width(), sRect.Height(), SWP_NOZORDER);
+                ::DeferWindowPos(sHdwp, *sTabData->mTabPane, XPR_NULL, sRect.left, sRect.top, sRect.Width(), sRect.Height(), SWP_NOZORDER);
             }
         }
     }
@@ -902,20 +729,6 @@ void ExplorerView::OnContextMenu(CWnd *aWnd, CPoint aPoint)
     CRect sWindowRect;
     GetWindowRect(&sWindowRect);
 
-    if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd) && aWnd->m_hWnd == mDrivePathBar->m_hWnd)
-    {
-        BCMenu sMenu;
-        if (sMenu.LoadMenu(IDR_COOLBAR_DRIVEBAR) == XPR_TRUE)
-        {
-            BCMenu *sPopupMenu = (BCMenu *)sMenu.GetSubMenu(0);
-            if (XPR_IS_NOT_NULL(sPopupMenu))
-            {
-                sPopupMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, aPoint, AfxGetMainWnd());
-                return;
-            }
-        }
-    }
-
     // Windows Explorer's background context menu
     if (GetKeyState(VK_CONTROL) < 0)
     {
@@ -1040,29 +853,29 @@ xpr_bool_t ExplorerView::createTabCtrl(void)
     return XPR_TRUE;
 }
 
-xpr_uint_t ExplorerView::generateTabWndId(void)
+xpr_uint_t ExplorerView::generateTabPaneId(void)
 {
-    xpr_uint_t sWndId = mNextExplorerCtrlId;
+    xpr_uint_t sPaneId = mNextTabPaneId;
     CWnd *sChildWnd;
 
     do
     {
-        sChildWnd = GetDlgItem(sWndId);
+        sChildWnd = GetDlgItem(sPaneId);
         if (sChildWnd == XPR_NULL)
         {
-            mNextExplorerCtrlId = sWndId + 1;
+            mNextTabPaneId = sPaneId + 1;
 
-            return sWndId;
+            return sPaneId;
         }
 
-        if (sWndId == kuint16max)
-            sWndId = CTRL_ID_EXPLORER_CTRL;
+        if (sPaneId == kuint16max)
+            sPaneId = CTRL_ID_TAB_PANE;
         else
-            ++sWndId;
+            ++sPaneId;
 
     } while (true);
 
-    return CTRL_ID_EXPLORER_CTRL;
+    return CTRL_ID_TAB_PANE;
 }
 
 xpr_sint_t ExplorerView::newTab(TabType aTabType)
@@ -1104,35 +917,48 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
     if (XPR_IS_NULL(mTabCtrl))
         return -1;
 
-    ExplorerTabData *sExplorerTabData;
-    TabPathDeque::iterator sIterator;
+    if (XPR_IS_NULL(mExplorerPane))
+    {
+        mExplorerPane = new ExplorerPane;
+        if (XPR_IS_NULL(mExplorerPane))
+            return -1;
 
-    sExplorerTabData = new ExplorerTabData;
-    if (XPR_IS_NULL(sExplorerTabData))
+        mExplorerPane->setViewIndex(mViewIndex);
+        mExplorerPane->setObserver(dynamic_cast<TabPaneObserver *>(this));
+
+        xpr_uint_t sExplorerPaneId = generateTabPaneId();
+        if (mExplorerPane->Create(this, sExplorerPaneId, CRect(0,0,0,0)) == XPR_TRUE)
+        {
+            // nothing to do
+        }
+        else
+        {
+            XPR_SAFE_DELETE(mExplorerPane);
+        }
+
+        if (XPR_IS_NULL(mExplorerPane))
+            return -1;
+    }
+
+    TabData *sTabData = new TabData(TabTypeExplorer);
+    if (XPR_IS_NULL(sTabData))
         return -1;
 
     xpr_size_t sInsertedTab = TabCtrl::InvalidTab;
+    xpr_uint_t sExplorerCtrlId = generateTabPaneId();
 
-    ExplorerCtrl *sExplorerCtrl = new ExplorerCtrl;
+    ExplorerCtrl *sExplorerCtrl = dynamic_cast<ExplorerCtrl *>(mExplorerPane->newSubPane(sExplorerCtrlId));
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        sExplorerTabData->mTabWnd = sExplorerCtrl;
-        sExplorerTabData->mStatusPane0[0] = 0;
-        sExplorerTabData->mStatusPane1[0] = 0;
+        sTabData->mTabPane   = mExplorerPane;
+        sTabData->mTabPaneId = sExplorerCtrlId;
 
-        sExplorerCtrl->setObserver(dynamic_cast<ExplorerCtrlObserver *>(this));
-        sExplorerCtrl->setViewIndex(mViewIndex);
-
-        xpr_uint_t sExplorerCtrlId = generateTabWndId();
-        if (sExplorerCtrl->Create(this, sExplorerCtrlId, CRect(0,0,0,0)) == XPR_TRUE)
-        {
-            sInsertedTab = mTabCtrl->addTab(XPR_NULL, -1, sExplorerTabData);
-        }
+        sInsertedTab = mTabCtrl->addTab(XPR_NULL, -1, sTabData);
     }
 
     if (sInsertedTab == TabCtrl::InvalidTab)
     {
-        XPR_SAFE_DELETE(sExplorerTabData);
+        XPR_SAFE_DELETE(sTabData);
 
         return -1;
     }
@@ -1236,35 +1062,37 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
 
 xpr_sint_t ExplorerView::newSearchResultTab(void)
 {
-    SearchResultTabData *sSearchResultTabData = new SearchResultTabData;
-    if (XPR_IS_NULL(sSearchResultTabData))
+    TabData *sTabData = new TabData(TabTypeSearchResult);
+    if (XPR_IS_NULL(sTabData))
         return -1;
 
     xpr_size_t sInsertedTab = TabCtrl::InvalidTab;
 
-    SearchResultPane *sSearchResultPane = new SearchResultPane;
-    if (XPR_IS_NOT_NULL(sSearchResultPane))
+    SearchResultPane *sTabPane = new SearchResultPane;
+    if (XPR_IS_NOT_NULL(sTabPane))
     {
-        sSearchResultTabData->mTabWnd = sSearchResultPane;
+        sTabPane->setViewIndex(mViewIndex);
+        sTabPane->setObserver(dynamic_cast<TabPaneObserver *>(this));
 
-        sSearchResultPane->setObserver(dynamic_cast<SearchResultPaneObserver *>(this));
-
-        xpr_uint_t sSearchResultPaneId = generateTabWndId();
-        if (sSearchResultPane->Create(this, sSearchResultPaneId, CRect(0,0,0,0)) == XPR_TRUE)
+        xpr_uint_t sTabPaneId = generateTabPaneId();
+        if (sTabPane->Create(this, sTabPaneId, CRect(0,0,0,0)) == XPR_TRUE)
         {
+            sTabData->mTabPane   = sTabPane;
+            sTabData->mTabPaneId = sTabPaneId;
+
             const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("search_result.title"));
 
-            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sSearchResultTabData);
+            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
         }
         else
         {
-            XPR_SAFE_DELETE(sSearchResultPane);
+            XPR_SAFE_DELETE(sTabPane);
         }
     }
 
     if (sInsertedTab == TabCtrl::InvalidTab)
     {
-        XPR_SAFE_DELETE(sSearchResultTabData);
+        XPR_SAFE_DELETE(sTabData);
 
         return -1;
     }
@@ -1274,35 +1102,37 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
 
 xpr_sint_t ExplorerView::newFileScrapTab(void)
 {
-    FileScrapTabData *sFileScrapTabData = new FileScrapTabData;
-    if (XPR_IS_NULL(sFileScrapTabData))
+    TabData *sTabData = new TabData(TabTypeFileScrap);
+    if (XPR_IS_NULL(sTabData))
         return -1;
 
     xpr_size_t sInsertedTab = TabCtrl::InvalidTab;
 
-    FileScrapPane *sFileScrapPane = new FileScrapPane;
-    if (XPR_IS_NOT_NULL(sFileScrapPane))
+    FileScrapPane *sTabPane = new FileScrapPane;
+    if (XPR_IS_NOT_NULL(sTabPane))
     {
-        sFileScrapTabData->mTabWnd = sFileScrapPane;
+        sTabPane->setViewIndex(mViewIndex);
+        sTabPane->setObserver(dynamic_cast<TabPaneObserver *>(this));
 
-        sFileScrapPane->setObserver(dynamic_cast<FileScrapPaneObserver *>(this));
-
-        xpr_uint_t sFileScrapPaneId = generateTabWndId();
-        if (sFileScrapPane->Create(this, sFileScrapPaneId, CRect(0,0,0,0)) == XPR_TRUE)
+        xpr_uint_t sTabPaneId = generateTabPaneId();
+        if (sTabPane->Create(this, sTabPaneId, CRect(0,0,0,0)) == XPR_TRUE)
         {
+            sTabData->mTabPane   = sTabPane;
+            sTabData->mTabPaneId = sTabPaneId;
+
             const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("file_scrap.title"));
 
-            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sFileScrapTabData);
+            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
         }
         else
         {
-            XPR_SAFE_DELETE(sFileScrapPane);
+            XPR_SAFE_DELETE(sTabPane);
         }
     }
 
     if (sInsertedTab == TabCtrl::InvalidTab)
     {
-        XPR_SAFE_DELETE(sFileScrapTabData);
+        XPR_SAFE_DELETE(sTabData);
 
         return -1;
     }
@@ -1328,25 +1158,31 @@ xpr_sint_t ExplorerView::duplicateTab(xpr_bool_t aOnCursor)
         sTab = mTabCtrl->getCurTab();
     }
 
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sExplorerTabData))
+    TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
+    if (XPR_IS_NULL(sTabData))
         return -1;
 
-    ExplorerCtrl *sExplorerCtrl = sExplorerTabData->getExplorerCtrl();
-    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    if (sTabData->canDuplicatePane() == XPR_FALSE)
+        return -1;
+
+    if (sTabData->isTabType(TabTypeExplorer) == XPR_TRUE)
     {
-        LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-        if (XPR_IS_NOT_NULL(sTvItemData))
+        ExplorerCtrl *sExplorerCtrl = dynamic_cast<ExplorerCtrl *>(sTabData->getSubPaneWnd());
+        if (XPR_IS_NOT_NULL(sExplorerCtrl))
         {
-            std::tstring sTabPath;
-            fxb::Pidl2Path(sTvItemData->mFullPidl, sTabPath);
-
-            xpr_sint_t sNewTab = newTab(sTabPath);
-            if (sNewTab >= 0)
+            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+            if (XPR_IS_NOT_NULL(sTvItemData))
             {
-                mTabCtrl->setCurTab(sNewTab);
+                std::tstring sTabPath;
+                fxb::Pidl2Path(sTvItemData->mFullPidl, sTabPath);
 
-                return sNewTab;
+                xpr_sint_t sNewTab = newTab(sTabPath);
+                if (sNewTab >= 0)
+                {
+                    mTabCtrl->setCurTab(sNewTab);
+
+                    return sNewTab;
+                }
             }
         }
     }
@@ -1372,8 +1208,11 @@ xpr_bool_t ExplorerView::canDuplicateTab(xpr_bool_t aOnCursor) const
         sTab = mTabCtrl->getCurTab();
     }
 
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sExplorerTabData))
+    TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
+    if (XPR_IS_NULL(sTabData))
+        return XPR_FALSE;
+
+    if (sTabData->canDuplicatePane() == XPR_FALSE)
         return XPR_FALSE;
 
     return XPR_TRUE;
@@ -1477,7 +1316,7 @@ xpr_bool_t ExplorerView::setCurTabLastActivedExplorerCtrl(void)
     if (XPR_IS_NULL(mTabCtrl))
         return XPR_FALSE;
 
-    xpr_sint_t sTab = findTabWndId(mLastActivedExplorerCtrlId);
+    xpr_sint_t sTab = findTab(mLastActivedExplorerPaneId);
     if (sTab < 0)
         return XPR_FALSE;
 
@@ -1546,7 +1385,7 @@ void ExplorerView::lastTab(void)
     mTabCtrl->setCurTab(sTab);
 }
 
-xpr_sint_t ExplorerView::findTabWndId(xpr_uint_t aTabWndId) const
+xpr_sint_t ExplorerView::findTab(xpr_uint_t aTabPaneId) const
 {
     if (XPR_IS_NULL(mTabCtrl))
         return -1;
@@ -1560,12 +1399,9 @@ xpr_sint_t ExplorerView::findTabWndId(xpr_uint_t aTabWndId) const
         sTabData = (TabData *)mTabCtrl->getTabData(i);
         if (XPR_IS_NOT_NULL(sTabData))
         {
-            if (XPR_IS_NOT_NULL(sTabData->mTabWnd))
+            if (sTabData->mTabPaneId == aTabPaneId)
             {
-                if (sTabData->mTabWnd->GetDlgCtrlID() == aTabWndId)
-                {
-                    return (xpr_sint_t)i;
-                }
+                return (xpr_sint_t)i;
             }
         }
     }
@@ -1587,7 +1423,7 @@ xpr_sint_t ExplorerView::findTabFirstExplorerCtrl(void) const
         sTabData = (TabData *)mTabCtrl->getTabData(i);
         if (XPR_IS_NOT_NULL(sTabData))
         {
-            if (sTabData->mTabType == TabTypeExplorer)
+            if (sTabData->isTabType(TabTypeExplorer) == XPR_TRUE)
             {
                 return (xpr_sint_t)i;
             }
@@ -1620,7 +1456,7 @@ xpr_sint_t ExplorerView::getTabOnCursor(void) const
     return (xpr_sint_t)sTab;
 }
 
-CWnd *ExplorerView::getTabWnd(xpr_sint_t aTab) const
+TabPane *ExplorerView::getTabPane(xpr_sint_t aTab) const
 {
     if (XPR_IS_NULL(mTabCtrl))
         return XPR_NULL;
@@ -1633,10 +1469,10 @@ CWnd *ExplorerView::getTabWnd(xpr_sint_t aTab) const
     if (XPR_IS_NULL(sTabData))
         return XPR_NULL;
 
-    return sTabData->mTabWnd;
+    return sTabData->mTabPane;
 }
 
-xpr_uint_t ExplorerView::getTabWndId(xpr_sint_t aTab) const
+xpr_uint_t ExplorerView::getTabPaneId(xpr_sint_t aTab) const
 {
     if (XPR_IS_NULL(mTabCtrl))
         return 0;
@@ -1649,10 +1485,10 @@ xpr_uint_t ExplorerView::getTabWndId(xpr_sint_t aTab) const
     if (XPR_IS_NULL(sTabData))
         return 0;
 
-    if (XPR_IS_NULL(sTabData->mTabWnd))
+    if (XPR_IS_NULL(sTabData->mTabPane))
         return 0;
 
-    return sTabData->mTabWnd->GetDlgCtrlID();
+    return sTabData->mTabPaneId;
 }
 
 xpr_bool_t ExplorerView::isExplorerTabMode(void) const
@@ -1663,7 +1499,7 @@ xpr_bool_t ExplorerView::isExplorerTabMode(void) const
     xpr_sint_t sTab = (xpr_sint_t)mTabCtrl->getCurTab();
 
     TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
-    if (XPR_IS_NOT_NULL(sTabData) && sTabData->mTabType == TabTypeExplorer)
+    if (XPR_IS_NOT_NULL(sTabData) && sTabData->isTabType(TabTypeExplorer) == XPR_TRUE)
         return XPR_TRUE;
 
     return XPR_FALSE;
@@ -1701,20 +1537,34 @@ FolderCtrl *ExplorerView::getFolderCtrl(void) const
     return sFolderPane->getFolderCtrl();
 }
 
+AddressBar *ExplorerView::getAddressBar(void) const
+{
+    ExplorerPane *sExplorerPane = getExplorerPane();
+    if (XPR_IS_NULL(sExplorerPane))
+        return XPR_NULL;
+
+    return sExplorerPane->getAddressBar();
+}
+
+ExplorerPane *ExplorerView::getExplorerPane(void) const
+{
+    return mExplorerPane;
+}
+
 ExplorerCtrl *ExplorerView::getExplorerCtrl(xpr_sint_t aTab) const
 {
-    if (XPR_IS_NULL(mTabCtrl))
+    if (XPR_IS_NULL(mTabCtrl) || XPR_IS_NULL(mExplorerPane))
         return XPR_NULL;
 
     xpr_sint_t sTab = aTab;
     if (sTab == -1)
         sTab = (xpr_sint_t)mTabCtrl->getCurTab();
 
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sExplorerTabData))
+    TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
+    if (XPR_IS_NULL(sTabData))
         return XPR_NULL;
 
-    return sExplorerTabData->getExplorerCtrl();
+    return dynamic_cast<ExplorerCtrl *>(sTabData->getSubPaneWnd());
 }
 
 SearchResultCtrl *ExplorerView::getSearchResultCtrl(xpr_sint_t aTab) const
@@ -1726,11 +1576,11 @@ SearchResultCtrl *ExplorerView::getSearchResultCtrl(xpr_sint_t aTab) const
     if (sTab == -1)
         sTab = (xpr_sint_t)mTabCtrl->getCurTab();
 
-    SearchResultTabData *sSearchResultTabData = dynamic_cast<SearchResultTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sSearchResultTabData))
+    TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
+    if (XPR_IS_NULL(sTabData))
         return XPR_NULL;
 
-    return sSearchResultTabData->getSearchResultPane()->getSearchResultCtrl();
+    return dynamic_cast<SearchResultCtrl *>(sTabData->getSubPaneWnd());
 }
 
 FileScrapPane *ExplorerView::getFileScrapPane(xpr_sint_t aTab) const
@@ -1742,21 +1592,11 @@ FileScrapPane *ExplorerView::getFileScrapPane(xpr_sint_t aTab) const
     if (sTab == -1)
         sTab = (xpr_sint_t)mTabCtrl->getCurTab();
 
-    FileScrapTabData *sFileScrapTabData = dynamic_cast<FileScrapTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sFileScrapTabData))
+    TabData *sTabData = (TabData *)mTabCtrl->getTabData(sTab);
+    if (XPR_IS_NULL(sTabData))
         return XPR_NULL;
 
-    return sFileScrapTabData->getFileScrapPane();
-}
-
-AddressBar *ExplorerView::getAddressBar(void) const
-{
-    return mAddressBar;
-}
-
-PathBar *ExplorerView::getPathBar(void) const
-{
-    return mPathBar;
+    return dynamic_cast<FileScrapPane *>(sTabData->mTabPane);
 }
 
 xpr_bool_t ExplorerView::visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoading, xpr_bool_t aSaveFolderPaneVisible)
@@ -1887,144 +1727,30 @@ void ExplorerView::setLeftFolderPane(xpr_bool_t aLeft)
     }
 }
 
-void ExplorerView::visibleAddressBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
-{
-    if (XPR_IS_TRUE(aVisible))
-    {
-        createAddressBar();
-
-        ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        {
-            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-            if (XPR_IS_NOT_NULL(sTvItemData))
-                mAddressBar->explore(sTvItemData->mFullPidl);
-        }
-    }
-    else
-    {
-        destroyAddressBar();
-    }
-
-    gOpt->mAddressBar[mViewIndex] = aVisible;
-
-    if (XPR_IS_FALSE(aLoading))
-    {
-        recalcLayout();
-        RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
-    }
-}
-
-xpr_bool_t ExplorerView::isVisibleAddressBar(void) const
-{
-    return gOpt->mAddressBar[mViewIndex];
-}
-
-void ExplorerView::createAddressBar(void)
-{
-    if (XPR_IS_NOT_NULL(mAddressBar))
-        return;
-
-    mAddressBar = new AddressBar;
-    if (XPR_IS_NOT_NULL(mAddressBar))
-    {
-        mAddressBar->setObserver(dynamic_cast<AddressBarObserver *>(this));
-        mAddressBar->Create(this, CTRL_ID_ADDRESS_BAR, CRect(0,0,0,300));
-        mAddressBar->setSystemImageList(&fxb::SysImgListMgr::instance().mSysImgList16);
-        mAddressBar->setCustomFont(gOpt->mCustomFontText);
-    }
-}
-
-void ExplorerView::destroyAddressBar(void)
-{
-    if (XPR_IS_NULL(mAddressBar))
-        return;
-
-    DESTROY_DELETE(mAddressBar);
-}
-
-void ExplorerView::createPathBar(void)
-{
-    if (XPR_IS_NOT_NULL(mPathBar))
-        return;
-
-    mPathBar = new PathBar;
-    if (XPR_IS_NOT_NULL(mPathBar))
-    {
-        mPathBar->setObserver(dynamic_cast<PathBarObserver *>(this));
-
-        if (mPathBar->Create(this, CTRL_ID_PATH_BAR, CRect(0,0,0,0)) == XPR_FALSE)
-        {
-            XPR_SAFE_DELETE(mPathBar);
-        }
-
-        mPathBar->setMode(gOpt->mPathBarRealPath);
-    }
-}
-
-void ExplorerView::destroyPathBar(void)
-{
-    if (XPR_IS_NULL(mPathBar))
-        return;
-
-    DESTROY_DELETE(mPathBar);
-}
-
-void ExplorerView::visiblePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
-{
-    if (XPR_IS_TRUE(aVisible))
-    {
-        createPathBar();
-
-        ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        {
-            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-            if (XPR_IS_NOT_NULL(sTvItemData))
-                mPathBar->setPath(sTvItemData->mFullPidl);
-        }
-    }
-    else
-    {
-        destroyPathBar();
-    }
-
-    gOpt->mPathBar[mViewIndex] = aVisible;
-
-    if (XPR_IS_FALSE(aLoading))
-    {
-        recalcLayout();
-        RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
-    }
-}
-
-xpr_bool_t ExplorerView::isVisiblePathBar(void) const
-{
-    return gOpt->mPathBar[mViewIndex];
-}
-
-void ExplorerView::setPathBarMode(xpr_bool_t aRealPath)
-{
-    if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
-        mPathBar->setMode(aRealPath);
-}
-
 ActivateBar *ExplorerView::getActivateBar(void) const
 {
     return mActivateBar;
 }
 
-void ExplorerView::createActivateBar(void)
+xpr_bool_t ExplorerView::createActivateBar(void)
 {
     if (XPR_IS_NOT_NULL(mActivateBar))
-        return;
+        return XPR_TRUE;
 
     mActivateBar = new ActivateBar;
     if (XPR_IS_NOT_NULL(mActivateBar))
     {
-        if (mActivateBar->Create(this, CTRL_ID_ACTIVATE_BAR, CRect(0,0,0,0)) == XPR_FALSE)
-            return;
+        if (mActivateBar->Create(this, CTRL_ID_ACTIVATE_BAR, CRect(0,0,0,0)) == XPR_TRUE)
+        {
+            mActivateBar->setActivateBackColor(gOpt->mActiveViewColor);
+        }
+        else
+        {
+            XPR_SAFE_DELETE(mActivateBar);
+        }
     }
+
+    return XPR_IS_NOT_NULL(mActivateBar) ? XPR_TRUE : XPR_FALSE;
 }
 
 void ExplorerView::destroyActivateBar(void)
@@ -2065,286 +1791,32 @@ xpr_bool_t ExplorerView::isVisibleActivateBar(void) const
     return gOpt->mActivateBar[mViewIndex];
 }
 
-void ExplorerView::createDrivePathBar(void)
+// TODO
+StatusBar *ExplorerView::getStatusBar(void) const
 {
-    if (XPR_IS_NOT_NULL(mDrivePathBar))
-        return;
+    TabPane *sTabPane = getTabPane();
+    if (XPR_IS_NULL(sTabPane))
+        return XPR_NULL;
 
-    mDrivePathBar = new DrivePathBar;
-    if (XPR_IS_NOT_NULL(mDrivePathBar))
-    {
-        if (mDrivePathBar->CreateEx(this) == XPR_FALSE)
-            return;
-
-        mDrivePathBar->createDriveBar();
-    }
+    return sTabPane->getStatusBar();
 }
 
-void ExplorerView::destroyDrivePathBar(void)
+// TODO
+const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
 {
-    if (XPR_IS_NULL(mDrivePathBar))
-        return;
+    TabPane *sTabPane = getTabPane();
+    if (XPR_IS_NULL(sTabPane))
+        return XPR_NULL;
 
-    mDrivePathBar->destroyDriveBar();
-    DESTROY_DELETE(mDrivePathBar);
-}
-
-DrivePathBar *ExplorerView::getDrivePathBar(void) const
-{
-    return mDrivePathBar;
-}
-
-void ExplorerView::setDrivePathBarLeft(xpr_bool_t aLeft)
-{
-    recalcLayout();
-}
-
-void ExplorerView::setDrivePathBarShortText(xpr_bool_t aShortText)
-{
-    if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd))
-    {
-        mDrivePathBar->setShortText(aShortText);
-        recalcLayout();
-    }
-}
-
-void ExplorerView::visibleDrivePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
-{
-    if (XPR_IS_TRUE(aVisible))
-    {
-        createDrivePathBar();
-    }
-    else
-    {
-        destroyDrivePathBar();
-    }
-
-    mIsDrivePathBar = aVisible;
-
-    if (XPR_IS_FALSE(aLoading))
-    {
-        recalcLayout();
-        RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
-    }
-}
-
-void ExplorerView::createContentsWnd(void)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        return;
-
-    mContentsWnd = new ContentsWnd;
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-    {
-        mContentsWnd->Create(this, CTRL_ID_CONTENTS_WND, CRect(0,0,0,0));
-    }
-}
-
-void ExplorerView::destroyContentsWnd(void)
-{
-    DESTROY_DELETE(mContentsWnd);
-}
-
-xpr_bool_t ExplorerView::isVisibleContentsWnd(void) const
-{
-    return (mContentsWnd != XPR_NULL);
-}
-
-void ExplorerView::setContentsStyle(xpr_sint_t aContentsStyle)
-{
-    switch (aContentsStyle)
-    {
-    case CONTENTS_EXPLORER:
-        {
-            createContentsWnd();
-
-            // default contents
-            mMarginRect = CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0);
-
-            ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-                sExplorerCtrl->resetStatus();
-
-            setBookmarkColor(gOpt->mContentsBookmarkColor);
-            updateBookmark();
-            setBookmarkPopup(gOpt->mContentsTooltip);
-            enableBookmark(gOpt->mContentsBookmark);
-
-            break;
-        }
-
-    case CONTENTS_BASIC:
-        {
-            createContentsWnd();
-
-            // basic contents
-            mMarginRect = CRect(0, CONTENTS_BASIC_STYLE_HEIGHT, 0, 0);
-
-            updateBookmark();
-            setBookmarkPopup(XPR_FALSE);
-            enableBookmark(XPR_FALSE);
-
-            break;
-        }
-
-    case CONTENTS_NONE:
-    default:
-        {
-            destroyContentsWnd();
-
-            mMarginRect = CRect(0, 0, 0, 0);
-
-            break;
-        }
-    }
-}
-
-void ExplorerView::setContentsFolder(LPTVITEMDATA aTvItemData)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setContentsFolder(aTvItemData);
-}
-
-void ExplorerView::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setContentsNormal(aTvItemData, aUpdate);
-}
-
-void ExplorerView::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
-                                         const xpr_tchar_t *aName,
-                                         const xpr_tchar_t *aType,
-                                         const xpr_tchar_t *aDate,
-                                         const xpr_tchar_t *aSize,
-                                         const xpr_tchar_t *aAttr)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setContentsSingleItem(aLvItemData, aName, aType, aDate, aSize, aAttr);
-}
-
-void ExplorerView::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSize, const xpr_tchar_t *aNames)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setContentsMultiItem(aCount, aSize, aNames);
-}
-
-void ExplorerView::setBookmarkPopup(xpr_bool_t aPopup)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setBookmarkPopup(aPopup);
-}
-
-void ExplorerView::setBookmarkColor(COLORREF aBookmarkColor)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setBookmarkColor(aBookmarkColor);
-}
-
-void ExplorerView::updateBookmark(xpr_bool_t aUpdatePosition)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-    {
-        mContentsWnd->updateBookmark();
-
-        if (XPR_IS_TRUE(aUpdatePosition))
-        {
-            mContentsWnd->updateBookmarkPosition();
-            mContentsWnd->enableBookmark(mContentsWnd->isEnableBookmark());
-        }
-    }
-}
-
-void ExplorerView::enableBookmark(xpr_bool_t aEnable)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->enableBookmark(aEnable);
-}
-
-xpr_bool_t ExplorerView::isEnableBookmark(void) const
-{
-    if (XPR_IS_NULL(mContentsWnd))
-        return XPR_FALSE;
-
-    return mContentsWnd->isEnableBookmark();
-}
-
-xpr_bool_t ExplorerView::isVisibleBookmark(void) const
-{
-    if (XPR_IS_NULL(mContentsWnd))
-        return XPR_FALSE;
-
-    return mContentsWnd->isVisibleBookmark();
-}
-
-void ExplorerView::invalidateContentsWnd(void)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->Invalidate(XPR_TRUE);
+    return sTabPane->getStatusPaneText(aIndex);
 }
 
 void ExplorerView::setDragContents(xpr_bool_t aDragContents)
 {
     mDropTarget.setDragContents(aDragContents);
-}
 
-void ExplorerView::createStatusBar(void)
-{
-    if (XPR_IS_NOT_NULL(mStatusBar))
-        return;
-
-    mStatusBar = new StatusBarEx;
-    if (XPR_IS_NOT_NULL(mStatusBar))
-    {
-        mStatusBar->setObserver(dynamic_cast<StatusBarObserver *>(this));
-
-        if (mStatusBar->Create(this, CTRL_ID_STATUS_BAR, CRect(0,0,0,0)) == XPR_FALSE)
-        {
-            XPR_SAFE_DELETE(mStatusBar);
-        }
-    }
-}
-
-void ExplorerView::destroyStatusBar(void)
-{
-    if (XPR_IS_NULL(mStatusBar))
-        return;
-
-    DESTROY_DELETE(mStatusBar);
-}
-
-void ExplorerView::visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
-{
-    if (XPR_IS_TRUE(aVisible))
-    {
-        createStatusBar();
-    }
-    else
-    {
-        destroyStatusBar();
-    }
-
-    gOpt->mStatusBar[mViewIndex] = aVisible;
-
-    if (XPR_IS_TRUE(aVisible))
-    {
-        updateStatusBar();
-    }
-
-    if (XPR_IS_FALSE(aLoading))
-    {
-        recalcLayout();
-        RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
-    }
-}
-
-xpr_bool_t ExplorerView::isVisibleStatusBar(void) const
-{
-    return gOpt->mStatusBar[mViewIndex];
-}
-
-StatusBar *ExplorerView::getStatusBar(void) const
-{
-    return mStatusBar;
+    if (XPR_IS_NOT_NULL(mExplorerPane))
+        mExplorerPane->setDragContents(aDragContents);
 }
 
 void ExplorerView::OnUpdate(CView *aSender, LPARAM aHint, CObject *aHintObject)
@@ -2358,10 +1830,10 @@ void ExplorerView::OnSetFocus(CWnd *aOldWnd)
     xpr_sint_t sCurTab = (xpr_sint_t)mTabCtrl->getCurTab();
     if (sCurTab >= 0)
     {
-        CWnd *sTabWnd = getTabWnd(sCurTab);
-        if (XPR_IS_NOT_NULL(sTabWnd))
+        CWnd *sTabPane = getTabPane(sCurTab);
+        if (XPR_IS_NOT_NULL(sTabPane))
         {
-            sTabWnd->SetFocus();
+            sTabPane->SetFocus();
         }
     }
 }
@@ -2425,19 +1897,26 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
     TabData *sOldTabData = (TabData *)aTabCtrl.getTabData(aOldTab);
     if (XPR_IS_NOT_NULL(sOldTabData))
     {
-        if (XPR_IS_NOT_NULL(sOldTabData->mTabWnd))
+        if (XPR_IS_NOT_NULL(sOldTabData->mTabPane))
         {
-            sOldTabData->mTabWnd->ShowWindow(SW_HIDE);
+            sOldTabData->mTabPane->ShowWindow(SW_HIDE);
         }
     }
 
     TabData *sNewTabData = (TabData *)aTabCtrl.getTabData(aNewTab);
     if (XPR_IS_NOT_NULL(sNewTabData))
     {
-        ExplorerTabData *sNewExplorerTabData = dynamic_cast<ExplorerTabData *>(sNewTabData);
-        if (XPR_IS_NOT_NULL(sNewExplorerTabData))
+        if (XPR_IS_NOT_NULL(sNewTabData->mTabPane))
         {
-            ExplorerCtrl *sNewExplorerCtrl = sNewExplorerTabData->getExplorerCtrl();
+            if (sNewTabData->mTabPane->isSharedPane() == XPR_TRUE)
+            {
+                sNewTabData->mTabPane->setCurSubPane(sNewTabData->mTabPaneId);
+            }
+        }
+
+        if (sNewTabData->isTabType(TabTypeExplorer) == XPR_TRUE)
+        {
+            ExplorerCtrl *sNewExplorerCtrl = dynamic_cast<ExplorerCtrl *>(sNewTabData->getSubPaneWnd());
             if (XPR_IS_NOT_NULL(sNewExplorerCtrl))
             {
                 LPTVITEMDATA sTvItemData = sNewExplorerCtrl->getFolderData();
@@ -2449,30 +1928,6 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                     {
                         sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
                     }
-
-                    // update address bar
-                    AddressBar *sAddressBar = getAddressBar();
-                    if (XPR_IS_NOT_NULL(sAddressBar) && XPR_IS_NOT_NULL(sAddressBar->m_hWnd))
-                    {
-                        sAddressBar->explore(sTvItemData->mFullPidl);
-                    }
-
-                    // update path bar
-                    PathBar *sPathBar = getPathBar();
-                    if (XPR_IS_NOT_NULL(sPathBar) && XPR_IS_NOT_NULL(sPathBar->m_hWnd))
-                    {
-                        sPathBar->setPath(sTvItemData->mFullPidl);
-                    }
-
-                    // update contents
-                    if (XPR_IS_NOT_NULL(mContentsWnd) && XPR_IS_NOT_NULL(mContentsWnd->m_hWnd))
-                    {
-                        setContentsFolder(sTvItemData);
-                        setContentsNormal(sTvItemData, XPR_TRUE);
-                    }
-
-                    // update status bar
-                    updateStatusBar();
 
                     // update tab text
                     std::tstring sName;
@@ -2486,53 +1941,17 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                         gFrame->setMainTitle(sTvItemData->mShellFolder, sTvItemData->mPidl);
                     }
 
-                    mLastActivedExplorerCtrlId = sNewExplorerCtrl->GetDlgCtrlID();
+                    mLastActivedExplorerPaneId = sNewTabData->mTabPaneId;
                 }
             }
         }
 
-        if (XPR_IS_NOT_NULL(sNewTabData->mTabWnd))
+        if (XPR_IS_NOT_NULL(sNewTabData->mTabPane))
         {
-            sNewTabData->mTabWnd->ShowWindow(SW_SHOW);
+            sNewTabData->mTabPane->ShowWindow(SW_SHOW);
 
             if (XPR_IS_FALSE(mInit))
-                sNewTabData->mTabWnd->SetFocus();
-        }
-    }
-
-    // tab mode change (explorer tab mode <-> non-explorer tab mode)
-    xpr_bool_t sExplorerTabMode = isExplorerTabMode();
-
-    CWnd *sTabModeChangeWnds[] = {
-        mContentsWnd,
-        mAddressBar,
-        mPathBar,
-        mDrivePathBar,
-        mStatusBar
-    };
-
-    xpr_size_t i;
-    xpr_size_t sCount;
-    CWnd *sWnd;
-
-    sCount = XPR_COUNT_OF(sTabModeChangeWnds);
-    for (i = 0; i < sCount; ++i)
-    {
-        sWnd = sTabModeChangeWnds[i];
-
-        if (XPR_IS_TRUE(sExplorerTabMode))
-        {
-            if (XPR_IS_NOT_NULL(sWnd) && XPR_IS_NOT_NULL(sWnd->m_hWnd) && sWnd->IsWindowVisible() == XPR_FALSE)
-            {
-                sWnd->ShowWindow(SW_SHOW);
-            }
-        }
-        else
-        {
-            if (XPR_IS_NOT_NULL(sWnd) && XPR_IS_NOT_NULL(sWnd->m_hWnd) && sWnd->IsWindowVisible() == XPR_TRUE)
-            {
-                sWnd->ShowWindow(SW_HIDE);
-            }
+                sNewTabData->mTabPane->SetFocus();
         }
     }
 
@@ -2711,14 +2130,13 @@ xpr_bool_t ExplorerView::onExplore(FolderPane &aFolderPane, LPITEMIDLIST aFullPi
 
 void ExplorerView::onUpdateStatus(FolderPane &aFolderPane)
 {
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
+    ExplorerPane *sExplorerPane = getExplorerPane();
+    if (XPR_IS_NULL(sExplorerPane))
         return;
 
-    xpr_uint_t sExplorerCtrlId = sExplorerCtrl->GetDlgCtrlID();
-    xpr_sint_t sTab = findTabWndId(sExplorerCtrlId);
+    xpr_uint_t sTabPaneId = getTabPaneId(-1);
 
-    updateStatusBar(sTab);
+    sExplorerPane->updateStatusBar(sTabPaneId);
 }
 
 void ExplorerView::onRename(FolderPane &aFolderPane, HTREEITEM aTreeItem)
@@ -2832,90 +2250,27 @@ void ExplorerView::onMoveFocus(FolderPane &aFolderPane, xpr_sint_t aCurWnd)
 }
 
 //
-// from ExplorerCtrlObserver
+// from TabPaneObserver
 //
-xpr_bool_t ExplorerView::onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
+void ExplorerView::onCreated(TabPane &aTabPane)
 {
-    if (XPR_IS_NULL(aFullPidl))
-        return XPR_FALSE;
-
-    if (XPR_IS_FALSE(aUpdateBuddy))
-        return XPR_TRUE;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return XPR_TRUE;
-
-    xpr_bool_t sResult = XPR_FALSE;
-
-    LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(aFullPidl);
-    if (XPR_IS_NOT_NULL(sFullPidl))
+    if (aTabPane.isTabType(TabTypeFileScrap) == XPR_TRUE)
     {
-        sResult = sExplorerCtrl->explore(sFullPidl);
-        if (XPR_IS_FALSE(sResult))
-        {
-            COM_FREE(sFullPidl);
-        }
-    }
+        FileScrapPane *sFileScrapPane = dynamic_cast<FileScrapPane *>(&aTabPane);
 
-    return sResult;
+        gFrame->setFileScrapPane(sFileScrapPane);
+    }
 }
 
-LPITEMIDLIST ExplorerView::onFailExec(AddressBar &aAddressBar, const xpr_tchar_t *aExecPath)
+void ExplorerView::onDestroyed(TabPane &aTabPane)
 {
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return XPR_NULL;
-
-    xpr_sint_t sIndex = sExplorerCtrl->findItemName(aExecPath);
-    if (sIndex < 0)
-        sIndex = sExplorerCtrl->findItemFileName(aExecPath);
-
-    if (sIndex > 0)
+    if (aTabPane.isTabType(TabTypeFileScrap) == XPR_TRUE)
     {
-        LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-        LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sExplorerCtrl->GetItemData(sIndex);
-
-        if (XPR_IS_NOT_NULL(sLvItemData))
-        {
-            return fxb::ConcatPidls(sTvItemData->mFullPidl, sLvItemData->mPidl);
-        }
+        gFrame->setFileScrapPane(XPR_NULL);
     }
-
-    return XPR_NULL;
 }
 
-void ExplorerView::onMoveFocus(AddressBar &aAddressBar)
-{
-    if (XPR_IS_NOT_NULL(mObserver))
-        mObserver->onMoveFocus(*this, 1);
-}
-
-xpr_bool_t ExplorerView::onExplore(PathBar &aPathBar, LPITEMIDLIST aFullPidl)
-{
-    if (XPR_IS_NULL(aFullPidl))
-        return XPR_FALSE;
-
-    xpr_bool_t sResult = XPR_FALSE;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NOT_NULL(sExplorerCtrl))
-    {
-        LPITEMIDLIST sFullPidl = fxb::CopyItemIDList(aFullPidl);
-        if (XPR_IS_NOT_NULL(sFullPidl))
-        {
-            sResult = sExplorerCtrl->explore(sFullPidl);
-            if (XPR_IS_FALSE(sResult))
-            {
-                COM_FREE(sFullPidl);
-            }
-        }
-    }
-
-    return sResult;
-}
-
-void ExplorerView::onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy, const xpr_tchar_t *aCurPath)
+void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
 {
     if (XPR_IS_NULL(aFullPidl))
         return;
@@ -2923,14 +2278,8 @@ void ExplorerView::onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl
     if (XPR_IS_NULL(mTabCtrl))
         return;
 
-    LPTVITEMDATA sTvItemData = aExplorerCtrl.getFolderData();
-    if (XPR_IS_NULL(sTvItemData))
-        return;
-
-    xpr_uint_t sExplorerCtrlId = aExplorerCtrl.GetDlgCtrlID();
-
     xpr_size_t sCurTab = mTabCtrl->getCurTab();
-    xpr_sint_t sTab = findTabWndId(sExplorerCtrlId);
+    xpr_sint_t sTab = findTab(aId);
 
     if (sTab != -1 && sTab == sCurTab)
     {
@@ -2940,29 +2289,12 @@ void ExplorerView::onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl
         {
             sFolderCtrl->searchSel(aFullPidl);
         }
-
-        // update address bar
-        AddressBar *sAddressBar = getAddressBar();
-        if (XPR_IS_NOT_NULL(sAddressBar) && XPR_IS_NOT_NULL(sAddressBar->m_hWnd))
-            sAddressBar->explore(sTvItemData->mFullPidl);
-
-        // update path bar
-        PathBar *sPathBar = getPathBar();
-        if (XPR_IS_NOT_NULL(sPathBar) && XPR_IS_NOT_NULL(sPathBar->m_hWnd))
-            sPathBar->setPath(sTvItemData->mFullPidl);
-
-        // update contents
-        if (isVisibleContentsWnd() == XPR_TRUE)
-        {
-            setContentsFolder(sTvItemData);
-            setContentsNormal(sTvItemData, XPR_TRUE);
-        }
     }
 
     if (sTab >= 0)
     {
         std::tstring sName;
-        fxb::GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
+        fxb::GetName(aFullPidl, SHGDN_INFOLDER, sName);
 
         mTabCtrl->setTabText(sTab, sName.c_str());
     }
@@ -2970,776 +2302,29 @@ void ExplorerView::onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl
     if (gFrame->getActiveView() == mViewIndex)
     {
         // update main title
-        gFrame->setMainTitle(sTvItemData->mShellFolder, sTvItemData->mPidl);
-    }
-
-    // update status bar
-    updateStatusBar(sTab);
-    //SetStatusBarDrive();
-}
-
-void ExplorerView::onUpdateStatus(ExplorerCtrl &aExplorerCtrl, xpr_size_t aRealSelCount)
-{
-    if (aRealSelCount == 0)
-    {
-        OnExpSelNormal();
-    }
-    else if (aRealSelCount == 1)
-    {
-        OnExpSelSingleItem();
-    }
-    else if (aRealSelCount > 1)
-    {
-        OnExpSelMultiItem();
+        gFrame->setMainTitle(aFullPidl);
     }
 }
 
-void ExplorerView::onUpdateFreeSize(ExplorerCtrl &aExplorerCtrl)
-{
-    xpr_uint_t sExplorerCtrlId = aExplorerCtrl.GetDlgCtrlID();
-    xpr_sint_t sTab = findTabWndId(sExplorerCtrlId);
-
-    updateStatusBar(sTab);
-}
-
-void ExplorerView::onSetFocus(ExplorerCtrl &aExplorerCtrl)
+void ExplorerView::onSetFocus(TabPane &aTabPane)
 {
     gFrame->setActiveView(mViewIndex);
 }
 
-void ExplorerView::onKillFocus(ExplorerCtrl &aExplorerCtrl)
-{
-}
-
-void ExplorerView::onRename(ExplorerCtrl &aExplorerCtrl)
-{
-    gFrame->executeCommand(ID_FILE_RENAME);
-}
-
-void ExplorerView::onContextMenuDelete(ExplorerCtrl &aExplorerCtrl)
-{
-    gFrame->executeCommand(ID_FILE_DELETE);
-}
-
-void ExplorerView::onContextMenuRename(ExplorerCtrl &aExplorerCtrl)
-{
-    gFrame->executeCommand(ID_FILE_RENAME);
-}
-
-void ExplorerView::onContextMenuPaste(ExplorerCtrl &aExplorerCtrl)
-{
-    cmd::CommandParameters sParameters;
-    sParameters.set(cmd::CommandParameterIdIsSelectedItem, (void *)XPR_TRUE);
-
-    gFrame->executeCommand(ID_EDIT_PASTE, &aExplorerCtrl, &sParameters);
-}
-
-void ExplorerView::onGoDrive(ExplorerCtrl &aExplorerCtrl)
-{
-    gFrame->executeCommand(ID_GO_DRIVE);
-}
-
-xpr_sint_t ExplorerView::onDrop(ExplorerCtrl &aExplorerCtrl, COleDataObject *aOleDataObject, xpr_tchar_t *aTargetDir)
-{
-    xpr_sint_t sResult = 0;
-
-    fxb::ClipFormat &sClipFormat = fxb::ClipFormat::instance();
-    LPDATAOBJECT sDataObject = aOleDataObject->GetIDataObject(XPR_FALSE);
-
-    if (fxb::IsPasteInetUrl(aOleDataObject, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA) == XPR_TRUE)
-    {
-        sResult = fxb::DoPasteInetUrl(sDataObject, aTargetDir, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA, XPR_FALSE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteInetUrl(aOleDataObject, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorW) == XPR_TRUE)
-    {
-        sResult = fxb::DoPasteInetUrl(sDataObject, aTargetDir, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorW, XPR_TRUE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteFileContents(aOleDataObject, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA) == XPR_TRUE)
-    {
-        sResult = fxb::DoPasteFileContents(sDataObject, aTargetDir, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA, XPR_FALSE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteFileContents(aOleDataObject, sClipFormat.mFileContents, sClipFormat.mFileDescriptorW) == XPR_TRUE)
-    {
-        sResult = fxb::DoPasteFileContents(sDataObject, aTargetDir, sClipFormat.mFileContents, sClipFormat.mFileDescriptorW, XPR_TRUE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteBitmap(aOleDataObject) == XPR_TRUE)
-    {
-        sResult = cmd::pasteNewBitmapFile(aExplorerCtrl, aTargetDir, sDataObject, XPR_FALSE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteDIB(aOleDataObject) == XPR_TRUE)
-    {
-        sResult = cmd::pasteNewBitmapFile(aExplorerCtrl, aTargetDir, sDataObject, XPR_TRUE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteUnicodeText(aOleDataObject) == XPR_TRUE)
-    {
-        sResult = cmd::pasteNewTextFile(aExplorerCtrl, aTargetDir, sDataObject, XPR_TRUE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    if (fxb::IsPasteText(aOleDataObject) == XPR_TRUE)
-    {
-        sResult = cmd::pasteNewTextFile(aExplorerCtrl, aTargetDir, sDataObject, XPR_FALSE);
-        if (sResult != 0)
-            return sResult;
-    }
-
-    return sResult;
-}
-
-xpr_bool_t ExplorerView::onGetExecParam(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath, xpr_tchar_t *aParam, xpr_size_t aMaxLen)
-{
-    if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aParam) || aMaxLen <= 0)
-        return XPR_TRUE;
-
-    ParamExecDlg sDlg;
-    sDlg.setPath(aPath);
-    if (sDlg.DoModal() == IDCANCEL)
-        return XPR_FALSE;
-
-    const xpr_tchar_t *sParameter = sDlg.getParameter();
-    if (_tcslen(sParameter) <= aMaxLen)
-    {
-        _tcscpy(aParam, sParameter);
-    }
-
-    return XPR_TRUE;
-}
-
-void ExplorerView::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath)
-{
-    if (XPR_IS_NOT_NULL(aPath))
-    {
-        xpr_tchar_t sMsg[XPR_MAX_PATH * 2 + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
-        MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-    }
-}
-
-void ExplorerView::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh)
-{
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->setViewStyle(aStyle, aRefresh, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerView::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
-{
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->useColumn(aColumnId, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerView::onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending)
-{
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->sortItems(aColumnId, aAscending, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerView::onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth)
-{
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = gFrame->getViewCount();
-    ExplorerCtrl *sExplorerCtrl;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerCtrl = gFrame->getExplorerCtrl(i);
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        {
-            if (&aExplorerCtrl != sExplorerCtrl)
-            {
-                sExplorerCtrl->SetColumnWidth(sColumnIndex, sWidth);
-            }
-        }
-    }
-}
-
-void ExplorerView::onMoveFocus(ExplorerCtrl &aExplorerCtrl)
+void ExplorerView::onMoveFocus(TabPane &aTabPane, xpr_sint_t aCurWnd)
 {
     if (XPR_IS_NOT_NULL(mObserver))
-        mObserver->onMoveFocus(*this, 0);
+        mObserver->onMoveFocus(*this, aCurWnd);
 }
 
-void ExplorerView::OnExpSelNormal(void)
+xpr_bool_t ExplorerView::onOpenFolder(TabPane &aTabPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
 {
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return;
-
-    LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-    if (XPR_IS_NULL(sTvItemData))
-        return;
-
-    xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
-
-    if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
-        return;
-
-    if (XPR_IS_TRUE(sVisibleContentsWnd))
-        setContentsNormal(sTvItemData);
-
-    if (XPR_IS_TRUE(sVisibleStatusBar))
-    {
-        xpr_uint_t sExplorerCtrlId = sExplorerCtrl->GetDlgCtrlID();
-        xpr_sint_t sTab = findTabWndId(sExplorerCtrlId);
-
-        updateStatusBar(sTab);
-    }
+    return openFolder(aDir, aSelPath);
 }
 
-void ExplorerView::OnExpSelSingleItem(void)
+xpr_bool_t ExplorerView::onOpenFolder(TabPane &aTabPane, LPITEMIDLIST aFullPidl)
 {
-    if (XPR_IS_NULL(mTabCtrl))
-        return;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return;
-
-    xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
-
-    if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
-        return;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return;
-
-    xpr_sint_t sIndex = -1;
-
-    POSITION sPosition = sExplorerCtrl->GetFirstSelectedItemPosition();
-    while (XPR_IS_NOT_NULL(sPosition))
-    {
-        sIndex = sExplorerCtrl->GetNextSelectedItem(sPosition);
-        if (sExplorerCtrl->GetItemData(sIndex))
-            break;
-    }
-
-    if (sIndex == -1)
-    {
-        OnExpSelNormal();
-        return;
-    }
-
-    LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sExplorerCtrl->GetItemData(sIndex);
-    if (XPR_IS_NULL(sLvItemData))
-    {
-        OnExpSelNormal();
-        return;
-    }
-
-    static xpr_uint64_t sFileSize;
-    static xpr_tchar_t sName[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sType[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sDate[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sSize[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sAttr[XPR_MAX_PATH + 1];
-    sFileSize = 0;
-    sName[0] = sType[0] = sDate[0] = sSize[0] = sAttr[0] = XPR_STRING_LITERAL('\0');
-
-    sExplorerCtrl->getItemName(sIndex, sName, XPR_MAX_PATH, EXT_TYPE_ALWAYS);
-    sExplorerCtrl->getFileType(sIndex, sType, XPR_MAX_PATH);
-    sExplorerCtrl->getFileTime(sIndex, sDate, XPR_MAX_PATH);
-    sExplorerCtrl->getFileSize(sIndex, sFileSize);
-    sExplorerCtrl->getFileAttr(sIndex, sAttr, XPR_MAX_PATH);
-
-    if (!XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
-    {
-        xpr_sint_t sUnit = gOpt->mSingleSelFileSizeUnit;
-        switch (sUnit)
-        {
-        case SIZE_UNIT_DEFAULT:
-            fxb::SizeFormat::getDefSizeFormat(sFileSize, sSize, XPR_MAX_PATH);
-            break;
-
-        case SIZE_UNIT_CUSTOM:
-            fxb::SizeFormat::instance().getSizeFormat(sFileSize, sSize, XPR_MAX_PATH);
-            break;
-
-        case SIZE_UNIT_NONE:
-            fxb::GetFormatedNumber(sFileSize, sSize, XPR_MAX_PATH);
-            break;
-
-        default:
-            fxb::SizeFormat::getSizeUnitFormat(sFileSize, sUnit, sSize, XPR_MAX_PATH);
-            break;
-        }
-    }
-
-    if (XPR_IS_TRUE(sVisibleContentsWnd))
-        setContentsSingleItem(sLvItemData, sName, sType, sDate, sSize, sAttr);
-
-    if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
-    {
-        _tcscpy(sExplorerTabData->mStatusPane0, theApp.loadString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected")));
-        _tcscpy(sExplorerTabData->mStatusPane1, XPR_STRING_LITERAL(""));
-
-        if (XPR_IS_TRUE(sVisibleStatusBar))
-            setStatusBarText();
-    }
-    else
-    {
-        _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected_file"), XPR_STRING_LITERAL("%s,%s,%s")), sType, sDate, sAttr);
-        _tcscpy(sExplorerTabData->mStatusPane1, sSize);
-
-        if (XPR_IS_TRUE(sVisibleStatusBar))
-            setStatusBarText();
-    }
-}
-
-void ExplorerView::OnExpSelMultiItem(void)
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return;
-
-    xpr_bool_t sVisibleContentsWnd = isVisibleContentsWnd();
-    xpr_bool_t sVisibleStatusBar   = isVisibleStatusBar();
-
-    if (XPR_IS_FALSE(sVisibleContentsWnd) && XPR_IS_FALSE(sVisibleStatusBar))
-        return;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return;
-
-    LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-    if (XPR_IS_NULL(sTvItemData))
-        return;
-
-    static xpr_tchar_t sSize[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sText[XPR_MAX_PATH * MAX_CONTENS_SHOW_SEL_ITEMS + 1];
-    sSize[0] = sText[0] = XPR_STRING_LITERAL('\0');
-    xpr_uint64_t sSelFileSize = 0ui64;
-
-    sSelFileSize = sExplorerCtrl->getSelFileSize();
-
-    xpr_sint_t sUnit = gOpt->mMultiSelFileSizeUnit;
-    switch (sUnit)
-    {
-    case SIZE_UNIT_DEFAULT:
-        fxb::SizeFormat::getDefSizeFormat(sSelFileSize, sSize, XPR_MAX_PATH);
-        break;
-
-    case SIZE_UNIT_CUSTOM:
-        fxb::SizeFormat::instance().getSizeFormat(sSelFileSize, sSize, XPR_MAX_PATH);
-        break;
-
-    case SIZE_UNIT_NONE:
-        fxb::GetFormatedNumber(sSelFileSize, sSize, XPR_MAX_PATH);
-        break;
-
-    default:
-        fxb::SizeFormat::getSizeUnitFormat(sSelFileSize, sUnit, sSize, XPR_MAX_PATH);
-        break;
-    }
-
-    xpr_size_t sRealSelCount = 0;
-    xpr_size_t sRealSelFolderCount = 0;
-    xpr_size_t sRealSelFileCount = 0;
-
-    sRealSelCount = sExplorerCtrl->getRealSelCount(XPR_FALSE, &sRealSelFolderCount, &sRealSelFileCount);
-
-    if (XPR_IS_TRUE(sVisibleContentsWnd))
-    {
-        if (sRealSelCount < MAX_CONTENS_SHOW_SEL_ITEMS)
-        {
-            xpr_sint_t sIndex;
-
-            POSITION sPosition = sExplorerCtrl->GetFirstSelectedItemPosition();
-            while (XPR_IS_NOT_NULL(sPosition))
-            {
-                sIndex = sExplorerCtrl->GetNextSelectedItem(sPosition);
-
-                if (sExplorerCtrl->GetItemData(sIndex) != XPR_NULL)
-                    _stprintf(sText+_tcslen(sText), XPR_STRING_LITERAL("\n%s"), sExplorerCtrl->GetItemText(sIndex, 0));
-            }
-        }
-
-        setContentsMultiItem(sRealSelCount, sSize, sText);
-    }
-
-    if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
-    {
-        xpr_tchar_t sRealSelCountText[0xff] = {0};
-        xpr_tchar_t sRealSelFileCountText[0xff] = {0};
-        xpr_tchar_t sRealSelFolderCountText[0xff] = {0};
-
-        fxb::GetFormatedNumber(sRealSelCount,       sRealSelCountText,       XPR_COUNT_OF(sRealSelCountText      ) - 1);
-        fxb::GetFormatedNumber(sRealSelFileCount,   sRealSelFileCountText,   XPR_COUNT_OF(sRealSelFileCountText  ) - 1);
-        fxb::GetFormatedNumber(sRealSelFolderCount, sRealSelFolderCountText, XPR_COUNT_OF(sRealSelFolderCountText) - 1);
-
-        switch (gOpt->mExplorerListType)
-        {
-        case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
-            break;
-
-        case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFileCountText);
-            break;
-
-        default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sRealSelCountText, sRealSelFolderCountText, sRealSelFileCountText);
-            break;
-        }
-    }
-    else
-    {
-        switch (gOpt->mExplorerListType)
-        {
-        case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
-            break;
-
-        case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFileCount);
-            break;
-
-        default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sRealSelCount, sRealSelFolderCount, sRealSelFileCount);
-            break;
-        }
-    }
-
-    _tcscpy(sExplorerTabData->mStatusPane1, sSize);
-
-    if (XPR_IS_TRUE(sVisibleStatusBar))
-        setStatusBarText();
-}
-
-void ExplorerView::updateStatusBar(xpr_sint_t aTab)
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return;
-
-    xpr_sint_t sTab = aTab;
-    if (sTab < 0)
-        sTab = (xpr_sint_t)mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl(sTab);
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return;
-
-    LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-    if (XPR_IS_NULL(sTvItemData))
-        return;
-
-    // get file, folder item count
-    xpr_sint_t sCount = 0;
-    xpr_sint_t sFileCount = 0, sFolderCount = 0;
-    xpr_uint64_t sTotalSize = 0ui64;
-
-    sTotalSize = sExplorerCtrl->getTotalFileSize(&sCount, &sFileCount, &sFolderCount);
-
-    // StatusBar Pane 1 - item count
-    // StatusBar Pane 2 - all file item size
-    // StatusBar Pane 3 - current disk free size
-    // StatusBar Pane 4 - current disk free size progress
-
-    if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
-    {
-        xpr_tchar_t sCountText[0xff] = {0};
-        xpr_tchar_t sFileCountText[0xff] = {0};
-        xpr_tchar_t sFolderCountText[0xff] = {0};
-
-        fxb::GetFormatedNumber(sCount,       sCountText,       XPR_COUNT_OF(sCountText      ) - 1);
-        fxb::GetFormatedNumber(sFileCount,   sFileCountText,   XPR_COUNT_OF(sFileCountText  ) - 1);
-        fxb::GetFormatedNumber(sFolderCount, sFolderCountText, XPR_COUNT_OF(sFolderCountText) - 1);
-
-        switch (gOpt->mExplorerListType)
-        {
-        case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
-            break;
-
-        case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFileCountText);
-            break;
-
-        default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sCountText, sFolderCountText, sFileCountText);
-            break;
-        }
-
-        xpr_sint_t sUnit = gOpt->mMultiSelFileSizeUnit;
-        switch (sUnit)
-        {
-        case SIZE_UNIT_DEFAULT:
-            fxb::SizeFormat::getDefSizeFormat(sTotalSize, sExplorerTabData->mStatusPane1, XPR_MAX_PATH);
-            break;
-
-        case SIZE_UNIT_CUSTOM:
-            fxb::SizeFormat::instance().getSizeFormat(sTotalSize, sExplorerTabData->mStatusPane1, XPR_MAX_PATH);
-            break;
-
-        case SIZE_UNIT_NONE:
-            fxb::GetFormatedNumber(sTotalSize, sExplorerTabData->mStatusPane1, XPR_MAX_PATH);
-            break;
-
-        default:
-            fxb::SizeFormat::getSizeUnitFormat(sTotalSize, sUnit, sExplorerTabData->mStatusPane1, XPR_MAX_PATH);
-            break;
-        }
-    }
-    else
-    {
-        switch (gOpt->mExplorerListType)
-        {
-        case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
-            break;
-
-        case LIST_TYPE_FILE:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.etc"), XPR_STRING_LITERAL("%d,%d")), sCount, sFileCount);
-            break;
-
-        default:
-            _stprintf(sExplorerTabData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sFolderCount, sFileCount);
-            break;
-        }
-
-        sExplorerTabData->mStatusPane1[0] = XPR_STRING_LITERAL('\0');
-    }
-
-    updateStatusBar();
-}
-
-void ExplorerView::updateStatusBar(void)
-{
-    setStatusBarDrive();
-    setStatusBarText();
-}
-
-void ExplorerView::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect)
-{
-    if (XPR_IS_NULL(mStatusBar))
-        return;
-
-    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
-
-    fxb::BookmarkItem *sBookmarkItem = fxb::BookmarkMgr::instance().getBookmark(aBookmarkIndex);
-    if (XPR_IS_NOT_NULL(sBookmarkItem))
-    {
-        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY)
-        {
-            _stprintf(
-                sText,
-                XPR_STRING_LITERAL("%s: \'%s\'"),
-                (aDropEffect == DROPEFFECT_MOVE) ? theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_move")) : theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_copy")),
-                sBookmarkItem->mPath.c_str());
-        }
-        else
-        {
-            if (aDropEffect == DROPEFFECT_LINK)
-            {
-                if (fxb::IsFileSystemFolder(sBookmarkItem->mPath.c_str()) == XPR_TRUE)
-                    _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_shortcut")), sBookmarkItem->mPath.c_str());
-            }
-
-            if (sText[0] == XPR_STRING_LITERAL('\0'))
-                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.file_association")), sBookmarkItem->mPath.c_str());
-        }
-    }
-    else
-    {
-        if (aInsert == -1 || aInsert >= fxb::BookmarkMgr::instance().getCount())
-            _stprintf(sText, theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_last_insert")));
-        else
-            _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.drag_specific_insert"), XPR_STRING_LITERAL("%d")), aInsert);
-    }
-
-    mStatusBar->setPaneText(0, sText);
-}
-
-void ExplorerView::setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect)
-{
-    if (XPR_IS_NULL(mStatusBar))
-        return;
-
-    xpr_tchar_t sText[XPR_MAX_PATH * 2 + 1] = {0};
-    if (aDriveChar != 0)
-    {
-        if (aDropEffect == DROPEFFECT_MOVE || aDropEffect == DROPEFFECT_COPY || aDropEffect == DROPEFFECT_LINK)
-        {
-            xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
-            _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), aDriveChar);
-
-            LPITEMIDLIST sFullPidl = fxb::SHGetPidlFromPath(sDrive);
-            if (XPR_IS_NOT_NULL(sFullPidl))
-            {
-                xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
-                fxb::GetName(sFullPidl, SHGDN_INFOLDER, sName);
-
-                switch (aDropEffect)
-                {
-                case DROPEFFECT_MOVE: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_move")),     sName); break;
-                case DROPEFFECT_COPY: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_copy")),     sName); break;
-                case DROPEFFECT_LINK: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_shortcut")), sName); break;
-                }
-            }
-
-            COM_FREE(sFullPidl);
-        }
-    }
-
-    mStatusBar->setPaneText(0, sText);
-}
-
-void ExplorerView::setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText)
-{
-    if (XPR_IS_NULL(mStatusBar))
-        return;
-
-    if (aIndex < 0 && 1 < aIndex)
-        return;
-
-    if (aIndex == 1)
-    {
-        mStatusBar->setDynamicPaneText(aIndex, aText, 0);
-        return;
-    }
-
-    mStatusBar->setPaneText(aIndex, aText);
-}
-
-void ExplorerView::setStatusDisk(const xpr_tchar_t *aPath)
-{
-    if (XPR_IS_NULL(mStatusBar))
-        return;
-
-    mStatusBar->setDiskFreeSpace(aPath);
-}
-
-void ExplorerView::setStatusBarText(void)
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return;
-
-    if (isVisibleStatusBar() == XPR_FALSE)
-        return;
-
-    setStatusPaneText(0, sExplorerTabData->mStatusPane0);
-    setStatusPaneText(1, sExplorerTabData->mStatusPane1);
-}
-
-void ExplorerView::setStatusBarDrive(const xpr_tchar_t *aCurPath)
-{
-    if (isVisibleStatusBar() == XPR_FALSE)
-        return;
-
-    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return;
-
-    if (XPR_IS_NULL(aCurPath))
-        aCurPath = sExplorerCtrl->getCurPath();
-
-    setStatusDisk(aCurPath);
-}
-
-const xpr_tchar_t *ExplorerView::getStatusPaneText(xpr_sint_t aIndex) const
-{
-    if (XPR_IS_NULL(mTabCtrl))
-        return XPR_NULL;
-
-    xpr_size_t sCurTab = mTabCtrl->getCurTab();
-
-    ExplorerTabData *sExplorerTabData = dynamic_cast<ExplorerTabData *>((TabData *)mTabCtrl->getTabData(sCurTab));
-    if (XPR_IS_NULL(sExplorerTabData))
-        return XPR_NULL;
-
-    switch (aIndex)
-    {
-    case 0: return sExplorerTabData->mStatusPane0;
-    case 1: return sExplorerTabData->mStatusPane1;
-    }
-
-    return XPR_NULL;
+    return openFolder(aFullPidl);
 }
 
 xpr_bool_t ExplorerView::openFolder(const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
@@ -3838,68 +2423,4 @@ xpr_bool_t ExplorerView::openFolder(LPITEMIDLIST aFullPidl)
     }
 
     return sResult;
-}
-
-xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
-{
-    return openFolder(aDir, aSelPath);
-}
-
-xpr_bool_t ExplorerView::onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl)
-{
-    return openFolder(aFullPidl);
-}
-
-void ExplorerView::onSetFocus(SearchResultPane &aSearchResultPane)
-{
-    gFrame->setActiveView(mViewIndex);
-}
-
-void ExplorerView::onCreated(FileScrapPane &aFileScrapPane)
-{
-    gFrame->setFileScrapPane(&aFileScrapPane);
-}
-
-void ExplorerView::onDestroyed(FileScrapPane &aFileScrapPane)
-{
-    gFrame->setFileScrapPane(XPR_NULL);
-}
-
-void ExplorerView::onSetFocus(FileScrapPane &aFileScrapPane)
-{
-    gFrame->setActiveView(mViewIndex);
-}
-
-xpr_bool_t ExplorerView::onExplore(FileScrapPane &aFileScrapPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
-{
-    return openFolder(aDir, aSelPath);
-}
-
-xpr_bool_t ExplorerView::onExplore(FileScrapPane &aFileScrapPane, LPITEMIDLIST aFullPidl)
-{
-    return openFolder(aFullPidl);
-}
-
-void ExplorerView::onStatusBarRemove(StatusBar &aStatusBar, xpr_size_t aIndex)
-{
-}
-
-void ExplorerView::onStatusBarRemoved(StatusBar &aStatusBar)
-{
-}
-
-void ExplorerView::onStatusBarRemoveAll(StatusBar &aStatusBar)
-{
-}
-
-void ExplorerView::onStatuBarContextMenu(StatusBar &aStatusBar, xpr_size_t aIndex, const POINT &aPoint)
-{
-}
-
-void ExplorerView::onStatusBarDoubleClicked(StatusBar &aStatusBar, xpr_size_t sIndex)
-{
-    if (sIndex == 2 || sIndex == 3)
-    {
-        mStatusBar->showDriveProperties();
-    }
 }

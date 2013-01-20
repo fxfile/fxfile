@@ -17,10 +17,7 @@
 #include "FolderPaneObserver.h"
 #include "MainFrame.h"
 #include "FolderCtrl.h"
-#include "ExplorerView.h"
-#include "AddressBar.h"
 #include "OptionMgr.h"
-#include "CtrlId.h"
 
 #include "cmd/cmd_parameters.h"
 #include "cmd/cmd_parameter_define.h"

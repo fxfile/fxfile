@@ -17,29 +17,39 @@
 #include "rgc/StatusBar.h"
 #include "rgc/BCMenu.h"
 
+#include "TabPane.h"
 #include "FileScrapCtrlObserver.h"
 
-class FileScrapPaneObserver;
 class FileScrapToolBar;
 
-class FileScrapPane : public CWnd, public FileScrapCtrlObserver, public fxb::FileScrapObserver
+class FileScrapPane
+    : public TabPane
+    , public FileScrapCtrlObserver
+    , public fxb::FileScrapObserver
 {
-    typedef CWnd super;
+    typedef TabPane super;
 
 public:
     FileScrapPane(void);
     virtual ~FileScrapPane(void);
 
 public:
-    void setObserver(FileScrapPaneObserver *aObserver);
-
-public:
     xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
 
 public:
-    void setViewIndex(xpr_sint_t aViewIndex);
-    xpr_sint_t getViewIndex(void) const;
+    // from TabPane
+    virtual CWnd *     newSubPane(xpr_uint_t aId);
+    virtual CWnd *     getSubPane(xpr_uint_t aId = InvalidId) const;
+    virtual xpr_size_t getSubPaneCount(void) const;
+    virtual xpr_uint_t getCurSubPaneId(void) const;
+    virtual xpr_uint_t setCurSubPane(xpr_uint_t aId);
+    virtual void       destroySubPane(xpr_uint_t aId);
+    virtual void       destroySubPane(void);
 
+    virtual StatusBar *getStatusBar(void) const;
+    virtual const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
+
+public:
     FileScrapCtrl *getFileScrapCtrl(void) const;
 
     fxb::FileScrap::Group *getCurGroup(void) const;
@@ -51,7 +61,6 @@ public:
     void refresh(void);
 
 protected:
-    xpr_bool_t registerWindowClass(void);
     void recalcLayout(void);
     void createFont(void);
     void recreateFont(void);
@@ -65,10 +74,11 @@ protected:
 
 protected:
     // from FileScrapCtrlObserver
-    virtual void onSetFocus(FileScrapCtrl &aFileScrapCtrl);
-    virtual xpr_bool_t onExplore(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
-    virtual xpr_bool_t onExplore(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPid);
+    virtual xpr_bool_t onOpenFolder(FileScrapCtrl &aFileScrapCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onOpenFolder(FileScrapCtrl &aFileScrapCtrl, LPITEMIDLIST aFullPid);
     virtual void onUpdateStatus(FileScrapCtrl &aFileScrapCtrl);
+    virtual void onSetFocus(FileScrapCtrl &aFileScrapCtrl);
+    virtual void onMoveFocus(FileScrapCtrl &aFileScrapCtrl);
 
     // from FileScrapObserver
     virtual void onAddGroup(fxb::FileScrap &aFileScrap, fxb::FileScrap::Group *aGroup);
@@ -84,10 +94,7 @@ protected:
     virtual xpr_bool_t OnCmdMsg(xpr_uint_t aId, xpr_sint_t aCode, void *aExtra, AFX_CMDHANDLERINFO *aHandlerInfo);
 
 protected:
-    FileScrapPaneObserver *mObserver;
-
-    xpr_sint_t mViewIndex;
-
+    xpr_uint_t         mSubPaneId;
     FileScrapCtrl     *mFileScrapCtrl;
     CRect              mGroupLabelRect;
     const xpr_tchar_t *mGroupLabelText;
@@ -97,6 +104,9 @@ protected:
     CImageList         mGroupImgList;
     CFont              mFont;
     BCMenu             mMenu;
+
+    xpr_tchar_t mStatusText0[0xff];
+    xpr_tchar_t mStatusText1[0xff];
 
 protected:
     DECLARE_MESSAGE_MAP()

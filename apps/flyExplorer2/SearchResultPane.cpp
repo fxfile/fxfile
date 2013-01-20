@@ -9,9 +9,8 @@
 
 #include "stdafx.h"
 #include "SearchResultPane.h"
-#include "SearchResultPaneObserver.h"
+#include "TabPaneObserver.h"
 #include "SearchResultCtrl.h"
-#include "CtrlId.h"
 
 #include "fxb/fxb_sys_img_list.h"
 #include "fxb/fxb_size_format.h"
@@ -46,11 +45,15 @@ enum
 };
 
 SearchResultPane::SearchResultPane(void)
-    : mObserver(XPR_NULL)
-    , mViewIndex(-1)
+    : TabPane(TabTypeSearchResult)
+    , mSubPaneId(TabPane::InvalidId)
     , mSearchResultCtrl(XPR_NULL)
     , mStatusBar(XPR_NULL)
 {
+    mStatusText0[0] = 0;
+    mStatusText1[0] = 0;
+
+    registerWindowClass(kClassName);
 }
 
 SearchResultPane::~SearchResultPane(void)
@@ -64,31 +67,6 @@ xpr_bool_t SearchResultPane::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT
     sStyle |= WS_CHILD;
     sStyle |= WS_CLIPSIBLINGS;
     sStyle |= WS_CLIPCHILDREN;
-
-    WNDCLASS sWndClass = {0};
-    HINSTANCE sInstance = AfxGetInstanceHandle();
-
-    //Check weather the class is registerd already
-    if (::GetClassInfo(sInstance, kClassName, &sWndClass) == XPR_FALSE)
-    {
-        //If not then we have to register the new class
-        sWndClass.style         = CS_DBLCLKS;
-        sWndClass.lpfnWndProc   = ::DefWindowProc;
-        sWndClass.cbClsExtra    = 0;
-        sWndClass.cbWndExtra    = 0;
-        sWndClass.hInstance     = sInstance;
-        sWndClass.hIcon         = XPR_NULL;
-        sWndClass.hCursor       = AfxGetApp()->LoadStandardCursor(IDC_ARROW);
-        sWndClass.hbrBackground = ::GetSysColorBrush(COLOR_WINDOW);
-        sWndClass.lpszMenuName  = XPR_NULL;
-        sWndClass.lpszClassName = kClassName;
-
-        if (AfxRegisterClass(&sWndClass) == XPR_FALSE)
-        {
-            AfxThrowResourceException();
-            return XPR_FALSE;
-        }
-    }
 
     return CWnd::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
 }
@@ -158,19 +136,52 @@ void SearchResultPane::OnDestroy(void)
     super::OnDestroy();
 }
 
-void SearchResultPane::setObserver(SearchResultPaneObserver *aObserver)
+CWnd * SearchResultPane::newSubPane(xpr_uint_t aId)
 {
-    mObserver = aObserver;
+    return mSearchResultCtrl;
 }
 
-void SearchResultPane::setViewIndex(xpr_sint_t aViewIndex)
+CWnd * SearchResultPane::getSubPane(xpr_uint_t aId) const
 {
-    mViewIndex = aViewIndex;
+    return mSearchResultCtrl;
 }
 
-xpr_sint_t SearchResultPane::getViewIndex(void) const
+xpr_size_t SearchResultPane::getSubPaneCount(void) const
 {
-    return mViewIndex;
+    return 1;
+}
+
+xpr_uint_t SearchResultPane::getCurSubPaneId(void) const
+{
+    return mSubPaneId;
+}
+
+xpr_uint_t SearchResultPane::setCurSubPane(xpr_uint_t aId)
+{
+    mSubPaneId = aId;
+
+    return mSubPaneId;
+}
+
+void SearchResultPane::destroySubPane(xpr_uint_t aId)
+{
+}
+
+void SearchResultPane::destroySubPane(void)
+{
+}
+
+StatusBar *SearchResultPane::getStatusBar(void) const
+{
+    return mStatusBar;
+}
+
+const xpr_tchar_t *SearchResultPane::getStatusPaneText(xpr_sint_t aIndex) const
+{
+    if (aIndex == 1)
+        return mStatusText1;
+
+    return mStatusText0;
 }
 
 void SearchResultPane::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
@@ -231,37 +242,34 @@ void SearchResultPane::onEndSearch(SearchResultCtrl &aSearchResultCtrl)
 
 void SearchResultPane::onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl)
 {
+    xpr_sint_t   sResultFileCount  = 0;
+    xpr_sint_t   sResultDirCount   = 0;
+    xpr_sint_t   sResultTotalCount = 0;
+    xpr_uint64_t sResultTotalSize  = 0;
+    aSearchResultCtrl.getResultInfo(sResultFileCount, sResultDirCount, sResultTotalSize);
+    sResultTotalCount = sResultFileCount + sResultDirCount;
+
+    xpr_tchar_t sResultFileCountText[0xff] = {0};
+    xpr_tchar_t sResultDirCountText [0xff] = {0};
+    xpr_tchar_t sResultTotalCountText[0xff] = {0};
+    fxb::GetFormatedNumber(sResultFileCount,  sResultFileCountText,  XPR_COUNT_OF(sResultFileCountText)  - 1);
+    fxb::GetFormatedNumber(sResultDirCount,   sResultDirCountText,   XPR_COUNT_OF(sResultDirCountText)   - 1);
+    fxb::GetFormatedNumber(sResultTotalCount, sResultTotalCountText, XPR_COUNT_OF(sResultTotalCountText) - 1);
+
+    _stprintf(
+        mStatusText0,
+        theApp.loadFormatString(XPR_STRING_LITERAL("search_result.status.pane1.file_folder"),
+        XPR_STRING_LITERAL("%s,%s,%s")),
+        sResultTotalCountText,
+        sResultDirCountText,
+        sResultFileCountText);
+
+    fxb::SizeFormat::getDefSizeFormat(sResultTotalSize, mStatusText1, XPR_COUNT_OF(mStatusText1) - 1);
+
     if (XPR_IS_NOT_NULL(mStatusBar))
     {
-        xpr_sint_t   sResultFileCount  = 0;
-        xpr_sint_t   sResultDirCount   = 0;
-        xpr_sint_t   sResultTotalCount = 0;
-        xpr_uint64_t sResultTotalSize  = 0;
-        aSearchResultCtrl.getResultInfo(sResultFileCount, sResultDirCount, sResultTotalSize);
-        sResultTotalCount = sResultFileCount + sResultDirCount;
-
-        xpr_tchar_t sResultFileCountText[0xff] = {0};
-        xpr_tchar_t sResultDirCountText [0xff] = {0};
-        xpr_tchar_t sResultTotalCountText[0xff] = {0};
-        fxb::GetFormatedNumber(sResultFileCount,  sResultFileCountText,  XPR_COUNT_OF(sResultFileCountText)  - 1);
-        fxb::GetFormatedNumber(sResultDirCount,   sResultDirCountText,   XPR_COUNT_OF(sResultDirCountText)   - 1);
-        fxb::GetFormatedNumber(sResultTotalCount, sResultTotalCountText, XPR_COUNT_OF(sResultTotalCountText) - 1);
-
-        xpr_tchar_t sStatusText0[0xff] = {0};
-        xpr_tchar_t sStatusText1[0xff] = {0};
-
-        _stprintf(
-            sStatusText0,
-            theApp.loadFormatString(XPR_STRING_LITERAL("search_result.status.pane1.file_folder"),
-            XPR_STRING_LITERAL("%s,%s,%s")),
-            sResultTotalCountText,
-            sResultDirCountText,
-            sResultFileCountText);
-
-        fxb::SizeFormat::getDefSizeFormat(sResultTotalSize, sStatusText1, XPR_COUNT_OF(sStatusText1) - 1);
-
-        mStatusBar->setPaneText(0, sStatusText0);
-        mStatusBar->setPaneText(1, sStatusText1);
+        mStatusBar->setPaneText(0, mStatusText0);
+        mStatusBar->setPaneText(1, mStatusText1);
     }
 }
 
@@ -273,18 +281,26 @@ void SearchResultPane::onSetFocus(SearchResultCtrl &aSearchResultCtrl)
     }
 }
 
-xpr_bool_t SearchResultPane::onExplore(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
+void SearchResultPane::onMoveFocus(SearchResultCtrl &aSearchResultCtrl)
 {
-    if (XPR_IS_NULL(mObserver))
-        return XPR_FALSE;
-
-    return mObserver->onExplore(*this, aDir, aSelPath);
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onMoveFocus(*this, 1);
+    }
 }
 
-xpr_bool_t SearchResultPane::onExplore(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl)
+xpr_bool_t SearchResultPane::onOpenFolder(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath)
 {
     if (XPR_IS_NULL(mObserver))
         return XPR_FALSE;
 
-    return mObserver->onExplore(*this, aFullPidl);
+    return mObserver->onOpenFolder(*this, aDir, aSelPath);
+}
+
+xpr_bool_t SearchResultPane::onOpenFolder(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(mObserver))
+        return XPR_FALSE;
+
+    return mObserver->onOpenFolder(*this, aFullPidl);
 }
