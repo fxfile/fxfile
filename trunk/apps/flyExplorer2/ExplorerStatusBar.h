@@ -7,14 +7,14 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_STATUS_BAR_EX_H__
-#define __FX_STATUS_BAR_EX_H__
+#ifndef __FX_EXPLORER_STATUS_BAR_H__
+#define __FX_EXPLORER_STATUS_BAR_H__
 #pragma once
 
 #include "rgc/StatusBar.h"
 #include "rgc/TextProgressCtrl.h"
 
-class StatusBarEx : public StatusBar
+class ExplorerStatusBar : public StatusBar
 {
     typedef StatusBar super;
 
@@ -28,8 +28,8 @@ public:
     };
 
 public:
-    StatusBarEx(void);
-    virtual ~StatusBarEx(void);
+    ExplorerStatusBar(void);
+    virtual ~ExplorerStatusBar(void);
 
 public:
     void setDiskFreeSpace(const xpr_tchar_t *aPath);
@@ -50,4 +50,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-#endif // __FX_STATUS_BAR_EX_H__
+#endif // __FX_EXPLORER_STATUS_BAR_H__

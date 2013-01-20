@@ -936,7 +936,7 @@ xpr_bool_t FileScrapCtrl::invokeCommandSelf(fxb::ContextMenu *aContextMenu, xpr_
                 const xpr_tchar_t *sDir     = sItemData->mDir.c_str();
                 const xpr_tchar_t *sSelPath = sItemData->mFileScrapItem->mPath.c_str();
 
-                mObserver->onExplore(*this, sDir, sSelPath);
+                mObserver->onOpenFolder(*this, sDir, sSelPath);
             }
         }
     }
@@ -1054,7 +1054,7 @@ void FileScrapCtrl::executeSelFolder(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        if (mObserver->onExplore(*this, aPath, XPR_NULL) == XPR_FALSE)
+        if (mObserver->onOpenFolder(*this, aPath, XPR_NULL) == XPR_FALSE)
         {
             doExecuteError(aPath);
         }
@@ -1151,7 +1151,7 @@ void FileScrapCtrl::executeLinkFolder(LPITEMIDLIST aFullPidl)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        if (mObserver->onExplore(*this, aFullPidl) == XPR_FALSE)
+        if (mObserver->onOpenFolder(*this, aFullPidl) == XPR_FALSE)
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
@@ -1504,6 +1504,13 @@ void FileScrapCtrl::OnSetFocus(CWnd *aOldWnd)
 
 void FileScrapCtrl::OnKeyDown(xpr_uint_t aChar, xpr_uint_t aRepCnt, xpr_uint_t aFlags) 
 {
+    if (aChar == VK_TAB)
+    {
+        if (XPR_IS_NOT_NULL(mObserver))
+            mObserver->onMoveFocus(*this);
+        return;
+    }
+
     super::OnKeyDown(aChar, aRepCnt, aFlags);
 }
 

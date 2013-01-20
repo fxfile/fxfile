@@ -13,48 +13,33 @@
 
 #include "rgc/DropTarget.h"
 #include "rgc/TabCtrlObserver.h"
-#include "rgc/StatusBarObserver.h"
-
-#include "rgc/DropTarget.h"
 
 #include "FolderPaneObserver.h"
-#include "ExplorerCtrlObserver.h"
-#include "SearchResultPaneObserver.h"
-#include "FileScrapPaneObserver.h"
-#include "AddressBarObserver.h"
-#include "PathBarObserver.h"
+#include "TabPaneObserver.h"
 #include "Splitter.h"
+#include "TabType.h"
 
 class ExplorerViewObserver;
 class FolderPane;
 class FolderCtrl;
 class AddressBar;
+class ExplorerPane;
 class ExplorerCtrl;
-class PathBar;
 class ActivateBar;
-class DrivePathBar;
-class ContentsWnd;
-class StatusBarEx;
 class SearchResultCtrl;
 class FileScrapPane;
 class DropTarget;
 class ListCtrlPrint;
+class StatusBar;
 
 class ExplorerView
     : public CView
     , public TabCtrlObserver
     , public SplitterObserver
     , public FolderPaneObserver
-    , public ExplorerCtrlObserver
-    , public SearchResultPaneObserver
-    , public FileScrapPaneObserver
-    , public AddressBarObserver
-    , public PathBarObserver
-    , public StatusBarObserver
+    , public TabPaneObserver
 {
     typedef CView super;
-
-    DECLARE_DYNCREATE(ExplorerView)
 
 public:
     ExplorerView(void);
@@ -67,14 +52,6 @@ public:
     void setViewIndex(xpr_sint_t aViewIndex);
     xpr_sint_t getViewIndex(void) const;
 
-    enum TabType
-    {
-        TabTypeNone,
-        TabTypeExplorer,
-        TabTypeSearchResult,
-        TabTypeFileScrap,
-    };
-
     xpr_sint_t    newTab(TabType aTabType = TabTypeExplorer);
     xpr_sint_t    newTab(LPITEMIDLIST aInitFolder);
     xpr_sint_t    newTab(const std::tstring &aInitFolder);
@@ -85,9 +62,9 @@ public:
     xpr_bool_t    isExplorerTabMode(void) const;
     xpr_sint_t    getTabOnCursor(void) const;
     xpr_sint_t    getTabCount(void) const;
-    CWnd         *getTabWnd(xpr_sint_t aTab) const;
-    xpr_uint_t    getTabWndId(xpr_sint_t aTab) const;
-    xpr_sint_t    findTabWndId(xpr_uint_t aTabWndId) const;
+    TabPane      *getTabPane(xpr_sint_t aTab = -1) const;
+    xpr_uint_t    getTabPaneId(xpr_sint_t aTab = -1) const;
+    xpr_sint_t    findTab(xpr_uint_t aTabPaneId) const;
     xpr_sint_t    findTabFirstExplorerCtrl(void) const;
     void          setCurTab(xpr_sint_t aTab);
     xpr_bool_t    setCurTabLastActivedExplorerCtrl(void);
@@ -101,13 +78,12 @@ public:
 
     FolderPane       *getFolderPane(void) const;
     FolderCtrl       *getFolderCtrl(void) const;
+    AddressBar       *getAddressBar(void) const;
+    ExplorerPane     *getExplorerPane(void) const;
     ExplorerCtrl     *getExplorerCtrl(xpr_sint_t aTab = -1) const;
     SearchResultCtrl *getSearchResultCtrl(xpr_sint_t aTab = -1) const;
     FileScrapPane    *getFileScrapPane(xpr_sint_t aTab = -1) const;
-    AddressBar       *getAddressBar(void) const;
-    PathBar          *getPathBar(void) const;
     ActivateBar      *getActivateBar(void) const;
-    DrivePathBar     *getDrivePathBar(void) const;
     StatusBar        *getStatusBar(void) const;
 
     xpr_bool_t visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE, xpr_bool_t aSaveFolderPaneVisible = XPR_TRUE);
@@ -115,36 +91,12 @@ public:
     xpr_bool_t isLeftFolderPane(void) const;
     void       setLeftFolderPane(xpr_bool_t aLeft);
 
-    void updateBookmark(xpr_bool_t aUpdatePosition = XPR_FALSE);
-    void enableBookmark(xpr_bool_t aEnable);
-    xpr_bool_t isEnableBookmark(void) const;
-    xpr_bool_t isVisibleBookmark(void) const;
-    void setBookmarkPopup(xpr_bool_t aPopup);
-    void setBookmarkColor(COLORREF aBookmarkColor);
-
-    void visibleAddressBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
-    xpr_bool_t isVisibleAddressBar(void) const;
-
-    void setPathBarMode(xpr_bool_t aRealPath);
-    void visiblePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
-    xpr_bool_t isVisiblePathBar(void) const;
-
-    void visibleActivateBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
+    void       visibleActivateBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
     xpr_bool_t isVisibleActivateBar(void) const;
-
-    void setDrivePathBarLeft(xpr_bool_t aLeft);
-    void setDrivePathBarShortText(xpr_bool_t aShortText);
-    void visibleDrivePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
-
-    void setActivateBarStatus(xpr_bool_t aActivate, xpr_bool_t aLastActivated);
-
-    void invalidateContentsWnd(void);
+    void       setActivateBarStatus(xpr_bool_t aActivate, xpr_bool_t aLastActivated);
 
     void setDragContents(xpr_bool_t aDragContents = XPR_TRUE);
-    void setContentsStyle(xpr_sint_t aContentsStyle);
 
-    void visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
-    xpr_bool_t isVisibleStatusBar(void) const;
     const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
 
     void print(void);
@@ -155,7 +107,7 @@ public:
     void saveOption(void);
 
 protected:
-    xpr_uint_t generateTabWndId(void);
+    xpr_uint_t generateTabPaneId(void);
 
     enum
     {
@@ -176,40 +128,9 @@ protected:
     xpr_bool_t createTabCtrl(void);
     xpr_bool_t createSplitter(void);
     xpr_bool_t createFolderPane(void);
-    void destroyFolderPane(void);
-    void createAddressBar(void);
-    void destroyAddressBar(void);
-    void createPathBar(void);
-    void destroyPathBar(void);
-    void createActivateBar(void);
-    void destroyActivateBar(void);
-    void createDrivePathBar(void);
-    void destroyDrivePathBar(void);
-    void createContentsWnd(void);
-    void destroyContentsWnd(void);
-    void createStatusBar(void);
-    void destroyStatusBar(void);
-
-    void setStatusBarText(void);
-    void setStatusBarDrive(const xpr_tchar_t *aCurPath = XPR_NULL);
-
-    void setStatusPaneText(xpr_sint_t aIndex, const xpr_tchar_t *aText);
-    void setStatusDisk(const xpr_tchar_t *aPath);
-    void setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint_t aInsert, DROPEFFECT aDropEffect = 0);
-    void setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDropEffect = 0);
-    void updateStatusBar(xpr_sint_t aTab);
-    void updateStatusBar(void);
-
-    xpr_bool_t isVisibleContentsWnd(void) const;
-
-    void setContentsFolder(LPTVITEMDATA aTvItemData);
-    void setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate = XPR_FALSE);
-    void setContentsSingleItem(LPLVITEMDATA sLvItemData, const xpr_tchar_t *aName = XPR_NULL, const xpr_tchar_t *aType = XPR_NULL, const xpr_tchar_t *aDate = XPR_NULL, const xpr_tchar_t *aSize = XPR_NULL, const xpr_tchar_t *aAttr = XPR_NULL);
-    void setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSize, const xpr_tchar_t *aNames);
-
-    void OnExpSelNormal(void);
-    void OnExpSelSingleItem(void);
-    void OnExpSelMultiItem(void);
+    xpr_bool_t createActivateBar(void);
+    void       destroyFolderPane(void);
+    void       destroyActivateBar(void);
 
 protected:
     ExplorerViewObserver *mObserver;
@@ -218,31 +139,20 @@ protected:
     xpr_bool_t     mInit;
 
     TabCtrl       *mTabCtrl;
-    xpr_uint_t     mNextExplorerCtrlId;
-    xpr_uint_t     mLastActivedExplorerCtrlId;
-    std::tstring   mInitTabFullPath;
+    xpr_uint_t     mNextTabPaneId;
+    xpr_uint_t     mLastActivedExplorerPaneId;
     CPoint         mContextMenuCursor;
 
     Splitter       mSplitter;
     FolderPane    *mFolderPane;
-    ContentsWnd   *mContentsWnd;
-    AddressBar    *mAddressBar;
-    PathBar       *mPathBar;
+    ExplorerPane  *mExplorerPane;
     ActivateBar   *mActivateBar;
-    DrivePathBar  *mDrivePathBar;
-    StatusBarEx   *mStatusBar;
-
-    CRect          mMarginRect;
-    xpr_bool_t     mIsDrivePathBar;
 
     ListCtrlPrint *mListCtrlPrint;
 
     DropTarget     mDropTarget;
 
     class TabData;
-    class ExplorerTabData;
-    class SearchResultTabData;
-    class FileScrapTabData;
 
 protected:
     virtual xpr_bool_t PreCreateWindow(CREATESTRUCT &aCreateStruct);
@@ -287,52 +197,14 @@ protected:
     virtual void onSetFocus(FolderPane &aFolderPane);
     virtual void onMoveFocus(FolderPane &aFolderPane, xpr_sint_t aCurWnd);
 
-    // from ExplorerCtrlObserver
-    virtual void onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy, const xpr_tchar_t *aCurPath);
-    virtual void onUpdateStatus(ExplorerCtrl &aExplorerCtrl, xpr_size_t aRealSelCount);
-    virtual void onUpdateFreeSize(ExplorerCtrl &aExplorerCtrl);
-    virtual void onSetFocus(ExplorerCtrl &aExplorerCtrl);
-    virtual void onKillFocus(ExplorerCtrl &aExplorerCtrl);
-    virtual void onRename(ExplorerCtrl &aExplorerCtrl);
-    virtual void onContextMenuDelete(ExplorerCtrl &aExplorerCtrl);
-    virtual void onContextMenuRename(ExplorerCtrl &aExplorerCtrl);
-    virtual void onContextMenuPaste(ExplorerCtrl &aExplorerCtrl);
-    virtual void onGoDrive(ExplorerCtrl &aExplorerCtrl);
-    virtual xpr_sint_t onDrop(ExplorerCtrl &aExplorerCtrl, COleDataObject *aOleDataObject, xpr_tchar_t *aTargetDir);
-    virtual xpr_bool_t onGetExecParam(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath, xpr_tchar_t *aParam, xpr_size_t aMaxLen);
-    virtual void onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath);
-    virtual void onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh);
-    virtual void onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId);
-    virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending);
-    virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth);
-    virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
-
-    // from SearchResultPaneObserver
-    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
-    virtual xpr_bool_t onExplore(SearchResultPane &aSearchResultPane, LPITEMIDLIST aFullPidl);
-    virtual void onSetFocus(SearchResultPane &aSearchResultPane);
-
-    // from FileScrapPaneObserver
-    virtual void onCreated(FileScrapPane &aFileScrapPane);
-    virtual void onDestroyed(FileScrapPane &aFileScrapPane);
-    virtual void onSetFocus(FileScrapPane &aFileScrapPane);
-    virtual xpr_bool_t onExplore(FileScrapPane &aFileScrapPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
-    virtual xpr_bool_t onExplore(FileScrapPane &aFileScrapPane, LPITEMIDLIST aFullPidl);
-
-    // from AddressBarObserver
-    virtual xpr_bool_t onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);
-    virtual LPITEMIDLIST onFailExec(AddressBar &aAddressBar, const xpr_tchar_t *aExecPath);
-    virtual void onMoveFocus(AddressBar &aAddressBar);
-
-    // from PathBarObserver
-    virtual xpr_bool_t onExplore(PathBar &aPathBar, LPITEMIDLIST aFullPidl);
-
-    // from StatusBarObserver
-    virtual void onStatusBarRemove(StatusBar &aStatusBar, xpr_size_t aIndex);
-    virtual void onStatusBarRemoved(StatusBar &aStatusBar);
-    virtual void onStatusBarRemoveAll(StatusBar &aStatusBar);
-    virtual void onStatuBarContextMenu(StatusBar &aStatusBar, xpr_size_t aIndex, const POINT &aPoint);
-    virtual void onStatusBarDoubleClicked(StatusBar &aStatusBar, xpr_size_t sIndex);
+    // from TabPaneObserver
+    virtual void onCreated(TabPane &aTabPane);
+    virtual void onDestroyed(TabPane &aTabPane);
+    virtual void onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);
+    virtual xpr_bool_t onOpenFolder(TabPane &aTabPane, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onOpenFolder(TabPane &aTabPane, LPITEMIDLIST aFullPidl);
+    virtual void onSetFocus(TabPane &aTabPane);
+    virtual void onMoveFocus(TabPane &aTabPane, xpr_sint_t aCurWnd);
 
 protected:
     DECLARE_MESSAGE_MAP()

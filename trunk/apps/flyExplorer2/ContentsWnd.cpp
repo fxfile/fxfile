@@ -18,7 +18,6 @@
 
 #include "Option.h"
 #include "BookmarkSetWnd.h"
-#include "CtrlId.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -12,28 +12,37 @@
 #pragma once
 
 #include "SearchResultCtrlObserver.h"
+#include "TabPane.h"
 
-class SearchResultPaneObserver;
 class StatusBar;
 
-class SearchResultPane : public CWnd, public SearchResultCtrlObserver
+class SearchResultPane
+    : public TabPane
+    , public SearchResultCtrlObserver
 {
-    typedef CWnd super;
+    typedef TabPane super;
 
 public:
     SearchResultPane(void);
     virtual ~SearchResultPane(void);
 
 public:
-    void setObserver(SearchResultPaneObserver *aObserver);
-
-public:
     xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
 
 public:
-    void setViewIndex(xpr_sint_t aViewIndex);
-    xpr_sint_t getViewIndex(void) const;
+    // from TabPane
+    virtual CWnd *     newSubPane(xpr_uint_t aId);
+    virtual CWnd *     getSubPane(xpr_uint_t aId = InvalidId) const;
+    virtual xpr_size_t getSubPaneCount(void) const;
+    virtual xpr_uint_t getCurSubPaneId(void) const;
+    virtual xpr_uint_t setCurSubPane(xpr_uint_t aId);
+    virtual void       destroySubPane(xpr_uint_t aId);
+    virtual void       destroySubPane(void);
 
+    virtual StatusBar *getStatusBar(void) const;
+    virtual const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
+
+public:
     SearchResultCtrl *getSearchResultCtrl(void) const;
 
 protected:
@@ -44,17 +53,18 @@ protected:
     virtual void onStartSearch(SearchResultCtrl &aSearchResultCtrl);
     virtual void onEndSearch(SearchResultCtrl &aSearchResultCtrl);
     virtual void onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl);
-    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
-    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl);
+    virtual xpr_bool_t onOpenFolder(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
+    virtual xpr_bool_t onOpenFolder(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl);
     virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl);
+    virtual void onMoveFocus(SearchResultCtrl &aSearchResultCtrl);
 
 protected:
-    SearchResultPaneObserver *mObserver;
-
-    xpr_sint_t mViewIndex;
-
+    xpr_uint_t        mSubPaneId;
     SearchResultCtrl *mSearchResultCtrl;
     StatusBar        *mStatusBar;
+
+    xpr_tchar_t mStatusText0[0xff];
+    xpr_tchar_t mStatusText1[0xff];
 
 protected:
     DECLARE_MESSAGE_MAP()

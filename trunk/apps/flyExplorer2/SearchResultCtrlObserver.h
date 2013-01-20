@@ -19,9 +19,10 @@ public:
     virtual void onStartSearch(SearchResultCtrl &aSearchResultCtrl) = 0;
     virtual void onEndSearch(SearchResultCtrl &aSearchResultCtrl) = 0;
     virtual void onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl) = 0;
-    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath) = 0;
-    virtual xpr_bool_t onExplore(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl) = 0;
+    virtual xpr_bool_t onOpenFolder(SearchResultCtrl &aSearchResultCtrl, const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath) = 0;
+    virtual xpr_bool_t onOpenFolder(SearchResultCtrl &aSearchResultCtrl, LPITEMIDLIST aFullPidl) = 0;
     virtual void onSetFocus(SearchResultCtrl &aSearchResultCtrl) = 0;
+    virtual void onMoveFocus(SearchResultCtrl &aSearchResultCtrl) = 0;
 };
 
 #endif // __FX_SEARCH_RESULT_CTRL_OBSERVER_H__

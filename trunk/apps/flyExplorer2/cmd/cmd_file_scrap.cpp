@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -576,7 +576,7 @@ void FileScrapViewCommand::execute(CommandContext &aContext)
         ExplorerView *sExplorerView = sMainFrame->getExplorerView();
         if (XPR_IS_NOT_NULL(sExplorerView))
         {
-            xpr_sint_t sTab = sExplorerView->newTab(ExplorerView::TabTypeFileScrap);
+            xpr_sint_t sTab = sExplorerView->newTab(TabTypeFileScrap);
             if (sTab >= 0)
                 sExplorerView->setCurTab(sTab);
         }

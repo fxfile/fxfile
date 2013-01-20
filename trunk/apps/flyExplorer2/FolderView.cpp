@@ -16,7 +16,6 @@
 #include "PreviewViewEx.h"
 #include "MainFrame.h"
 #include "OptionMgr.h"
-#include "CtrlId.h"
 
 #include "rgc/MemDC.h"
 
@@ -74,8 +73,6 @@ xpr_bool_t FolderView::PreCreateWindow(CREATESTRUCT &aCreateStruct)
 
     return super::PreCreateWindow(aCreateStruct);
 }
-
-IMPLEMENT_DYNCREATE(FolderView, CView)
 
 BEGIN_MESSAGE_MAP(FolderView, super)
     ON_WM_CREATE()

@@ -1839,6 +1839,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ExplorerPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerPane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerStatusBar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerStatusBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ExplorerView.cpp"
 				>
 			</File>
@@ -1876,10 +1892,6 @@
 			</File>
 			<File
 				RelativePath=".\FileScrapPane.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FileScrapPaneObserver.h"
 				>
 			</File>
 			<File
@@ -2059,10 +2071,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SearchResultPaneObserver.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Splitter.cpp"
 				>
 			</File>
@@ -2076,14 +2084,6 @@
 			</File>
 			<File
 				RelativePath=".\Stackwalker.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StatusBarEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StatusBarEx.h"
 				>
 			</File>
 			<File
@@ -2145,6 +2145,22 @@
 			</File>
 			<File
 				RelativePath=".\SystemInfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TabPane.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TabPane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TabPaneObserver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\TabType.h"
 				>
 			</File>
 			<File

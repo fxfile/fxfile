@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "StatusBarEx.h"
+#include "ExplorerStatusBar.h"
 
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_size_format.h"
@@ -32,24 +32,24 @@ enum
     CTRL_ID_DRIVE_PROGRESS_CTRL = 50,
 };
 
-StatusBarEx::StatusBarEx(void)
+ExplorerStatusBar::ExplorerStatusBar(void)
     : mDriveIcon(XPR_NULL)
 {
 }
 
-StatusBarEx::~StatusBarEx(void)
+ExplorerStatusBar::~ExplorerStatusBar(void)
 {
     DESTROY_ICON(mDriveIcon);
 }
 
-BEGIN_MESSAGE_MAP(StatusBarEx, super)
+BEGIN_MESSAGE_MAP(ExplorerStatusBar, super)
     ON_WM_CREATE()
     ON_WM_SIZE()
     ON_WM_DESTROY()
     ON_MESSAGE(WM_PROGRESS_DBLCK, OnProgressDblclk)
 END_MESSAGE_MAP()
 
-xpr_sint_t StatusBarEx::OnCreate(LPCREATESTRUCT aCreateStruct)
+xpr_sint_t ExplorerStatusBar::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
@@ -77,7 +77,7 @@ xpr_sint_t StatusBarEx::OnCreate(LPCREATESTRUCT aCreateStruct)
     return 0;
 }
 
-void StatusBarEx::OnDestroy(void)
+void ExplorerStatusBar::OnDestroy(void)
 {
     super::OnDestroy();
 
@@ -86,14 +86,14 @@ void StatusBarEx::OnDestroy(void)
     mDriveProgressCtrl.DestroyWindow();
 }
 
-void StatusBarEx::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
+void ExplorerStatusBar::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
 {
     super::OnSize(aType, cx, cy);
 
     recalcLayout();
 }
 
-void StatusBarEx::recalcLayout(void)
+void ExplorerStatusBar::recalcLayout(void)
 {
     CRect sRect;
     getPaneRect(3, &sRect);
@@ -102,7 +102,7 @@ void StatusBarEx::recalcLayout(void)
     mDriveProgressCtrl.Invalidate(XPR_FALSE);
 }
 
-void StatusBarEx::setDiskFreeSpace(const xpr_tchar_t *aPath)
+void ExplorerStatusBar::setDiskFreeSpace(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NULL(aPath))
         return;
@@ -180,14 +180,14 @@ void StatusBarEx::setDiskFreeSpace(const xpr_tchar_t *aPath)
     recalcLayout();
 }
 
-LRESULT StatusBarEx::OnProgressDblclk(WPARAM wParam, LPARAM lParam)
+LRESULT ExplorerStatusBar::OnProgressDblclk(WPARAM wParam, LPARAM lParam)
 {
     showDriveProperties();
 
     return 0;
 }
 
-void StatusBarEx::showDriveProperties(void)
+void ExplorerStatusBar::showDriveProperties(void)
 {
     xpr_tchar_t sText[0xff] = {0};
     if (getPaneText(2, sText, 0xfe) == XPR_FALSE)

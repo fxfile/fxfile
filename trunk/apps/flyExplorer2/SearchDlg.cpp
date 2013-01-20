@@ -79,7 +79,7 @@ SearchDlg::SearchDlg(void)
     , mCurSel(-1)
     , mDlgState(XPR_NULL)
     , mSearchResultViewIndex(-1)
-    , mSearchResultCtrlId(0)
+    , mSearchResultPaneId(0)
 {
 }
 
@@ -993,9 +993,9 @@ SearchResultCtrl *SearchDlg::getSearchResultCtrl(void) const
     if (XPR_IS_NULL(sExplorerView))
         return XPR_NULL;
 
-    xpr_sint_t sTab = sExplorerView->findTabWndId(mSearchResultCtrlId);
+    xpr_sint_t sTab = sExplorerView->findTab(mSearchResultPaneId);
 
-    SearchResultPane *sSearchResultPane = dynamic_cast<SearchResultPane *>(sExplorerView->getTabWnd(sTab));
+    SearchResultPane *sSearchResultPane = dynamic_cast<SearchResultPane *>(sExplorerView->getTabPane(sTab));
     if (XPR_IS_NULL(sSearchResultPane))
         return XPR_NULL;
 
@@ -1021,7 +1021,7 @@ void SearchDlg::OnStart(void)
         sExplorerView->setCurTab(sTab);
 
         mSearchResultViewIndex = sExplorerView->getViewIndex();
-        mSearchResultCtrlId = sExplorerView->getTabWndId(sTab);
+        mSearchResultPaneId = sExplorerView->getTabPaneId(sTab);
     }
 
     SearchResultCtrl *sSearchResultCtrl = getSearchResultCtrl();

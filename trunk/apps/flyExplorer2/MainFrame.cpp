@@ -31,6 +31,7 @@
 #include "FolderPane.h"
 #include "FolderCtrl.h"
 #include "ExplorerView.h"
+#include "ExplorerPane.h"
 #include "ExplorerCtrl.h"
 #include "SearchResultCtrl.h"
 #include "BookmarkItemEditDlg.h"
@@ -297,6 +298,9 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
     {
         mPicViewer = new PicViewer;
         mPicViewer->Create(this);
+
+        if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+            mPicViewer->setDocking(XPR_FALSE);
     }
 
     if (XPR_IS_TRUE(gOpt->mFileScrapDrop))
@@ -1874,7 +1878,7 @@ ExplorerView *MainFrame::getExplorerView(xpr_sint_t aIndex) const
         if (sRow != -1 && sColumn != -1)
         {
             CWnd *sWnd = mSplitter.getPaneWnd(sRow, sColumn);
-            sExplorerView = DYNAMIC_DOWNCAST(ExplorerView, sWnd);
+            sExplorerView = dynamic_cast<ExplorerView *>(sWnd);
         }
     }
     else if (aIndex == -2) // other focused explorer view
@@ -1885,7 +1889,7 @@ ExplorerView *MainFrame::getExplorerView(xpr_sint_t aIndex) const
         if (sRow != -1 && sColumn != -1)
         {
             CWnd *sWnd = mSplitter.getPaneWnd(sRow, sColumn);
-            sExplorerView = DYNAMIC_DOWNCAST(ExplorerView, sWnd);
+            sExplorerView = dynamic_cast<ExplorerView *>(sWnd);
         }
     }
     else // explicitly explorer view
@@ -1897,10 +1901,19 @@ ExplorerView *MainFrame::getExplorerView(xpr_sint_t aIndex) const
         getViewIndexToViewSplit(aIndex, sRowCount, sColumnCount, sRow, sColumn);
 
         CWnd *sWnd = mSplitter.getPaneWnd(sRow, sColumn);
-        sExplorerView = DYNAMIC_DOWNCAST(ExplorerView, sWnd);
+        sExplorerView = dynamic_cast<ExplorerView *>(sWnd);
     }
 
     return sExplorerView;
+}
+
+ExplorerPane *MainFrame::getExplorerPane(xpr_sint_t aIndex) const
+{
+    ExplorerView *sExplorerView = getExplorerView(aIndex);
+    if (XPR_IS_NULL(sExplorerView))
+        return XPR_NULL;
+
+    return sExplorerView->getExplorerPane();
 }
 
 SysTray *MainFrame::createTray(void)
@@ -3478,13 +3491,13 @@ void MainFrame::setDriveViewSplit(xpr_bool_t aDriveViewSplit)
 
     xpr_sint_t i;
     xpr_sint_t sViewCount = getViewCount();
-    ExplorerView *sExplorerView;
+    ExplorerPane *sExplorerPane;
 
     for (i = 0; i < sViewCount; ++i)
     {
-        sExplorerView = getExplorerView(i);
-        if (XPR_IS_NOT_NULL(sExplorerView) && XPR_IS_NOT_NULL(sExplorerView->m_hWnd))
-            sExplorerView->visibleDrivePathBar(aDriveViewSplit);
+        sExplorerPane = getExplorerPane(i);
+        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
+            sExplorerPane->visibleDrivePathBar(aDriveViewSplit);
     }
 
     gOpt->mDriveBar = XPR_TRUE;
@@ -3496,9 +3509,9 @@ DriveToolBar *MainFrame::getDriveBar(void) const
     DriveToolBar *sDriveBar = XPR_NULL;
     if (isDriveViewSplit() == XPR_TRUE)
     {
-        ExplorerView *sExplorerView = getExplorerView();
-        if (XPR_IS_NOT_NULL(sExplorerView) && XPR_IS_NOT_NULL(sExplorerView->m_hWnd))
-            sDriveBar = (DriveToolBar *)sExplorerView->getDrivePathBar();
+        ExplorerPane *sExplorerPane = getExplorerPane();
+        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
+            sDriveBar = (DriveToolBar *)sExplorerPane->getDrivePathBar();
     }
     else
     {
@@ -3799,14 +3812,14 @@ void MainFrame::updateBookmark(void)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = getViewCount();
-        ExplorerView *sExplorerView;
+        ExplorerPane *sExplorerPane;
 
         for (i = 0; i < sViewCount; ++i)
         {
-            sExplorerView = getExplorerView(i);
-            if (XPR_IS_NOT_NULL(sExplorerView) && XPR_IS_NOT_NULL(sExplorerView->m_hWnd))
+            sExplorerPane = getExplorerPane(i);
+            if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
             {
-                sExplorerView->updateBookmark(XPR_TRUE);
+                sExplorerPane->updateBookmark(XPR_TRUE);
             }
         }
     }
