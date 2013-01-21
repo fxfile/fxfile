@@ -138,16 +138,8 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
-    DWORD sExStyle = GetExtendedStyle();
-    sExStyle |= WS_EX_CLIENTEDGE;
-    sExStyle |= LVS_EX_DOUBLEBUFFER; // support from WinXP
-    SetExtendedStyle(sExStyle);
-
-    // enable explorer theme
-    SetWindowTheme(m_hWnd, XPR_WIDE_STRING_LITERAL("explorer"), XPR_NULL);
-
-    if (subclassHeader() == XPR_FALSE)
-        return -1;
+    // enable vista enhanced control
+    enableVistaEnhanced(XPR_TRUE);
 
     InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  170);
     InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("search_result.column.location")), LVCFMT_LEFT,  200);
@@ -155,8 +147,6 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  150);
     InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  140);
     mHeaderCtrl->setSortImage(-1, XPR_TRUE);
-
-    //createAccelTable();
 
     if (XPR_IS_NULL(mShellIcon))
     {
@@ -197,25 +187,6 @@ void SearchResultCtrl::OnDestroy(void)
 
     if (XPR_IS_NOT_NULL(mShellIcon))
         mShellIcon->Stop();
-
-    DESTROY_DELETE(mHeaderCtrl);
-}
-
-xpr_bool_t SearchResultCtrl::subclassHeader(xpr_bool_t aBoldFont)
-{
-    mHeaderCtrl = new FlatHeaderCtrl;
-    ASSERT(mHeaderCtrl);
-
-    HWND sHwnd = GetDlgItem(0)->GetSafeHwnd();
-    if (XPR_IS_NULL(sHwnd))
-        return XPR_FALSE;
-
-    if (mHeaderCtrl->SubclassWindow(sHwnd) == XPR_FALSE)
-        return XPR_FALSE;
-
-    mHeaderCtrl->initHeader(aBoldFont);
-
-    return XPR_TRUE;
 }
 
 void SearchResultCtrl::OnWindowPosChanging(WINDOWPOS FAR *aWindowPos)

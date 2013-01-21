@@ -21,18 +21,19 @@ static char THIS_FILE[] = __FILE__;
 IMPLEMENT_DYNAMIC(ListCtrlEx, CListCtrl);
 
 ListCtrlEx::ListCtrlEx(void)
-    : mHeaderCtrl(XPR_NULL)
+    : mVistaEnhanced(XPR_FALSE)
+    , mHeaderCtrl(XPR_NULL)
 {
 }
 
-BEGIN_MESSAGE_MAP(ListCtrlEx, CListCtrl)
+BEGIN_MESSAGE_MAP(ListCtrlEx, super)
     ON_WM_CREATE()
     ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 xpr_sint_t ListCtrlEx::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
-    if (CListCtrl::OnCreate(aCreateStruct) == -1)
+    if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
     // header control subclassing
@@ -44,9 +45,38 @@ xpr_sint_t ListCtrlEx::OnCreate(LPCREATESTRUCT aCreateStruct)
 
 void ListCtrlEx::OnDestroy(void)
 {
-    CListCtrl::OnDestroy();
+    super::OnDestroy();
 
     XPR_SAFE_DELETE(mHeaderCtrl);
+}
+
+xpr_bool_t ListCtrlEx::isVistaEnhanced(void) const
+{
+    return mVistaEnhanced;
+}
+
+void ListCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
+{
+    if (XPR_IS_TRUE(aEnable))
+    {
+        // enable explorer theme
+        SetWindowTheme(m_hWnd, XPR_WIDE_STRING_LITERAL("explorer"), XPR_NULL);
+
+        DWORD sExStyle = GetExtendedStyle();
+        sExStyle |= LVS_EX_DOUBLEBUFFER; // support from WinXP
+        SetExtendedStyle(sExStyle);
+    }
+    else
+    {
+        // diable explorer theme
+        SetWindowTheme(m_hWnd, XPR_NULL, XPR_NULL);
+
+        DWORD sExStyle = GetExtendedStyle();
+        sExStyle &= ~LVS_EX_DOUBLEBUFFER;
+        SetExtendedStyle(sExStyle);
+    }
+
+    mVistaEnhanced = aEnable;
 }
 
 xpr_bool_t ListCtrlEx::subclassHeader(xpr_bool_t aBoldFont)
@@ -79,7 +109,7 @@ xpr_sint_t ListCtrlEx::setSortImage(xpr_sint_t aColumn, xpr_bool_t aAscending)
 
 LRESULT ListCtrlEx::WindowProc(xpr_uint_t msg, WPARAM wParam, LPARAM lParam) 
 {
-    LRESULT lResult = CListCtrl::WindowProc(msg, wParam, lParam);
+    LRESULT lResult = super::WindowProc(msg, wParam, lParam);
 
     if (msg == WM_SETREDRAW)
     {

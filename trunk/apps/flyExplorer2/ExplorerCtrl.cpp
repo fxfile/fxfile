@@ -356,15 +356,12 @@ xpr_sint_t ExplorerCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 
     SetWindowText(XPR_STRING_LITERAL("flyExplorer"));
 
+    // enable vist enhanced control
+    enableVistaEnhanced(XPR_TRUE);
+
     // Register Drag & Drop
     mDropTarget.registerObserver(this);
     mDropTarget.Register(this);
-
-    //DWORD dwExtendedStyle = GetExtendedStyle();
-    //dwExtendedStyle |= LVS_EX_HEADERDRAGDROP;
-    //dwExtendedStyle |= LVS_EX_CHECKBOXES;
-    //dwExtendedStyle |= LVS_EX_DOUBLEBUFFER;
-    //SetExtendedStyle(dwExtendedStyle);
 
     // create file change watcher
     //if (fxb::UserEnv::instance().bPlatformNT)
