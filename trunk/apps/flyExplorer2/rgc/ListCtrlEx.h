@@ -29,8 +29,6 @@ class ListCtrlEx : public CListCtrl
 {
     typedef CListCtrl super;
 
-    DECLARE_DYNAMIC(ListCtrlEx);
-
 public:
     ListCtrlEx(void);
 

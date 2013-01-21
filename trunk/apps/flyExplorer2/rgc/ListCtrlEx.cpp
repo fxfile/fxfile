@@ -18,8 +18,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-IMPLEMENT_DYNAMIC(ListCtrlEx, CListCtrl);
-
 ListCtrlEx::ListCtrlEx(void)
     : mVistaEnhanced(XPR_FALSE)
     , mHeaderCtrl(XPR_NULL)

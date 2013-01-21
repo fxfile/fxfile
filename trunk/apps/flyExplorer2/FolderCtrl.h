@@ -27,8 +27,6 @@ class FolderCtrl : public TreeCtrlEx, public DropTargetObserver
 {
     typedef TreeCtrlEx super;
 
-    DECLARE_DYNAMIC(FolderCtrl);
-
 public:
     FolderCtrl(void);
     virtual ~FolderCtrl(void);

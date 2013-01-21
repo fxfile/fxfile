@@ -15,8 +15,6 @@ class BookmarkSetWnd;
 
 class ContentsWnd : public CWnd
 {
-    DECLARE_DYNAMIC(ContentsWnd)
-
 public:
     enum Mode
     {

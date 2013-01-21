@@ -41,8 +41,6 @@ public:
     }
 };
 
-IMPLEMENT_DYNAMIC(MainCoolBar, CSizableReBar)
-
 BEGIN_MESSAGE_MAP(MainCoolBar, CSizableReBar)
     ON_WM_SIZE()
     ON_WM_SYSCOLORCHANGE()
