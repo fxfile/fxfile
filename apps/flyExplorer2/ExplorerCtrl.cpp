@@ -151,8 +151,6 @@ struct ExplorerCtrl::DefColumnInfo
 xpr_sint_t ExplorerCtrl::mRefCount = 0;
 xpr_uint_t ExplorerCtrl::mCodeMgr = 0;
 
-IMPLEMENT_DYNAMIC(ExplorerCtrl, ListCtrlEx);
-
 ExplorerCtrl::ExplorerCtrl(void)
     : mViewIndex(-1)
 {

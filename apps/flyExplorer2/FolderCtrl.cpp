@@ -130,8 +130,6 @@ FolderCtrl::~FolderCtrl(void)
     XPR_SAFE_DELETE(mShellIcon);
 }
 
-IMPLEMENT_DYNAMIC(FolderCtrl, TreeCtrlEx);
-
 BEGIN_MESSAGE_MAP(FolderCtrl, super)
     ON_WM_CREATE()
     ON_WM_SETFOCUS()

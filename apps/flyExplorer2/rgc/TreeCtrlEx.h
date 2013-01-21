@@ -28,8 +28,6 @@ class TreeCtrlEx : public CTreeCtrl
 {
     typedef CTreeCtrl super;
 
-    DECLARE_DYNAMIC(TreeCtrlEx);
-
 public:
     TreeCtrlEx(void);
     virtual ~TreeCtrlEx(void);

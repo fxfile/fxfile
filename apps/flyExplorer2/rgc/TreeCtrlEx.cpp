@@ -25,8 +25,6 @@ TreeCtrlEx::~TreeCtrlEx(void)
 {
 }
 
-IMPLEMENT_DYNAMIC(TreeCtrlEx, CTreeCtrl);
-
 BEGIN_MESSAGE_MAP(TreeCtrlEx, super)
 END_MESSAGE_MAP()
 

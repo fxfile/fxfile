@@ -35,8 +35,6 @@ enum
     CTRL_ID_BOOKMARK_SET_WND = 50,
 };
 
-IMPLEMENT_DYNAMIC(ContentsWnd, CWnd)
-
 ContentsWnd::ContentsWnd(void)
     : mMode(ModeNone)
     , mFolderIcon(XPR_NULL)

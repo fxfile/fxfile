@@ -44,8 +44,6 @@ class ExplorerCtrl : public ListCtrlEx, public DropTargetObserver
 {
     typedef ListCtrlEx super;
 
-    DECLARE_DYNAMIC(ExplorerCtrl);
-
     enum FolderType;
     struct EnumData;
 

@@ -55,8 +55,6 @@ protected:
     void saveStateFile(const xpr_tchar_t *aPath);
 
 protected:
-    DECLARE_DYNAMIC(MainCoolBar)
-
     DECLARE_MESSAGE_MAP()
     afx_msg void OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy);
     afx_msg void OnSysColorChange(void);
