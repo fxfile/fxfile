@@ -37,8 +37,14 @@ public:
 public:
     xpr_bool_t hasChildItem(HTREEITEM aTreeItem) const;
 
+    xpr_bool_t isVistaEnhanced(void) const;
+    void enableVistaEnhanced(xpr_bool_t aEnable);
+
     DWORD GetExtendedStyle() const;
     DWORD SetExtendedStyle(DWORD dwExMask, DWORD dwExStyles);
+
+protected:
+    xpr_bool_t mVistaEnhanced;
 
 protected:
     DECLARE_MESSAGE_MAP()

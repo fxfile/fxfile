@@ -12,7 +12,9 @@
 #pragma once
 
 #include "fxb/fxb_shell_change_notify.h"
+
 #include "rgc/BCMenu.h"
+#include "rgc/ListCtrlEx.h"
 
 namespace fxb
 {
@@ -58,9 +60,9 @@ public:
     DWORD        mFileAttributes;
 };
 
-class SearchResultCtrl : public CListCtrl
+class SearchResultCtrl : public ListCtrlEx
 {
-    typedef CListCtrl super;
+    typedef ListCtrlEx super;
 
 public:
     SearchResultCtrl(void);
@@ -121,7 +123,6 @@ protected:
 
     xpr_bool_t invokeCommandSelf(fxb::ContextMenu *aContextMenu, xpr_uint_t aId);
     static xpr_sint_t CALLBACK DefaultItemCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
-    xpr_bool_t subclassHeader(xpr_bool_t bBoldFont = XPR_FALSE);
 
     xpr_sint_t findItemSignature(xpr_uint_t aSignature);
 
@@ -133,7 +134,6 @@ protected:
     xpr_sint_t mSortColumn;
     xpr_bool_t mSortAscending;
 
-    FlatHeaderCtrl *mHeaderCtrl;
     fxb::ShellIcon *mShellIcon;
 
     typedef std::deque<SrItemData *> ResultDeque;

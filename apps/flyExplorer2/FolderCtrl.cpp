@@ -189,12 +189,26 @@ xpr_bool_t FolderCtrl::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRec
     return super::Create(sStyle, aRect, aParentWnd, aId);
 }
 
+xpr_bool_t FolderCtrl::PreCreateWindow(CREATESTRUCT &aCreateStruct) 
+{
+    aCreateStruct.style |= TVS_HASLINES;
+    aCreateStruct.style |= TVS_HASBUTTONS;
+    aCreateStruct.style |= TVS_SHOWSELALWAYS;
+    aCreateStruct.style |= TVS_EDITLABELS;
+    aCreateStruct.style |= TVS_NONEVENHEIGHT;
+
+    return super::PreCreateWindow(aCreateStruct);
+}
+
 xpr_sint_t FolderCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
     SetWindowText(XPR_STRING_LITERAL("flyExplorer"));
+
+    // enable vista enhanced control
+    enableVistaEnhanced(XPR_TRUE);
 
     mDropTarget.registerObserver(this);
     mDropTarget.Register(this);
@@ -206,17 +220,6 @@ xpr_sint_t FolderCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     }
 
     return 0;
-}
-
-xpr_bool_t FolderCtrl::PreCreateWindow(CREATESTRUCT &aCreateStruct) 
-{
-    aCreateStruct.style |= TVS_HASLINES;
-    aCreateStruct.style |= TVS_HASBUTTONS;
-    aCreateStruct.style |= TVS_SHOWSELALWAYS;
-    aCreateStruct.style |= TVS_EDITLABELS;
-    aCreateStruct.style |= TVS_NONEVENHEIGHT;
-
-    return super::PreCreateWindow(aCreateStruct);
 }
 
 void FolderCtrl::OnDestroy(void) 
@@ -254,9 +257,9 @@ LPARAM FolderCtrl::GetItemData(HTREEITEM aTreeItem) const
     return sTvItem.lParam;
 }
 
-void FolderCtrl::setImageList(CImageList *pSmallImgList)
+void FolderCtrl::setImageList(CImageList *aSmallImgList)
 {
-    mSmallImgList = pSmallImgList;
+    mSmallImgList = aSmallImgList;
 
     super::SetImageList(mSmallImgList, TVSIL_NORMAL);
 }

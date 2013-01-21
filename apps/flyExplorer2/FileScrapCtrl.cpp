@@ -81,7 +81,7 @@ xpr_uint_t FileScrapCtrl::mCodeMgr = 0;
 
 FileScrapCtrl::FileScrapCtrl(void)
     : mObserver(XPR_NULL)
-    , mHeaderCtrl(XPR_NULL), mSortColumn(-1), mSortAscending(XPR_TRUE)
+    , mSortColumn(-1), mSortAscending(XPR_TRUE)
     , mShellIcon(XPR_NULL), mCode(0), mSignature(0)
     , mGroup(XPR_NULL), mFileCount(0), mDirCount(0)
 {
@@ -137,17 +137,12 @@ xpr_sint_t FileScrapCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
+    // enable vista enhanced control
+    enableVistaEnhanced(XPR_TRUE);
+
     DWORD sExStyle = GetExtendedStyle();
-    sExStyle |= WS_EX_CLIENTEDGE;
-    sExStyle |= LVS_EX_DOUBLEBUFFER; // support from WinXP
     sExStyle |= LVS_EX_FULLROWSELECT;
     SetExtendedStyle(sExStyle);
-
-    // enable explorer theme
-    SetWindowTheme(m_hWnd, XPR_WIDE_STRING_LITERAL("explorer"), XPR_NULL);
-
-    if (subclassHeader() == XPR_FALSE)
-        return -1;
 
     InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("file_scrap.list.column.name")),     LVCFMT_LEFT,  170);
     InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("file_scrap.list.column.location")), LVCFMT_LEFT,  200);
@@ -176,25 +171,6 @@ void FileScrapCtrl::OnDestroy(void)
 
     if (XPR_IS_NOT_NULL(mShellIcon))
         mShellIcon->Stop();
-
-    DESTROY_DELETE(mHeaderCtrl);
-}
-
-xpr_bool_t FileScrapCtrl::subclassHeader(xpr_bool_t aBoldFont)
-{
-    mHeaderCtrl = new FlatHeaderCtrl;
-    ASSERT(mHeaderCtrl);
-
-    HWND sHwnd = GetDlgItem(0)->GetSafeHwnd();
-    if (XPR_IS_NULL(sHwnd))
-        return XPR_FALSE;
-
-    if (mHeaderCtrl->SubclassWindow(sHwnd) == XPR_FALSE)
-        return XPR_FALSE;
-
-    mHeaderCtrl->initHeader(aBoldFont);
-
-    return XPR_TRUE;
 }
 
 void FileScrapCtrl::clearList(void)

@@ -17,6 +17,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 TreeCtrlEx::TreeCtrlEx(void)
+    : mVistaEnhanced(XPR_FALSE)
 {
 }
 
@@ -38,6 +39,37 @@ xpr_bool_t TreeCtrlEx::hasChildItem(HTREEITEM aTreeItem) const
         return XPR_FALSE;
 
     return (sTvItem.cChildren != 0) ? XPR_TRUE : XPR_FALSE;
+}
+
+xpr_bool_t TreeCtrlEx::isVistaEnhanced(void) const
+{
+    return mVistaEnhanced;
+}
+
+void TreeCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
+{
+    if (XPR_IS_TRUE(aEnable))
+    {
+        // enable explorer theme
+        SetWindowTheme(m_hWnd, XPR_WIDE_STRING_LITERAL("explorer"), XPR_NULL);
+
+        ModifyStyle(TVS_HASLINES, TVS_FULLROWSELECT | TVS_TRACKSELECT);
+
+        DWORD sExStyle = TVS_EX_DOUBLEBUFFER | TVS_EX_FADEINOUTEXPANDOS | TVS_EX_AUTOHSCROLL;
+        SetExtendedStyle(sExStyle, sExStyle);
+    }
+    else
+    {
+        // disable explorer theme
+        SetWindowTheme(m_hWnd, XPR_NULL, XPR_NULL);
+
+        ModifyStyle(TVS_FULLROWSELECT | TVS_TRACKSELECT, TVS_HASLINES);
+
+        DWORD sExStyle = TVS_EX_DOUBLEBUFFER | TVS_EX_FADEINOUTEXPANDOS | TVS_EX_AUTOHSCROLL;
+        SetExtendedStyle(sExStyle, 0);
+    }
+
+    mVistaEnhanced = aEnable;
 }
 
 DWORD TreeCtrlEx::GetExtendedStyle() const

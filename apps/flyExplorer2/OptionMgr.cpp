@@ -251,7 +251,10 @@ void OptionMgr::applyFolderCtrl(FolderCtrl *aFolderCtrl, xpr_sint_t aIndex, xpr_
 
     if (aIndex == 0) // general
     {
-        DWORD sStyle = TVS_TRACKSELECT | TVS_SINGLEEXPAND;
+        DWORD sStyle = TVS_SINGLEEXPAND;
+        if (aFolderCtrl->isVistaEnhanced() == XPR_FALSE)
+            sStyle |= TVS_TRACKSELECT;
+
         if (mOption->mMouseClick == MOUSE_ONE_CLICK) aFolderCtrl->ModifyStyle(0, sStyle);
         else                                         aFolderCtrl->ModifyStyle(sStyle, 0);
 
@@ -534,7 +537,6 @@ void OptionMgr::applyExplorerCtrl(ExplorerCtrl *aExplorerCtrl, xpr_sint_t aIndex
             sExStyle |= LVS_EX_UNDERLINEHOT;
             sExStyle |= LVS_EX_ONECLICKACTIVATE;
             sExStyle |= LVS_EX_TRACKSELECT;
-
         }
         else
         {
