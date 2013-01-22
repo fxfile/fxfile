@@ -127,6 +127,7 @@ xpr_bool_t MainToolBar::HasButtonText(xpr_uint_t aId)
         case ID_VIEW_FOLDER_TREE_SHOW:
         case ID_VIEW_BAR_SEARCH:
         case ID_FILE_RENAME:
+        case ID_FILE_NEW_FOLDER:
             sResult = XPR_TRUE;
             break;
         }
@@ -149,6 +150,7 @@ xpr_bool_t MainToolBar::HasButtonTip(xpr_uint_t aId)
         case ID_VIEW_FOLDER_TREE_SHOW:
         case ID_VIEW_BAR_SEARCH:
         case ID_FILE_RENAME:
+        case ID_FILE_NEW_FOLDER:
             sResult = XPR_FALSE;
             break;
         }
