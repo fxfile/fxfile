@@ -457,11 +457,8 @@ void PathBar::recalcLayout(void)
 
 void PathBar::updateFonts(void)
 {
-    if (XPR_IS_NULL(mTextFont.m_hObject))
-        mTextFont.DeleteObject();
-
-    if (XPR_IS_NULL(mTextUnderLineFont.m_hObject))
-        mTextUnderLineFont.DeleteObject();
+    DELETE_OBJECT(mTextFont);
+    DELETE_OBJECT(mTextUnderLineFont);
 
     if (XPR_IS_TRUE(gOpt->mCustomFont) && gOpt->mCustomFontText[0] != 0)
     {
