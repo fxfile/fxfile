@@ -36,15 +36,15 @@ BEGIN_MESSAGE_MAP(TipDlg, super)
     ON_WM_PAINT()
     ON_WM_DESTROY()
     ON_BN_CLICKED(IDC_TIP_NEXT, OnNext)
-    ON_BN_CLICKED(IDC_TIP_NO_STARTUP, OnTipStartup)
+    ON_BN_CLICKED(IDC_TIP_SHOW_AT_STARTUP, OnTipStartup)
 END_MESSAGE_MAP()
 
 xpr_bool_t TipDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
-    xpr_bool_t sNoStartupTip = !gOpt->mTipOfTheToday;
-    ((CButton *)GetDlgItem(IDC_TIP_NO_STARTUP))->SetCheck(sNoStartupTip);
+    xpr_bool_t sStartupTip = gOpt->mTipOfTheToday;
+    ((CButton *)GetDlgItem(IDC_TIP_SHOW_AT_STARTUP))->SetCheck(sStartupTip);
 
     xpr_sint_t i;
     xpr_tchar_t sStringId[0xff] = {0};
@@ -71,9 +71,9 @@ xpr_bool_t TipDlg::OnInitDialog(void)
         mIndex = rand() % mTipDeque.size();
 
     SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.title")));
-    SetDlgItemText(IDC_TIP_NO_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.check.no_show_on_startup")));
-    SetDlgItemText(IDC_TIP_NEXT,       theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.button.next_tip")));
-    SetDlgItemText(IDOK,               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDC_TIP_SHOW_AT_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.check.show_at_startup")));
+    SetDlgItemText(IDC_TIP_NEXT,            theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.button.next_tip")));
+    SetDlgItemText(IDOK,                    theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
 
     return XPR_TRUE;
 }
@@ -82,60 +82,63 @@ void TipDlg::OnPaint(void)
 {
     CPaintDC sPaintDc(this);
 
+    const CRect sOffsetRect(7, 10, 7, 10);
+    const CPoint sTextOffset(15, 10);
+
     CRect sRect;
     GetClientRect(&sRect);
-    sRect.DeflateRect(12, 12, 12, 12);
-    sRect.bottom -= 34;
 
-    CRect sRect2(sRect);
-    sRect2.right = 70;
-    sPaintDc.FillSolidRect(sRect2, RGB(128,128,128));
+    CRect sOkButtonRect;
+    GetDlgItem(IDOK)->GetWindowRect(&sOkButtonRect);
+    ScreenToClient(&sOkButtonRect);
+    sRect.bottom = sOkButtonRect.top - sOffsetRect.bottom;
+
+    // draw background
+    sPaintDc.FillSolidRect(sRect, RGB(255,255,255));
 
     HICON sIcon = theApp.LoadIcon(IDI_TIP);
     if (sIcon != XPR_NULL)
     {
-        CPoint sIconPoint(sRect2.left + ((sRect2.Width() - 32) / 2), 25);
+        CPoint sIconPoint(sOffsetRect.left, sOffsetRect.top);
         ::DrawIconEx(sPaintDc.m_hDC, sIconPoint.x, sIconPoint.y, sIcon, 32, 32, 0, XPR_NULL, DI_NORMAL);
         DESTROY_ICON(sIcon);
     }
 
-    CRect sRect3(sRect);
-    sRect3.left = 70;
-    sPaintDc.FillSolidRect(sRect3, RGB(255,255,255));
-
     CPen sPen(PS_SOLID, 1, RGB(200,200,200));
     CPen *sOldPen = sPaintDc.SelectObject(&sPen);
-    sPaintDc.MoveTo(sRect2.right, 60);
-    sPaintDc.LineTo(sRect.right, 60);
+    sPaintDc.MoveTo(sRect.left,  sRect.bottom);
+    sPaintDc.LineTo(sRect.right, sRect.bottom);
     sPaintDc.SelectObject(sOldPen);
 
     CRect sTitleRect(sRect);
-    sTitleRect.left = sRect2.right + 10;
-    sTitleRect.bottom = 60;
+    sTitleRect.left   = sOffsetRect.left + 32 + sTextOffset.x;
+    sTitleRect.top    = sOffsetRect.top;
+    sTitleRect.bottom = sTitleRect.top + 32;
 
-    CFont sTitleFont, sTextFont;
     LOGFONT sLogFont = {0};
     GetFont()->GetLogFont(&sLogFont);
+
+    CFont sTextFont;
     sTextFont.CreateFontIndirect(&sLogFont);
-    sTitleFont.CreatePointFont(200, XPR_STRING_LITERAL("Times New Roman"));
-    sTitleFont.GetLogFont(&sLogFont);
-    sLogFont.lfWeight = FW_BOLD;
-    sLogFont.lfItalic = XPR_TRUE;
-    sLogFont.lfHeight = -MulDiv(18, GetDeviceCaps(sPaintDc.m_hDC, LOGPIXELSY), 72);
-    sTitleFont.DeleteObject();
+
+    CFont sTitleFont;
+    sLogFont.lfHeight = -MulDiv(13, GetDeviceCaps(sPaintDc.m_hDC, LOGPIXELSY), 72);
     sTitleFont.CreateFontIndirect(&sLogFont);
 
-    sPaintDc.SetTextColor(RGB(0,0,0));
+    sPaintDc.SetTextColor(RGB(0,50,150));
+
     CFont *sOldFont = sPaintDc.SelectObject(&sTitleFont);
-    xpr_tchar_t sTipOfTodayText[] = XPR_STRING_LITERAL("tip of the today");
+    const xpr_tchar_t sTipOfTodayText[] = XPR_STRING_LITERAL("Did you know...");
     sPaintDc.DrawText(sTipOfTodayText, (xpr_sint_t)_tcslen(sTipOfTodayText), sTitleRect, DT_SINGLELINE | DT_LEFT | DT_VCENTER);
     sPaintDc.SelectObject(sOldFont);
 
+    sPaintDc.SetTextColor(RGB(0,0,0));
+
     CRect sTextRect;
     sTextRect.left   = sTitleRect.left;
-    sTextRect.top    = sTitleRect.bottom + 15;
-    sTextRect.right  = sRect.right - 10;
-    sTextRect.bottom = sRect.bottom - 10;
+    sTextRect.top    = sTitleRect.bottom + sTextOffset.y;
+    sTextRect.right  = sRect.right  - sOffsetRect.right;
+    sTextRect.bottom = sRect.bottom - sOffsetRect.bottom;
 
     const xpr_tchar_t *sText = XPR_NULL;
     if (XPR_STL_IS_INDEXABLE(mIndex, mTipDeque))
@@ -168,5 +171,5 @@ void TipDlg::OnDestroy(void)
 
 void TipDlg::OnTipStartup(void) 
 {
-    gOpt->mTipOfTheToday = !((CButton *)GetDlgItem(IDC_TIP_NO_STARTUP))->GetCheck();
+    gOpt->mTipOfTheToday = ((CButton *)GetDlgItem(IDC_TIP_SHOW_AT_STARTUP))->GetCheck();
 }
