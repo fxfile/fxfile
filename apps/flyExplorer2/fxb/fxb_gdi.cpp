@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -212,5 +212,74 @@ HFONT CreateFont(const xpr_tchar_t *aFaceName,
     _tcscpy(sLogFont.lfFaceName, aFaceName);
 
     return ::CreateFontIndirect(&sLogFont);
+}
+
+
+xpr_bool_t FontDlgToString(const xpr_tchar_t *aFaceName,
+                           xpr_sint_t         aSize,
+                           xpr_sint_t         aWeight,
+                           xpr_bool_t         aItalic,
+                           xpr_bool_t         aStrikeOut,
+                           xpr_bool_t         aUnderline,
+                           xpr_tchar_t       *aFontText)
+{
+    if (XPR_IS_NULL(aFaceName) || XPR_IS_NULL(aFontText))
+        return XPR_FALSE;
+
+    _stprintf(aFontText,
+              XPR_STRING_LITERAL("%s,%d,%d,%d,%d,%d"),
+              aFaceName,
+              aSize / 10,
+              aWeight,
+              aItalic,
+              aStrikeOut,
+              aUnderline);
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t StringToLogFont(const xpr_tchar_t *aFontText, LOGFONT &aLogFont)
+{
+    if (XPR_IS_NULL(aFontText))
+        return XPR_FALSE;
+
+    xpr_tchar_t sFontText[0xff] = {0};
+    _tcscpy(sFontText, aFontText);
+
+    memset(&aLogFont, 0, sizeof(LOGFONT));
+
+    xpr_sint_t i;
+    xpr_tchar_t *sSplit = sFontText;
+    xpr_tchar_t *sSplit2;
+    for (i = 0; i <= 5; ++i)
+    {
+        if (*sSplit == XPR_STRING_LITERAL('\0'))
+            break;
+
+        sSplit2 = _tcschr(sSplit, XPR_STRING_LITERAL(','));
+        if (XPR_IS_NOT_NULL(sSplit2))
+            *sSplit2 = XPR_STRING_LITERAL('\0');
+
+        switch (i)
+        {
+        case 0: _tcscpy(aLogFont.lfFaceName, sSplit);                               break;
+        case 1: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfHeight);     break;
+        case 2: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfWeight);     break;
+        case 3: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfItalic);     break;
+        case 4: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfStrikeOut);  break;
+        case 5: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfUnderline);  break;
+        }
+
+        sSplit += _tcslen(sSplit) + 1;
+    }
+
+    CClientDC sClientDC(CWnd::GetDesktopWindow());
+    aLogFont.lfCharSet = DEFAULT_CHARSET;
+    aLogFont.lfHeight  = -MulDiv(aLogFont.lfHeight, sClientDC.GetDeviceCaps(LOGPIXELSY), 72);
+    if (aLogFont.lfWeight    == 1) aLogFont.lfWeight    = FW_BOLD;
+    if (aLogFont.lfStrikeOut != 0) aLogFont.lfStrikeOut = XPR_TRUE;
+    if (aLogFont.lfUnderline != 0) aLogFont.lfUnderline = XPR_TRUE;
+
+    return XPR_TRUE;
 }
 } // namespace fxb

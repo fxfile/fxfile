@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,28 +11,29 @@
 #include "CfgMgrDlg.h"
 
 #include "../resource.h"
+#include "../OptionMgr.h"
 
 #include "CfgGeneralDlg.h"
-#include "CfgContentsDlg.h"
-#include "CfgFldDlg.h"
-#include "CfgFldWndDlg.h"
-#include "CfgExpDlg.h"
-#include "CfgExpViewSetDlg.h"
-#include "CfgExpWndDlg.h"
-#include "CfgExpDispDlg.h"
-#include "CfgExpFilterDlg.h"
-#include "CfgExpThumbDlg.h"
-#include "CfgDispDlg.h"
-#include "CfgDispSizeDlg.h"
+#include "CfgGeneralStartupDlg.h"
+#include "CfgAppearanceDlg.h"
+#include "CfgAppearanceLayoutDlg.h"
+#include "CfgAppearanceFontDlg.h"
+#include "CfgAppearanceColorDlg.h"
+#include "CfgAppearanceFileListDlg.h"
+#include "CfgAppearanceViewSetDlg.h"
+#include "CfgAppearanceFilteringDlg.h"
+#include "CfgAppearanceThumbnailDlg.h"
+#include "CfgAppearanceHistoryDlg.h"
+#include "CfgAppearanceSizeFormatDlg.h"
+#include "CfgAppearanceFolderTreeDlg.h"
+#include "CfgAppearanceLanguageDlg.h"
 #include "CfgFuncDlg.h"
 #include "CfgFuncBookmarkDlg.h"
 #include "CfgFuncRenameDlg.h"
-#include "CfgFuncFileAssDlg.h"
 #include "CfgFuncRefreshDlg.h"
 #include "CfgFuncDragDlg.h"
-#include "CfgFuncSplitDlg.h"
+#include "CfgFuncProgramAssDlg.h"
 #include "CfgFuncFileScrapDlg.h"
-#include "CfgFuncHistoryDlg.h"
 #include "CfgFuncFileOpDlg.h"
 #include "CfgAdvDlg.h"
 #include "CfgAdvPathDlg.h"
@@ -50,6 +51,7 @@ CfgMgrDlg::CfgMgrDlg(xpr_sint_t aInitShowCfg)
     : super(IDD_CFG_MGR, XPR_NULL)
     , mInitShowCfg(aInitShowCfg)
     , mShowCfg(-1)
+    , mChanging(XPR_FALSE)
 {
     if (mInitShowCfg == -1)
         mInitShowCfg = mLastShowCfg;
@@ -67,13 +69,13 @@ BEGIN_MESSAGE_MAP(CfgMgrDlg, super)
     ON_NOTIFY(TVN_SELCHANGED, IDC_CFG_TREE, OnSelchangedTree)
     ON_BN_CLICKED(IDC_CFG_DEFAULT, OnDefault)
     ON_BN_CLICKED(IDC_CFG_APPLY,   OnApply)
-    ON_MESSAGE(WM_SETMODIFIED, OnSetModified)
-    ON_MESSAGE(WM_GETMODIFIED, OnGetModified)
 END_MESSAGE_MAP()
 
 xpr_bool_t CfgMgrDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
+
+    mTreeCtrl.enableVistaEnhanced(XPR_TRUE);
 
     mDarkGrayBrush.CreateSolidBrush(RGB(127,127,127));
 
@@ -86,55 +88,45 @@ xpr_bool_t CfgMgrDlg::OnInitDialog(void)
     mTreeCtrl.SetImageList(&mImgList, TVSIL_NORMAL);
     mTreeCtrl.SetItemHeight(mTreeCtrl.GetItemHeight() + 2);
 
-    // Init Configuration Dialog
+    // copy config
+    gOpt->copyConfig(mNewConfig);
+
+    // initialize configuration dialog
     xpr_sint_t sIndex;
-    sIndex = addCfgItem( 0,     -1, new CfgGeneralDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general")));
-    sIndex = addCfgItem( 4,     -1, new CfgFldDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(0),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view1")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(1),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view2")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(2),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view3")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(3),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view4")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(4),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view5")));
-    /*    */ addCfgItem( 4, sIndex, new CfgFldWndDlg(5),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.folder_pane.view6")));
-    sIndex = addCfgItem( 1,     -1, new CfgContentsDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.contents")));
-    sIndex = addCfgItem(12,     -1, new CfgExpDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window")));
-    /*    */ addCfgItem(20, sIndex, new CfgExpViewSetDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view_set")));
-    /*    */ addCfgItem( 9, sIndex, new CfgExpWndDlg(0),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view1")));
-    /*    */ addCfgItem(10, sIndex, new CfgExpWndDlg(1),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view2")));
-    /*    */ addCfgItem(10, sIndex, new CfgExpWndDlg(2),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view3")));
-    /*    */ addCfgItem(10, sIndex, new CfgExpWndDlg(3),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view4")));
-    /*    */ addCfgItem(10, sIndex, new CfgExpWndDlg(4),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view5")));
-    /*    */ addCfgItem(10, sIndex, new CfgExpWndDlg(5),     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.view6")));
-    /*    */ addCfgItem(19, sIndex, new CfgExpDispDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.display")));
-    /*    */ addCfgItem(11, sIndex, new CfgExpFilterDlg,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.filtering")));
-    /*    */ addCfgItem( 5, sIndex, new CfgExpThumbDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.explorer_window.thumbnail")));
-    sIndex = addCfgItem(18,     -1, new CfgDispDlg,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.display")));
-    /*    */ addCfgItem(22, sIndex, new CfgDispSizeDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.display.size")));
-    sIndex = addCfgItem(17,     -1, new CfgFuncDlg,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function")));
-    /*    */ addCfgItem(13, sIndex, new CfgFuncBookmarkDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.bookmark")));
-    /*    */ addCfgItem( 7, sIndex, new CfgFuncRenameDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.rename")));
-    /*    */ addCfgItem(21, sIndex, new CfgFuncFileAssDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.view_edit")));
-    /*    */ addCfgItem(14, sIndex, new CfgFuncRefreshDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.refresh")));
-    /*    */ addCfgItem( 8, sIndex, new CfgFuncDragDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.drag_drop")));
-    /*    */ addCfgItem(15, sIndex, new CfgFuncSplitDlg,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.split_view")));
-    /*    */ addCfgItem(16, sIndex, new CfgFuncFileScrapDlg, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.scrap")));
-    /*    */ addCfgItem(25, sIndex, new CfgFuncHistoryDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.history")));
-    /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.operation")));
-    sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
-    /*    */ addCfgItem(23, sIndex, new CfgAdvPathDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.cfg_path")));
-    /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
+    sIndex = addCfgItem( 0,     -1, new CfgGeneralDlg,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general")));
+    /*    */ addCfgItem(31, sIndex, new CfgGeneralStartupDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general.startup")));
+    sIndex = addCfgItem(18,     -1, new CfgAppearanceDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance")));
+    /*    */ addCfgItem(29, sIndex, new CfgAppearanceLayoutDlg,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.layout")));
+    /*    */ addCfgItem(30, sIndex, new CfgAppearanceFontDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.font")));
+    /*    */ addCfgItem(28, sIndex, new CfgAppearanceColorDlg,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.color")));
+    /*    */ addCfgItem(12, sIndex, new CfgAppearanceFileListDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.file_list")));
+    /*    */ addCfgItem(20, sIndex, new CfgAppearanceViewSetDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.view_set")));
+    /*    */ addCfgItem(11, sIndex, new CfgAppearanceFilteringDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.filtering")));
+    /*    */ addCfgItem( 5, sIndex, new CfgAppearanceThumbnailDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.thumbnail")));
+    /*    */ addCfgItem(25, sIndex, new CfgAppearanceHistoryDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.history")));
+    /*    */ addCfgItem(22, sIndex, new CfgAppearanceSizeFormatDlg, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.size_format")));
+    /*    */ addCfgItem( 3, sIndex, new CfgAppearanceFolderTreeDlg, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.folder_tree")));
+    /*    */ addCfgItem(27, sIndex, new CfgAppearanceLanguageDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.language")));
+    sIndex = addCfgItem(17,     -1, new CfgFuncDlg,                 theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function")));
+    /*    */ addCfgItem(13, sIndex, new CfgFuncBookmarkDlg,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.bookmark")));
+    /*    */ addCfgItem( 7, sIndex, new CfgFuncRenameDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.rename")));
+    /*    */ addCfgItem(14, sIndex, new CfgFuncRefreshDlg,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.refresh")));
+    /*    */ addCfgItem( 8, sIndex, new CfgFuncDragDlg,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.drag_drop")));
+    /*    */ addCfgItem(21, sIndex, new CfgFuncProgramAssDlg,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.program_ass")));
+    /*    */ addCfgItem(16, sIndex, new CfgFuncFileScrapDlg,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_scrap")));
+    /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_operation")));
+    sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
+    /*    */ addCfgItem(23, sIndex, new CfgAdvPathDlg,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.cfg_path")));
+    /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
 
     if (!XPR_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))
         mInitShowCfg = 0;
-
-    // Show Init Dialog
-    //showCfg(mShowCfg);
 
     // expand all
     HTREEITEM sTreeItem = mTreeCtrl.GetRootItem();
     while (sTreeItem != XPR_NULL)
     {
-        if (mTreeCtrl.ItemHasChildren(sTreeItem))
+        if (mTreeCtrl.ItemHasChildren(sTreeItem) == XPR_TRUE)
             mTreeCtrl.Expand(sTreeItem, TVE_EXPAND);
 
         sTreeItem = mTreeCtrl.GetNextSiblingItem(sTreeItem);
@@ -180,14 +172,14 @@ xpr_sint_t CfgMgrDlg::addCfgItem(xpr_sint_t aImage, xpr_sint_t aParent, CfgDlg *
     return (xpr_sint_t)mCfgDeque.size() - 1;
 }
 
-xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aIndex)
+xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aCfgIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mCfgDeque))
+    if (!XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
         return XPR_FALSE;
 
-    CfgItem *sCfgItem = mCfgDeque[aIndex];
+    CfgItem *sCfgItem = mCfgDeque[aCfgIndex];
 
-    // Hide
+    // hide
     if (mShowCfg != -1)
     {
         if (XPR_STL_IS_INDEXABLE(mShowCfg, mCfgDeque))
@@ -199,10 +191,12 @@ xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aIndex)
         }
     }
 
-    // Show
+    // show
     if (sCfgItem->mCfgDlg->m_hWnd == XPR_NULL)
     {
-        sCfgItem->mCfgDlg->Create(aIndex, this);
+        sCfgItem->mCfgDlg->setObserver(dynamic_cast<CfgDlgObserver *>(this));
+        sCfgItem->mCfgDlg->Create(aCfgIndex, this);
+        sCfgItem->mCfgDlg->onInit(mNewConfig);
 
         CRect sDescRect;
         GetDlgItem(IDC_CFG_DESC)->GetWindowRect(&sDescRect);
@@ -213,7 +207,6 @@ xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aIndex)
         ::ReleaseDC(XPR_NULL, sDC);
 
         sCfgItem->mCfgDlg->SetWindowPos(XPR_NULL, sDescRect.left, y, 0, 0, SWP_NOSIZE);
-        //sCfgItem->mCfgDlg->SetWindowPos(XPR_NULL, 190, 44, 0, 0, SWP_NOSIZE);
     }
 
     sCfgItem->mCfgDlg->ShowWindow(SW_SHOW);
@@ -223,19 +216,21 @@ xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aIndex)
     xpr_sint_t sParent = sCfgItem->mParent;
 
     sDesc += theApp.loadString(XPR_STRING_LITERAL("popup.cfg.title"));
-    sDesc += XPR_STRING_LITERAL(" > ");
-    sDesc += sCfgItem->mText;
 
+    xpr_size_t sInsertPos = sDesc.length();
     while (sParent != -1)
     {
         if (!XPR_STL_IS_INDEXABLE(sParent, mCfgDeque))
             break;
 
-        sDesc += XPR_STRING_LITERAL(" > ");
-        sDesc += mCfgDeque[sParent]->mText;
+        sDesc.insert(sInsertPos, mCfgDeque[sParent]->mText);
+        sDesc.insert(sInsertPos, XPR_STRING_LITERAL(" > "));
 
         sParent = mCfgDeque[sParent]->mParent;
     }
+
+    sDesc += XPR_STRING_LITERAL(" > ");
+    sDesc += sCfgItem->mText;
 
     SetDlgItemText(IDC_CFG_DESC, sDesc.c_str());
 
@@ -268,18 +263,16 @@ void CfgMgrDlg::OnDestroy(void)
     mCfgDeque.clear();
 }
 
-void CfgMgrDlg::showCfgByTree(xpr_sint_t aIndex)
+void CfgMgrDlg::showCfgByTree(xpr_sint_t aCfgIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mCfgDeque))
+    if (!XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
         return;
 
-    //xpr_bool_t sModified = mCfgDeque[aIndex]->mModified;
     mChanging = XPR_TRUE;
 
-    showCfg(aIndex);
+    showCfg(aCfgIndex);
 
     mChanging = XPR_FALSE;
-    //::SendMessage(m_hWnd, WM_SETMODIFIED, aIndex, sModified);
 }
 
 void CfgMgrDlg::OnOK(void) 
@@ -294,44 +287,25 @@ void CfgMgrDlg::OnCancel(void)
     super::OnCancel();
 }
 
-void CfgMgrDlg::OnApply(void)
-{
-    CWaitCursor sWaitCursor;
-
-    CfgItem *sCfgItem;
-    CfgDeque::iterator sIterator;
-
-    sIterator = mCfgDeque.begin();
-    for (; sIterator != mCfgDeque.end(); ++sIterator)
-    {
-        sCfgItem = *sIterator;
-        if (sCfgItem == XPR_NULL)
-            continue;
-
-        if (sCfgItem->mModified == XPR_TRUE && sCfgItem->mCfgDlg != XPR_NULL && sCfgItem->mCfgDlg->m_hWnd != XPR_NULL)
-        {
-            ::SendMessage(sCfgItem->mCfgDlg->GetSafeHwnd(), WM_APPLY, 0, 0);
-            sCfgItem->mModified = XPR_FALSE;
-        }
-    }
-
-    GetDlgItem(IDC_CFG_APPLY)->EnableWindow(XPR_FALSE);
-
-    OptionMgr::instance().save();
-}
-
-LRESULT CfgMgrDlg::OnSetModified(WPARAM wParam, LPARAM lParam)
+void CfgMgrDlg::onSetModified(CfgDlg &aCfgDlg, xpr_bool_t aModified)
 {
     if (mChanging == XPR_TRUE)
-        return 0;
+        return;
 
-    xpr_size_t sIndex = (xpr_size_t)wParam;
-    xpr_bool_t sModified = (xpr_bool_t)lParam;
+    xpr_size_t sCfgIndex = aCfgDlg.getCfgIndex();
+
+    onSetModified(sCfgIndex, aModified);
+}
+
+void CfgMgrDlg::onSetModified(xpr_size_t aCfgIndex, xpr_bool_t aModified)
+{
+    if (mChanging == XPR_TRUE)
+        return;
 
     xpr_size_t sCount = mCfgDeque.size();
-    if (XPR_STL_IS_INDEXABLE(sIndex, mCfgDeque))
+    if (XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
     {
-        mCfgDeque[sIndex]->mModified = sModified;
+        mCfgDeque[aCfgIndex]->mModified = aModified;
 
         xpr_size_t i;
         CfgItem *sCfgItem;
@@ -354,18 +328,16 @@ LRESULT CfgMgrDlg::OnSetModified(WPARAM wParam, LPARAM lParam)
 
         GetDlgItem(IDC_CFG_APPLY)->EnableWindow(sEnable);
     }
-
-    return XPR_TRUE;
 }
 
-LRESULT CfgMgrDlg::OnGetModified(WPARAM wParam, LPARAM lParam)
+xpr_bool_t CfgMgrDlg::onIsModified(CfgDlg &aCfgDlg)
 {
-    xpr_sint_t sIndex = (xpr_sint_t)wParam;
+    xpr_size_t sCfgIndex = aCfgDlg.getCfgIndex();
 
-    if (!XPR_STL_IS_INDEXABLE(sIndex, mCfgDeque))
+    if (!XPR_STL_IS_INDEXABLE(sCfgIndex, mCfgDeque))
         return 0;
 
-    return mCfgDeque[sIndex]->mModified;
+    return mCfgDeque[sCfgIndex]->mModified;
 }
 
 void CfgMgrDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult) 
@@ -397,47 +369,6 @@ void CfgMgrDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
     mLastShowCfg = mShowCfg;
 }
 
-void CfgMgrDlg::OnDefault(void) 
-{
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.confirm_default"));
-    xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING | MB_YESNO);
-    if (sMsgId != IDYES)
-        return;
-
-    OptionMgr &sOptionMgr = OptionMgr::instance();
-
-    sOptionMgr.initDefault();
-
-    sOptionMgr.applyFolderCtrl(XPR_FALSE);
-    sOptionMgr.applyExplorerView(XPR_FALSE);
-    sOptionMgr.applyEtc();
-
-    xpr_sint_t i;
-    CfgItem *sCfgItem;
-    CfgDeque::iterator sIterator;
-
-    sIterator = mCfgDeque.begin();
-    for (i = 0; sIterator != mCfgDeque.end(); ++sIterator, ++i)
-    {
-        sCfgItem = *sIterator;
-        if (sCfgItem == XPR_NULL)
-            continue;
-
-        if (sCfgItem->mCfgDlg != XPR_NULL && sCfgItem->mCfgDlg->m_hWnd != XPR_NULL)
-            sCfgItem->mCfgDlg->DestroyWindow();
-
-        SendMessage(WM_SETMODIFIED, i, XPR_TRUE);
-    }
-
-    mTreeCtrl.SelectItem(mCfgDeque[0]->mTreeItem);
-    showCfg(0);
-
-    GetDlgItem(IDC_CFG_APPLY)->EnableWindow(XPR_FALSE);
-
-    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.default_ok"));
-    MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
-}
-
 HBRUSH CfgMgrDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor)
 {
     HBRUSH sBrush = super::OnCtlColor(pDC, pWnd, nCtlColor);
@@ -456,4 +387,84 @@ HBRUSH CfgMgrDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor)
     }
 
     return sBrush;
+}
+
+void CfgMgrDlg::OnDefault(void)
+{
+    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.confirm_default"));
+    xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING | MB_YESNO);
+    if (sMsgId != IDYES)
+        return;
+
+    OptionMgr &sOptionMgr = OptionMgr::instance();
+
+    // initialize default option and save one
+    sOptionMgr.initDefault();
+
+    // save default option
+    sOptionMgr.save(XPR_TRUE);
+
+    // notify default option
+    gOpt->notifyConfig();
+
+    xpr_sint_t i;
+    CfgItem *sCfgItem;
+    CfgDeque::iterator sIterator;
+
+    sIterator = mCfgDeque.begin();
+    for (i = 0; sIterator != mCfgDeque.end(); ++sIterator, ++i)
+    {
+        sCfgItem = *sIterator;
+        if (sCfgItem == XPR_NULL)
+            continue;
+
+        if (sCfgItem->mCfgDlg != XPR_NULL && sCfgItem->mCfgDlg->m_hWnd != XPR_NULL)
+            sCfgItem->mCfgDlg->DestroyWindow();
+
+        onSetModified(i, XPR_TRUE);
+    }
+
+    mTreeCtrl.SelectItem(mCfgDeque[0]->mTreeItem);
+    showCfg(0);
+
+    GetDlgItem(IDC_CFG_APPLY)->EnableWindow(XPR_FALSE);
+
+    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.default_ok"));
+    MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
+}
+
+void CfgMgrDlg::OnApply(void)
+{
+    CWaitCursor sWaitCursor;
+
+    CfgItem *sCfgItem;
+    CfgDeque::iterator sIterator;
+
+    sIterator = mCfgDeque.begin();
+    for (; sIterator != mCfgDeque.end(); ++sIterator)
+    {
+        sCfgItem = *sIterator;
+        if (sCfgItem == XPR_NULL)
+            continue;
+
+        if (sCfgItem->mModified == XPR_TRUE && sCfgItem->mCfgDlg != XPR_NULL && sCfgItem->mCfgDlg->m_hWnd != XPR_NULL)
+        {
+            sCfgItem->mCfgDlg->onApply(mNewConfig);
+
+            sCfgItem->mModified = XPR_FALSE;
+        }
+    }
+
+    OptionMgr &sOptionMgr = OptionMgr::instance();
+
+    // set new option
+    gOpt->setConfig(mNewConfig);
+
+    // save new option
+    sOptionMgr.save(XPR_TRUE);
+
+    // notify new option
+    gOpt->notifyConfig();
+
+    GetDlgItem(IDC_CFG_APPLY)->EnableWindow(XPR_FALSE);
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,7 +27,7 @@ ExplorerCtrlPrint::~ExplorerCtrlPrint(void)
 {
 }
 
-xpr_sint_t ExplorerCtrlPrint::GetRowCount(void)
+xpr_sint_t ExplorerCtrlPrint::getRowCount(void) const
 {
     if (XPR_IS_NULL(mListCtrl))
         return 0;
@@ -36,27 +36,23 @@ xpr_sint_t ExplorerCtrlPrint::GetRowCount(void)
     if (XPR_IS_NULL(sExplorerCtrl))
         return mListCtrl->GetItemCount();
 
-    xpr_sint_t sCount = mListCtrl->GetItemCount();
-    if (gOpt->mExplorerParentFolder == XPR_TRUE)
-        sCount--;
+    xpr_sint_t i;
+    xpr_sint_t sCount;
 
-    if (gOpt->mExplorerShowDrive == XPR_TRUE || gOpt->mExplorerShowDriveItem == XPR_TRUE)
+    sCount = mListCtrl->GetItemCount();
+    for (i = sCount - 1; i >= 0; --i)
     {
-        xpr_sint_t i;
-        for (i = sCount - 1; i >= 0; --i)
+        if (sExplorerCtrl->isShellItem(i) == XPR_TRUE)
         {
-            if (sExplorerCtrl->isShellItem(i) == XPR_TRUE)
-            {
-                sCount = i;
-                break;
-            }
+            sCount = i;
+            break;
         }
     }
 
     return sCount;
 }
 
-CString ExplorerCtrlPrint::GetItemText(xpr_sint_t aRow, xpr_sint_t aColumn)
+CString ExplorerCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const
 {
     ASSERT(aColumn >= 0 && aColumn < mPageColumns);
     ASSERT(aRow >= 0 && aRow < mRowCount);

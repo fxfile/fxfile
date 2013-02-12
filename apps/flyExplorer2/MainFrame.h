@@ -17,11 +17,10 @@
 #include "rgc/BCMenu.h"
 #include "rgc/DropTarget.h"
 
-#include "Option.h"
+#include "Defines.h"
 #include "FolderViewObserver.h"
 #include "ExplorerViewObserver.h"
 #include "SearchDlgObserver.h"
-#include "MainCoolBar.h"
 #include "Splitter.h"
 
 namespace fxb
@@ -119,7 +118,6 @@ public:
     void setActiveView(xpr_sint_t aRow, xpr_sint_t aColumn);
 
     xpr_sint_t addBookmark(LPITEMIDLIST aFullPidl, xpr_sint_t aInsert = -1);
-    xpr_bool_t isUpdateBookmark(void) const;
     void updateBookmark(void);
 
     void gotoBookmark(xpr_sint_t aBookmarkIndex);
@@ -132,10 +130,7 @@ public:
 
     xpr_bool_t isDriveBar(void) const;
     xpr_bool_t isDriveShortText(void) const;
-    xpr_bool_t isDriveViewSplit(void) const;
-    xpr_bool_t isDriveViewSplitLeft(void) const;
     void setDriveBar(xpr_bool_t aVisible);
-    void setDriveViewSplit(xpr_bool_t aDriveViewSplit);
 
     void setDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath);
     const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, xpr_tchar_t aDriveChar);
@@ -175,14 +170,15 @@ public:
     xpr_bool_t insertSearchLocation(LPITEMIDLIST aFullPidl);
     void       destroySearchDlg(void);
 
-    void saveExplicitOption(void);
+    void setOption(Option &aOption);
+    void setChangedOption(Option &aOption);
+    void saveAllOptions(void);
 
     xpr_bool_t isPreviewMode(void) const;
 
 public:
-    Splitter          mOneFolderSplitter;
+    Splitter          mSingleFolderSplitter;
     Splitter          mSplitter;
-    FolderPane       *mFolderPane[MAX_VIEW_SPLIT];
 
     PicViewer        *mPicViewer;
     SearchDlg        *mSearchDlg;

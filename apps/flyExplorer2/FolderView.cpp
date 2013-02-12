@@ -15,7 +15,6 @@
 #include "ExplorerCtrlPrint.h"
 #include "PreviewViewEx.h"
 #include "MainFrame.h"
-#include "OptionMgr.h"
 
 #include "rgc/MemDC.h"
 
@@ -111,6 +110,13 @@ void FolderView::OnDestroy(void)
     destroyFolderPane();
 
     super::OnDestroy();
+}
+
+void FolderView::setChangedOption(Option &aOption)
+{
+    XPR_ASSERT(mFolderPane != XPR_NULL);
+
+    mFolderPane->setChangedOption(aOption);
 }
 
 void FolderView::OnDraw(CDC *aDC)

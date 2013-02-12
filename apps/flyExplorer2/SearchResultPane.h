@@ -42,6 +42,8 @@ public:
     virtual StatusBar *getStatusBar(void) const;
     virtual const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
 
+    virtual void setChangedOption(Option &aOption);
+
 public:
     SearchResultCtrl *getSearchResultCtrl(void) const;
 

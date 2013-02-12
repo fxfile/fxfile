@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -89,6 +89,9 @@ protected: ShellChangeNotify(void);
 public: virtual ~ShellChangeNotify(void);
 
 public:
+    static void setNoRefresh(xpr_bool_t aNoRefresh);
+
+public:
     void create(void);
     void destroy(void);
 
@@ -109,7 +112,7 @@ protected:
 protected:
     static xpr_uint_t mIdMgr;
 
-    LPSHELLFOLDER mShellFolder;
+    static xpr_bool_t mNoRefresh;
 
     HANDLE   mThread;
     HANDLE   mEvent;

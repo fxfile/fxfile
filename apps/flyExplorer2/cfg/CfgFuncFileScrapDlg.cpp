@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -36,45 +36,20 @@ xpr_bool_t CfgFuncFileScrapDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILE_SCRAP_SHOW_POPUP))->SetCheck(gOpt->mFileScrapContextMenu);
-    ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILE_SCRAP_SAVE_SCRAP))->SetCheck(gOpt->mFileScrapSave);
-
-    SetDlgItemText(IDC_CFG_FUNC_FILE_SCRAP_SHOW_POPUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.scrap.show_on_shell_popup_menu")));
-    SetDlgItemText(IDC_CFG_FUNC_FILE_SCRAP_SAVE_SCRAP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.scrap.save_file_scrap")));
+    SetDlgItemText(IDC_CFG_FILE_SCRAP_SHOW_POPUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.show_on_shell_popup_menu")));
+    SetDlgItemText(IDC_CFG_FILE_SCRAP_SAVE_SCRAP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.save_file_scrap")));
 
     return XPR_TRUE;
 }
 
-xpr_bool_t CfgFuncFileScrapDlg::OnCommand(WPARAM wParam, LPARAM lParam) 
+void CfgFuncFileScrapDlg::onInit(Option::Config &aConfig)
 {
-    xpr_uint_t sNotifyMsg = HIWORD(wParam);
-    xpr_uint_t sId = LOWORD(wParam);
-
-    if (sNotifyMsg == BN_CLICKED)
-    {
-        switch (sId)
-        {
-        case IDC_CFG_FUNC_FILE_SCRAP_SHOW_POPUP:
-        case IDC_CFG_FUNC_FILE_SCRAP_SAVE_SCRAP:
-            setModified();
-            break;
-        }
-    }
-    else if (sNotifyMsg == EN_UPDATE)
-    {
-    }
-
-    return super::OnCommand(wParam, lParam);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SHOW_POPUP))->SetCheck(aConfig.mFileScrapContextMenu);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SAVE_SCRAP))->SetCheck(aConfig.mFileScrapSave);
 }
 
-void CfgFuncFileScrapDlg::OnApply(void)
+void CfgFuncFileScrapDlg::onApply(Option::Config &aConfig)
 {
-    OptionMgr &sOptionMgr = OptionMgr::instance();
-
-    gOpt->mFileScrapContextMenu = ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILE_SCRAP_SHOW_POPUP))->GetCheck();
-    gOpt->mFileScrapSave        = ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILE_SCRAP_SAVE_SCRAP))->GetCheck();
-
-    sOptionMgr.applyFolderCtrl(3, XPR_FALSE);
-    sOptionMgr.applyExplorerView(3, XPR_FALSE);
-    sOptionMgr.applyEtc(3);
+    aConfig.mFileScrapContextMenu = ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SHOW_POPUP))->GetCheck();
+    aConfig.mFileScrapSave        = ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SAVE_SCRAP))->GetCheck();
 }

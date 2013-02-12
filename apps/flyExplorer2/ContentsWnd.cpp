@@ -82,10 +82,10 @@ xpr_bool_t ContentsWnd::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRe
         }
     }
 
-    return CWnd::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
+    return super::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
 }
 
-BEGIN_MESSAGE_MAP(ContentsWnd, CWnd)
+BEGIN_MESSAGE_MAP(ContentsWnd, super)
     ON_WM_CREATE()
     ON_WM_DESTROY()
     ON_WM_PAINT()
@@ -96,17 +96,17 @@ END_MESSAGE_MAP()
 
 xpr_sint_t ContentsWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-    if (CWnd::OnCreate(lpCreateStruct) == -1)
+    if (super::OnCreate(lpCreateStruct) == -1)
         return -1;
 
-    updateChildWnd();
+    updateFont();
 
     return 0;
 }
 
 void ContentsWnd::OnDestroy(void) 
 {
-    CWnd::OnDestroy();
+    super::OnDestroy();
 
     DESTROY_DELETE(mBookmarkSetWnd);
 
@@ -120,9 +120,9 @@ void ContentsWnd::OnDestroy(void)
 
 void ContentsWnd::OnSettingChange(xpr_uint_t uFlags, const xpr_tchar_t *lpszSection) 
 {
-    CWnd::OnSettingChange(uFlags, lpszSection);
+    super::OnSettingChange(uFlags, lpszSection);
 
-    updateChildWnd();
+    updateFont();
 }
 
 void ContentsWnd::OnPaint(void) 
@@ -134,11 +134,11 @@ void ContentsWnd::OnPaint(void)
 
     CMemDC sMemDc(&sPaintDc);
 
-    if (gOpt->mContentsStyle == CONTENTS_NONE)
+    if (gOpt->mConfig.mContentsStyle == CONTENTS_NONE)
         sMemDc.FillSolidRect(&sClientRect, ::GetSysColor(COLOR_WINDOW));
-    else if (gOpt->mContentsStyle == CONTENTS_EXPLORER)
+    else if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER)
         sMemDc.FillSolidRect(&sClientRect, RGB(255,255,255));
-    else if (gOpt->mContentsStyle == CONTENTS_BASIC)
+    else if (gOpt->mConfig.mContentsStyle == CONTENTS_BASIC)
     {
         COLORREF sBackColor = fxb::CalculateColor(RGB(255,255,255), GetSysColor(COLOR_3DFACE), 180);
         sMemDc.FillSolidRect(&sClientRect, sBackColor);
@@ -148,7 +148,7 @@ void ContentsWnd::OnPaint(void)
     sMemDc.SetBkMode(TRANSPARENT);
 
     // contents picture
-    if (gOpt->mContentsStyle == CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER)
     {
         COLORREF sBackColor = fxb::CalculateColor(RGB(255,255,255), GetSysColor(COLOR_3DFACE), 200);
         COLORREF sBarColor  = GetSysColor(COLOR_APPWORKSPACE);
@@ -158,11 +158,14 @@ void ContentsWnd::OnPaint(void)
         sMemDc.FillSolidRect(sContentsRect, sBackColor);
 
         // bar
-        CPen sPen(PS_SOLID, 2, sBarColor);
+        CPen sPen(PS_SOLID, 1, sBarColor);
         CPen *sOldPen = sMemDc.SelectObject(&sPen);
 
         sMemDc.MoveTo(0, sClientRect.top+60);
         sMemDc.LineTo(200, sClientRect.top+60);
+
+        sMemDc.MoveTo(0, sClientRect.top+61);
+        sMemDc.LineTo(200, sClientRect.top+61);
 
         sMemDc.SelectObject(sOldPen);
         sPen.DeleteObject();
@@ -186,21 +189,21 @@ void ContentsWnd::OnPaint(void)
     }
 
     // folder icon
-    if (gOpt->mContentsStyle != 0)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_NONE)
     {
         if (mFolderIcon != XPR_NULL)
         {
-            if (gOpt->mContentsStyle == CONTENTS_BASIC) sMemDc.DrawIcon(5,  sClientRect.top+2,  mFolderIcon);
-            else                                        sMemDc.DrawIcon(16, sClientRect.top+14, mFolderIcon);
+            if (gOpt->mConfig.mContentsStyle == CONTENTS_BASIC) sMemDc.DrawIcon(5,  sClientRect.top+2,  mFolderIcon);
+            else                                                sMemDc.DrawIcon(16, sClientRect.top+14, mFolderIcon);
         }
     }
 
-    if (gOpt->mContentsStyle != 0)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_NONE)
     {
         // current folder
         xpr_sint_t sDesc = 0;
         CFont *sOldFont = sMemDc.SelectObject(mTitleFont);
-        if (gOpt->mContentsStyle == CONTENTS_EXPLORER)
+        if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER)
         {
             sMemDc.DrawText(mFolderName.c_str(), CRect(62, sClientRect.top+7, 198, sClientRect.top+60), DT_LEFT | DT_END_ELLIPSIS | DT_WORDBREAK | DT_EDITCONTROL | DT_NOPREFIX);
             sDesc = sClientRect.top+72;
@@ -211,7 +214,7 @@ void ContentsWnd::OnPaint(void)
         }
         sMemDc.SelectObject(sOldFont);
 
-        if (gOpt->mContentsStyle == CONTENTS_EXPLORER)
+        if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER)
         {
             // description
             xpr_sint_t sBookmarkTextTop = drawItem(&sMemDc, sDesc);
@@ -241,7 +244,7 @@ void ContentsWnd::OnPaint(void)
 xpr_bool_t ContentsWnd::OnEraseBkgnd(CDC* pDC) 
 {
     return XPR_TRUE;
-    //return CWnd::OnEraseBkgnd(pDC);
+    //return super::OnEraseBkgnd(pDC);
 }
 
 void ContentsWnd::clear(void)
@@ -528,13 +531,13 @@ void ContentsWnd::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate
     if (aTvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
     {
         clear();
         return;
     }
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
@@ -573,7 +576,7 @@ void ContentsWnd::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate
 
     mMode = ModeNormal;
 
-    xpr_bool_t sEnableBookmark = gOpt->mContentsStyle == CONTENTS_EXPLORER || gOpt->mContentsStyle == CONTENTS_BASIC && gOpt->mContentsBookmark;
+    xpr_bool_t sEnableBookmark = gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER || gOpt->mConfig.mContentsStyle == CONTENTS_BASIC && gOpt->mConfig.mContentsBookmark;
     if (sEnableBookmark == XPR_TRUE)
         enableBookmark(XPR_TRUE);
 
@@ -594,13 +597,13 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
     if (aLvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
     {
         clear();
         return;
     }
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     if (XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
@@ -640,7 +643,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
             sSingleSelItem->mSize = sText;
         }
 
-        if (gOpt->mContentsARHSAttribute == XPR_TRUE)
+        if (gOpt->mConfig.mContentsARHSAttribute == XPR_TRUE)
         {
             _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.ARHS_attributes")), aAttr);
             sSingleSelItem->mAttr = sText;
@@ -700,13 +703,13 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
 
 void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSize, const xpr_tchar_t *aNames)
 {
-    if (XPR_IS_TRUE(gOpt->mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
     {
         clear();
         return;
     }
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     clear();
@@ -738,7 +741,7 @@ void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSi
 
 void ContentsWnd::setContentsDrive(LPLVITEMDATA aLvItemData, xpr_tchar_t aDriveChar, xpr_bool_t aShowBookmark, xpr_bool_t aUpdate)
 {
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     setContentsDrive(aLvItemData->mShellFolder, aLvItemData->mPidl, aLvItemData->mShellAttributes, aDriveChar, aShowBookmark, aUpdate);
@@ -746,7 +749,7 @@ void ContentsWnd::setContentsDrive(LPLVITEMDATA aLvItemData, xpr_tchar_t aDriveC
 
 void ContentsWnd::setContentsDrive(LPTVITEMDATA aTvItemData, xpr_tchar_t aDriveChar, xpr_bool_t aShowBookmark, xpr_bool_t aUpdate)
 {
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     setContentsDrive(aTvItemData->mShellFolder, aTvItemData->mPidl, aTvItemData->mShellAttributes, aDriveChar, aShowBookmark, aUpdate);
@@ -759,7 +762,7 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
                                    xpr_bool_t    aShowBookmark,
                                    xpr_bool_t    aUpdate)
 {
-    if (XPR_IS_TRUE(gOpt->mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
     {
         clear();
         return;
@@ -768,7 +771,7 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
     if (!aUpdate && mMode == ModeDrive)
         return;
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
     clear();
@@ -851,30 +854,30 @@ void ContentsWnd::updateBookmarkPosition(void)
     updateBookmark(mBookmarkTop);
 }
 
-void ContentsWnd::enableBookmark(xpr_bool_t bEnable)
+void ContentsWnd::enableBookmark(xpr_bool_t aEnable)
 {
-    if (mMode == ModeSingleItem || mMode == ModeMultiItem || !gOpt->mContentsBookmark)
-        bEnable = XPR_FALSE;
+    if (mMode == ModeSingleItem || mMode == ModeMultiItem || gOpt->mConfig.mContentsBookmark == XPR_FALSE)
+        aEnable = XPR_FALSE;
 
     if (mBookmarkSetWnd != XPR_NULL)
-        mBookmarkSetWnd->enableBookmark(bEnable);
+        mBookmarkSetWnd->enableBookmark(aEnable);
 
-    mEnableBookmark = bEnable;
+    mEnableBookmark = aEnable;
 }
 
-void ContentsWnd::setBookmarkPopup(xpr_bool_t bPopup)
+void ContentsWnd::setBookmarkPopup(xpr_bool_t aPopup)
 {
     if (mBookmarkSetWnd != XPR_NULL)
-        mBookmarkSetWnd->setBookmarkPopup(bPopup);
+        mBookmarkSetWnd->setBookmarkPopup(aPopup);
 }
 
-void ContentsWnd::setBookmarkColor(COLORREF clrBookmark)
+void ContentsWnd::setBookmarkColor(COLORREF aBookmarkColor)
 {
     if (mBookmarkSetWnd != XPR_NULL)
-        mBookmarkSetWnd->setBookmarkColor(clrBookmark);
+        mBookmarkSetWnd->setBookmarkColor(aBookmarkColor);
 }
 
-void ContentsWnd::updateChildWnd(void)
+void ContentsWnd::updateFont(void)
 {
     if (mTitleFont    != XPR_NULL) { XPR_SAFE_DELETE(mTitleFont);    }
     if (mTextFont     != XPR_NULL) { XPR_SAFE_DELETE(mTextFont);     }
@@ -908,7 +911,7 @@ void ContentsWnd::updateChildWnd(void)
 
 void ContentsWnd::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy)
 {
-    CWnd::OnSize(nType, cx, cy);
+    super::OnSize(nType, cx, cy);
 
     if (mBookmarkSetWnd != XPR_NULL)
     {

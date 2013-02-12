@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -127,7 +127,7 @@ void RecentFileListEx::updateMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert)
 
     ASSERT(m_arrNames != XPR_NULL);
 
-    if (gOpt->mRecentFile == XPR_FALSE)
+    if (gOpt->mConfig.mRecentFile == XPR_FALSE)
     {
         const xpr_tchar_t *sText = theApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.not_used"));
 

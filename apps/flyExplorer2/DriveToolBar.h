@@ -65,6 +65,7 @@ protected:
 
     xpr_bool_t mInit;
     xpr_bool_t mBarCreated;
+    xpr_bool_t mShortText;
 
     void addDriveButton(const xpr_tchar_t *aDrive, xpr_sint_t aInsert);
 

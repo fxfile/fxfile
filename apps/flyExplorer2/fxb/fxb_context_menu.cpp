@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,6 +27,9 @@ namespace fxb
 {
 static const xpr_tchar_t PROP_CONTEXT_MENU[] = XPR_STRING_LITERAL("flyExplorer::SubclassData");
 
+xpr_bool_t ContextMenu::mShowFileScrapMenu = XPR_FALSE;
+xpr_bool_t ContextMenu::mAnimationMenu     = XPR_FALSE;
+
 ContextMenu::ContextMenu(HWND aHwnd)
     : mHwnd(aHwnd)
     , mShellFolder(XPR_NULL), mPidls(XPR_NULL), mCount(0)
@@ -41,6 +44,16 @@ ContextMenu::~ContextMenu(void)
 {
     destroySubclass();
     release();
+}
+
+void ContextMenu::setFileScrapMenu(xpr_bool_t aShowFileScrapMenu)
+{
+    mShowFileScrapMenu = aShowFileScrapMenu;
+}
+
+void ContextMenu::setAnimationMenu(xpr_bool_t aAnimationMenu)
+{
+    mAnimationMenu = aAnimationMenu;
 }
 
 xpr_bool_t ContextMenu::init(LPSHELLFOLDER aShellFolder, LPITEMIDLIST *aPidls, xpr_uint_t aCount)
@@ -138,7 +151,7 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aIdFirst, xpr_uint_t aQ
         ::SetProp(mHwnd, PROP_CONTEXT_MENU, (HANDLE)mSubclassData);
     }
 
-    if (XPR_IS_NOT_NULL(mPidls) && mCount > 0 && XPR_IS_TRUE(gOpt->mFileScrapContextMenu))
+    if (XPR_IS_NOT_NULL(mPidls) && mCount > 0 && XPR_IS_TRUE(mShowFileScrapMenu))
     {
         xpr_sint_t nInsert = aMenu->GetMenuItemCount();
         nInsert -= 2;
@@ -157,7 +170,7 @@ xpr_uint_t ContextMenu::getIdFirst(void)
 
 xpr_uint_t ContextMenu::trackPopupMenu(xpr_uint_t aFlags, LPPOINT aPoint, xpr_uint_t aQueryFlags)
 {
-    if (gOpt->mAnimationMenu == XPR_FALSE)
+    if (XPR_IS_FALSE(mAnimationMenu))
         aFlags |= 0x4000L;
 
     CMenu sMenu;
@@ -190,7 +203,7 @@ xpr_bool_t ContextMenu::getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_s
 
 xpr_bool_t ContextMenu::invokeCommand(xpr_uint_t aId)
 {
-    if (XPR_IS_TRUE(gOpt->mFileScrapContextMenu) && aId == CMID_FILE_SCRAP)
+    if (XPR_IS_TRUE(mShowFileScrapMenu) && aId == CMID_FILE_SCRAP)
     {
         fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
         xpr_uint_t sGroupId = sFileScrap.getCurGroupId();

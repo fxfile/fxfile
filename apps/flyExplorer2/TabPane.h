@@ -47,6 +47,8 @@ public:
     virtual StatusBar *getStatusBar(void) const = 0;
     virtual const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const = 0;
 
+    virtual void setChangedOption(Option &aOption) = 0;
+
 protected:
     xpr_bool_t registerWindowClass(const xpr_tchar_t *aClassName);
 

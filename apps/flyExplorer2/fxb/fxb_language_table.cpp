@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -154,9 +154,27 @@ const LanguagePack::Desc *LanguageTable::getLanguageDesc(xpr_size_t aIndex) cons
     return mLanguageDeque[aIndex]->getLanguageDesc();
 }
 
+const LanguagePack::Desc *LanguageTable::getLanguageDesc(const xpr_tchar_t *aLanguage) const
+{
+    if (XPR_IS_NULL(aLanguage))
+        return XPR_NULL;
+
+    LanguageMap::const_iterator sIterator = mLanguageMap.find(aLanguage);
+    if (sIterator == mLanguageMap.end())
+        return XPR_NULL;
+
+    const LanguagePack *sLanguagePack = sIterator->second;
+    const LanguagePack::Desc *sLanguagePackDesc = sLanguagePack->getLanguageDesc();
+
+    return sLanguagePackDesc;
+}
+
 const LanguagePack::Desc *LanguageTable::getLanguageDesc(void) const
 {
-    return (const LanguagePack::Desc *)mLoadedLanaguage;
+    if (XPR_IS_NULL(mLoadedLanaguage))
+        return XPR_NULL;
+
+    return mLoadedLanaguage->getLanguageDesc();
 }
 
 StringTable *LanguageTable::getStringTable(void) const

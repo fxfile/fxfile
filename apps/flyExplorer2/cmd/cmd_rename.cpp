@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -218,7 +218,7 @@ static void doRename(FolderCtrl &aFolderCtrl, HTREEITEM aTreeItem = XPR_NULL)
 
     xpr_bool_t sRenamed = XPR_FALSE;
 
-    if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
+    if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
     {
         SingleRenameDlg sDlg;
         sDlg.setItem(sTvItemData->mShellFolder, sTvItemData->mPidl, sTvItemData->mFullPidl, sTvItemData->mShellAttributes);
@@ -226,7 +226,7 @@ static void doRename(FolderCtrl &aFolderCtrl, HTREEITEM aTreeItem = XPR_NULL)
 
         sRenamed = XPR_TRUE;
     }
-    else if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
+    else if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
     {
         if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
         {
@@ -351,9 +351,9 @@ void RenameCommand::execute(CommandContext &aContext)
         if (sSelCount <= 0)
             return;
 
-        if (sSelCount > 1 && XPR_IS_TRUE(gOpt->mBatchRenameMultiSel))
+        if (sSelCount > 1 && XPR_IS_TRUE(gOpt->mConfig.mBatchRenameMultiSel))
         {
-            doBatchRename(*sSearchResultCtrl, XPR_TRUE, gOpt->mBatchRenameWithFolder);
+            doBatchRename(*sSearchResultCtrl, XPR_TRUE, gOpt->mConfig.mBatchRenameWithFolder);
         }
         else
         {
@@ -361,7 +361,7 @@ void RenameCommand::execute(CommandContext &aContext)
 
             xpr_bool_t sResult = XPR_FALSE;
 
-            if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
+            if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
             {
                 SrItemData *sSrItemData = (SrItemData *)sSearchResultCtrl->GetItemData(sIndex);
                 if (XPR_IS_NOT_NULL(sSrItemData))
@@ -395,9 +395,9 @@ void RenameCommand::execute(CommandContext &aContext)
                     sResult = XPR_TRUE;
                 }
             }
-            else if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
+            else if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
             {
-                doBatchRename(*sSearchResultCtrl, XPR_TRUE, gOpt->mBatchRenameMultiSel);
+                doBatchRename(*sSearchResultCtrl, XPR_TRUE, gOpt->mConfig.mBatchRenameMultiSel);
                 sResult = XPR_TRUE;
             }
 
@@ -409,7 +409,7 @@ void RenameCommand::execute(CommandContext &aContext)
     }
     XPR_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        if (sExplorerCtrl->isFileSystemFolder() == XPR_TRUE && gOpt->mBatchRenameMultiSel == XPR_TRUE)
+        if (sExplorerCtrl->isFileSystemFolder() == XPR_TRUE && gOpt->mConfig.mBatchRenameMultiSel == XPR_TRUE)
         {
             LPLVITEMDATA sLvItemData = XPR_NULL;
             xpr_sint_t sSelIndex = sExplorerCtrl->GetSelectionMark();
@@ -423,7 +423,7 @@ void RenameCommand::execute(CommandContext &aContext)
 
             FileSysItemDeque sFileSysItemDeque;
             xpr_ulong_t sMask = SFGAO_FILESYSTEM;
-            xpr_ulong_t sUnmask = (gOpt->mBatchRenameWithFolder == XPR_TRUE) ? 0 : SFGAO_FOLDER;
+            xpr_ulong_t sUnmask = (gOpt->mConfig.mBatchRenameWithFolder == XPR_TRUE) ? 0 : SFGAO_FOLDER;
 
             if (sSelCount > 1)
             {
@@ -447,7 +447,7 @@ void RenameCommand::execute(CommandContext &aContext)
         xpr_bool_t sRenamed = XPR_FALSE;
         xpr_sint_t sSelIndex = sExplorerCtrl->GetSelectionMark();
 
-        if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
+        if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BY_POPUP)
         {
             LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sExplorerCtrl->GetItemData(sSelIndex);
             if (XPR_IS_NOT_NULL(sLvItemData) && XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_CANRENAME))
@@ -463,14 +463,14 @@ void RenameCommand::execute(CommandContext &aContext)
                 sRenamed = XPR_TRUE;
             }
         }
-        else if (gOpt->mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
+        else if (gOpt->mConfig.mSingleRenameType == SINGLE_RENAME_TYPE_BATCH_RENAME)
         {
             LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sExplorerCtrl->GetItemData(sSelIndex);
             if (XPR_IS_NOT_NULL(sLvItemData))
             {
                 if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
                 {
-                    doBatchRename(*sExplorerCtrl, XPR_TRUE, gOpt->mBatchRenameWithFolder);
+                    doBatchRename(*sExplorerCtrl, XPR_TRUE, gOpt->mConfig.mBatchRenameWithFolder);
 
                     sRenamed = XPR_TRUE;
                 }

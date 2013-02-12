@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -31,6 +31,17 @@ HFONT CreateFont(const xpr_tchar_t *aFaceName,
                  xpr_bool_t         aUnderLine = XPR_FALSE,
                  xpr_bool_t         aStrikeOut = XPR_FALSE,
                  xpr_sint_t         aWidth = -1);
+
+
+xpr_bool_t FontDlgToString(const xpr_tchar_t *aFaceName,
+                           xpr_sint_t         aSize,
+                           xpr_sint_t         aWeight,
+                           xpr_bool_t         aItalic,
+                           xpr_bool_t         aStrikeOut,
+                           xpr_bool_t         aUnderline,
+                           xpr_tchar_t       *aFontText);
+
+xpr_bool_t StringToLogFont(const xpr_tchar_t *aFontText, LOGFONT &aLogFont);
 } // namespace fxb
 
 #endif // __FXB_GDI_H__

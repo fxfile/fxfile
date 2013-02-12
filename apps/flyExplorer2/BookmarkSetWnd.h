@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,8 @@ class BookmarkWnd;
 
 class BookmarkSetWnd : public CWnd
 {
+    typedef CWnd super;
+
 public:
     BookmarkSetWnd(void);
     virtual ~BookmarkSetWnd(void);

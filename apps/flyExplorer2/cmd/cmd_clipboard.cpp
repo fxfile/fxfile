@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,7 @@
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_clip_format.h"
 
+#include "Option.h"
 #include "CreateItemDlg.h"
 #include "MainFrame.h"
 #include "FolderCtrl.h"
@@ -484,8 +485,8 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
         DROPEFFECT sDropEffect = DROPEFFECT_NONE;
         fxb::GetPreferredDropEffect(&sOleDataObject, sClipFormat.mDropEffect, sDropEffect);
 
-        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
         if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
             fxb::ContextMenu::invokeCommand(sTvItemData->mShellFolder, &sTvItemData->mPidl, 1, CMID_VERB_PASTE, sFolderCtrl->GetSafeHwnd());
@@ -540,8 +541,8 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
                         DROPEFFECT sDropEffect = DROPEFFECT_NONE;
                         fxb::GetPreferredDropEffect(sClipFormat.mDropEffect, sDropEffect);
 
-                        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-                        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+                        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+                        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
                         if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
                             fxb::ContextMenu::invokeCommand(sLvItemData->mShellFolder, &sLvItemData->mPidl, 1, CMID_VERB_PASTE, sExplorerCtrl->GetSafeHwnd());
@@ -624,8 +625,8 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
             DROPEFFECT sDropEffect = DROPEFFECT_NONE;
             fxb::GetPreferredDropEffect(&sOleDataObject, sClipFormat.mDropEffect, sDropEffect);
 
-            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
             if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
             {
@@ -832,8 +833,8 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
             DROPEFFECT sDropEffect = DROPEFFECT_NONE;
             fxb::GetPreferredDropEffect(sClipFormat.mDropEffect, sDropEffect);
 
-            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
             if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
                 fxb::ContextMenu::invokeCommand(sTvItemData->mShellFolder, &sTvItemData->mPidl, 1, CMID_VERB_PASTE, sFolderCtrl->GetSafeHwnd());
@@ -964,8 +965,8 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
                         DROPEFFECT sDropEffect = DROPEFFECT_NONE;
                         fxb::GetPreferredDropEffect(sClipFormat.mDropEffect, sDropEffect);
 
-                        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-                        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+                        xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+                        xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
                         if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
                             fxb::ContextMenu::invokeCommand(sLvItemData->mShellFolder, &sLvItemData->mPidl, 1, CMID_VERB_PASTE, sExplorerCtrl->GetSafeHwnd());
@@ -980,8 +981,8 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
             DROPEFFECT sDropEffect = DROPEFFECT_NONE;
             fxb::GetPreferredDropEffect(sClipFormat.mDropEffect, sDropEffect);
 
-            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+            xpr_bool_t sExternalCopyFileOp = (sDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mConfig.mExternalCopyFileOp);
+            xpr_bool_t sExternalMoveFileOp = (sDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mConfig.mExternalMoveFileOp);
 
             if (XPR_IS_TRUE(sExternalCopyFileOp) || XPR_IS_TRUE(sExternalMoveFileOp))
             {
@@ -1103,7 +1104,7 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
         sText[0] = '\0';
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
         xpr_tchar_t *sSplit;
@@ -1144,7 +1145,7 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
         std::tstring sName;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sCount = sExplorerCtrl->GetSelectedCount();
         if (sCount <= 0)
@@ -1247,7 +1248,7 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
         sText[0] = '\0';
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
         xpr_tchar_t *sSplit;
@@ -1285,7 +1286,7 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
         std::tstring sFileName;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sCount = sExplorerCtrl->GetSelectedCount();
         if (sCount <= 0)
@@ -1419,7 +1420,7 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
         sText[0] = '\0';
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
@@ -1452,7 +1453,7 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
         std::tstring sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sCount = sExplorerCtrl->GetSelectedCount();
         if (sCount <= 0)
@@ -1547,7 +1548,7 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
         memset(sText, 0, (XPR_MAX_PATH * sCount + 1) * sizeof(xpr_tchar_t));
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
         xpr_tchar_t sName[XPR_MAX_PATH * 2 + 1];
@@ -1596,7 +1597,7 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
         std::tstring sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sCount = sExplorerCtrl->GetSelectedCount();
         if (sCount <= 0)
@@ -1695,7 +1696,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
         std::tstring sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sIndex;
         SrItemData *sSrItemData = XPR_NULL;
@@ -1733,7 +1734,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
         std::tstring sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
-        fxb::ConvertStringToFormat(gOpt->mClipboardSeparator, sClipSeperatorText);
+        fxb::ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
 
         xpr_sint_t sCount = sExplorerCtrl->GetSelectedCount();
         if (sCount <= 0)

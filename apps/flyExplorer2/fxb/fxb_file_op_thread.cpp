@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -38,7 +38,8 @@ enum
     WM_POST_END = WM_USER+100,
 };
 
-xpr_sint_t FileOpThread::mRefCount = 0;
+xpr_sint_t FileOpThread::mRefCount      = 0;
+xpr_bool_t FileOpThread::mCompleteFlash = XPR_FALSE;
 
 FileOpThread::FileOpThread(void)
     : mRefIndex(mRefCount++)
@@ -61,6 +62,11 @@ BEGIN_MESSAGE_MAP(FileOpThread, CWnd)
     ON_WM_CLOSE()
     ON_MESSAGE(WM_POST_END, OnPostEnd)
 END_MESSAGE_MAP()
+
+void FileOpThread::setCompleteFlash(xpr_bool_t aCompleteFlash)
+{
+    mCompleteFlash = aCompleteFlash;
+}
 
 void FileOpThread::setUndo(xpr_bool_t aUndo)
 {
@@ -222,7 +228,7 @@ LRESULT FileOpThread::OnPostEnd(WPARAM, LPARAM)
     }
     else
     {
-        if (XPR_IS_TRUE(gOpt->mFileOpCompleteFlash))
+        if (XPR_IS_TRUE(mCompleteFlash))
         {
             FLASHWINFO sFlashWInfo = {0};
             sFlashWInfo.cbSize  = sizeof(sFlashWInfo);

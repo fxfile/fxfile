@@ -17,7 +17,7 @@
 #include "FolderPaneObserver.h"
 #include "MainFrame.h"
 #include "FolderCtrl.h"
-#include "OptionMgr.h"
+#include "Option.h"
 
 #include "cmd/cmd_parameters.h"
 #include "cmd/cmd_parameter_define.h"
@@ -120,7 +120,7 @@ xpr_sint_t FolderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     mFolderCtrl->init(XPR_NULL, XPR_FALSE);
 
-    OptionMgr::instance().applyFolderCtrl(mFolderCtrl, XPR_TRUE);
+    setFolderOption(mFolderCtrl, *gOpt);
 
     return 0;
 }
@@ -145,6 +145,79 @@ void FolderPane::setViewIndex(xpr_sint_t aViewIndex)
 xpr_sint_t FolderPane::getViewIndex(void) const
 {
     return mViewIndex;
+}
+
+void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
+{
+    XPR_ASSERT(aFolderCtrl != XPR_NULL);
+
+    FolderCtrl::Option sOption;
+
+    sOption.mMouseClick               = aOption.mConfig.mMouseClick;
+    sOption.mShowHiddenAttribute      = aOption.mConfig.mShowHiddenAttribute;
+    sOption.mShowSystemAttribute      = aOption.mConfig.mShowSystemAttribute;
+    sOption.mRenameByMouse            = aOption.mConfig.mRenameByMouse;
+
+    if (aOption.mConfig.mFolderTreeBkgndColorType[mViewIndex] == FOLDER_TREE_CUSTOM_EXPLORER)
+    {
+        sOption.mBkgndColorType       = COLOR_TYPE_CUSTOM;
+        sOption.mBkgndColor           = aOption.mConfig.mExplorerBkgndColor[mViewIndex];
+    }
+    else
+    {
+        sOption.mBkgndColorType       = aOption.mConfig.mFolderTreeBkgndColorType[mViewIndex];
+        sOption.mBkgndColor           = aOption.mConfig.mFolderTreeBkgndColor[mViewIndex];
+    }
+
+    if (aOption.mConfig.mFolderTreeTextColorType[mViewIndex] == FOLDER_TREE_CUSTOM_EXPLORER)
+    {
+        sOption.mTextColorType        = COLOR_TYPE_CUSTOM;
+        sOption.mTextColor            = aOption.mConfig.mExplorerTextColor[mViewIndex];
+    }
+    else
+    {
+        sOption.mTextColorType        = aOption.mConfig.mFolderTreeTextColorType[mViewIndex];
+        sOption.mTextColor            = aOption.mConfig.mFolderTreeTextColor[mViewIndex];
+    }
+
+    if (XPR_IS_TRUE(aOption.mConfig.mFolderTreeCustomFont))
+    {
+        sOption.mCustomFont            = aOption.mConfig.mFolderTreeCustomFont;
+        _tcscpy(sOption.mCustomFontText, aOption.mConfig.mFolderTreeCustomFontText);
+    }
+    else
+    {
+        sOption.mCustomFont            = aOption.mConfig.mCustomFont;
+        _tcscpy(sOption.mCustomFontText, aOption.mConfig.mCustomFontText);
+    }
+
+    sOption.mIsItemHeight             = aOption.mConfig.mFolderTreeIsItemHeight;
+    sOption.mItemHeight               = aOption.mConfig.mFolderTreeItemHeight;
+    sOption.mHighlight                = aOption.mConfig.mFolderTreeHighlight[mViewIndex];
+    sOption.mHighlightColor           = aOption.mConfig.mFolderTreeHighlightColor[mViewIndex];
+    sOption.mInitNoExpand             = aOption.mConfig.mFolderTreeInitNoExpand;
+    sOption.mSelDelay                 = aOption.mConfig.mFolderTreeSelDelay;
+    sOption.mSelDelayTime             = aOption.mConfig.mFolderTreeSelDelayTime;
+
+    sOption.mExternalCopyFileOp       = aOption.mConfig.mExternalCopyFileOp;
+    sOption.mExternalMoveFileOp       = aOption.mConfig.mExternalMoveFileOp;
+
+    sOption.mDragType                 = aOption.mConfig.mDragType;
+    sOption.mDragDist                 = aOption.mConfig.mDragDist;
+    sOption.mDropType                 = aOption.mConfig.mDropType;
+    sOption.mDragFolderTreeExpandTime = aOption.mConfig.mDragFolderTreeExpandTime;
+    sOption.mDragScrollTime           = aOption.mConfig.mDragScrollTime;
+    sOption.mDragDefaultFileOp        = aOption.mConfig.mDragDefaultFileOp;
+    sOption.mDragNoContents           = aOption.mConfig.mDragNoContents;
+
+    aFolderCtrl->setOption(sOption);
+}
+
+void FolderPane::setChangedOption(Option &aOption)
+{
+    XPR_ASSERT(mFolderCtrl != XPR_NULL);
+
+    setFolderOption(mFolderCtrl, aOption);
 }
 
 void FolderPane::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
@@ -247,6 +320,25 @@ void FolderPane::onMoveFocus(FolderCtrl &aFolderCtrl)
     if (XPR_IS_NOT_NULL(mObserver))
     {
         mObserver->onMoveFocus(*this, 2);
+    }
+}
+
+void FolderPane::onClick(FolderCtrl &aFolderCtrl)
+{
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
+    {
+        CPoint sPoint(0,0);
+        GetCursorPos(&sPoint);
+        aFolderCtrl.ScreenToClient(&sPoint);
+
+        xpr_uint_t sFlags = 0;
+        HTREEITEM sTreeItem = aFolderCtrl.HitTest(sPoint, &sFlags);
+
+        HTREEITEM sSelTreeItem = aFolderCtrl.GetSelectedItem();
+        if (sTreeItem == sSelTreeItem && XPR_ANY_BITS(sFlags, TVHT_ONITEM))
+        {
+            mFolderCtrl->explore(sTreeItem);
+        }
     }
 }
 

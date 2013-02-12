@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -96,13 +96,13 @@ void ActivateBar::activate(xpr_bool_t aActivate, xpr_bool_t aLastActivated)
     if (XPR_IS_FALSE(mActivate))
     {
         if (XPR_IS_TRUE(aLastActivated))
-            mBackColor = fxb::CalculateColor(GetSysColor(COLOR_WINDOW), gOpt->mActiveViewColor, 150);
+            mBackColor = fxb::CalculateColor(GetSysColor(COLOR_WINDOW), gOpt->mConfig.mActiveViewColor, 150);
         else
             mBackColor = fxb::CalculateColor(GetSysColor(COLOR_WINDOW), GetSysColor(COLOR_3DFACE), 50);
     }
     else
     {
-        mBackColor = gOpt->mActiveViewColor;
+        mBackColor = gOpt->mConfig.mActiveViewColor;
     }
 
     Invalidate(XPR_FALSE);

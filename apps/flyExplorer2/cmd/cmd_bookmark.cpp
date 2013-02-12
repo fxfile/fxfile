@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -109,8 +109,13 @@ xpr_sint_t BookmarkModifyCommand::canExecute(CommandContext &aContext)
 
 void BookmarkModifyCommand::execute(CommandContext &aContext)
 {
+    XPR_COMMAND_DECLARE_CTRL;
+
     BookmarkEditDlg sDlg;
-    sDlg.DoModal();
+    if (sDlg.DoModal() == XPR_TRUE)
+    {
+        sMainFrame->updateBookmark();
+    }
 }
 
 xpr_sint_t BookmarkRefreshCommand::canExecute(CommandContext &aContext)

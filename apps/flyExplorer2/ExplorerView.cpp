@@ -15,7 +15,7 @@
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_file_scrap.h"
 #include "fxb/fxb_cmd_line_parser.h"
-#include "fxb/fxb_file_ass.h"
+#include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_size_format.h"
 
@@ -31,7 +31,7 @@
 #include "FolderCtrl.h"
 #include "PreviewViewEx.h"
 #include "ActivateBar.h"
-#include "OptionMgr.h"
+#include "Option.h"
 #include "SearchResultPane.h"
 #include "SearchResultCtrl.h"
 #include "FileScrapPane.h"
@@ -234,13 +234,27 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (createSplitter() == XPR_FALSE)
         return -1;
 
-    // load tab from option
-    TabPathDeque::iterator sIterator = gOpt->mViewSplitTab[mViewIndex].mTabPathDeque.begin();
-    for (; sIterator != gOpt->mViewSplitTab[mViewIndex].mTabPathDeque.end(); ++sIterator)
+    switch (gOpt->mConfig.mExplorerInitFolderType[mViewIndex])
     {
-        const std::tstring &sFullPath = *sIterator;
+    case INIT_TYPE_LAST_TAB:
+        {
+            // load last tabs
+            TabPathDeque::iterator sIterator = gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.begin();
+            for (; sIterator != gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.end(); ++sIterator)
+            {
+                const std::tstring &sFullPath = *sIterator;
 
-        newTab(sFullPath);
+                newTab(sFullPath);
+            }
+            break;
+        }
+
+    case INIT_TYPE_LAST_FOLDER:
+        {
+            // load last folder
+            newTab(gOpt->mMain.mLastFolder[mViewIndex]);
+            break;
+        }
     }
 
     if (mTabCtrl->getTabCount() == 0)
@@ -248,21 +262,21 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
         newTab();
     }
 
-    if (mTabCtrl->setCurTab(gOpt->mViewSplitTab[mViewIndex].mCurTab) == XPR_FALSE)
+    if (mTabCtrl->setCurTab(gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab) == XPR_FALSE)
         mTabCtrl->setCurTab(0);
 
     // activate bar
-    visibleActivateBar(gOpt->mActivateBar[mViewIndex], XPR_TRUE);
+    visibleActivateBar(gOpt->mConfig.mShowActivateBar, XPR_TRUE);
 
     // folder pane
     xpr_bool_t sVisibleFolderPane = XPR_FALSE;
-    if (XPR_IS_FALSE(gOpt->mSingleFolderPaneMode) && XPR_IS_TRUE(gOpt->mShowEachFolderPane[mViewIndex]))
+    if (XPR_IS_FALSE(gOpt->mMain.mSingleFolderPaneMode) && XPR_IS_TRUE(gOpt->mMain.mShowEachFolderPane[mViewIndex]))
         sVisibleFolderPane = visibleFolderPane(XPR_TRUE, XPR_TRUE);
 
     FolderCtrl *sFolderCtrl = getFolderCtrl();
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
 
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode) && mViewIndex == 0)
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode) && mViewIndex == 0)
         sFolderCtrl = gFrame->getFolderCtrl();
 
     if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl))
@@ -282,14 +296,14 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
         GetClientRect(sRect);
 
         mSplitter.setWindowRect(sRect);
-        mSplitter.moveColumn(0, gOpt->mEachFolderPaneSize[mViewIndex]);
+        mSplitter.moveColumn(0, gOpt->mMain.mEachFolderPaneSize[mViewIndex]);
         mSplitter.resize();
     }
 
     // register for drag and drop
     mDropTarget.Register(this);
 
-    setDragContents(!gOpt->mDragNoContents);
+    setDragContents(!gOpt->mConfig.mDragNoContents);
 
     mInit = XPR_FALSE;
 
@@ -382,9 +396,9 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         sInitFolderType = aFlags & InitFolderCfgInit;
         if (sInitFolderType != 0)
         {
-            if (gOpt->mExplorerInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER)
+            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER)
             {
-                const xpr_tchar_t *sInitFolder = gOpt->mExplorerInitFolder[mViewIndex];
+                const xpr_tchar_t *sInitFolder = gOpt->mConfig.mExplorerInitFolder[mViewIndex];
                 if (fxb::IsEmptyString(sInitFolder) == XPR_FALSE)
                 {
                     sFullPidl = fxb::Path2Pidl(sInitFolder);
@@ -399,13 +413,13 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         sInitFolderType = aFlags & InitFolderLastSaved;
         if (sInitFolderType != 0)
         {
-            if (gOpt->mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
+            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
             {
-                const xpr_tchar_t *sLastFolder = gOpt->mLastFolder[mViewIndex];
+                const xpr_tchar_t *sLastFolder = gOpt->mMain.mLastFolder[mViewIndex];
                 if (fxb::IsEmptyString(sLastFolder) == XPR_FALSE)
                 {
-                    if ((XPR_IS_FALSE(gOpt->mExplorerNoNetLastFolder[mViewIndex])) ||
-                        (XPR_IS_TRUE (gOpt->mExplorerNoNetLastFolder[mViewIndex]) && fxb::IsNetItem(sLastFolder) == XPR_FALSE))
+                    if ((XPR_IS_FALSE(gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex])) ||
+                        (XPR_IS_TRUE (gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex]) && fxb::IsNetItem(sLastFolder) == XPR_FALSE))
                     {
                         sFullPidl = fxb::Path2Pidl(sLastFolder);
                     }
@@ -470,6 +484,49 @@ void ExplorerView::OnDestroy(void)
     mDropTarget.Revoke();
 }
 
+void ExplorerView::setChangedOption(Option &aOption)
+{
+    xpr_sint_t i, sTabCount;
+    TabPane *sTabPane;
+    std::set<TabPane *> mTabPaneSet;
+
+    // set activate bar options
+    visibleActivateBar(gOpt->mConfig.mShowActivateBar, XPR_FALSE);
+
+    if (XPR_IS_NOT_NULL(mActivateBar))
+    {
+        mActivateBar->setActivateBackColor(aOption.mConfig.mActiveViewColor);
+    }
+
+    // set folder pane options
+    if (XPR_IS_NOT_NULL(mFolderPane))
+    {
+        mFolderPane->setChangedOption(aOption);
+    }
+
+    // set tab pane options like explorer pane, search result pane, file scrap pane and so on...
+    sTabCount = getTabCount();
+    for (i = 0; i < sTabCount; ++i)
+    {
+        sTabPane = getTabPane(i);
+
+        XPR_ASSERT(sTabPane != XPR_NULL);
+
+        if (mTabPaneSet.find(sTabPane) == mTabPaneSet.end())
+        {
+            sTabPane->setChangedOption(aOption);
+
+            mTabPaneSet.insert(sTabPane);
+        }
+    }
+
+    // set contents display while dragging
+    setDragContents(!aOption.mConfig.mDragNoContents);
+
+    // update layout
+    recalcLayout();
+}
+
 void ExplorerView::saveOption(void)
 {
     ExplorerPane *sExplorerPane = getExplorerPane();
@@ -480,12 +537,12 @@ void ExplorerView::saveOption(void)
 
     if (XPR_IS_NOT_NULL(mTabCtrl))
     {
-        gOpt->mViewSplitTab[mViewIndex].mTabPathDeque.clear();
-        gOpt->mViewSplitTab[mViewIndex].mCurTab = 0;
+        gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.clear();
+        gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab = 0;
 
-        if (XPR_IS_TRUE(gOpt->mTabSave))
+        if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
         {
-            gOpt->mViewSplitTab[mViewIndex].mCurTab = mTabCtrl->getCurTab();
+            gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab = mTabCtrl->getCurTab();
 
             xpr_size_t i, sTabCount;
             ExplorerCtrl *sExplorerCtrl;
@@ -502,16 +559,16 @@ void ExplorerView::saveOption(void)
                         std::tstring sTabPath;
                         fxb::Pidl2Path(sTvItemData->mFullPidl, sTabPath);
 
-                        gOpt->mViewSplitTab[mViewIndex].mTabPathDeque.push_back(sTabPath);
+                        gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.push_back(sTabPath);
                     }
                 }
             }
         }
     }
 
-    if (XPR_IS_FALSE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_FALSE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        gOpt->mShowEachFolderPane[mViewIndex] = XPR_IS_NOT_NULL(mFolderPane) ? XPR_TRUE : XPR_FALSE;
+        gOpt->mMain.mShowEachFolderPane[mViewIndex] = XPR_IS_NOT_NULL(mFolderPane) ? XPR_TRUE : XPR_FALSE;
     }
 }
 
@@ -557,23 +614,6 @@ void ExplorerView::recalcLayout(void)
         }
     }
 
-    // splitter
-    mSplitter.setWindowRect(sRect);
-
-    xpr_sint_t sPaneSize = gOpt->mEachFolderPaneSize[mViewIndex];
-    if (XPR_IS_FALSE(gOpt->mLeftEachFolderPane[mViewIndex]))
-    {
-        xpr_sint_t sSplitSize = mSplitter.getSplitSize();
-        sPaneSize = sWidth- sPaneSize - sSplitSize;
-    }
-
-    mSplitter.moveColumn(0, sPaneSize);
-
-    mSplitter.resize(sHdwp);
-
-    xpr_sint_t sColumn = XPR_IS_TRUE(gOpt->mLeftEachFolderPane[mViewIndex]) ? 1 : 0;
-    mSplitter.getPaneRect(0, sColumn, sRect);
-
     // activate bar
     if (XPR_IS_NOT_NULL(mActivateBar) && XPR_IS_NOT_NULL(mActivateBar->m_hWnd))
     {
@@ -584,6 +624,23 @@ void ExplorerView::recalcLayout(void)
 
         sRect.top += sActivateBarRect.Height();
     }
+
+    // splitter
+    mSplitter.setWindowRect(sRect);
+
+    xpr_sint_t sPaneSize = gOpt->mMain.mEachFolderPaneSize[mViewIndex];
+    if (XPR_IS_FALSE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]))
+    {
+        xpr_sint_t sSplitSize = mSplitter.getSplitSize();
+        sPaneSize = sWidth- sPaneSize - sSplitSize;
+    }
+
+    mSplitter.moveColumn(0, sPaneSize);
+
+    mSplitter.resize(sHdwp);
+
+    xpr_sint_t sColumn = XPR_IS_TRUE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]) ? 1 : 0;
+    mSplitter.getPaneRect(0, sColumn, sRect);
 
     // tab based window (such as ExplorerPane, SearchResultPane, FileScrapPane and so on...)
     if (XPR_IS_NOT_NULL(mTabCtrl) && XPR_IS_NOT_NULL(mTabCtrl->m_hWnd))
@@ -772,7 +829,7 @@ void ExplorerView::OnContextMenu(CWnd *aWnd, CPoint aPoint)
                 if (XPR_IS_NOT_NULL(sPopupMenu))
                 {
                     BCMenu *sSubMenu = XPR_NULL;
-                    if (XPR_IS_TRUE(gOpt->mFileScrapContextMenu))
+                    if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapContextMenu))
                         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(14);
                     else
                     {
@@ -963,14 +1020,6 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
         return -1;
     }
 
-    // set image list
-    fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
-    sExplorerCtrl->setImageList(&sSysImgListMgr.mSysImgList32, &sSysImgListMgr.mSysImgList16);
-
-    // apply configuration
-    OptionMgr &sOptionMgr = OptionMgr::instance();
-    sOptionMgr.applyExplorerCtrl(sExplorerCtrl, XPR_TRUE);
-
     // initailize folder location
     xpr_bool_t sExplored = XPR_FALSE;
 
@@ -1000,7 +1049,7 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
         sFlags &= ~InitFolderLastSaved;
         sInitFolderType = InitFolderNone;
 
-        if (XPR_IS_FALSE(gOpt->mSplitLastFolder))
+        if (XPR_IS_FALSE(gOpt->mConfig.mViewSplitReopenLastFolder))
             sFlags &= ~InitFolderSplit;
 
         sFullPidl = getInitFolder(mViewIndex, sSelFile, sFlags, &sInitFolderType);
@@ -1044,14 +1093,14 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
     }
 
     // set view style
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_NONE && XPR_IS_TRUE(gOpt->mExplorerSaveViewStyle))
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_NONE && XPR_IS_TRUE(gOpt->mConfig.mExplorerSaveViewStyle))
     {
-        if (gOpt->mViewStyle[mViewIndex] != LVS_REPORT)
-            sExplorerCtrl->setViewStyle(gOpt->mViewStyle[mViewIndex], XPR_TRUE);
+        if (gOpt->mMain.mViewStyle[mViewIndex] != LVS_REPORT)
+            sExplorerCtrl->setViewStyle(gOpt->mMain.mViewStyle[mViewIndex], XPR_TRUE);
     }
 
     // load history
-    if (XPR_IS_TRUE(gOpt->mSaveHistory))
+    if (XPR_IS_TRUE(gOpt->mConfig.mSaveHistory))
     {
         // TODO each tab data
         sExplorerCtrl->loadHistory();
@@ -1522,9 +1571,9 @@ FolderPane *ExplorerView::getFolderPane(void) const
 
 FolderCtrl *ExplorerView::getFolderCtrl(void) const
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        if (XPR_IS_TRUE(gOpt->mSingleFolderTreeLinkage))
+        if (XPR_IS_TRUE(gOpt->mConfig.mSingleFolderTreeLinkage))
             return gFrame->getFolderCtrl();
 
         return XPR_NULL;
@@ -1602,7 +1651,7 @@ FileScrapPane *ExplorerView::getFileScrapPane(xpr_sint_t aTab) const
 xpr_bool_t ExplorerView::visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoading, xpr_bool_t aSaveFolderPaneVisible)
 {
     if (XPR_IS_TRUE(aSaveFolderPaneVisible))
-        gOpt->mShowEachFolderPane[mViewIndex] = aVisible;
+        gOpt->mMain.mShowEachFolderPane[mViewIndex] = aVisible;
 
     if (XPR_IS_TRUE(aVisible))
     {
@@ -1623,7 +1672,7 @@ xpr_bool_t ExplorerView::visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoad
                         HTREEITEM sTreeItem = sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
                         if (XPR_IS_NOT_NULL(sTreeItem))
                         {
-                            if (gOpt->mFolderTreeInitNoExpand == XPR_FALSE)
+                            if (gOpt->mConfig.mFolderTreeInitNoExpand == XPR_FALSE)
                                 sFolderCtrl->Expand(sTreeItem, TVE_EXPAND);
 
                             sFolderCtrl->EnsureVisible(sTreeItem);
@@ -1674,14 +1723,14 @@ xpr_bool_t ExplorerView::createFolderPane(void)
         CRect sWindowRect;
         mSplitter.getWindowRect(sWindowRect);
 
-        xpr_sint_t sPaneSize = gOpt->mEachFolderPaneSize[mViewIndex];
-        if (XPR_IS_FALSE(gOpt->mLeftEachFolderPane[mViewIndex]))
+        xpr_sint_t sPaneSize = gOpt->mMain.mEachFolderPaneSize[mViewIndex];
+        if (XPR_IS_FALSE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]))
         {
             xpr_sint_t sSplitSize = mSplitter.getSplitSize();
             sPaneSize = sWindowRect.Width() - sPaneSize - sSplitSize;
         }
 
-        if (XPR_IS_TRUE(gOpt->mLeftEachFolderPane[mViewIndex]))
+        if (XPR_IS_TRUE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]))
             mSplitter.switchPane(0, 0, 0, 1);
 
         mSplitter.split(1, 2);
@@ -1697,7 +1746,7 @@ void ExplorerView::destroyFolderPane(void)
     if (XPR_IS_NULL(mFolderPane))
         return;
 
-    if (XPR_IS_TRUE(gOpt->mLeftEachFolderPane[mViewIndex]))
+    if (XPR_IS_TRUE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]))
         mSplitter.switchPane(0, 1, 0, 0);
 
     mSplitter.split(1, 1);
@@ -1709,7 +1758,7 @@ void ExplorerView::destroyFolderPane(void)
 
 xpr_bool_t ExplorerView::isLeftFolderPane(void) const
 {
-    return gOpt->mLeftEachFolderPane[mViewIndex];
+    return gOpt->mMain.mLeftEachFolderPane[mViewIndex];
 }
 
 void ExplorerView::setLeftFolderPane(xpr_bool_t aLeft)
@@ -1717,9 +1766,9 @@ void ExplorerView::setLeftFolderPane(xpr_bool_t aLeft)
     if (isVisibleFolderPane() == XPR_FALSE)
         return;
 
-    if (gOpt->mLeftEachFolderPane[mViewIndex] != aLeft)
+    if (gOpt->mMain.mLeftEachFolderPane[mViewIndex] != aLeft)
     {
-        gOpt->mLeftEachFolderPane[mViewIndex] = aLeft;
+        gOpt->mMain.mLeftEachFolderPane[mViewIndex] = aLeft;
 
         mSplitter.switchPane(0, 0, 0, 1);
 
@@ -1742,7 +1791,7 @@ xpr_bool_t ExplorerView::createActivateBar(void)
     {
         if (mActivateBar->Create(this, CTRL_ID_ACTIVATE_BAR, CRect(0,0,0,0)) == XPR_TRUE)
         {
-            mActivateBar->setActivateBackColor(gOpt->mActiveViewColor);
+            mActivateBar->setActivateBackColor(gOpt->mConfig.mActiveViewColor);
         }
         else
         {
@@ -1777,8 +1826,6 @@ void ExplorerView::visibleActivateBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
         destroyActivateBar();
     }
 
-    gOpt->mActivateBar[mViewIndex] = aVisible;
-
     if (XPR_IS_FALSE(aLoading))
     {
         recalcLayout();
@@ -1788,7 +1835,7 @@ void ExplorerView::visibleActivateBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 
 xpr_bool_t ExplorerView::isVisibleActivateBar(void) const
 {
-    return gOpt->mActivateBar[mViewIndex];
+    return gOpt->mConfig.mShowActivateBar;
 }
 
 // TODO
@@ -1859,7 +1906,7 @@ void ExplorerView::OnActivateView(xpr_bool_t aActivate, CView *aActivateView, CV
                 if (XPR_IS_NOT_NULL(sTvItemData))
                 {
                     // update single folder pane linkage
-                    if (XPR_IS_TRUE(gOpt->mSingleFolderTreeLinkage))
+                    if (XPR_IS_TRUE(gOpt->mConfig.mSingleFolderTreeLinkage))
                     {
                         FolderCtrl *sFolderCtrl = getFolderCtrl();
                         if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sFolderCtrl->m_hWnd))
@@ -2029,7 +2076,7 @@ void ExplorerView::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
         CSize sPaneSize(0, 0);
         mSplitter.getPaneSize(0, sColumn, sPaneSize);
 
-        gOpt->mEachFolderPaneSize[mViewIndex] = sPaneSize.cx;
+        gOpt->mMain.mEachFolderPaneSize[mViewIndex] = sPaneSize.cx;
 
         recalcLayout();
     }
@@ -2055,7 +2102,7 @@ void ExplorerView::OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint)
         CSize sPaneSize(0, 0);
         mSplitter.getPaneSize(sRow, sColumn, sPaneSize);
 
-        gOpt->mEachFolderPaneSize[mViewIndex] = sPaneSize.cx;
+        gOpt->mMain.mEachFolderPaneSize[mViewIndex] = sPaneSize.cx;
 
         recalcLayout();
     }
@@ -2080,7 +2127,7 @@ CWnd *ExplorerView::onSplitterPaneCreate(Splitter &aSplitter, xpr_sint_t aRow, x
 {
     xpr_sint_t sPaneCount = aSplitter.getPaneCount();
 
-    if (XPR_IS_TRUE(gOpt->mShowEachFolderPane[mViewIndex]) && XPR_IS_FALSE(gOpt->mLeftEachFolderPane[mViewIndex]))
+    if (XPR_IS_TRUE(gOpt->mMain.mShowEachFolderPane[mViewIndex]) && XPR_IS_FALSE(gOpt->mMain.mLeftEachFolderPane[mViewIndex]))
     {
         if ((sPaneCount == 1) || (aRow == 0 && aColumn == 0))
             return XPR_NULL;

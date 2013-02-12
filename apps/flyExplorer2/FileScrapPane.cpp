@@ -997,3 +997,7 @@ void FileScrapPane::onRemovedAllItems(fxb::FileScrap &aFileScrap, fxb::FileScrap
 
     mFileScrapCtrl->DeleteAllItems();
 }
+
+void FileScrapPane::setChangedOption(Option &aOption)
+{
+}

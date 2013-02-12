@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -41,7 +41,7 @@ protected:
     virtual void       OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEffect, CPoint aPoint);
 
     void OnDropBookmark(LPITEMIDLIST aFullPidl);
-    void OnDropFileAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType);
+    void OnDropProgramAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType);
     void OnDropWorkingFolder(xpr_sint_t aIndex, LPITEMIDLIST aFullPidl);
 
 protected:

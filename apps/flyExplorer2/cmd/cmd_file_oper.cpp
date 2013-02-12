@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -67,7 +67,7 @@ void FileDeleteCommand::execute(CommandContext &aContext)
         LPTVITEMDATA sTvItemData = (LPTVITEMDATA)sFolderCtrl->GetItemData(sTreeItem);
         if (XPR_IS_NOT_NULL(sTvItemData) && XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_CANDELETE))
         {
-            if (gOpt->mExternalDeleteFileOp == XPR_TRUE)
+            if (gOpt->mConfig.mExternalDeleteFileOp == XPR_TRUE)
                 fxb::ContextMenu::invokeCommand(sTvItemData->mShellFolder, &sTvItemData->mPidl, 1, CMID_VERB_DELETE, sFolderCtrl->GetSafeHwnd());
             else
             {
@@ -174,7 +174,7 @@ void FileDeleteCommand::execute(CommandContext &aContext)
         }
         COM_RELEASE(sShellFolder);
 
-        if (XPR_IS_TRUE(sTrash) || gOpt->mExternalDeleteFileOp == XPR_TRUE)
+        if (XPR_IS_TRUE(sTrash) || gOpt->mConfig.mExternalDeleteFileOp == XPR_TRUE)
         {
             xpr_sint_t sCount = 0;
             LPSHELLFOLDER sShellFolder = XPR_NULL;

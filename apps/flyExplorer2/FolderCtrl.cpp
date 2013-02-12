@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "FolderCtrl.h"
+#include "FolderCtrlObserver.h"
 
 #include "fxb/fxb_file_change_watcher.h" // for File Change Watcher
 #include "fxb/fxb_file_op_thread.h"      // for File Operation Thread
@@ -21,10 +22,6 @@
 #include "rgc/DragImage.h"
 #include "rgc/DropSource.h"
 #include "rgc/WindowScroller.h"    // for Wheel Scroller
-
-#include "Option.h"
-#include "FolderCtrlObserver.h"
-#include "OptionMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -241,6 +238,78 @@ void FolderCtrl::OnDestroy(void)
     }
 }
 
+void FolderCtrl::setOption(Option &aOption)
+{
+    xpr_bool_t sModifiedHidden = (mOption.mShowSystemAttribute != aOption.mShowHiddenAttribute) ? XPR_TRUE : XPR_FALSE;
+    xpr_bool_t sModifiedSystem = (mOption.mShowSystemAttribute != aOption.mShowSystemAttribute) ? XPR_TRUE : XPR_FALSE;
+
+    // set new option
+    mOption = aOption;
+
+    // modify style
+    DWORD sStyle = TVS_SINGLEEXPAND;
+    if (isVistaEnhanced() == XPR_FALSE)
+        sStyle |= TVS_TRACKSELECT;
+
+    if (mOption.mMouseClick == MOUSE_ONE_CLICK)
+    {
+        ModifyStyle(0, sStyle);
+    }
+    else
+    {
+        ModifyStyle(sStyle, 0);
+    }
+
+    // update hidden or system attribute
+    if ((XPR_IS_FALSE(mInit)) && (XPR_IS_TRUE(sModifiedHidden) || XPR_IS_TRUE(sModifiedSystem)))
+        setHiddenSystem(sModifiedHidden, sModifiedSystem);
+
+    // set item height
+    if (XPR_IS_TRUE(mOption.mIsItemHeight))
+    {
+        SetItemHeight(mOption.mItemHeight);
+    }
+    else
+    {
+        SetItemHeight(-1);
+    }
+
+    // set background color
+    if (mOption.mBkgndColorType == COLOR_TYPE_CUSTOM)
+    {
+        SetBkColor(mOption.mBkgndColor);
+    }
+    else
+    {
+        SetBkColor(::GetSysColor(COLOR_WINDOW));
+    }
+
+    // set text color
+    if (mOption.mTextColorType == COLOR_TYPE_CUSTOM)
+    {
+        SetTextColor(mOption.mTextColor);
+    }
+    else
+    {
+        SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+    }
+
+    // set custom font
+    setCustomFont(mOption.mCustomFont, mOption.mCustomFontText);
+
+    // update selected tree item
+    HTREEITEM sTreeItem = GetSelectedItem();
+    if (XPR_IS_NOT_NULL(sTreeItem))
+    {
+        CRect sRect;
+        GetItemRect(sTreeItem, &sRect, XPR_FALSE);
+        InvalidateRect(sRect, XPR_FALSE);
+    }
+
+    // set contents display while dragging
+    setDragContents(!mOption.mDragNoContents);
+}
+
 LPARAM FolderCtrl::GetItemData(HTREEITEM aTreeItem) const
 {
     if (XPR_IS_NULL(aTreeItem))
@@ -414,7 +483,7 @@ void FolderCtrl::OnSelchanged(NMHDR *aNmHdr, LRESULT *aResult)
     if (XPR_IS_TRUE(sSelTimer))
     {
         mTimerSelTreeItem = sTreeItem;
-        SetTimer(TM_ID_SEL_ITEM, gOpt->mFolderTreeSelDelayTime, XPR_NULL);
+        SetTimer(TM_ID_SEL_ITEM, mOption.mSelDelayTime, XPR_NULL);
     }
     else
     {
@@ -760,7 +829,7 @@ xpr_bool_t FolderCtrl::init(LPITEMIDLIST aRootFullPidl, xpr_bool_t aSelDefItem, 
                 Expand(GetRootItem(), TVE_EXPAND);
                 SelectItem(sTreeItem);
 
-                if (gOpt->mFolderTreeInitNoExpand == XPR_FALSE)
+                if (mOption.mInitNoExpand == XPR_FALSE)
                     Expand(sTreeItem, TVE_EXPAND);
 
                 aSelDefItem = XPR_FALSE;
@@ -778,7 +847,7 @@ xpr_bool_t FolderCtrl::init(LPITEMIDLIST aRootFullPidl, xpr_bool_t aSelDefItem, 
             {
                 SelectItem(sTreeItem);
 
-                if (gOpt->mFolderTreeInitNoExpand == XPR_FALSE)
+                if (mOption.mInitNoExpand == XPR_FALSE)
                     Expand(sTreeItem, TVE_EXPAND);
 
                 sSelItem = XPR_TRUE;
@@ -814,8 +883,8 @@ xpr_bool_t FolderCtrl::enumItem(LPSHELLFOLDER  aShellFolder,
     HRESULT sHResult;
 
     DWORD sFlags = SHCONTF_FOLDERS;
-    if (XPR_IS_TRUE(gOpt->mShowHiddenAttribute)) sFlags |= SHCONTF_INCLUDEHIDDEN;
-    if (XPR_IS_TRUE(gOpt->mShowSystemAttribute)) sFlags |= SHCONTF_STORAGE;
+    if (XPR_IS_TRUE(mOption.mShowHiddenAttribute)) sFlags |= SHCONTF_INCLUDEHIDDEN;
+    if (XPR_IS_TRUE(mOption.mShowSystemAttribute)) sFlags |= SHCONTF_STORAGE;
 
     sHResult = aShellFolder->EnumObjects(m_hWnd, sFlags, &sEnumIdList);
     if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sEnumIdList))
@@ -916,7 +985,7 @@ xpr_bool_t FolderCtrl::FillItem(LPSHELLFOLDER  aShellFolder,
         return XPR_TRUE;
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
@@ -1142,8 +1211,8 @@ void FolderCtrl::OnBegindrag(NMHDR *aNmHdr, LRESULT *aResult)
 {
     NM_TREEVIEW *sNmTreeView = (NM_TREEVIEW*)aNmHdr;
 
-    if ((gOpt->mDragType == DRAG_START_DEFAULT) ||
-        (gOpt->mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
+    if ((mOption.mDragType == DRAG_START_DEFAULT) ||
+        (mOption.mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
     {
         beginDragDrop(sNmTreeView);
     }
@@ -1155,8 +1224,8 @@ void FolderCtrl::OnBeginrdrag(NMHDR *aNmHdr, LRESULT *aResult)
 {
     NM_TREEVIEW *sNmTreeView = (NM_TREEVIEW*)aNmHdr;
 
-    if ((gOpt->mDragType == DRAG_START_DEFAULT) ||
-        (gOpt->mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
+    if ((mOption.mDragType == DRAG_START_DEFAULT) ||
+        (mOption.mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
     {
         beginDragDrop(sNmTreeView);
     }
@@ -1198,7 +1267,7 @@ void FolderCtrl::beginDragDrop(NM_TREEVIEW* sNmTreeView)
 
                 DragImage &sDragImage = DragImage::instance();
 
-                if (gOpt->mDragNoContents == XPR_FALSE)
+                if (mOption.mDragNoContents == XPR_FALSE)
                 {
                     if (sDragImage.beginDrag(m_hWnd, XPR_NULL, sDataObject) == XPR_FALSE)
                     {
@@ -1437,7 +1506,7 @@ void FolderCtrl::OnKeyDown(xpr_uint_t nChar, xpr_uint_t nRepCnt, xpr_uint_t nFla
     }
     else if (nChar == VK_UP || nChar == VK_DOWN || nChar == VK_LEFT || nChar == VK_RIGHT)
     {
-        if (gOpt->mFolderTreeSelDelay == XPR_TRUE)
+        if (mOption.mSelDelay == XPR_TRUE)
             mSelTimer = XPR_TRUE;
     }
 
@@ -2051,13 +2120,13 @@ xpr_bool_t FolderCtrl::OnShcnEnum(LPSHELLFOLDER  aShellFolder,
         return XPR_TRUE;
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && gOpt->mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sShellAttributes, SFGAO_GHOSTED))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && mOption.mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sShellAttributes, SFGAO_GHOSTED))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
@@ -2510,17 +2579,17 @@ void FolderCtrl::setHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModifie
 
     if (XPR_IS_TRUE(aModifiedHidden))
     {
-        if (XPR_IS_TRUE(gOpt->mShowHiddenAttribute)) sShow = XPR_TRUE;
-        else                                         sHide = XPR_TRUE;
+        if (XPR_IS_TRUE(mOption.mShowHiddenAttribute)) sShow = XPR_TRUE;
+        else                                           sHide = XPR_TRUE;
     }
 
     if (XPR_IS_TRUE(aModifiedSystem))
     {
-        if (XPR_IS_TRUE(gOpt->mShowSystemAttribute)) sShow = XPR_TRUE;
-        else                                         sHide = XPR_TRUE;
+        if (XPR_IS_TRUE(mOption.mShowSystemAttribute)) sShow = XPR_TRUE;
+        else                                           sHide = XPR_TRUE;
     }
 
-    if (XPR_IS_TRUE(sHide) && XPR_IS_TRUE(gOpt->mShowSystemAttribute))
+    if (XPR_IS_TRUE(sHide) && XPR_IS_TRUE(mOption.mShowSystemAttribute))
         sHide = XPR_FALSE;
 
     if (XPR_IS_TRUE(sShow))
@@ -2586,8 +2655,8 @@ void FolderCtrl::hideHiddenSystem(HTREEITEM aTreeItem, xpr_bool_t aModifiedHidde
         LPTVITEMDATA sTvItemData = (LPTVITEMDATA)GetItemData(aTreeItem);
         if (XPR_IS_NOT_NULL(sTvItemData))
         {
-            if ((gOpt->mShowSystemAttribute == XPR_FALSE && gOpt->mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_GHOSTED)) ||
-                (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sTvItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sTvItemData->mFileAttributes, FILE_ATTRIBUTE_SYSTEM)))
+            if ((mOption.mShowSystemAttribute == XPR_FALSE && mOption.mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_GHOSTED)) ||
+                (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sTvItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sTvItemData->mFileAttributes, FILE_ATTRIBUTE_SYSTEM)))
             {
                 HTREEITEM sParentTreeItem = GetParentItem(aTreeItem);
                 DeleteItem(aTreeItem);
@@ -2634,7 +2703,7 @@ void FolderCtrl::OnShcnUpdateImage(HTREEITEM aTreeItem, xpr_sint_t aImageIndex)
 
 void FolderCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult) 
 {
-    if (XPR_IS_FALSE(gOpt->mRenameByMouse) && XPR_IS_TRUE(mMouseEdit))
+    if (XPR_IS_FALSE(mOption.mRenameByMouse) && XPR_IS_TRUE(mMouseEdit))
     {
         *aResult = 1;
         mMouseEdit = XPR_TRUE;
@@ -2889,15 +2958,15 @@ DROPEFFECT FolderCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeyStat
         }
 
         //sDropEffect = sCopy ? DROPEFFECT_COPY : DROPEFFECT_MOVE;
-        if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_DEFAULT)
+        if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_DEFAULT)
         {
             sDropEffect = XPR_IS_TRUE(sCopy) ? DROPEFFECT_COPY : DROPEFFECT_MOVE;
         }
-        else if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_COPY)
+        else if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_COPY)
         {
             sDropEffect = DROPEFFECT_COPY;
         }
-        else if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_LINK)
+        else if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_LINK)
         {
             sDropEffect = DROPEFFECT_LINK;
         }
@@ -2935,7 +3004,7 @@ DROPEFFECT FolderCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeyStat
         mDragExpandTreeItem = sTreeItem;
 
         KillTimer(TM_ID_DRAG_EXPAND_ITEM);
-        SetTimer(TM_ID_DRAG_EXPAND_ITEM, gOpt->mDragFolderTreeExpandTime, XPR_NULL);
+        SetTimer(TM_ID_DRAG_EXPAND_ITEM, mOption.mDragFolderTreeExpandTime, XPR_NULL);
     }
 
     if (XPR_IS_NOT_NULL(sTreeItem))
@@ -3048,7 +3117,7 @@ void FolderCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollUpTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_UP, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_UP, mOption.mDragScrollTime, XPR_NULL);
             mScrollUpTimer = XPR_TRUE;
         }
     }
@@ -3061,7 +3130,7 @@ void FolderCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollDownTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_DOWN, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_DOWN, mOption.mDragScrollTime, XPR_NULL);
             mScrollDownTimer = XPR_TRUE;
         }
     }
@@ -3074,7 +3143,7 @@ void FolderCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollLeftTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_LEFT, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_LEFT, mOption.mDragScrollTime, XPR_NULL);
             mScrollLeftTimer = XPR_TRUE;
         }
     }
@@ -3087,7 +3156,7 @@ void FolderCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollRightTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_RIGHT, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_RIGHT, mOption.mDragScrollTime, XPR_NULL);
             mScrollRightTimer = XPR_TRUE;
         }
     }
@@ -3165,8 +3234,8 @@ void FolderCtrl::OnDrop(COleDataObject *pOleDataObject, DROPEFFECT aDropEffect, 
         }
     }
 
-    xpr_bool_t sExternalCopyFileOp = (aDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-    xpr_bool_t sExternalMoveFileOp = (aDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+    xpr_bool_t sExternalCopyFileOp = (aDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(mOption.mExternalCopyFileOp);
+    xpr_bool_t sExternalMoveFileOp = (aDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(mOption.mExternalMoveFileOp);
 
     if (mDropTarget.isRightDrag() == XPR_FALSE && _tcslen(sTargetDir) > 0 && XPR_IS_FALSE(sExternalCopyFileOp) && XPR_IS_FALSE(sExternalMoveFileOp))///* && !aOleDataObject->IsDataAvailable(CF_HDROP)*/)
     {
@@ -3508,33 +3577,22 @@ void FolderCtrl::OnPaint(void)
     COLORREF sSysImgListBkColor;
     CImageList *sImgList = XPR_NULL;
 
-    xpr_bool_t sIsBkColor = (gOpt->mFolderTreeCustomFolder[mViewIndex] != FOLDER_TREE_CUSTOM_NONE) ? XPR_TRUE : XPR_FALSE;
-    COLORREF sBackColor = gOpt->mFolderTreeBkgndColor[mViewIndex];
+    xpr_bool_t sCustomBkgndColor = (mOption.mBkgndColorType == COLOR_TYPE_CUSTOM) ? XPR_TRUE : XPR_FALSE;
+    COLORREF sBkgndColor = mOption.mBkgndColor;
 
-    if (XPR_IS_TRUE(sIsBkColor))
-    {
-        if (gOpt->mFolderTreeCustomFolder[mViewIndex] == FOLDER_TREE_CUSTOM_EXPLORER) // explorer background color
-        {
-            sIsBkColor = gOpt->mExplorerCustomFolder[mViewIndex];
-
-            if (XPR_IS_TRUE(sIsBkColor))
-                sBackColor = gOpt->mExplorerBkgndColor[mViewIndex];
-        }
-    }
-
-    if (XPR_IS_TRUE(sIsBkColor))
+    if (XPR_IS_TRUE(sCustomBkgndColor))
     {
         sImgList = GetImageList(TVSIL_NORMAL);
         if (XPR_IS_NOT_NULL(sImgList))
         {
             sSysImgListBkColor = sImgList->GetBkColor();
-            sImgList->SetBkColor(sBackColor);
+            sImgList->SetBkColor(sBkgndColor);
         }
     }
 
     Default();
 
-    if (XPR_IS_TRUE(sIsBkColor))
+    if (XPR_IS_TRUE(sCustomBkgndColor))
     {
         if (XPR_IS_NOT_NULL(sImgList))
         {
@@ -3561,7 +3619,7 @@ void FolderCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
     {
         if (XPR_TEST_BITS(sNmTvCustomDraw->nmcd.uItemState, CDIS_SELECTED))
         {
-            if (gOpt->mFolderTreeHighlight[mViewIndex] == XPR_TRUE)
+            if (mOption.mHighlight == XPR_TRUE)
             {
                 if (GetFocus() != this)
                 {
@@ -3571,7 +3629,7 @@ void FolderCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
                     CRect sRect;
                     if (GetItemRect(sTreeItem, sRect, XPR_TRUE) == XPR_TRUE)
                     {
-                        CPen sPen(PS_SOLID, 1, gOpt->mFolderTreeHighlightColor[mViewIndex]);
+                        CPen sPen(PS_SOLID, 1, mOption.mHighlightColor);
                         CPen *sOldPen = sDC->SelectObject(&sPen);
 
                         CBrush *sBrush = CBrush::FromHandle((HBRUSH)GetStockObject(NULL_BRUSH));
@@ -3594,25 +3652,15 @@ void FolderCtrl::OnClick(NMHDR *aNmHdr, LRESULT *aResult)
 {
     *aResult = 0;
 
-    if (gOpt->mSingleFolderPaneMode == XPR_TRUE)
+    if (XPR_IS_NOT_NULL(mObserver))
     {
-        CPoint sPoint(0,0);
-        GetCursorPos(&sPoint);
-        ScreenToClient(&sPoint);
-
-        xpr_uint_t sFlags = 0;
-        HTREEITEM sTreeItem = HitTest(sPoint, &sFlags);
-        if (sTreeItem == GetSelectedItem() && sFlags & TVHT_ONITEM)
-        {
-            explore(sTreeItem);
-            //*aResult = XPR_TRUE;
-        }
+        mObserver->onClick(*this);
     }
 }
 
-void FolderCtrl::setCustomFont(xpr_tchar_t *aFontText)
+void FolderCtrl::setCustomFont(xpr_bool_t aCustomFont, xpr_tchar_t *aFontText)
 {
-    if (gOpt->mCustomFont == XPR_FALSE && gOpt->mFolderTreeCustomFont == XPR_FALSE)
+    if (XPR_IS_FALSE(aCustomFont))
     {
         SetFont(XPR_NULL);
         return;
@@ -3627,16 +3675,16 @@ void FolderCtrl::setCustomFont(xpr_tchar_t *aFontText)
         mCustomFont = new CFont;
 
     LOGFONT sLogFont = {0};
-    OptionMgr::instance().StringToLogFont(aFontText, sLogFont);
+    fxb::StringToLogFont(aFontText, sLogFont);
 
     mCustomFont->CreateFontIndirect(&sLogFont);
     if (XPR_IS_NOT_NULL(mCustomFont->m_hObject))
         SetFont(mCustomFont);
 }
 
-void FolderCtrl::setCustomFont(CFont *aFont)
+void FolderCtrl::setCustomFont(xpr_bool_t aCustomFont, CFont *aFont)
 {
-    if (gOpt->mCustomFont == XPR_FALSE)
+    if (XPR_IS_FALSE(aCustomFont))
     {
         SetFont(XPR_NULL);
         return;
@@ -3851,7 +3899,7 @@ HTREEITEM FolderCtrl::insertPartialNetComRootItem(LPITEMIDLIST aFullPidl)
     if (!XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER))
         return XPR_NULL;
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
         return XPR_NULL;
 
     xpr_ulong_t sHasSubFolderShellAttribute = SFGAO_HASSUBFOLDER;

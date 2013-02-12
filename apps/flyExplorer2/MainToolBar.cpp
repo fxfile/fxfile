@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "MainCoolBar.h"
 
-#include "fxb/fxb_file_ass.h"
+#include "fxb/fxb_program_ass.h"
 
 #include "rgc/DragImage.h"
 
@@ -403,8 +403,8 @@ void MainToolBar::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEffect,
             case ID_FILE_VIEW:
             case ID_FILE_EDIT:
                 {
-                    xpr_uint_t sType = (sDragId == ID_FILE_VIEW) ? fxb::FileAssTypeViewer : fxb::FileAssTypeEditor;
-                    OnDropFileAss(sFullPidl, sType);
+                    xpr_uint_t sType = (sDragId == ID_FILE_VIEW) ? fxb::ProgramAssTypeViewer : fxb::ProgramAssTypeEditor;
+                    OnDropProgramAss(sFullPidl, sType);
                     break;
                 }
 
@@ -438,7 +438,7 @@ void MainToolBar::OnDropBookmark(LPITEMIDLIST aFullPidl)
     }
 }
 
-void MainToolBar::OnDropFileAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType)
+void MainToolBar::OnDropProgramAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType)
 {
     xpr_ulong_t sShellAttributes = SFGAO_FILESYSTEM | SFGAO_FOLDER;
     fxb::GetItemAttributes(aFullPidl, sShellAttributes);
@@ -450,15 +450,15 @@ void MainToolBar::OnDropFileAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType)
     std::tstring sPath;
     fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
-    fxb::FileAssItem *sFileAssItem;
-    sFileAssItem = fxb::FileAssMgr::instance().getItemFromPath(sPath.c_str(), aType);
-    if (XPR_IS_NULL(sFileAssItem))
+    fxb::ProgramAssItem *sProgramAssItem;
+    sProgramAssItem = fxb::ProgramAssMgr::instance().getItemFromPath(sPath.c_str(), aType);
+    if (XPR_IS_NULL(sProgramAssItem))
         return;
 
     std::tstring sFile;
     std::tstring sParameters;
 
-    fxb::GetEnvRealPath(sFileAssItem->mPath, sFile);
+    fxb::GetEnvRealPath(sProgramAssItem->mPath, sFile);
     sParameters = sPath;
 
     ::ShellExecute(m_hWnd, XPR_STRING_LITERAL("open"), sFile.c_str(), sParameters.c_str(), XPR_NULL, SW_SHOW);

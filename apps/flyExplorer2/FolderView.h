@@ -39,6 +39,8 @@ public:
     void print(void);
     void printPreview(void);
 
+    void setChangedOption(Option &aOption);
+
 protected:
     void recalcLayout(void);
 

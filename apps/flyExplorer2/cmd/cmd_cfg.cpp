@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -31,7 +31,7 @@ void SaveOptionCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    sMainFrame->saveExplicitOption();
+    theApp.saveAllOptions();
 }
 
 xpr_sint_t AcceleratorCommand::canExecute(CommandContext &aContext)

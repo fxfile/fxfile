@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -22,11 +22,14 @@
 
 #include "MainFrame.h"
 #include "ExplorerView.h"
+#include "Option.h"
 #include "OptionMgr.h"
 #include "CfgPath.h"
 #include "RecentFileListEx.h"
 #include "AppVer.h"
 #include "command_string_table.h"
+#include "ShellRegistry.h"
+#include "LauncherMgr.h"
 
 #include "gfl/libgfl.h"
 
@@ -93,7 +96,7 @@ xpr_bool_t ExplorerApp::InitInstance(void)
 #endif
 
     // Initialize OLE libraries
-    if (!AfxOleInit())
+    if (AfxOleInit() == XPR_FALSE)
     {
         AfxMessageBox(IDP_OLE_INIT_FAILED);
         return XPR_FALSE;
@@ -151,10 +154,7 @@ xpr_bool_t ExplorerApp::InitInstance(void)
     sInitCommonContrlEx.dwICC = ICC_WIN95_CLASSES;
     InitCommonControlsEx(&sInitCommonContrlEx);
 
-    // Change the registry key under which our settings are stored.
-    // TODO: You should modify this string to be something appropriate
-    // such as the name of your company or organization.
-    // Company Name\\AFX_IDS_APP_TITLE
+    // set registry key of this program
 #ifdef XPR_CFG_BUILD_DEBUG
     SetRegistryKey(XPR_STRING_LITERAL("flyExplorer_dbg"));
 #else
@@ -162,15 +162,18 @@ xpr_bool_t ExplorerApp::InitInstance(void)
 #endif
 
     // load configuration path
-    CfgPath::instance().load();
+    CfgPath &sCfgPath = CfgPath::instance();
+    sCfgPath.load();
 
-    // load configuration
+    // load options from file or load default option if configuration file does not exist
     OptionMgr &sOptionMgr = OptionMgr::instance();
 
     xpr_bool_t sInitCfg = XPR_FALSE;
     sOptionMgr.load(sInitCfg);
 
     gOpt = sOptionMgr.getOption();
+
+    gOpt->setObserver(dynamic_cast<OptionObserver *>(this));
 
     // load language table & string table
     if (loadLanguageTable() == XPR_FALSE)
@@ -180,16 +183,17 @@ xpr_bool_t ExplorerApp::InitInstance(void)
         return XPR_FALSE;
     }
 
-    loadLanguage(gOpt->mLanguage);
+    // load language
+    loadLanguage(gOpt->mConfig.mLanguage);
 
     // load command string table
     CommandStringTable::instance().load();
 
-    // load link
+    // load bookmark
     fxb::BookmarkMgr::instance().load();
 
-    // single instance by option
-    if (XPR_IS_TRUE(gOpt->mSingleInstance))
+    // check it if single instance by option
+    if (XPR_IS_TRUE(gOpt->mConfig.mSingleInstance))
     {
         mSingleInstanceMutex = ::OpenMutex(MUTEX_ALL_ACCESS, XPR_FALSE, kSingleInstanceMutexName);
         if (mSingleInstanceMutex != XPR_NULL)
@@ -203,44 +207,43 @@ xpr_bool_t ExplorerApp::InitInstance(void)
         setSingleInstance(XPR_TRUE);
     }
 
+    // load recent executed file list
     LoadStdProfileSettings(10);  // Load standard INI file options (including MRU)
 
+    // load main frame
     MainFrame *sMainFrame = new MainFrame;
     if (XPR_IS_NULL(sMainFrame))
         return XPR_FALSE;
 
     m_pMainWnd = sMainFrame;
-    sMainFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, XPR_NULL, XPR_NULL);
-
-    fxb::CmdLineParser::instance().parse();
-
-    // Parse command line for standard shell commands, DDE, file open
-    CCommandLineInfo sCommandLineInfo;
-    sCommandLineInfo.m_nShellCommand = CCommandLineInfo::FileNew;
-
-    // Dispatch commands specified on the command line
-    if (ProcessShellCommand(sCommandLineInfo) == XPR_FALSE)
+    if (sMainFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, XPR_NULL, XPR_NULL) == XPR_FALSE)
         return XPR_FALSE;
 
-    fxb::CmdLineParser::instance().clear();
+    // parse command line arguments
+    fxb::CmdLineParser &sCmdLineParser = fxb::CmdLineParser::instance();
+    sCmdLineParser.parse();
+    sCmdLineParser.clear();
 
     // The one and only window has been initialized, so show and update it.
     sMainFrame->SetForegroundWindow();
     sMainFrame->ShowWindow(m_nCmdShow);
     sMainFrame->UpdateWindow();
 
-    if (sInitCfg == XPR_TRUE)
+    // popup preference dialog if configuration file does not exist on loading time.
+    if (XPR_IS_TRUE(sInitCfg))
     {
         CfgMgrDlg sDlg;
         sDlg.DoModal();
     }
 
-    if (gOpt->mTipOfTheToday == XPR_TRUE)
+    // popup tip of today dialog by option
+    if (XPR_IS_TRUE(gOpt->mMain.mTipOfTheToday))
     {
         TipDlg sDlg;
         sDlg.DoModal();
     }
 
+    // show main frame
     sMainFrame->ShowWindow(SW_SHOW);
 
     return XPR_TRUE;
@@ -254,18 +257,23 @@ xpr_sint_t ExplorerApp::ExitInstance(void)
     // Exit gfl Library
     gflLibraryExit(); 
 
-    // Save Main Option
+    // save main option
     if (OptionMgr::isInstance() == XPR_TRUE)
         OptionMgr::instance().saveMainOption();
 
+    // save configuration path
     if (CfgPath::isInstance() == XPR_TRUE)
         CfgPath::instance().save();
 
-    fxb::ShellChangeNotify::instance().stop();
-    fxb::ShellChangeNotify::instance().destroy();
+    // destroy shell change notify
+    fxb::ShellChangeNotify &sShellChangeNotify = fxb::ShellChangeNotify::instance();
+    sShellChangeNotify.stop();
+    sShellChangeNotify.destroy();
 
-    fxb::DriveShcn::instance().stop();
-    fxb::DriveShcn::instance().destroy();
+    // destroy drive shell change notify
+    fxb::DriveShcn &sDriveShcn = fxb::DriveShcn::instance();
+    sDriveShcn.stop();
+    sDriveShcn.destroy();
 
     XPR_SAFE_DELETE(mLanguageTable);
 
@@ -397,26 +405,31 @@ xpr_bool_t ExplorerApp::loadLanguage(const xpr_tchar_t *aLanguage)
     mFormatStringTable = mLanguageTable->getFormatStringTable();
 
     fxb::Filter::setString(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.folder")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.general_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.executable_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.compressed_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.document_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.image_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.sound_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.movie_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.web_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.programming_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.explorer_window.filter.default_filter_name.temporary_file")));
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.folder")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.general_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.executable_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.compressed_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.document_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.image_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.sound_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.movie_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.web_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.programming_file")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.temporary_file")));
 
     fxb::SizeFormat::setText(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.display.size.unit.none")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.display.size.unit.automatic")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.display.size.unit.default")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.display.size.unit.custom")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.none")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.automatic")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.default")),
+        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.custom")),
         theApp.loadString(XPR_STRING_LITERAL("common.size.byte")));
 
     return XPR_TRUE;
+}
+
+const fxb::LanguageTable *ExplorerApp::getLanguageTable(void) const
+{
+    return mLanguageTable;
 }
 
 const xpr_tchar_t *ExplorerApp::loadString(const xpr_tchar_t *aId, xpr_bool_t aNullAvailable)
@@ -433,4 +446,60 @@ const xpr_tchar_t *ExplorerApp::loadFormatString(const xpr_tchar_t *aId, const x
         return aId;
 
     return mFormatStringTable->loadString(aId, aReplaceFormatSpecifier);
+}
+
+void ExplorerApp::onChangedConfig(Option &aOption)
+{
+    // unregister shell registry for old language
+    ShellRegistry::unregisterShell();
+
+    // load language
+    loadLanguage(aOption.mConfig.mLanguage);
+
+    // set single instance
+    setSingleInstance(aOption.mConfig.mSingleInstance);
+
+    // shell registry
+    if (XPR_IS_TRUE(aOption.mConfig.mRegShellContextMenu))
+    {
+        ShellRegistry::registerShell();
+    }
+    else
+    {
+        ShellRegistry::unregisterShell();
+    }
+
+    // launcher
+    if (XPR_IS_TRUE(aOption.mConfig.mLauncher))
+    {
+        LauncherMgr::startLauncher(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
+    }
+    else
+    {
+        LauncherMgr::stopLauncher(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
+    }
+
+    if (XPR_IS_TRUE(aOption.mConfig.mLauncherWinStartup))
+    {
+        LauncherMgr::registerWinStartup();
+    }
+    else
+    {
+        LauncherMgr::unregisterWinStartup();
+    }
+
+    MainFrame *sMainFrame = (MainFrame *)GetMainWnd();
+
+    sMainFrame->setChangedOption(aOption);
+}
+
+void ExplorerApp::saveAllOptions(void)
+{
+    // save main frame options
+    MainFrame *sMainFrame = (MainFrame *)GetMainWnd();
+    sMainFrame->saveAllOptions();
+
+    // save recent executed file list
+    RecentFileListEx *sRecentFileListEx = (RecentFileListEx *)m_pRecentFileList;
+    sRecentFileListEx->WriteList();
 }

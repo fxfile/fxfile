@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,7 +18,6 @@
 
 #include "Option.h"
 #include "PathBarObserver.h"
-#include "OptionMgr.h"
 #include "resource.h"
 
 #ifdef _DEBUG
@@ -46,7 +45,7 @@ PathBar::PathBar(void)
     mPath[0]      = 0;
     mPathMouse[0] = 0;
 
-    mHighlightColor = getDefaultHighlightColor();
+    mHighlightColor = Option::getPathBarDefaultHighlightColor();
 }
 
 PathBar::~PathBar(void)
@@ -164,11 +163,6 @@ void PathBar::setPath(LPITEMIDLIST aFullPidl)
     recalcLayout();
     Invalidate(XPR_FALSE);
     UpdateWindow();
-}
-
-COLORREF PathBar::getDefaultHighlightColor(void)
-{
-    return ::GetSysColor(COLOR_ACTIVECAPTION);
 }
 
 void PathBar::OnPaint(void)
@@ -460,10 +454,10 @@ void PathBar::updateFonts(void)
     DELETE_OBJECT(mTextFont);
     DELETE_OBJECT(mTextUnderLineFont);
 
-    if (XPR_IS_TRUE(gOpt->mCustomFont) && gOpt->mCustomFontText[0] != 0)
+    if (XPR_IS_TRUE(gOpt->mConfig.mCustomFont) && gOpt->mConfig.mCustomFontText[0] != 0)
     {
         LOGFONT sLogFont = {0};
-        OptionMgr::instance().StringToLogFont(gOpt->mCustomFontText, sLogFont);
+        fxb::StringToLogFont(gOpt->mConfig.mCustomFontText, sLogFont);
 
         mTextFont.CreateFontIndirect(&sLogFont);
 

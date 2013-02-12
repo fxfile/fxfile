@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -144,7 +144,7 @@ void BookmarkItemEditDlg::getPathFromPidl(LPITEMIDLIST aFullPidl, std::tstring &
 {
     xpr_bool_t sOnlyFileSystemPath = XPR_FALSE;
 
-    if (gOpt->mContentsBookmarkRealPath == XPR_TRUE)
+    if (gOpt->mConfig.mBookmarkRealPath == XPR_TRUE)
         sOnlyFileSystemPath = XPR_TRUE;
     else
     {

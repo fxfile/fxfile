@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -16,7 +16,7 @@ class Option;
 class OptionObserver
 {
 public:
-    virtual onSaveOption(Option &aOption) = 0;
+    virtual void onChangedConfig(Option &aOption) = 0;
 };
 
 #endif // __FX_OPTION_OBSERVER_H__

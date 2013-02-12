@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -20,8 +20,8 @@ XPR_COMMAND_DECLARE_CLASS(DuplicateTabCommand);
 XPR_COMMAND_DECLARE_CLASS(DuplicateTabOnCursorCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseTabCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseTabOnCursorCommand);
-XPR_COMMAND_DECLARE_CLASS(CloseAllTabsButThisCommand);
-XPR_COMMAND_DECLARE_CLASS(CloseAllTabsButThisOnCursorCommand);
+XPR_COMMAND_DECLARE_CLASS(CloseOtherTabsCommand);
+XPR_COMMAND_DECLARE_CLASS(CloseOtherTabsOnCursorCommand);
 XPR_COMMAND_DECLARE_CLASS(CloseAllTabsCommand);
 XPR_COMMAND_DECLARE_CLASS(FirstTabCommand);
 XPR_COMMAND_DECLARE_CLASS(PreviousTabCommand);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -264,7 +264,6 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
     SetDlgItemText(IDC_ACCEL_LABEL_COMMANDS,         theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.commands")));
     SetDlgItemText(IDC_ACCEL_LABEL_CUR_KEYS,         theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.current_keys")));
     SetDlgItemText(IDC_ACCEL_LABEL_NEW_SHORTCUT_KEY, theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.new_shortcut_key")));
-    SetDlgItemText(IDC_ACCEL_LABEL_DESC,             theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.description")));
     SetDlgItemText(IDC_ACCEL_LABEL_ASSIGNED_TO,      theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.assigned_to")));
     SetDlgItemText(IDC_ACCEL_BUTTON_ASSIGN,          theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.assign")));
     SetDlgItemText(IDC_ACCEL_BUTTON_REMOVE,          theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.remove")));
@@ -470,11 +469,6 @@ void AccelTableDlg::OnSelchangeCommands(void)
     }
 
     GetDlgItem(IDC_ACCEL_BUTTON_REMOVE)->EnableWindow(XPR_FALSE);
-
-    CString sDescription;
-    if (sCommand->mDesc == XPR_TRUE)
-        ((CFrameWnd *)AfxGetMainWnd())->GetMessageString(sCommand->mId, sDescription);
-    SetDlgItemText(IDC_ACCEL_DESC, sDescription);
 }
 
 void AccelTableDlg::OnSelchangeCurKeys(void) 

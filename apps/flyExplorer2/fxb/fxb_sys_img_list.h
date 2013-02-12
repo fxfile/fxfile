@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -47,7 +47,7 @@ public:   ~SysImgListMgr(void);
 
 public:
     void getSystemImgList(void);
-    void getCustomImgList(void);
+    void getCustomImgList(const xpr_tchar_t *aCustomImagePath16, const xpr_tchar_t *aCustomImagePath32);
 
 public:
     // System Image List

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -36,6 +36,9 @@ public:
     xpr_bool_t isWrapable(xpr_uint_t aId);
     void setWrapable(xpr_uint_t aId, xpr_bool_t aWrapable);
 
+    void saveStateFile(void);
+
+public:
     MainToolBar     mMainToolBar;
     DriveToolBar    mDriveToolBar;
     BookmarkToolBar mBookmarkToolBar;
@@ -49,7 +52,6 @@ protected:
     void saveState(void);
 
     void loadStateFile(void);
-    void saveStateFile(void);
 
     xpr_bool_t loadStateFile(const xpr_tchar_t *aPath);
     void saveStateFile(const xpr_tchar_t *aPath);

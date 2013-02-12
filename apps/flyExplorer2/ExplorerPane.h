@@ -61,6 +61,8 @@ public:
     virtual StatusBar *getStatusBar(void) const;
     virtual const xpr_tchar_t *getStatusPaneText(xpr_sint_t aIndex) const;
 
+    virtual void setChangedOption(Option &aOption);
+
 public:
     ExplorerCtrl *getExplorerCtrl(xpr_uint_t aId = InvalidId) const;
     AddressBar   *getAddressBar(void) const;
@@ -80,14 +82,13 @@ public:
     void visiblePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
     xpr_bool_t isVisiblePathBar(void) const;
 
-    void setDrivePathBarLeft(xpr_bool_t aLeft);
-    void setDrivePathBarShortText(xpr_bool_t aShortText);
     void visibleDrivePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
+    void refreshDrivePathBar(void);
 
     void invalidateContentsWnd(void);
 
     void setDragContents(xpr_bool_t aDragContents = XPR_TRUE);
-    void setContentsStyle(xpr_sint_t aContentsStyle);
+    void setContentsStyle(xpr_bool_t aShowInfoBar, xpr_sint_t aContentsStyle);
 
     void visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
     xpr_bool_t isVisibleStatusBar(void) const;
@@ -111,6 +112,8 @@ protected:
     void       destroyDrivePathBar(void);
     void       destroyContentsWnd(void);
     void       destroyStatusBar(void);
+
+    void setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &aOption);
 
     void setStatusBarText(void);
     void setStatusBarDrive(const xpr_tchar_t *aCurPath = XPR_NULL);
@@ -145,6 +148,7 @@ protected:
     DrivePathBar      *mDrivePathBar;
     ExplorerStatusBar *mStatusBar;
 
+    xpr_sint_t     mContentsStyle;
     CRect          mMarginRect;
     xpr_bool_t     mIsDrivePathBar;
 

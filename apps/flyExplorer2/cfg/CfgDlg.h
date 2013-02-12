@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,11 +11,9 @@
 #define __FX_CFG_DLG_H__
 #pragma once
 
-#include "../OptionMgr.h"
+#include "../Option.h"
 
-#define WM_APPLY       (WM_USER + 50)
-#define WM_SETMODIFIED (WM_USER + 51)
-#define WM_GETMODIFIED (WM_USER + 52)
+class CfgDlgObserver;
 
 class CfgDlg : public CDialog
 {
@@ -25,20 +23,38 @@ public:
     CfgDlg(xpr_uint_t aResourceId = 0, CWnd *sParentWnd = XPR_NULL);
 
 public:
-    xpr_bool_t getModified(void);
-    void setModified(xpr_bool_t aModified = XPR_TRUE);
-    virtual void OnApply(void);
-
-private:
-    xpr_uint_t mResourceId;
-    xpr_sint_t mIndex;
+    CfgDlgObserver *getObserver(void) const;
+    void setObserver(CfgDlgObserver *aObserver);
 
 public:
-    virtual xpr_bool_t Create(xpr_uint_t aIndex, CWnd *aParentWnd);
-    virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);
+    virtual xpr_bool_t Create(xpr_size_t aCfgIndex, CWnd *aParentWnd);
+
+public:
+    xpr_size_t getCfgIndex(void) const;
+    xpr_bool_t isModified(void);
+    void setModified(xpr_bool_t aModified = XPR_TRUE);
+
+    virtual void onInit(Option::Config &aConfig) = 0;
+    virtual void onApply(Option::Config &aConfig) = 0;
+
+protected:
+    void addIgnoreApply(xpr_uint_t aId);
+
+protected:
+    CfgDlgObserver *mObserver;
+
+    xpr_uint_t mResourceId;
+    xpr_size_t mCfgIndex;
+
+    typedef std::set<xpr_uint_t> IgnoreApplySet;
+    IgnoreApplySet mIgnoreApplySet;
+
+public:
+    virtual xpr_bool_t PreTranslateMessage(MSG *aMsg);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+    virtual xpr_bool_t OnCommand(WPARAM wParam, LPARAM lParam);
 
 protected:
     DECLARE_MESSAGE_MAP()

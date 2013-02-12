@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -12,8 +12,11 @@
 #pragma once
 
 #include "fxb/fxb_shell_change_notify.h"
+
 #include "rgc/TreeCtrlEx.h"
 #include "rgc/DropTarget.h"
+
+#include "Defines.h"
 
 namespace fxb
 {
@@ -28,6 +31,40 @@ class FolderCtrl : public TreeCtrlEx, public DropTargetObserver
     typedef TreeCtrlEx super;
 
 public:
+    struct Option
+    {
+        xpr_sint_t  mMouseClick;
+        xpr_bool_t  mShowHiddenAttribute;
+        xpr_bool_t  mShowSystemAttribute;
+        xpr_bool_t  mRenameByMouse;
+
+        xpr_uint_t  mBkgndColorType; // new
+        xpr_uint_t  mBkgndColor;
+        xpr_uint_t  mTextColorType; // new
+        xpr_uint_t  mTextColor;
+        xpr_bool_t  mCustomFont;
+        xpr_tchar_t mCustomFontText[MAX_FONT_TEXT + 1];
+        xpr_bool_t  mIsItemHeight;
+        xpr_sint_t  mItemHeight;
+        xpr_bool_t  mHighlight;
+        xpr_uint_t  mHighlightColor;
+        xpr_bool_t  mInitNoExpand;
+        xpr_bool_t  mSelDelay;
+        xpr_sint_t  mSelDelayTime;
+
+        xpr_bool_t  mExternalCopyFileOp;
+        xpr_bool_t  mExternalMoveFileOp;
+
+        xpr_sint_t  mDragType;
+        xpr_sint_t  mDragDist;
+        xpr_sint_t  mDropType;
+        xpr_sint_t  mDragFolderTreeExpandTime;
+        xpr_sint_t  mDragScrollTime;
+        xpr_sint_t  mDragDefaultFileOp;
+        xpr_bool_t  mDragNoContents;
+    };
+
+public:
     FolderCtrl(void);
     virtual ~FolderCtrl(void);
 
@@ -38,6 +75,8 @@ public:
     xpr_sint_t getViewIndex(void) const;
 
     virtual xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
+
+    void setOption(Option &aOption);
 
 public:
     xpr_bool_t init(LPITEMIDLIST aRootFullPidl, xpr_bool_t aSelDefItem, const xpr_tchar_t *aSelFullPath = XPR_NULL, xpr_bool_t *aSelItem = XPR_NULL);
@@ -75,8 +114,8 @@ public:
     void expandAll(HTREEITEM aTreeItem);
     void collapseAll(HTREEITEM aTreeItem);
 
-    void setCustomFont(xpr_tchar_t *aFontText);
-    void setCustomFont(CFont *aFont);
+    void setCustomFont(xpr_bool_t aCustomFont, xpr_tchar_t *aFontText);
+    void setCustomFont(xpr_bool_t aCustomFont, CFont *aFont);
 
     void setDragContents(xpr_bool_t aDragContents = XPR_TRUE);
     void setChangeNotify(std::tstring aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable = XPR_TRUE);
@@ -170,6 +209,8 @@ protected:
 
     xpr_bool_t  mInit;
     xpr_bool_t  mUpdate;
+
+    Option mOption;
 
     CImageList     *mSmallImgList;
     fxb::ShellIcon *mShellIcon;

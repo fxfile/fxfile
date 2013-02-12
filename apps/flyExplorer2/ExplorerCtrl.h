@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -19,6 +19,7 @@
 #include "rgc/DropTarget.h"
 #include "rgc/ListCtrlEx.h"
 
+#include "Defines.h"
 #include "ViewSet.h"
 
 namespace fxb
@@ -48,6 +49,75 @@ class ExplorerCtrl : public ListCtrlEx, public DropTargetObserver
     struct EnumData;
 
 public:
+    struct Option
+    {
+        xpr_sint_t  mMouseClick;
+        xpr_bool_t  mShowHiddenAttribute;
+        xpr_bool_t  mShowSystemAttribute;
+        xpr_bool_t  mTooltip;
+        xpr_bool_t  mTooltipWithFileName;
+        xpr_bool_t  mGridLines;
+        xpr_bool_t  mFullRowSelect;
+        xpr_sint_t  mFileExtType;
+        xpr_sint_t  mRenameExtType;
+        xpr_bool_t  mRenameByMouse;
+
+        xpr_bool_t  mCustomFont;
+        xpr_tchar_t mCustomFontText[MAX_FONT_TEXT + 1];
+
+        xpr_bool_t  mBkgndImage;
+        xpr_tchar_t mBkgndImagePath[XPR_MAX_PATH + 1];
+        xpr_sint_t  mBkgndColorType;
+        xpr_uint_t  mBkgndColor;
+        xpr_sint_t  mTextColorType;
+        xpr_uint_t  mTextColor;
+        xpr_sint_t  mSizeUnit;
+        xpr_sint_t  mListType;
+        xpr_bool_t  mParentFolder;
+        xpr_bool_t  mGoUpSelSubFolder;
+        xpr_bool_t  mCustomIcon;
+        xpr_tchar_t mCustomIconFile[MAX_CUSTOM_ICON][XPR_MAX_PATH + 1];
+        xpr_bool_t  m24HourTime;
+        xpr_bool_t  m2YearDate;
+        xpr_bool_t  mShowDrive;
+        xpr_bool_t  mShowDriveItem;
+        xpr_bool_t  mShowDriveSize;
+        xpr_sint_t  mNameCaseType;
+        xpr_bool_t  mCreateAndEditText;
+        xpr_bool_t  mAutoColumnWidth;
+        xpr_sint_t  mSaveViewSet;
+        xpr_bool_t  mSaveViewStyle;
+        xpr_sint_t  mDefaultViewStyle;
+        xpr_sint_t  mDefaultSort;
+        xpr_sint_t  mDefaultSortOrder;
+        xpr_bool_t  mNoSort;
+        xpr_bool_t  mExitVerifyViewSet;
+
+        xpr_sint_t  mThumbnailWidth;
+        xpr_sint_t  mThumbnailHeight;
+        xpr_bool_t  mThumbnailSaveCache;
+        xpr_sint_t  mThumbnailPriority;
+        xpr_bool_t  mThumbnailLoadByExt;
+
+        xpr_bool_t  mFileScrapContextMenu;
+
+        xpr_sint_t  mDragType;
+        xpr_sint_t  mDragDist;
+        xpr_sint_t  mDragScrollTime;
+        xpr_sint_t  mDragDefaultFileOp;
+        xpr_bool_t  mDragNoContents;
+
+        xpr_bool_t  mExternalCopyFileOp;
+        xpr_bool_t  mExternalMoveFileOp;
+
+        xpr_bool_t  mNoRefresh;
+        xpr_bool_t  mRefreshSort;
+
+        xpr_sint_t  mHistoryCount;
+        xpr_sint_t  mBackwardCount;
+    };
+
+public:
     ExplorerCtrl(void);
     virtual ~ExplorerCtrl(void);
 
@@ -58,6 +128,8 @@ public:
     void       setViewIndex(xpr_sint_t aViewIndex);
 
     virtual xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
+
+    void setOption(Option &aOption);
 
 public:
     xpr_bool_t explore(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy = XPR_TRUE);
@@ -73,6 +145,7 @@ public:
     LPITEMIDLIST       getFolderGroup(void) const;
 
     void loadHistory(void);
+    void saveHistory(void) const;
     void saveOption(void);
 
     // file processing
@@ -188,8 +261,8 @@ public:
     void        setImageList(CImageList *aLargeImgList, CImageList *aSmallImgList);
 
     // custom font
-    void setCustomFont(xpr_tchar_t *aFontText);
-    void setCustomFont(CFont *aFont);
+    void setCustomFont(xpr_bool_t aCustomFont, xpr_tchar_t *aFontText);
+    void setCustomFont(xpr_bool_t aCustomFont, CFont *aFont);
 
     // item data
     LPARAM      GetItemData(xpr_sint_t aItem) const;
@@ -211,6 +284,8 @@ public:
     xpr_uint_t getPasteSelItemMessage(void) const;
 
 protected:
+    void applyOption(Option &aNewOption);
+
     xpr_bool_t exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy = XPR_TRUE);
 
     typedef void (ExplorerCtrl::*FailEnumFunc)(EnumData *aEnumData);
@@ -351,6 +426,11 @@ protected:
     xpr_sint_t mViewIndex;
 
     ExplorerCtrlObserver *mObserver;
+
+    // option
+    Option       mOption;
+    Option      *mNewOption;
+    xpr_bool_t   mFirstExplore;
 
     // folder information
     LPTVITEMDATA mTvItemData;    // current folder data

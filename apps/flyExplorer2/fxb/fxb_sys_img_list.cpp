@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -128,25 +128,31 @@ void SysImgListMgr::getSystemImgList(void)
     mSysImgList16.init(SysImgList::ImgSizeSmall);
 }
 
-void SysImgListMgr::getCustomImgList(void)
+void SysImgListMgr::getCustomImgList(const xpr_tchar_t *aCustomImagePath16, const xpr_tchar_t *aCustomImagePath32)
 {
     CImageList *sImgList[] = { &mCusImgList16, &mCusImgList32, XPR_NULL };
+    const xpr_tchar_t *sImagePath[] = { aCustomImagePath16, aCustomImagePath32, XPR_NULL };
     CSize sIconSize[] = { CSize(16,16), CSize(32,32), CSize(0,0) };
 
     xpr_sint_t i;
-    std::tstring strPath;
+    std::tstring sPath;
 
     for (i = 0; sImgList[i]; ++i)
     {
-        strPath = gOpt->mExplorerCustomIconFile[i];
+        sPath.clear();
 
-        if (!strPath.empty() && strPath[0] == XPR_STRING_LITERAL('%'))
+        if (XPR_IS_NOT_NULL(sImagePath[i]))
         {
-            strPath.clear();
-            GetEnvRealPath(gOpt->mExplorerCustomIconFile[i], strPath);
+            sPath = sImagePath[i];
+
+            if (sPath.empty() == false && sPath[0] == XPR_STRING_LITERAL('%'))
+            {
+                sPath.clear();
+                GetEnvRealPath(sImagePath[i], sPath);
+            }
         }
 
-        LoadImgList(sImgList[i], strPath.c_str(), sIconSize[i], 3);
+        LoadImgList(sImgList[i], sPath.c_str(), sIconSize[i], 3);
     }
 }
 } // namespace fxb

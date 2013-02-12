@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -145,7 +145,7 @@ xpr_bool_t BookmarkItem::isSeparator(void)
     return (_tcscmp(mPath.c_str(), BOOKMARK_SEPARATOR) == 0) ? XPR_TRUE : XPR_FALSE;
 }
 
-void BookmarkItem::getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithPending)
+void BookmarkItem::getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithName, xpr_bool_t aWithPending)
 {
     if (aTooltip == XPR_NULL)
         return;
@@ -155,7 +155,7 @@ void BookmarkItem::getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithPending)
     if (aWithPending == XPR_TRUE && mPending == XPR_TRUE)
         _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s\n\n"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.icon_pending")));
 
-    if (gOpt->mBookmarkBarText == XPR_FALSE)
+    if (XPR_IS_TRUE(aWithName))
         _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.name")), mName.c_str());
 
     if (mHotKey > 0)
@@ -167,6 +167,7 @@ void BookmarkItem::getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithPending)
 BookmarkMgr::BookmarkMgr(void)
     : mSignature(0)
     , mShellIcon(XPR_NULL)
+    , mFastNetIcon(XPR_TRUE)
 {
     CreateEx(0, AfxRegisterWndClass(CS_GLOBALCLASS), XPR_STRING_LITERAL(""), 0,0,0,0,0,0,0);
 }
@@ -199,6 +200,11 @@ BookmarkMgr::~BookmarkMgr(void)
 BEGIN_MESSAGE_MAP(BookmarkMgr, CWnd)
     ON_MESSAGE(WM_SHELL_ASYNC_ICON, OnShellAsyncIcon)
 END_MESSAGE_MAP()
+
+void BookmarkMgr::setFastNetIcon(xpr_bool_t aFastNetIcon)
+{
+    mFastNetIcon = aFastNetIcon;
+}
 
 xpr_sint_t BookmarkMgr::getCount(void)
 {
@@ -667,11 +673,11 @@ BookmarkMgr::Result BookmarkMgr::getIcon(xpr_sint_t aBookmarkIndex, HICON &aIcon
 
     if (aAvailableSync == XPR_TRUE)
     {
-        if ((gOpt->mContentsBookmarkFastNetIcon == XPR_TRUE) || (gOpt->mContentsBookmarkFastNetIcon == XPR_FALSE && sBookmark->isFastIcon() == XPR_TRUE))
+        if ((mFastNetIcon == XPR_TRUE) || (mFastNetIcon == XPR_FALSE && sBookmark->isFastIcon() == XPR_TRUE))
         {
             if (sBookmark->mPath != BOOKMARK_SEPARATOR)
             {
-                aIcon = ShellIcon::getIcon(sBookmark->mIconPath, sBookmark->mIconIndex, sBookmark->mPath, gOpt->mContentsBookmarkFastNetIcon);
+                aIcon = ShellIcon::getIcon(sBookmark->mIconPath, sBookmark->mIconIndex, sBookmark->mPath, mFastNetIcon);
                 if (aIcon == XPR_NULL)
                     aIcon = getTypeIcon(BookmarkMgr::IconTypeNot, XPR_TRUE);
             }
@@ -690,7 +696,7 @@ BookmarkMgr::Result BookmarkMgr::getIcon(xpr_sint_t aBookmarkIndex, HICON &aIcon
 
     ShellIcon::AsyncIcon *sAsyncIcon = new ShellIcon::AsyncIcon;
     sAsyncIcon->mType       = ShellIcon::TypeIcon;
-    sAsyncIcon->mFlags      = XPR_IS_TRUE(gOpt->mContentsBookmarkFastNetIcon) ? ShellIcon::FlagFastNetIcon : ShellIcon::FlagNone;
+    sAsyncIcon->mFlags      = XPR_IS_TRUE(mFastNetIcon) ? ShellIcon::FlagFastNetIcon : ShellIcon::FlagNone;
     sAsyncIcon->mCode       = 0;
     sAsyncIcon->mItem       = aBookmarkIndex;
     sAsyncIcon->mSignature  = sBookmark->mSignature;
