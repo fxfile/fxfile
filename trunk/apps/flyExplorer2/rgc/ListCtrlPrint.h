@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -44,8 +44,8 @@ protected:
     xpr_sint_t getPageRows(void);
     xpr_sint_t getPageColumns(void);
 
-    virtual CString getItemText(xpr_sint_t aRow, xpr_sint_t aColumn);
-    virtual xpr_sint_t getRowCount(void);
+    virtual CString getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const;
+    virtual xpr_sint_t getRowCount(void) const;
 
 protected:
     CListCtrl  *mListCtrl;

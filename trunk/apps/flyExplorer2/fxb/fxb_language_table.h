@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -34,6 +34,7 @@ public:
     xpr_size_t getLanguageCount(void) const;
     const LanguagePack::Desc *getLanguageDesc(xpr_size_t aIndex) const;
     const LanguagePack::Desc *getLanguageDesc(void) const;
+    const LanguagePack::Desc *getLanguageDesc(const xpr_tchar_t *aLanguage) const;
 
     StringTable *getStringTable(void) const;
     FormatStringTable *getFormatStringTable(void) const;

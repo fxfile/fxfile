@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,9 +11,14 @@
 #define __FX_CFG_MGR_DLG_H__
 #pragma once
 
+#include "rgc/TreeCtrlEx.h"
+
+#include "../Option.h"
+#include "CfgDlgObserver.h"
+
 class CfgDlg;
 
-class CfgMgrDlg : public CDialog
+class CfgMgrDlg : public CDialog, public CfgDlgObserver
 {
     typedef CDialog super;
 
@@ -21,8 +26,8 @@ public:
     CfgMgrDlg(xpr_sint_t aInitShowCfg = -1);
 
 protected:
-    xpr_bool_t showCfg(xpr_sint_t aIndex);
-    void showCfgByTree(xpr_sint_t aIndex);
+    xpr_bool_t showCfg(xpr_sint_t aCfgIndex);
+    void showCfgByTree(xpr_sint_t aCfgIndex);
     xpr_sint_t addCfgItem(xpr_sint_t aImage, xpr_sint_t aParent, CfgDlg *aCfgDlg, const xpr_tchar_t *aText);
 
 protected:
@@ -45,11 +50,19 @@ protected:
 
     xpr_bool_t mChanging;
 
+    Option::Config mNewConfig;
+
     CImageList mImgList;
 
 protected:
-    CTreeCtrl mTreeCtrl;
-    CBrush    mDarkGrayBrush;
+    TreeCtrlEx mTreeCtrl;
+    CBrush     mDarkGrayBrush;
+
+protected:
+    // from CfgDlgObserver
+    virtual xpr_bool_t onIsModified(CfgDlg &aCfgDlg);
+    virtual void onSetModified(CfgDlg &aCfgDlg, xpr_bool_t aModified);
+    void onSetModified(xpr_size_t aCfgIndex, xpr_bool_t aModified);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -63,8 +76,6 @@ protected:
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnDefault(void);
-    afx_msg LRESULT OnSetModified(WPARAM wParam, LPARAM lParam);
-    afx_msg LRESULT OnGetModified(WPARAM wParam, LPARAM lParam);
     afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, xpr_uint_t nCtlColor);
 };
 

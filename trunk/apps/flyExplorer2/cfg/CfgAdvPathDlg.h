@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -21,7 +21,8 @@ public:
     CfgAdvPathDlg(void);
 
 public:
-    virtual void OnApply(void);
+    virtual void onInit(Option::Config &aConfig);
+    virtual void onApply(Option::Config &aConfig);
 
 protected:
     typedef struct Item
@@ -41,7 +42,6 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
-    afx_msg xpr_bool_t OnCommand(WPARAM wParam, LPARAM lParam);
     afx_msg void OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnLvnItemActivate(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnLvnDeleteitemList(NMHDR* pNMHDR, LRESULT* pResult);

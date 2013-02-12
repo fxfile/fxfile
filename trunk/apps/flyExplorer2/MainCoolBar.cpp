@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "MainCoolBar.h"
 
+#include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "CfgPath.h"
@@ -119,26 +120,26 @@ xpr_bool_t MainCoolBar::createBands(void)
     loadStateFile();
 
     // Dynamic Creation
-    if (gFrame->isDriveBar() == XPR_FALSE)
+    if (XPR_IS_FALSE(gOpt->mMain.mDriveBar))
+    {
         setBandVisible(AFX_IDW_DRIVE_BAR, XPR_FALSE);
+    }
     else
     {
-        if (gFrame->isDriveViewSplit() == XPR_FALSE)
-            mDriveToolBar.createDriveBar();
-        else
-            setBandVisible(AFX_IDW_DRIVE_BAR, XPR_FALSE);
+        mDriveToolBar.setShortText(gOpt->mMain.mDriveBarShortText);
+        mDriveToolBar.createDriveBar();
     }
 
     if (isBandVislble(AFX_IDW_BOOKMARK_BAR) == XPR_TRUE)
         mBookmarkToolBar.createBookmarkBar();
 
-    setWrapable(AFX_IDW_BOOKMARK_BAR, gOpt->mBookmarkBarMultiLine);
-    setWrapable(AFX_IDW_DRIVE_BAR,    gOpt->mDriveBarMultiLine);
+    setWrapable(AFX_IDW_BOOKMARK_BAR, gOpt->mMain.mBookmarkBarMultiLine);
+    setWrapable(AFX_IDW_DRIVE_BAR,    gOpt->mMain.mDriveBarMultiLine);
 
     return 0;
 }
 
-void MainCoolBar::OnDestroy() 
+void MainCoolBar::OnDestroy(void) 
 {
     saveStateFile();
 
@@ -310,8 +311,8 @@ void MainCoolBar::setWrapable(xpr_uint_t aBandId, xpr_bool_t aWrapable)
                 sToolBar->UpdateToolbarSize();    // CReBarCtrl update
                 GetParentFrame()->RecalcLayout(); // CSizableReBar update
 
-                if (aBandId == AFX_IDW_BOOKMARK_BAR) gOpt->mBookmarkBarMultiLine = aWrapable;
-                if (aBandId == AFX_IDW_DRIVE_BAR)    gOpt->mDriveBarMultiLine    = aWrapable;
+                if (aBandId == AFX_IDW_BOOKMARK_BAR) gOpt->mMain.mBookmarkBarMultiLine = aWrapable;
+                if (aBandId == AFX_IDW_DRIVE_BAR)    gOpt->mMain.mDriveBarMultiLine    = aWrapable;
             }
         }
     }

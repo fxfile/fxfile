@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -30,6 +30,7 @@ public:
     struct Desc
     {
         xpr_tchar_t mLanguage[kMaxLanguageLength];
+        xpr_tchar_t mFilePath[XPR_MAX_PATH + 1];
         xpr_tchar_t mAuthor[kMaxAuthorLength];
         xpr_tchar_t mHomepage[kMaxHomepageLength];
         xpr_tchar_t mEmail[kMaxEmailLength];

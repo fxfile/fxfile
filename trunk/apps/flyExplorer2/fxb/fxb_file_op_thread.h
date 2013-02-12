@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -32,6 +32,9 @@ public:
     FileOpThread(void);
 
 public:
+    static void setCompleteFlash(xpr_bool_t aCompleteFlash);
+
+public:
     void start(
         SHFILEOPSTRUCT *aShFileOpStruct,
         xpr_bool_t      aSelectItem = XPR_FALSE,
@@ -49,6 +52,10 @@ public:
 
     void setUndo(xpr_bool_t aUndo);
 
+public:
+    static xpr_sint_t getRefCount(void) { return mRefCount; }
+    xpr_sint_t getRefIndex(void) { return mRefIndex; }
+
 protected:
     static unsigned __stdcall FileOpProc(LPVOID lpParam);
     void OnFileOp(void);
@@ -64,9 +71,7 @@ protected:
     HANDLE          mStopEvent;
     xpr_bool_t      mUndo;
 
-public:
-    static xpr_sint_t getRefCount(void) { return mRefCount; }
-    xpr_sint_t getRefIndex(void) { return mRefIndex; }
+    static xpr_bool_t mCompleteFlash;
 
 protected:
     static xpr_sint_t mRefCount;

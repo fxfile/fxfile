@@ -18,6 +18,7 @@
 
 #include "rgc/DragImage.h"
 
+#include "Option.h"
 #include "MainFrame.h"
 #include "DriveToolBarObserver.h"
 
@@ -36,8 +37,9 @@ enum
 
 DriveToolBar::DriveToolBar(void)
     : mObserver(XPR_NULL)
-    , mBarCreated(XPR_FALSE)
     , mInit(XPR_FALSE)
+    , mBarCreated(XPR_FALSE)
+    , mShortText(XPR_FALSE)
     , mThread(XPR_NULL)
     , mStopEvent(XPR_NULL)
     , mOldDrive(-1)
@@ -272,7 +274,7 @@ void DriveToolBar::addDriveButton(const xpr_tchar_t *aDrive, xpr_sint_t aInsert)
     sToolBarCtrl.InsertButton(aInsert, &sTbButton);
 
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
-    if (gFrame->isDriveShortText() == XPR_TRUE)
+    if (XPR_IS_TRUE(mShortText))
     {
         _stprintf(sText, XPR_STRING_LITERAL("%c"), sDriveChar);
         _tcsupr(sText);
@@ -307,7 +309,7 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
 
         xpr_tchar_t sDriveChar;
         xpr_tchar_t sDrive[50];
-        sDriveChar = (gFrame->isDriveShortText()) ? sText[0] : sText[sText.GetLength()-3];
+        sDriveChar = XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
         _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), sDriveChar);
 
         LPITEMIDLIST sFullPidl = fxb::IL_CreateFromPath(sDrive);
@@ -338,6 +340,11 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
 
 void DriveToolBar::setShortText(xpr_bool_t aShortText)
 {
+    if (mShortText == aShortText)
+        return;
+
+    mShortText = aShortText;
+
     if (XPR_IS_TRUE(mBarCreated))
         refresh();
 }
@@ -391,7 +398,7 @@ xpr_tchar_t DriveToolBar::getButtonDrive(xpr_uint_t aIndex)
 {
     CString sText;
     GetButtonText(aIndex, sText);
-    return (gFrame->isDriveShortText()) ? sText[0] : sText[sText.GetLength()-3];
+    return XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
 }
 
 void DriveToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)
@@ -604,7 +611,7 @@ DROPEFFECT DriveToolBar::OnDragOver(COleDataObject* pDataObject, DWORD aKeyState
             else if (aKeyState & MK_SHIFT)   sDropEffect = DROPEFFECT_MOVE;
             else
             {
-                switch (gOpt->mDragDefaultFileOp)
+                switch (gOpt->mConfig.mDragDefaultFileOp)
                 {
                 case DRAG_FILE_OP_DEFAULT: sDropEffect = DROPEFFECT_MOVE; break;
                 case DRAG_FILE_OP_COPY:    sDropEffect = DROPEFFECT_COPY; break;

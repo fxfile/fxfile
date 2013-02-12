@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -24,6 +24,7 @@
 #include "fxb/fxb_shell_icon.h"
 #include "fxb/fxb_size_format.h"
 #include "fxb/fxb_clip_format.h"
+#include "fxb/fxb_sys_img_list.h"
 
 #include "rgc/FlatHeaderCtrl.h"
 #include "rgc/DropSource.h"
@@ -40,7 +41,6 @@
 #include "MainFrame.h"
 #include "PicViewer.h"
 #include "CfgPath.h"
-#include "OptionMgr.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -153,6 +153,8 @@ xpr_uint_t ExplorerCtrl::mCodeMgr = 0;
 
 ExplorerCtrl::ExplorerCtrl(void)
     : mViewIndex(-1)
+    , mNewOption(XPR_NULL)
+    , mFirstExplore(XPR_TRUE)
 {
     mRefCount++;
 
@@ -237,6 +239,8 @@ ExplorerCtrl::~ExplorerCtrl(void)
 
     XPR_SAFE_DELETE(mRenameHelper);
     XPR_SAFE_DELETE(mShellIcon);
+
+    XPR_SAFE_DELETE(mNewOption);
 }
 
 ExplorerCtrl::DefColumnInfo ExplorerCtrl::mDefColumnDefault[] = 
@@ -394,10 +398,18 @@ xpr_sint_t ExplorerCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     // thumbnail
     fxb::Thumbnail &sThumbnail = fxb::Thumbnail::instance();
 
-    sThumbnail.setThumbSize(CSize(gOpt->mThumbnailWidth, gOpt->mThumbnailHeight));
-    sThumbnail.setThumbPriority(gOpt->mThumbnailPriority);
+    sThumbnail.setThumbSize(CSize(mOption.mThumbnailWidth, mOption.mThumbnailHeight));
+    sThumbnail.setThumbPriority(mOption.mThumbnailPriority);
 
     return 0;
+}
+
+void ExplorerCtrl::setOption(Option &aOption)
+{
+    if (XPR_IS_NULL(mNewOption))
+        mNewOption = new Option;
+
+    *mNewOption = aOption;
 }
 
 void ExplorerCtrl::setImageList(CImageList *aLargeImgList, CImageList *aSmallImgList)
@@ -421,76 +433,28 @@ CImageList *ExplorerCtrl::getImageList(xpr_bool_t aLarge) const
 
 void ExplorerCtrl::loadHistory(void)
 {
-    if (gOpt->mSaveHistory == XPR_TRUE)
-    {
-        xpr_tchar_t sIndex[0xff];
-        _stprintf(sIndex, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
+    xpr_tchar_t sIndex[0xff];
+    _stprintf(sIndex, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
 
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getLoadPath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndex);
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    CfgPath::instance().getLoadPath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndex);
 
-        mHistory->loadFromFile(sPath);
-    }
+    mHistory->loadFromFile(sPath);
+}
+
+void ExplorerCtrl::saveHistory(void) const
+{
+    xpr_tchar_t sIndexText[0xff];
+    _stprintf(sIndexText, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
+
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    CfgPath::instance().getSavePath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndexText);
+
+    mHistory->saveToFile(sPath);
 }
 
 void ExplorerCtrl::saveOption(void)
 {
-    // Save Last Folder
-    LPTVITEMDATA sTvItemData = XPR_NULL;
-    if (gOpt->mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
-    {
-        gOpt->mLastFolder[mViewIndex][0] = 0;
-
-        LPTVITEMDATA sTvItemData = getFolderData();
-        if (XPR_IS_NOT_NULL(sTvItemData))
-        {
-            LPITEMIDLIST sInternetFullPidl = XPR_NULL;
-            HRESULT sHResult = ::SHGetSpecialFolderLocation(m_hWnd, CSIDL_INTERNET, &sInternetFullPidl);
-
-            xpr_bool_t sSaveLastFolder = XPR_FALSE;
-
-            if (FAILED(sHResult))
-                sSaveLastFolder = XPR_TRUE;
-            else if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sInternetFullPidl))
-            {
-                if (sTvItemData->mShellFolder->CompareIDs(0, sTvItemData->mPidl, sInternetFullPidl) != 0)
-                    sSaveLastFolder = XPR_TRUE;
-            }
-
-            if (XPR_IS_TRUE(sSaveLastFolder))
-            {
-                sSaveLastFolder = XPR_TRUE;
-
-                if (gOpt->mExplorerNoNetLastFolder[mViewIndex] == XPR_TRUE && fxb::IsNetItem(mCurPath.c_str()) == XPR_TRUE)
-                    sSaveLastFolder = XPR_FALSE;
-
-                if (XPR_IS_TRUE(sSaveLastFolder))
-                {
-                    fxb::Pidl2Path(sTvItemData->mFullPidl, gOpt->mLastFolder[mViewIndex]);
-                }
-            }
-
-            COM_FREE(sInternetFullPidl);
-        }
-    }
-
-    if (gOpt->mSaveHistory == XPR_TRUE)
-    {
-        xpr_tchar_t sIndexText[0xff];
-        _stprintf(sIndexText, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
-
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getSavePath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndexText);
-
-        mHistory->saveToFile(sPath);
-    }
-
-    // Save ExplorerCtrl ViewStyle
-    if (gOpt->mExplorerSaveViewStyle == XPR_TRUE)
-    {
-        gOpt->mViewStyle[mViewIndex] = getViewStyle();
-    }
-
     // Save Column Data
     saveColumn();
 }
@@ -542,7 +506,7 @@ void ExplorerCtrl::OnDestroy(void)
 
         sThumbnail.Stop();
 
-        if (gOpt->mThumbnailSaveCache == XPR_TRUE)
+        if (mOption.mThumbnailSaveCache == XPR_TRUE)
             sThumbnail.saveCache();
 
         sThumbnail.destroy();
@@ -620,14 +584,14 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
         fxb::Thumbnail &sThumbnail = fxb::Thumbnail::instance();
 
         xpr_bool_t sLoad = XPR_FALSE;
-        if (gOpt->mThumbnailSaveCache == XPR_TRUE)
+        if (mOption.mThumbnailSaveCache == XPR_TRUE)
             sLoad = sThumbnail.loadCache();
 
         if (XPR_IS_FALSE(sLoad))
             sThumbnail.create();
 
         sThumbnail.Start();
-        sThumbnail.setThumbPriority(gOpt->mThumbnailPriority);
+        sThumbnail.setThumbPriority(mOption.mThumbnailPriority);
 
         xpr_bool_t sVisible = IsWindowVisible();
         if (XPR_IS_TRUE(sVisible))
@@ -690,7 +654,7 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
             refresh();
         }
 
-        if (XPR_IS_TRUE(gOpt->mExplorerAutoColumnWidth) && aStyle == LVS_REPORT)
+        if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && aStyle == LVS_REPORT)
             SetColumnWidth(0, LVSCW_AUTOSIZE);
     }
 
@@ -698,7 +662,7 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
     if (XPR_IS_FALSE(aRefresh))
     {
         if ((aStyle == LVS_ICON || aStyle == LVS_SMALLICON) &&
-            (gOpt->mExplorerShowDrive == XPR_TRUE || gOpt->mExplorerShowDriveItem == XPR_TRUE))
+            (mOption.mShowDrive == XPR_TRUE || mOption.mShowDriveItem == XPR_TRUE))
         {
             CPoint sPoint(0,0);
             xpr_sint_t sLastInsertIndex = getLastInsertIndex();
@@ -761,14 +725,14 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoDriveItem(LVITEM &aLvItem, LPLVITEMDATA aL
             break;
 
         case 1:
-            if (gOpt->mExplorerShowDriveSize == XPR_TRUE && aLvItemData->mItemType != IDT_DRIVE_SEL)
+            if (mOption.mShowDriveSize == XPR_TRUE && aLvItemData->mItemType != IDT_DRIVE_SEL)
             {
                 getDriveItemTotalSize(sDrive, aLvItem.pszText, aLvItem.cchTextMax);
             }
             break;
 
         case 2:
-            if (gOpt->mExplorerShowDriveSize == XPR_TRUE && aLvItemData->mItemType != IDT_DRIVE_SEL)
+            if (mOption.mShowDriveSize == XPR_TRUE && aLvItemData->mItemType != IDT_DRIVE_SEL)
             {
                 getDriveItemFreeSize(sDrive, aLvItem.pszText, aLvItem.cchTextMax);
             }
@@ -778,9 +742,9 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoDriveItem(LVITEM &aLvItem, LPLVITEMDATA aL
 
     if (XPR_TEST_BITS(aLvItem.mask, LVIF_TEXT))
     {
-        if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_UPPER)
+        if (mOption.mNameCaseType == NAME_CASE_TYPE_UPPER)
             _tcsupr(aLvItem.pszText);
-        else if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_LOWER)
+        else if (mOption.mNameCaseType == NAME_CASE_TYPE_LOWER)
             _tcslwr(aLvItem.pszText);
     }
 
@@ -789,7 +753,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoDriveItem(LVITEM &aLvItem, LPLVITEMDATA aL
         if (sDrive[0] > XPR_STRING_LITERAL('Z'))
             sDrive[0] = XPR_STRING_LITERAL('C');
 
-        if (gOpt->mExplorerCustomIcon == XPR_TRUE)
+        if (mOption.mCustomIcon == XPR_TRUE)
         {
             aLvItem.iImage = getFileIconIndex(aLvItemData, sDrive);
         }
@@ -1003,9 +967,9 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
 
     if (XPR_TEST_BITS(aLvItem.mask, LVIF_TEXT))
     {
-        if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_UPPER)
+        if (mOption.mNameCaseType == NAME_CASE_TYPE_UPPER)
             _tcsupr(aLvItem.pszText);
-        else if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_LOWER)
+        else if (mOption.mNameCaseType == NAME_CASE_TYPE_LOWER)
             _tcslwr(aLvItem.pszText);
     }
 
@@ -1017,7 +981,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
         if (XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
             fxb::GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
-        if (gOpt->mExplorerCustomIcon == XPR_TRUE)
+        if (mOption.mCustomIcon == XPR_TRUE)
         {
             aLvItem.iImage = getFileIconIndex(aLvItemData, sPath);
         }
@@ -1249,7 +1213,7 @@ void ExplorerCtrl::OnSetdispinfo(NMHDR *aNmHdr, LRESULT *aResult)
 
 xpr_bool_t ExplorerCtrl::getItemName(LPLVITEMDATA aLvItemData, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const
 {
-    return getItemName(aLvItemData, aName, aMaxLen, gOpt->mFileExtType);
+    return getItemName(aLvItemData, aName, aMaxLen, mOption.mFileExtType);
 }
 
 xpr_bool_t ExplorerCtrl::getItemName(LPLVITEMDATA aLvItemData, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const
@@ -1259,7 +1223,7 @@ xpr_bool_t ExplorerCtrl::getItemName(LPLVITEMDATA aLvItemData, xpr_tchar_t *aNam
 
 xpr_bool_t ExplorerCtrl::getItemName(LPITEMIDLIST aFullPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const
 {
-    return getItemName(aFullPidl, aName, aMaxLen, gOpt->mFileExtType);
+    return getItemName(aFullPidl, aName, aMaxLen, mOption.mFileExtType);
 }
 
 xpr_bool_t ExplorerCtrl::getItemName(LPITEMIDLIST aFullPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const
@@ -1287,7 +1251,7 @@ xpr_bool_t ExplorerCtrl::getItemName(LPITEMIDLIST aFullPidl, xpr_tchar_t *aName,
 
 xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const
 {
-    return getItemName(aShellFolder, aPidl, aName, aMaxLen, gOpt->mFileExtType);
+    return getItemName(aShellFolder, aPidl, aName, aMaxLen, mOption.mFileExtType);
 }
 
 xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const
@@ -1371,7 +1335,7 @@ xpr_sint_t ExplorerCtrl::getFileIconIndex(LPLVITEMDATA aLvItemData, const xpr_tc
 
     xpr_sint_t sIconIndex = -1;
 
-    if (gOpt->mExplorerCustomIcon == XPR_TRUE)
+    if (mOption.mCustomIcon == XPR_TRUE)
     {
         if (aLvItemData->mItemType >= IDT_DRIVE || mFolderType == FOLDER_COMPUTER)
         {
@@ -1476,7 +1440,7 @@ void ExplorerCtrl::getFileSize(LPLVITEMDATA aLvItemData, xpr_tchar_t *aFileSizeT
     if (getFileSize(aLvItemData, sFileSize) == XPR_FALSE)
         return;
 
-    xpr_sint_t sSizeUnit = gOpt->mExplorerSizeUnit;
+    xpr_sint_t sSizeUnit = mOption.mSizeUnit;
     switch (sSizeUnit)
     {
     case SIZE_UNIT_DEFAULT:
@@ -1624,7 +1588,7 @@ xpr_bool_t ExplorerCtrl::getDescription(LPLVITEMDATA aLvItemData, xpr_tchar_t *a
     {
         xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
 
-        if (XPR_IS_FALSE(aOriginal) && gOpt->mTooltipWithFileName == XPR_TRUE)
+        if (XPR_IS_FALSE(aOriginal) && mOption.mTooltipWithFileName == XPR_TRUE)
         {
             if (fxb::IsVirtualItem(sShellFolder, sPidl) == XPR_TRUE)
                 fxb::GetName(sShellFolder, sPidl, SHGDN_INFOLDER, sName);
@@ -1770,8 +1734,8 @@ void ExplorerCtrl::getFileTime(LPLVITEMDATA aLvItemData, xpr_tchar_t *aModifiedT
     if (::FileTimeToSystemTime(&sFileTime, &sSystemTime) == XPR_FALSE)
         return;
 
-    const xpr_tchar_t *sDateFormat = XPR_IS_TRUE(gOpt->mExplorer2YearDate)  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
-    const xpr_tchar_t *sTimeFormat = XPR_IS_TRUE(gOpt->mExplorer24HourTime) ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
+    const xpr_tchar_t *sDateFormat = XPR_IS_TRUE(mOption.m2YearDate)  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
+    const xpr_tchar_t *sTimeFormat = XPR_IS_TRUE(mOption.m24HourTime) ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
     GetDateFormat(XPR_NULL, 0, &sSystemTime, sDateFormat, sDateText, 0xfe);
     GetTimeFormat(XPR_NULL, 0, &sSystemTime, sTimeFormat, sTimeText, 0xfe);
     _stprintf(aModifiedTime, XPR_STRING_LITERAL("%s %s"), sDateText, sTimeText);
@@ -2088,7 +2052,7 @@ static const xpr_tchar_t COL_REG_ENTRY_DEF[]          = XPR_STRING_LITERAL("Defa
 
 void ExplorerCtrl::getRegColumnEntry(xpr_tchar_t *aEntry) const
 {
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_EACH_FOLDER)
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_EACH_FOLDER)
     {
         fxb::GetName(mTvItemData->mShellFolder, mTvItemData->mPidl, SHGDN_FORPARSING, aEntry);
         return;
@@ -2103,7 +2067,7 @@ void ExplorerCtrl::getRegColumnEntry(xpr_tchar_t *aEntry) const
     case FOLDER_DEFAULT:  _tcscpy(aEntry, COL_REG_ENTRY_DEF);          break;
     }
 
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_DEFAULT)
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
     {
         _stprintf(aEntry + _tcslen(aEntry), XPR_STRING_LITERAL(" #%d"), mViewIndex);
     }
@@ -2146,7 +2110,7 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
     getRegColumnEntry(sEntry);
 
     xpr_bool_t sLoaded = XPR_FALSE;
-    if (gOpt->mExplorerSaveViewSet != SAVE_VIEW_SET_NONE)
+    if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
         sLoaded = ViewSetMgr::instance().getViewSet(sEntry, aFolderViewSet);
 
     // Fill in the Result Column Info
@@ -2160,7 +2124,7 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
         }
 
         xpr_uint_t sDefaultViewStyle = LVS_REPORT;
-        switch (gOpt->mExplorerDefaultViewStyle)
+        switch (mOption.mDefaultViewStyle)
         {
         case VIEW_STYLE_ICON:       sDefaultViewStyle = LVS_ICON;      break;
         case VIEW_STYLE_SMALL_ICON: sDefaultViewStyle = LVS_SMALLICON; break;
@@ -2177,8 +2141,8 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
         aFolderViewSet->mAllSubApply = 0;
 
         aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
-        aFolderViewSet->mColumnSortInfo.mPropertyId = gOpt->mExplorerDefaultSort;
-        aFolderViewSet->mColumnSortInfo.mAscending  = XPR_IS_TRUE(gOpt->mExplorerDefaultSortOrder) ? XPR_TRUE : XPR_FALSE;
+        aFolderViewSet->mColumnSortInfo.mPropertyId = mOption.mDefaultSort;
+        aFolderViewSet->mColumnSortInfo.mAscending  = XPR_IS_TRUE(mOption.mDefaultSortOrder) ? XPR_TRUE : XPR_FALSE;
 
         if (mFolderType == FOLDER_COMPUTER)
         {
@@ -2225,13 +2189,13 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
 
 xpr_bool_t ExplorerCtrl::setRegColumnInfo(FolderViewSet *aFolderViewSet)
 {
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_NONE)
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_NONE)
         return XPR_TRUE;
 
     xpr_tchar_t sEntry[XPR_MAX_PATH * 2 + 1] = {0};
     getRegColumnEntry(sEntry);
 
-    if (gOpt->mExplorerAutoColumnWidth == XPR_TRUE)
+    if (mOption.mAutoColumnWidth == XPR_TRUE)
         aFolderViewSet->mColumnItem[0].mWidth = 0;
 
     return ViewSetMgr::instance().setViewSet(sEntry, aFolderViewSet);
@@ -2267,7 +2231,7 @@ void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
     FolderViewSet sFolderViewSet;
     getRegColumnInfo(&sFolderViewSet, mDefColumnCount, &mDefColumnInfo);
 
-    if (gOpt->mExplorerSaveViewSet != SAVE_VIEW_SET_NONE)
+    if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
         setViewStyle(sFolderViewSet.mViewStyle, XPR_FALSE, XPR_FALSE);
 
     mColumnSortData.mColumnSortInfo = sFolderViewSet.mColumnSortInfo;
@@ -2365,7 +2329,7 @@ void ExplorerCtrl::saveColumn(void)
         LVCOLUMN sLvColumn = {0};
         for (i = 0; i < sColumnCount; ++i)
         {
-            if (XPR_IS_TRUE(gOpt->mExplorerAutoColumnWidth) && i == 0)
+            if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && i == 0)
                 continue;
 
             sLvColumn.mask = LVCF_WIDTH;
@@ -2610,12 +2574,118 @@ xpr_bool_t ExplorerCtrl::isFolderType(FolderType aFolderType) const
     return (mFolderType == aFolderType);
 }
 
+void ExplorerCtrl::applyOption(Option &aNewOption)
+{
+    // set extended style
+    DWORD sExStyle = GetExtendedStyle();
+
+    if (aNewOption.mMouseClick == MOUSE_ONE_CLICK)
+    {
+        sExStyle |= LVS_EX_UNDERLINEHOT;
+        sExStyle |= LVS_EX_ONECLICKACTIVATE;
+        sExStyle |= LVS_EX_TRACKSELECT;
+    }
+    else
+    {
+        sExStyle &= ~LVS_EX_UNDERLINEHOT;
+        sExStyle &= ~LVS_EX_ONECLICKACTIVATE;
+        sExStyle &= ~LVS_EX_TRACKSELECT;
+    }
+
+    if (XPR_IS_TRUE(aNewOption.mTooltip))       sExStyle |= LVS_EX_INFOTIP;
+    else                                        sExStyle &= ~LVS_EX_INFOTIP;
+
+    if (XPR_IS_TRUE(aNewOption.mGridLines))     sExStyle |= LVS_EX_GRIDLINES;
+    else                                        sExStyle &= ~LVS_EX_GRIDLINES;
+
+    if (XPR_IS_TRUE(aNewOption.mFullRowSelect)) sExStyle |= LVS_EX_FULLROWSELECT;
+    else                                        sExStyle &= ~LVS_EX_FULLROWSELECT;
+
+    SetExtendedStyle(sExStyle);
+
+    // redraw header control
+    mHeaderCtrl->Invalidate();
+
+    // set custom text color, text background color, background color and background image
+    if (XPR_IS_TRUE(aNewOption.mBkgndImage))
+    {
+        SetBkImage((xpr_tchar_t *)(const xpr_tchar_t *)aNewOption.mBkgndImagePath);
+    }
+    else
+    {
+        SetBkImage(XPR_STRING_LITERAL(""));
+    }
+
+    if (aNewOption.mBkgndColorType == COLOR_TYPE_CUSTOM)
+    {
+        SetBkColor(aNewOption.mBkgndColor);
+        SetTextBkColor(aNewOption.mBkgndColor);
+    }
+    else
+    {
+        SetBkColor(::GetSysColor(COLOR_WINDOW));
+        SetTextBkColor(::GetSysColor(COLOR_WINDOW));
+    }
+
+    if (aNewOption.mTextColorType == COLOR_TYPE_CUSTOM)
+    {
+        SetTextColor(aNewOption.mTextColor);
+    }
+    else
+    {
+        SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+    }
+
+    // set system image list or custom image list
+    fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
+
+    sSysImgListMgr.getCustomImgList(aNewOption.mCustomIconFile[0], aNewOption.mCustomIconFile[1]);
+
+    if (XPR_IS_TRUE(aNewOption.mCustomIcon))
+        setImageList(&sSysImgListMgr.mCusImgList32, &sSysImgListMgr.mCusImgList16);
+    else
+        setImageList(&sSysImgListMgr.mSysImgList32, &sSysImgListMgr.mSysImgList16);
+
+    // set custom font
+    setCustomFont(aNewOption.mCustomFont, aNewOption.mCustomFontText);
+
+    // set history count
+    setMaxHistory(aNewOption.mHistoryCount);
+    setMaxBackward(aNewOption.mBackwardCount);
+
+    // set contents display while dragging
+    setDragContents(!aNewOption.mDragNoContents);
+
+    // set new option
+    mOption = aNewOption;
+
+    // set thumbnail options
+    fxb::Thumbnail &sThumbnail = fxb::Thumbnail::instance();
+
+    sThumbnail.setThumbSize(CSize(aNewOption.mThumbnailWidth, aNewOption.mThumbnailHeight));
+    sThumbnail.setThumbPriority(aNewOption.mThumbnailPriority);
+
+    //  update view style, if one is thumbnail
+    if (getViewStyle() == LVS_THUMBNAIL)
+        setViewStyle(LVS_THUMBNAIL, XPR_TRUE);
+}
+
 xpr_bool_t ExplorerCtrl::explore(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
 {
     if (XPR_IS_NULL(aFullPidl))
         return XPR_FALSE;
 
+    // apply new option
+    if (XPR_IS_NOT_NULL(mNewOption))
+    {
+        applyOption(*mNewOption);
+
+        XPR_SAFE_DELETE(mNewOption);
+    }
+
     xpr_bool_t sResult = exploreItem(aFullPidl, aUpdateBuddy);
+
+    mFirstExplore = XPR_FALSE;
 
     return sResult;
 }
@@ -2698,10 +2768,10 @@ xpr_bool_t ExplorerCtrl::enumItem(LPSHELLFOLDER  aShellFolder,
     HRESULT sHResult;
 
     DWORD sFlags = SHCONTF_FOLDERS | SHCONTF_NONFOLDERS;
-    if (gOpt->mExplorerListType != LIST_TYPE_ALL)
-        sFlags = (gOpt->mExplorerListType == LIST_TYPE_FOLDER) ? SHCONTF_FOLDERS : SHCONTF_NONFOLDERS;
-    if (gOpt->mShowHiddenAttribute == XPR_TRUE) sFlags |= SHCONTF_INCLUDEHIDDEN;
-    if (gOpt->mShowSystemAttribute == XPR_TRUE) sFlags |= SHCONTF_STORAGE;
+    if (mOption.mListType != LIST_TYPE_ALL)
+        sFlags = (mOption.mListType == LIST_TYPE_FOLDER) ? SHCONTF_FOLDERS : SHCONTF_NONFOLDERS;
+    if (mOption.mShowHiddenAttribute == XPR_TRUE) sFlags |= SHCONTF_INCLUDEHIDDEN;
+    if (mOption.mShowSystemAttribute == XPR_TRUE) sFlags |= SHCONTF_STORAGE;
 
     sHResult = aShellFolder->EnumObjects(m_hWnd, sFlags, &sEnumIdList);
     if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sEnumIdList))
@@ -2844,7 +2914,7 @@ xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
         }
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE)
+    if (mOption.mShowSystemAttribute == XPR_FALSE)
     {
         if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
         {
@@ -2928,7 +2998,7 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     }
 
     // [..] Parent Folder
-    if (gOpt->mExplorerParentFolder == XPR_TRUE && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
+    if (mOption.mParentFolder == XPR_TRUE && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
     {
         LPLVITEMDATA sLvItemData = new LVITEMDATA;
         if (XPR_IS_NOT_NULL(sLvItemData))
@@ -2965,7 +3035,7 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     mUpdated = XPR_TRUE;
 
     // Auto Column Width
-    if (gOpt->mExplorerAutoColumnWidth == XPR_TRUE && getViewStyle() == LVS_REPORT)
+    if (mOption.mAutoColumnWidth == XPR_TRUE && getViewStyle() == LVS_REPORT)
         SetColumnWidth(0, LVSCW_AUTOSIZE);
 
     // update notify message
@@ -2978,14 +3048,14 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     // update status
     updateStatus();
 
-    if (gOpt->mExplorerParentFolder == XPR_TRUE && mSubFolder.empty() == true && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
+    if (mOption.mParentFolder == XPR_TRUE && mSubFolder.empty() == true && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
         selectItem(0);
 }
 
 void ExplorerCtrl::addDriveItem(void)
 {
     // each drive item
-    if (mFolderType != FOLDER_COMPUTER && gOpt->mExplorerShowDrive == XPR_TRUE)
+    if (mFolderType != FOLDER_COMPUTER && mOption.mShowDrive == XPR_TRUE)
     {
         xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
         fxb::GetDriveStrings(sDrive, XPR_MAX_PATH);
@@ -3020,7 +3090,7 @@ void ExplorerCtrl::addDriveItem(void)
     }
 
     // drive seleciont item
-    if (gOpt->mExplorerShowDriveItem == XPR_TRUE)
+    if (mOption.mShowDriveItem == XPR_TRUE)
     {
         LPLVITEMDATA sLvItemData = new LVITEMDATA;
         if (XPR_IS_NOT_NULL(sLvItemData))
@@ -3148,7 +3218,7 @@ void ExplorerCtrl::sortItems(ColumnId *aColumnId)
 
 void ExplorerCtrl::sortItems(ColumnId *aColumnId, xpr_bool_t aAscending, xpr_bool_t aOtherApply)
 {
-    if (gOpt->mExplorerNoSort == XPR_TRUE)
+    if (mOption.mNoSort == XPR_TRUE)
         return;
 
     if (XPR_IS_NULL(aColumnId))
@@ -3997,7 +4067,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuBkgnd(CWnd *aWnd, CPoint aPoint, CRect aWi
         return XPR_FALSE;
 
     BCMenu *sSubMenu = XPR_NULL;
-    if (gOpt->mFileScrapContextMenu == XPR_TRUE)
+    if (mOption.mFileScrapContextMenu == XPR_TRUE)
         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(14);
     else
     {
@@ -4427,8 +4497,8 @@ void ExplorerCtrl::OnBegindrag(NMHDR *aNmHdr, LRESULT *aResult)
 {
     NM_LISTVIEW *sNmListView = (NM_LISTVIEW*)aNmHdr;
 
-    if ((gOpt->mDragType == DRAG_START_DEFAULT) ||
-        (gOpt->mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
+    if ((mOption.mDragType == DRAG_START_DEFAULT) ||
+        (mOption.mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
     {
         beginDragDrop(sNmListView);
     }
@@ -4440,8 +4510,8 @@ void ExplorerCtrl::OnBeginrdrag(NMHDR *aNmHdr, LRESULT *aResult)
 {
     NM_LISTVIEW *sNmListView = (NM_LISTVIEW*)aNmHdr;
 
-    if ((gOpt->mDragType == DRAG_START_DEFAULT) ||
-        (gOpt->mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
+    if ((mOption.mDragType == DRAG_START_DEFAULT) ||
+        (mOption.mDragType == DRAG_START_CTRL && GetAsyncKeyState(VK_CONTROL) < 0))
     {
         beginDragDrop(sNmListView);
     }
@@ -4463,7 +4533,7 @@ void ExplorerCtrl::beginDragDrop(NM_LISTVIEW *aNmListView)
         {
             DragImage &sDragImage = DragImage::instance();
 
-            if (gOpt->mDragNoContents == XPR_FALSE)
+            if (mOption.mDragNoContents == XPR_FALSE)
             {
                 if (sDragImage.beginDrag(m_hWnd, XPR_NULL, sDataObject) == XPR_FALSE)
                 {
@@ -4631,15 +4701,15 @@ DROPEFFECT ExplorerCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeySt
         }
 
         // Background Default Drop Effect
-        if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_DEFAULT)
+        if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_DEFAULT)
         {
             sDropEffect = sCopy ? DROPEFFECT_COPY : DROPEFFECT_MOVE;
         }
-        else if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_COPY)
+        else if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_COPY)
         {
             sDropEffect = DROPEFFECT_COPY;
         }
-        else if (gOpt->mDragDefaultFileOp == DRAG_FILE_OP_LINK)
+        else if (mOption.mDragDefaultFileOp == DRAG_FILE_OP_LINK)
         {
             sDropEffect = DROPEFFECT_LINK;
         }
@@ -4944,7 +5014,7 @@ void ExplorerCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollUpTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_UP, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_UP, mOption.mDragScrollTime, XPR_NULL);
             mScrollUpTimer = XPR_TRUE;
         }
     }
@@ -4952,7 +5022,7 @@ void ExplorerCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
     {
         if (XPR_IS_FALSE(mScrollDownTimer))
         {
-            SetTimer(TM_ID_DRAG_SCROLL_DOWN, gOpt->mDragScrollTime, XPR_NULL);
+            SetTimer(TM_ID_DRAG_SCROLL_DOWN, mOption.mDragScrollTime, XPR_NULL);
             mScrollDownTimer = XPR_TRUE;
         }
     }
@@ -4964,7 +5034,7 @@ void ExplorerCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
         {
             if (XPR_IS_FALSE(mScrollLeftTimer))
             {
-                SetTimer(TM_ID_DRAG_SCROLL_LEFT, gOpt->mDragScrollTime, XPR_NULL);
+                SetTimer(TM_ID_DRAG_SCROLL_LEFT, mOption.mDragScrollTime, XPR_NULL);
                 mScrollLeftTimer = XPR_TRUE;
             }
         }
@@ -4972,7 +5042,7 @@ void ExplorerCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
         {
             if (XPR_IS_FALSE(mScrollRightTimer))
             {
-                SetTimer(TM_ID_DRAG_SCROLL_RIGHT, gOpt->mDragScrollTime, XPR_NULL);
+                SetTimer(TM_ID_DRAG_SCROLL_RIGHT, mOption.mDragScrollTime, XPR_NULL);
                 mScrollRightTimer = XPR_TRUE;
             }
         }
@@ -5085,8 +5155,8 @@ void ExplorerCtrl::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEffect
         }
     }
 
-    xpr_bool_t sExternalCopyFileOp = (aDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(gOpt->mExternalCopyFileOp);
-    xpr_bool_t sExternalMoveFileOp = (aDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(gOpt->mExternalMoveFileOp);
+    xpr_bool_t sExternalCopyFileOp = (aDropEffect == DROPEFFECT_COPY) && XPR_IS_TRUE(mOption.mExternalCopyFileOp);
+    xpr_bool_t sExternalMoveFileOp = (aDropEffect == DROPEFFECT_MOVE) && XPR_IS_TRUE(mOption.mExternalMoveFileOp);
 
     if (mDropTarget.isRightDrag() == XPR_FALSE && _tcslen(sTargetDir) > 0 && XPR_IS_FALSE(sExternalCopyFileOp) && XPR_IS_FALSE(sExternalMoveFileOp))
     {
@@ -5250,7 +5320,7 @@ void ExplorerCtrl::OnTimer(xpr_uint_t aIdEvent)
     //else if (aIdEvent == 4)
     //{
     //    KillTimer(4);
-    //    if (gOpt->adv_bTotalCmdSelSytle)
+    //    if (mOption.mTotalCmdSelSytle)
     //    {
     //        CPoint sPoint;
     //        GetCursorPos(&sPoint);
@@ -5448,7 +5518,7 @@ void ExplorerCtrl::setMoveToPidl(LPITEMIDLIST aPidl)
 
 void ExplorerCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult) 
 {
-    if (gOpt->mRenameByMouse == XPR_FALSE && XPR_IS_TRUE(mMouseEdit))
+    if (mOption.mRenameByMouse == XPR_FALSE && XPR_IS_TRUE(mMouseEdit))
     {
         *aResult = 1;
         mMouseEdit = XPR_TRUE;
@@ -5474,7 +5544,7 @@ void ExplorerCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     fxb::RenameHelper::RenameStyle sRenameStyle = fxb::RenameHelper::RenameStyleNone;
     if (XPR_IS_FALSE(sCtrlKey))
     {
-        switch (gOpt->mRenameExtType)
+        switch (mOption.mRenameExtType)
         {
         case RENAME_EXT_TYPE_KEEP:               sRenameStyle = fxb::RenameHelper::RenameStyleKeepExt;         break;
         case RENAME_EXT_TYPE_SEL_EXCEPT_FOR_EXT: sRenameStyle = fxb::RenameHelper::RenameStyleSelExceptForExt; break;
@@ -5649,7 +5719,7 @@ void ExplorerCtrl::OnInsertitem(NMHDR *aNmHdr, LRESULT *aResult)
     // But it activates when IShellFolder isn't enumerate (shell change notify).
     if (XPR_IS_TRUE(mUpdated))
     {
-        if (gOpt->mExplorerShowDrive == XPR_TRUE || gOpt->mExplorerShowDriveItem == XPR_TRUE)
+        if (mOption.mShowDrive == XPR_TRUE || mOption.mShowDriveItem == XPR_TRUE)
         {
             DWORD sStyle = getViewStyle();
             if ((sStyle == LVS_ICON) || (sStyle == LVS_SMALLICON) || (sStyle == LVS_THUMBNAIL))
@@ -5676,7 +5746,7 @@ void ExplorerCtrl::OnInsertitem(NMHDR *aNmHdr, LRESULT *aResult)
 
                 selectItem(sIndex);
 
-                if (gOpt->mExplorerCreateAndEditText == XPR_TRUE && fxb::IsEqualFileExt(mInsSel.c_str(), XPR_STRING_LITERAL(".txt")) == XPR_TRUE)
+                if (mOption.mCreateAndEditText == XPR_TRUE && fxb::IsEqualFileExt(mInsSel.c_str(), XPR_STRING_LITERAL(".txt")) == XPR_TRUE)
                 {
                     execute(sIndex);
                 }
@@ -5975,7 +6045,7 @@ void ExplorerCtrl::OnItemchanged(NMHDR *aNmHdr, LRESULT *aResult)
         return;
 
     // Explorer Window Customizing
-    if (gOpt->mExplorerCustomFolder[mViewIndex] == XPR_TRUE)
+    if (XPR_IS_TRUE(mOption.mBkgndImage) || mOption.mBkgndColorType == COLOR_TYPE_CUSTOM || mOption.mTextColorType == COLOR_TYPE_CUSTOM)
         RedrawItems(sNmListView->iItem, sNmListView->iItem);
 
     // Image & Picture Viewer
@@ -6228,7 +6298,7 @@ xpr_uint64_t ExplorerCtrl::getTotalFileSize(xpr_sint_t *aTotalCount, xpr_sint_t 
 
 void ExplorerCtrl::updateDriveItem(void)
 {
-    if (gOpt->mExplorerShowDrive == XPR_FALSE || gOpt->mExplorerShowDriveSize == XPR_FALSE)
+    if (mOption.mShowDrive == XPR_FALSE || mOption.mShowDriveSize == XPR_FALSE)
         return;
 
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
@@ -6304,7 +6374,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
         if (GetBkImage(&sLvBkImage) == XPR_TRUE)
             sNmLvCustomDraw->clrTextBk = sImage[0] == XPR_STRING_LITERAL('\0') ? GetTextBkColor() : CLR_NONE;
 
-        if (gOpt->mExplorerFilterColorType == FILTER_COLOR_TYPE_TEXT || gOpt->mExplorerFilterColorType == FILTER_COLOR_TYPE_BKGND)
+        if (mOption.mTextColorType == COLOR_TYPE_FILTERING || mOption.mBkgndColorType == COLOR_TYPE_FILTERING)
         {
             LPLVITEMDATA sLvItemData = ((LPLVITEMDATA)sNmLvCustomDraw->nmcd.lItemlParam);
             verifyItemData(&sLvItemData);
@@ -6318,9 +6388,10 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
                 if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
                     fxb::GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sParsing);
 
-                if (gOpt->mExplorerFilterColorType == FILTER_COLOR_TYPE_TEXT)
+                if (mOption.mTextColorType == COLOR_TYPE_FILTERING)
                     sNmLvCustomDraw->clrText = sFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
-                else
+
+                if (mOption.mBkgndColorType == COLOR_TYPE_FILTERING)
                     sNmLvCustomDraw->clrTextBk = sFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
             }
         }
@@ -6328,7 +6399,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
         // Only if view style is thumbnail, it draw all of things (image, icon, text and so on...).
         if (XPR_IS_FALSE(mThumbnail))
         {
-            *aResult = XPR_IS_TRUE(gOpt->mExplorerParentFolder) ? CDRF_NOTIFYPOSTPAINT : CDRF_DODEFAULT;//CDRF_NOTIFYITEMDRAW;//CDRF_DODEFAULT;
+            *aResult = XPR_IS_TRUE(mOption.mParentFolder) ? CDRF_NOTIFYPOSTPAINT : CDRF_DODEFAULT;//CDRF_NOTIFYITEMDRAW;//CDRF_DODEFAULT;
         }
         else
         {
@@ -6338,7 +6409,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
     }
     else if (sNmLvCustomDraw->nmcd.dwDrawStage == CDDS_ITEMPOSTPAINT)
     {
-        if (gOpt->mExplorerParentFolder)
+        if (mOption.mParentFolder)
         {
             LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sNmLvCustomDraw->nmcd.lItemlParam;
             if (XPR_IS_NOT_NULL(sLvItemData) && sLvItemData->mItemType == IDT_PARENT)
@@ -6419,7 +6490,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
     sDC->FillSolidRect(sIconRect, RGB(255,255,255));
     sDC->Draw3dRect(sIconRect, ::GetSysColor(COLOR_3DLIGHT), ::GetSysColor(COLOR_3DLIGHT));
 
-    if (XPR_IS_FALSE(gOpt->mExplorerParentFolder) || XPR_IS_NOT_NULL(sLvItemData))
+    if (XPR_IS_FALSE(mOption.mParentFolder) || XPR_IS_NOT_NULL(sLvItemData))
     {
         xpr_uint_t sThumbImageId = sLvItemData->mThumbImageId;
         if (sThumbImageId == fxb::Thumbnail::InvalidThumbImageId)
@@ -6615,7 +6686,7 @@ xpr_bool_t ExplorerCtrl::goUp(void)
         return XPR_TRUE;
 
     mSubFolder.clear();
-    if (XPR_IS_TRUE(gOpt->mExplorerGoUpSelSubFolder))
+    if (XPR_IS_TRUE(mOption.mGoUpSelSubFolder))
         fxb::GetName(mTvItemData->mShellFolder, mTvItemData->mPidl, SHGDN_INFOLDER, mSubFolder);
 
     LPITEMIDLIST sParentFullPidl = fxb::CopyItemIDList(sFullPidl);
@@ -6623,7 +6694,7 @@ xpr_bool_t ExplorerCtrl::goUp(void)
 
     xpr_bool_t sResult = explore(sParentFullPidl);
 
-    if (gOpt->mExplorerGoUpSelSubFolder)
+    if (mOption.mGoUpSelSubFolder)
     {
         if (mSubFolder.empty() == false)
         {
@@ -7142,12 +7213,12 @@ xpr_bool_t ExplorerCtrl::beginShcn(DWORD aEventId)
     xpr_bool_t sResult = XPR_TRUE;
     switch (aEventId)
     {
-    case SHCNE_CREATE:       sResult = gOpt->mExplorerListType != LIST_TYPE_FOLDER; break;
-    case SHCNE_MKDIR:        sResult = gOpt->mExplorerListType != LIST_TYPE_FILE;   break;
-    case SHCNE_RENAMEITEM:   sResult = gOpt->mExplorerListType != LIST_TYPE_FOLDER; break;
-    case SHCNE_RENAMEFOLDER: sResult = gOpt->mExplorerListType != LIST_TYPE_FILE;   break;
-    case SHCNE_DELETE:       sResult = gOpt->mExplorerListType != LIST_TYPE_FOLDER; break;
-    case SHCNE_RMDIR:        sResult = gOpt->mExplorerListType != LIST_TYPE_FILE;   break;
+    case SHCNE_CREATE:       sResult = mOption.mListType != LIST_TYPE_FOLDER; break;
+    case SHCNE_MKDIR:        sResult = mOption.mListType != LIST_TYPE_FILE;   break;
+    case SHCNE_RENAMEITEM:   sResult = mOption.mListType != LIST_TYPE_FOLDER; break;
+    case SHCNE_RENAMEFOLDER: sResult = mOption.mListType != LIST_TYPE_FILE;   break;
+    case SHCNE_DELETE:       sResult = mOption.mListType != LIST_TYPE_FOLDER; break;
+    case SHCNE_RMDIR:        sResult = mOption.mListType != LIST_TYPE_FILE;   break;
     }
 
     return sResult;
@@ -7155,7 +7226,7 @@ xpr_bool_t ExplorerCtrl::beginShcn(DWORD aEventId)
 
 void ExplorerCtrl::endShcn(DWORD aEventId, xpr_bool_t aResult)
 {
-    if (gOpt->mRefreshSort == XPR_TRUE && XPR_IS_TRUE(aResult))
+    if (mOption.mRefreshSort == XPR_TRUE && XPR_IS_TRUE(aResult))
     {
         // If refresh and auto-arrange option enable and is renaming any item, auto-arrange function delay.
         CEdit *sEdit = GetEditControl();
@@ -7168,7 +7239,7 @@ void ExplorerCtrl::endShcn(DWORD aEventId, xpr_bool_t aResult)
 
 LRESULT ExplorerCtrl::OnFileChangeNotify(WPARAM wParam, LPARAM lParam)
 {
-    if (gOpt->mNoRefresh == XPR_TRUE)
+    if (mOption.mNoRefresh == XPR_TRUE)
         return 0;
 
     fxb::FileChangeWatcher::WatchId sWatchId = (fxb::FileChangeWatcher::WatchId)wParam;
@@ -7194,7 +7265,7 @@ LRESULT ExplorerCtrl::OnFileChangeNotify(WPARAM wParam, LPARAM lParam)
 
 LRESULT ExplorerCtrl::OnAdvFileChangeNotify(WPARAM wParam, LPARAM lParam)
 {
-    if (gOpt->mNoRefresh == XPR_TRUE)
+    if (mOption.mNoRefresh == XPR_TRUE)
         return 0;
 
     fxb::AdvFileChangeWatcher::NotifyInfo *sNotifyInfo = reinterpret_cast<fxb::AdvFileChangeWatcher::NotifyInfo *>(wParam);
@@ -7346,13 +7417,13 @@ void ExplorerCtrl::OnShcnPreEnum(EnumData *aEnumData)
 
 xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData)
 {
-    if (gOpt->mExplorerListType == LIST_TYPE_FOLDER && fxb::IsFileSystemFolder(aShellFolder, aPidl) == XPR_FALSE)
+    if (mOption.mListType == LIST_TYPE_FOLDER && fxb::IsFileSystemFolder(aShellFolder, aPidl) == XPR_FALSE)
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
     }
 
-    if (gOpt->mExplorerListType == LIST_TYPE_FILE && fxb::IsFileSystemFolder(aShellFolder, aPidl) == XPR_TRUE)
+    if (mOption.mListType == LIST_TYPE_FILE && fxb::IsFileSystemFolder(aShellFolder, aPidl) == XPR_TRUE)
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
@@ -7390,13 +7461,13 @@ xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPi
         }
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && gOpt->mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sShellAttributes, SFGAO_GHOSTED))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && mOption.mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sShellAttributes, SFGAO_GHOSTED))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
     }
 
-    if (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
+    if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
@@ -7464,7 +7535,7 @@ xpr_sint_t ExplorerCtrl::getLastInsertIndex(void) const
             break;
     }
 
-    if (gOpt->mExplorerParentFolder == XPR_TRUE)
+    if (mOption.mParentFolder == XPR_TRUE)
     {
         if (i == -1)
             i++;
@@ -7699,7 +7770,7 @@ xpr_uint_t ExplorerCtrl::getThumbImageId(const xpr_tchar_t *aPath)
         sThumbImageId = fxb::Thumbnail::InvalidThumbImageId;
 
     if (sThumbImageId == fxb::Thumbnail::InvalidThumbImageId)
-        sThumbnail.getAsyncImage(m_hWnd, WM_THUMBNAIL_PROC, mCode, aPath, gOpt->mThumbnailLoadByExt);
+        sThumbnail.getAsyncImage(m_hWnd, WM_THUMBNAIL_PROC, mCode, aPath, mOption.mThumbnailLoadByExt);
 
     return sThumbImageId;
 }
@@ -7864,7 +7935,7 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
 
                     if (XPR_IS_FALSE(sAsyncSubItemText))
                     {
-                        if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_UPPER || gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_LOWER)
+                        if (mOption.mNameCaseType == NAME_CASE_TYPE_UPPER || mOption.mNameCaseType == NAME_CASE_TYPE_LOWER)
                         {
                             if (_tcsicmp(sSubItemText, sNewSubItemText) != 0)
                             {
@@ -7892,7 +7963,7 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
                 fxb::GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
                 xpr_sint_t sIconIndex = -1;
-                if (gOpt->mExplorerCustomIcon == XPR_TRUE)
+                if (mOption.mCustomIcon == XPR_TRUE)
                 {
                     sIconIndex = getFileIconIndex(aLvItemData, sPath);
                 }
@@ -8133,9 +8204,9 @@ xpr_bool_t ExplorerCtrl::OnShcnUpdateItem()
 
         if (_tcscmp(sName, sItemText) != NAME_CASE_TYPE_DEFAULT)
         {
-            if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_UPPER)
+            if (mOption.mNameCaseType == NAME_CASE_TYPE_UPPER)
                 _tcsupr(sName);
-            else if (gOpt->mExplorerNameCaseType == NAME_CASE_TYPE_LOWER)
+            else if (mOption.mNameCaseType == NAME_CASE_TYPE_LOWER)
                 _tcslwr(sName);
 
             sResult = SetItemText(i, 0, sName);
@@ -8333,17 +8404,17 @@ void ExplorerCtrl::setHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModif
 
     if (XPR_IS_TRUE(aModifiedHidden))
     {
-        if (gOpt->mShowHiddenAttribute == XPR_TRUE) sShow = XPR_TRUE;
-        else                                        sHide = XPR_TRUE;
+        if (mOption.mShowHiddenAttribute == XPR_TRUE) sShow = XPR_TRUE;
+        else                                          sHide = XPR_TRUE;
     }
 
     if (XPR_IS_TRUE(aModifiedSystem))
     {
-        if (gOpt->mShowSystemAttribute == XPR_TRUE) sShow = XPR_TRUE;
-        else                                        sHide = XPR_TRUE;
+        if (mOption.mShowSystemAttribute == XPR_TRUE) sShow = XPR_TRUE;
+        else                                          sHide = XPR_TRUE;
     }
 
-    if (XPR_IS_TRUE(sHide) && XPR_IS_TRUE(gOpt->mShowSystemAttribute))
+    if (XPR_IS_TRUE(sHide) && XPR_IS_TRUE(mOption.mShowSystemAttribute))
         sHide = XPR_FALSE;
 
     if (XPR_IS_TRUE(sShow))
@@ -8379,12 +8450,12 @@ void ExplorerCtrl::hideHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModi
         {
             sDelete = XPR_FALSE;
 
-            if (gOpt->mShowSystemAttribute == XPR_FALSE && gOpt->mShowHiddenAttribute  == XPR_FALSE && XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_GHOSTED))
+            if (mOption.mShowSystemAttribute == XPR_FALSE && mOption.mShowHiddenAttribute  == XPR_FALSE && XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_GHOSTED))
             {
                 sDelete = XPR_TRUE;
             }
 
-            if (gOpt->mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sLvItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sLvItemData->mFileAttributes, FILE_ATTRIBUTE_SYSTEM))
+            if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sLvItemData->mFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sLvItemData->mFileAttributes, FILE_ATTRIBUTE_SYSTEM))
             {
                 sDelete = XPR_TRUE;
             }
@@ -8483,7 +8554,7 @@ void ExplorerCtrl::OnSysColorChange(void)
     mLargeImgList->SetBkColor(sWindowColor);
     mSmallImgList->SetBkColor(sWindowColor);
 
-    if (gOpt->mExplorerCustomFolder[mViewIndex] == XPR_FALSE)
+    if (mOption.mBkgndColorType != COLOR_TYPE_CUSTOM)
     {
         SetTextBkColor(sWindowColor);
         SetBkColor(sWindowColor);
@@ -8536,7 +8607,7 @@ void ExplorerCtrl::OnHdnItemChanged(NMHDR *aNmHdr)
 
     NMHEADER *sNmHeader = (NMHEADER *)aNmHdr;
 
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
     {
         if (XPR_TEST_BITS(sNmHeader->pitem->mask, HDI_WIDTH))
         {
@@ -8609,7 +8680,7 @@ void ExplorerCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
     //if (sIndex == -1)
     //    return;
 
-    if (gOpt->mDragType == DRAG_START_DIST)
+    if (mOption.mDragType == DRAG_START_DIST)
     {
         static xpr_bool_t sDrag = XPR_FALSE;
         static CPoint sDragPoint(0,0);
@@ -8632,7 +8703,7 @@ void ExplorerCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
             xpr_sint_t sYDist = sDragPoint.y - aPoint.y;
             xpr_sint_t sRDist = (xpr_sint_t)sqrt((xpr_float_t)(sXDist * sXDist + sYDist * sYDist));
 
-            if (sRDist > gOpt->mDragDist)
+            if (sRDist > mOption.mDragDist)
             {
                 ReleaseCapture();
 
@@ -8677,9 +8748,9 @@ void ExplorerCtrl::OnRButtonUp(xpr_uint_t aFlags, CPoint aPoint)
     super::OnRButtonUp(aFlags, aPoint);
 }
 
-void ExplorerCtrl::setCustomFont(xpr_tchar_t *aFontText)
+void ExplorerCtrl::setCustomFont(xpr_bool_t aCustomFont, xpr_tchar_t *aFontText)
 {
-    if (gOpt->mCustomFont == XPR_FALSE)
+    if (XPR_IS_FALSE(aCustomFont))
     {
         SetFont(XPR_NULL);
         return;
@@ -8694,16 +8765,16 @@ void ExplorerCtrl::setCustomFont(xpr_tchar_t *aFontText)
         mCustomFont = new CFont;
 
     LOGFONT sLogFont = {0};
-    OptionMgr::instance().StringToLogFont(aFontText, sLogFont);
+    fxb::StringToLogFont(aFontText, sLogFont);
 
     mCustomFont->CreateFontIndirect(&sLogFont);
     if (XPR_IS_NOT_NULL(mCustomFont->m_hObject))
         SetFont(mCustomFont);
 }
 
-void ExplorerCtrl::setCustomFont(CFont *aFont)
+void ExplorerCtrl::setCustomFont(xpr_bool_t aCustomFont, CFont *aFont)
 {
-    if (gOpt->mCustomFont == XPR_FALSE)
+    if (XPR_IS_FALSE(aCustomFont))
     {
         SetFont(XPR_NULL);
         return;
@@ -8772,7 +8843,7 @@ LRESULT ExplorerCtrl::OnDriveShellChangeNotify(WPARAM wParam, LPARAM lParam)
         }
     }
 
-    if (gOpt->mExplorerShowDrive == XPR_FALSE)
+    if (mOption.mShowDrive == XPR_FALSE)
         return 0;
 
     if (sEventId == SHCNE_FREESPACE)
@@ -8806,7 +8877,7 @@ LRESULT ExplorerCtrl::OnDriveShellChangeNotify(WPARAM wParam, LPARAM lParam)
                 if (GetDriveType(sDrive) != DRIVE_FIXED)
                     continue;
 
-                if (XPR_IS_TRUE(gOpt->mExplorerShowDriveSize))
+                if (XPR_IS_TRUE(mOption.mShowDriveSize))
                 {
                     // total size
                     getDriveItemTotalSize(sDrive, sText, XPR_MAX_PATH);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -30,7 +30,7 @@ public:
         TypeConfig,
         TypeBookmark,
         TypeFileScrap,
-        TypeFileAss,
+        TypeProgramAss,
         TypeFilter,
         TypeSearchDir,
         TypeSizeFmt,

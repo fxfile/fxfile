@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -29,54 +29,27 @@ public:
     void initDefault(void);
 
     void load(xpr_bool_t &aInitCfg);
-    xpr_bool_t save(void);
+    xpr_bool_t save(xpr_bool_t aOnlyConfig = XPR_FALSE);
 
-    xpr_bool_t loadOption(void);
-    xpr_bool_t saveOption(void);
+    xpr_bool_t loadMainOption(void);
     xpr_bool_t saveMainOption(void);
+
+    xpr_bool_t loadConfigOption(void);
+    xpr_bool_t saveConfigOption(void);
 
     xpr_bool_t loadFilter(void);
     xpr_bool_t saveFilter(void);
 
-    xpr_bool_t loadFileAss(void);
-    xpr_bool_t saveFileAss(void);
+    xpr_bool_t loadProgramAss(void);
+    xpr_bool_t saveProgramAss(void);
 
     xpr_bool_t loadSizeFormat(void);
     xpr_bool_t saveSizeFormat(void);
 
-    void setModifiedHidden(xpr_bool_t aModifiedHidden) { mModifiedHidden = aModifiedHidden; }
-    void setModifiedSystem(xpr_bool_t aModifiedSystem) { mModifiedSystem = aModifiedSystem; }
-    xpr_bool_t isModifiedHidden(void) { return mModifiedHidden; }
-    xpr_bool_t isModifiedSystem(void) { return mModifiedSystem; }
-
-    // Apply to FolderCtrl
-    void applyFolderCtrl(xpr_bool_t aLoading);
-    void applyFolderCtrl(xpr_sint_t aIndex, xpr_bool_t aLoading);
-    void applyFolderCtrl(FolderCtrl *aFolderCtrl, xpr_sint_t aIndex, xpr_bool_t aLoading);
-    void applyFolderCtrl(FolderCtrl *aFolderCtrl, xpr_bool_t aLoading);
-
-    // Apply to ExplorerView
-    void applyExplorerView(xpr_bool_t aLoading);
-    void applyExplorerView(xpr_sint_t aIndex, xpr_bool_t aLoading);
-    void applyExplorerView(ExplorerView *aExplorerView, xpr_sint_t aIndex, xpr_bool_t aLoading);
-    void applyExplorerView(ExplorerView *aExplorerView, xpr_bool_t aLoading);
-    void applyExplorerCtrl(ExplorerCtrl *aExplorerCtrl, xpr_bool_t aLoading);
-    void applyExplorerCtrl(ExplorerCtrl *aExplorerCtrl, xpr_sint_t aIndex, xpr_bool_t aLoading);
-
-    // Apply to Etc Control
-    void applyEtc(void);
-    void applyEtc(xpr_sint_t aIndex);
-
     Option *getOption(void) { return mOption; }
-
-    xpr_bool_t FontDlgToString(CFontDialog &aDlg, xpr_tchar_t *aFontText);
-    xpr_bool_t StringToLogFont(const xpr_tchar_t *aFontText, LOGFONT &aLogFont);
 
 private:
     Option *mOption;
-
-    xpr_bool_t mModifiedHidden;
-    xpr_bool_t mModifiedSystem;
 };
 
 #endif // __FX_OPTION_MGR_H__

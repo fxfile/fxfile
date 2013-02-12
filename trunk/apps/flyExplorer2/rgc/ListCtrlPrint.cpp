@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -278,7 +278,7 @@ CRect ListCtrlPrint::getCellRect(xpr_sint_t aRow, xpr_sint_t aColumn)
     return sCellRect;
 }
 
-CString ListCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn)
+CString ListCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const
 {
     ASSERT(aColumn >= 0 && aColumn < mPageColumns);
     ASSERT(aRow >= 0 && aRow < mRowCount);
@@ -321,7 +321,7 @@ xpr_sint_t ListCtrlPrint::getColumnWidth(xpr_sint_t aColumn)
     return (xpr_sint_t)((sHdItem.cxy + 8) * mRatioX);
 }
 
-xpr_sint_t ListCtrlPrint::getRowCount(void)
+xpr_sint_t ListCtrlPrint::getRowCount(void) const
 {
     ASSERT(mListCtrl);
     return mListCtrl->GetItemCount();

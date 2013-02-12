@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -36,6 +36,9 @@ public:
 
     FolderCtrl *getFolderCtrl(void) const;
 
+    void setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption);
+    void setChangedOption(Option &aOption);
+
 protected:
     void recalcLayout(void);
 
@@ -49,6 +52,7 @@ protected:
     virtual void onContextMenuPaste(FolderCtrl &aFolderCtrl, HTREEITEM aTreeItem);
     virtual xpr_sint_t onDrop(FolderCtrl &aFolderCtrl, COleDataObject *aOleDataObject, xpr_tchar_t *aTargetDir);
     virtual void onMoveFocus(FolderCtrl &aFolderCtrl);
+    virtual void onClick(FolderCtrl &aFolderCtrl);
 
 protected:
     FolderPaneObserver *mObserver;

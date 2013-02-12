@@ -106,6 +106,9 @@ CString BCMenuData::GetString(void)
 
 CTypedPtrArray<CPtrArray, HMENU> BCMenu::m_AllSubMenus;  // Stores list of all sub-menus
 
+xpr_bool_t BCMenu::mStandardMenuStyle = XPR_FALSE;
+xpr_bool_t BCMenu::mAnimationMenu     = XPR_FALSE;
+
 IMPLEMENT_DYNCREATE(BCMenu, CMenu)
 
 BCMenu::BCMenu()
@@ -239,6 +242,16 @@ void DrawGradient(CDC*pDC, CRect rc)
 	GradientFill(pDC->m_hDC, vert, 2, &grc, 1, GRADIENT_FILL_RECT_H);
 }
 */
+
+void BCMenu::setStandardMenuStyle(xpr_bool_t aStandardMenuStyle)
+{
+    mStandardMenuStyle = aStandardMenuStyle;
+}
+
+void BCMenu::setAnimationMenu(xpr_bool_t aAnimationMenu)
+{
+    mAnimationMenu = aAnimationMenu;
+}
 
 static void DrawVistaStyle_MenuSel(CDC *pDC, CRect rc, COLORREF clr)
 {
@@ -928,7 +941,7 @@ void BCMenu::DrawItemStandardStyle(LPDRAWITEMSTRUCT lpDIS)
 
 void BCMenu::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 {
-	if (gOpt->mStandardMenu)
+	if (mStandardMenuStyle == XPR_TRUE)
 		DrawItemStandardStyle(lpDIS);
 	else
 		DrawItemOffice2007Style(lpDIS);
@@ -2462,7 +2475,7 @@ BOOL BCMenu::TrackPopupMenu(UINT nFlags, CPoint pt, CWnd* pWnd, LPCRECT lpRect /
 
 BOOL BCMenu::TrackPopupMenu(UINT nFlags, int x, int y, CWnd* pWnd, LPCRECT lpRect /*= 0*/)
 {
-	if (!gOpt->mAnimationMenu)
+	if (mAnimationMenu == XPR_FALSE)
 		nFlags |= 0x4000L;
 
 	return CMenu::TrackPopupMenu(nFlags, x, y, pWnd, lpRect);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -43,7 +43,7 @@ xpr_bool_t TipDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    xpr_bool_t sStartupTip = gOpt->mTipOfTheToday;
+    xpr_bool_t sStartupTip = gOpt->mMain.mTipOfTheToday;
     ((CButton *)GetDlgItem(IDC_TIP_SHOW_AT_STARTUP))->SetCheck(sStartupTip);
 
     xpr_sint_t i;
@@ -171,5 +171,5 @@ void TipDlg::OnDestroy(void)
 
 void TipDlg::OnTipStartup(void) 
 {
-    gOpt->mTipOfTheToday = ((CButton *)GetDlgItem(IDC_TIP_SHOW_AT_STARTUP))->GetCheck();
+    gOpt->mMain.mTipOfTheToday = ((CButton *)GetDlgItem(IDC_TIP_SHOW_AT_STARTUP))->GetCheck();
 }

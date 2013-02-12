@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -22,7 +22,8 @@ public:
     CfgAdvDlg(void);
 
 protected:
-    virtual void OnApply();
+    virtual void onInit(Option::Config &aConfig);
+    virtual void onApply(Option::Config &aConfig);
 
 protected:
     OptionsPanel mOptionPanel;

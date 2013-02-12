@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -151,6 +151,8 @@ xpr_bool_t LanguagePack::load(const xpr_tchar_t *aPath, StringTable *aStringTabl
 
         sInLanguagePackElement = sXmlReader.nextElement(sInLanguagePackElement);
     }
+
+    _tcscpy(mDesc.mFilePath, aPath);
 
     XPR_TRACE(XPR_STRING_LITERAL("The string table for \'%s\' language is loaded.\n"), mDesc.mLanguage);
 

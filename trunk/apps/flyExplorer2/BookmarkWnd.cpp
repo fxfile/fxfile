@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,8 +10,8 @@
 #include "stdafx.h"
 #include "BookmarkWnd.h"
 
+#include "Option.h"
 #include "MainFrame.h"
-#include "ExplorerView.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -62,13 +62,13 @@ xpr_sint_t BookmarkWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     mToolTipCtrl.Create(this);
 
-    if (gOpt->mContentsTooltip == XPR_TRUE)
+    if (gOpt->mConfig.mBookmarkTooltip == XPR_TRUE)
     {
         CRect sRect;
         GetClientRect(&sRect);
 
         xpr_tchar_t sTip[XPR_MAX_PATH + 50] = {0};
-        mBookmarkItem->getTooltip(sTip);
+        mBookmarkItem->getTooltip(sTip, XPR_TRUE);
 
         mToolTipCtrl.AddTool(this, sTip, sRect, TOOLTIP_ID);
         mToolTipCtrl.SetMaxTipWidth(500);
@@ -110,14 +110,14 @@ xpr_bool_t BookmarkWnd::PreTranslateMessage(MSG* pMsg)
 
 void BookmarkWnd::setBookmarkColor(COLORREF aBookmarkColor)
 {
-    mBookmarkColor = gOpt->mContentsBookmarkColor;
+    mBookmarkColor = aBookmarkColor;
 }
 
 HBRUSH BookmarkWnd::CtlColor(CDC* pDC, xpr_uint_t nCtlColor) 
 {
     ASSERT(nCtlColor == CTLCOLOR_STATIC);
 
-    pDC->SetTextColor(gOpt->mContentsBookmarkColor);
+    pDC->SetTextColor(mBookmarkColor);
     pDC->SetBkMode(TRANSPARENT);
 
     return (HBRUSH)GetStockObject(WHITE_BRUSH);//(HBRUSH)GetStockObject(NULL_BRUSH);

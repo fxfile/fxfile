@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -21,11 +21,11 @@ public:
     CfgFuncRenameDlg(void);
 
 protected:
-    virtual void OnApply(void);
+    virtual void onInit(Option::Config &aConfig);
+    virtual void onApply(Option::Config &aConfig);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-    virtual xpr_bool_t OnCommand(WPARAM wParam, LPARAM lParam);
 
 protected:
     DECLARE_MESSAGE_MAP()

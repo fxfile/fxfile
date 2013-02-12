@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,7 @@
 #include "rgc/BCMenu.h"
 
 #include "resource.h"
+#include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "ExplorerCtrl.h"
@@ -611,7 +612,7 @@ void PicViewer::setPicture(const xpr_tchar_t *aPath, xpr_bool_t aActualSize)
         CRect sClientRect;
         GetClientRect(&sClientRect);
 
-        sPictureItem->mLoadByExt   = gOpt->mThumbnailLoadByExt;
+        sPictureItem->mLoadByExt   = gOpt->mConfig.mThumbnailLoadByExt;
         sPictureItem->mDocking     = isDocking();
         sPictureItem->mLock        = mLock;
         sPictureItem->mWndSize.cx  = sClientRect.Width();
@@ -961,7 +962,7 @@ void PicViewer::toggleDocking(void)
         return;
     }
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
     {
         const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.msg.docking_contents"));
         gFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);

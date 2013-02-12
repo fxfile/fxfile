@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -163,7 +163,7 @@ void CloseTabOnCursorCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t CloseAllTabsButThisCommand::canExecute(CommandContext &aContext)
+xpr_sint_t CloseOtherTabsCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -180,7 +180,7 @@ xpr_sint_t CloseAllTabsButThisCommand::canExecute(CommandContext &aContext)
     return sState;
 }
 
-void CloseAllTabsButThisCommand::execute(CommandContext &aContext)
+void CloseOtherTabsCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -191,7 +191,7 @@ void CloseAllTabsButThisCommand::execute(CommandContext &aContext)
     }
 }
 
-xpr_sint_t CloseAllTabsButThisOnCursorCommand::canExecute(CommandContext &aContext)
+xpr_sint_t CloseOtherTabsOnCursorCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
@@ -208,7 +208,7 @@ xpr_sint_t CloseAllTabsButThisOnCursorCommand::canExecute(CommandContext &aConte
     return sState;
 }
 
-void CloseAllTabsButThisOnCursorCommand::execute(CommandContext &aContext)
+void CloseOtherTabsOnCursorCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 

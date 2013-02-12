@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -29,26 +29,30 @@ CfgAdvPathDlg::CfgAdvPathDlg(void)
 void CfgAdvPathDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_CFG_ADV_PATH_LIST, mListCtrl);
+    DDX_Control(pDX, IDC_CFG_CFG_PATH_LIST, mListCtrl);
 }
 
 BEGIN_MESSAGE_MAP(CfgAdvPathDlg, super)
-    ON_NOTIFY(LVN_GETDISPINFO,  IDC_CFG_ADV_PATH_LIST, OnLvnGetdispinfoList)
-    ON_NOTIFY(LVN_ITEMACTIVATE, IDC_CFG_ADV_PATH_LIST, OnLvnItemActivate)
-    ON_NOTIFY(LVN_DELETEITEM,   IDC_CFG_ADV_PATH_LIST, OnLvnDeleteitemList)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_CUSTOM_PATH_BROWSE, OnCustomPathBrowse)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_SET_PATH,           OnSetPath)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_PROGRAM,            OnCfgPath)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_APPDATA,            OnCfgPath)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_CUSTOM,             OnCfgPath)
-    ON_BN_CLICKED(IDC_CFG_ADV_PATH_EACH_CUSTOM,        OnCfgPath)
+    ON_NOTIFY(LVN_GETDISPINFO,  IDC_CFG_CFG_PATH_LIST, OnLvnGetdispinfoList)
+    ON_NOTIFY(LVN_ITEMACTIVATE, IDC_CFG_CFG_PATH_LIST, OnLvnItemActivate)
+    ON_NOTIFY(LVN_DELETEITEM,   IDC_CFG_CFG_PATH_LIST, OnLvnDeleteitemList)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_CUSTOM_PATH_BROWSE, OnCustomPathBrowse)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_SET_PATH,           OnSetPath)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_PROGRAM,            OnCfgPath)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_APPDATA,            OnCfgPath)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_CUSTOM,             OnCfgPath)
+    ON_BN_CLICKED(IDC_CFG_CFG_PATH_EACH_CUSTOM,        OnCfgPath)
 END_MESSAGE_MAP()
 
 xpr_bool_t CfgAdvPathDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
-    ((CEdit *)GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM_PATH))->LimitText(XPR_MAX_PATH);
+    // disable apply button event
+    addIgnoreApply(IDC_CFG_CFG_PATH_CUSTOM_PATH_BROWSE);
+    addIgnoreApply(IDC_CFG_CFG_PATH_SET_PATH);
+
+    ((CEdit *)GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM_PATH))->LimitText(XPR_MAX_PATH);
 
     CBitmap sBitmap;
     sBitmap.LoadBitmap(IDB_CONFIG_TREE);
@@ -66,6 +70,17 @@ xpr_bool_t CfgAdvPathDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.list.column.filename")), LVCFMT_LEFT,  100, -1);
     mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.list.column.path")),     LVCFMT_LEFT,  200, -1);
 
+    SetDlgItemText(IDC_CFG_CFG_PATH_PROGRAM,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.program")));
+    SetDlgItemText(IDC_CFG_CFG_PATH_APPDATA,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.appdata")));
+    SetDlgItemText(IDC_CFG_CFG_PATH_CUSTOM,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.custom")));
+    SetDlgItemText(IDC_CFG_CFG_PATH_EACH_CUSTOM, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.each_custom")));
+    SetDlgItemText(IDC_CFG_CFG_PATH_SET_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.button.set_path")));
+
+    return XPR_TRUE;
+}
+
+void CfgAdvPathDlg::onInit(Option::Config &aConfig)
+{
     CfgPath &sCfgPath = CfgPath::instance();
 
     if (sCfgPath.isTypeAll() == XPR_TRUE)
@@ -74,18 +89,18 @@ xpr_bool_t CfgAdvPathDlg::OnInitDialog(void)
         sCfgPath.getCfgPath(CfgPath::TypeAll, sPath);
 
         if (_tcsicmp(sPath.c_str(), XPR_STRING_LITERAL("%flyExplorer%")) == 0)
-            ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_PROGRAM))->SetCheck(XPR_TRUE);
+            ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_PROGRAM))->SetCheck(XPR_TRUE);
         else if (_tcsicmp(sPath.c_str(), XPR_STRING_LITERAL("%AppData%")) == 0)
-            ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_APPDATA))->SetCheck(XPR_TRUE);
+            ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_APPDATA))->SetCheck(XPR_TRUE);
         else
         {
-            ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM))->SetCheck(XPR_TRUE);
-            SetDlgItemText(IDC_CFG_ADV_PATH_CUSTOM_PATH, sPath.c_str());
+            ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM))->SetCheck(XPR_TRUE);
+            SetDlgItemText(IDC_CFG_CFG_PATH_CUSTOM_PATH, sPath.c_str());
         }
     }
     else
     {
-        ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_EACH_CUSTOM))->SetCheck(XPR_TRUE);
+        ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_EACH_CUSTOM))->SetCheck(XPR_TRUE);
     }
 
     xpr_sint_t sType;
@@ -114,38 +129,28 @@ xpr_bool_t CfgAdvPathDlg::OnInitDialog(void)
     }
 
     OnCfgPath();
-
-    SetDlgItemText(IDC_CFG_ADV_PATH_PROGRAM,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.program")));
-    SetDlgItemText(IDC_CFG_ADV_PATH_APPDATA,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.appdata")));
-    SetDlgItemText(IDC_CFG_ADV_PATH_CUSTOM,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.custom")));
-    SetDlgItemText(IDC_CFG_ADV_PATH_EACH_CUSTOM, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.radio.each_custom")));
-    SetDlgItemText(IDC_CFG_ADV_PATH_SET_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.button.set_path")));
-
-    return XPR_TRUE;
 }
 
-void CfgAdvPathDlg::OnApply(void)
+void CfgAdvPathDlg::onApply(Option::Config &aConfig)
 {
-    OptionMgr &sOptionMgr = OptionMgr::instance();
-
     CfgPath &sCfgPath = CfgPath::instance();
 
     sCfgPath.setBackup(XPR_TRUE);
 
-    if (((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_PROGRAM))->GetCheck())
+    if (((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_PROGRAM))->GetCheck())
     {
         sCfgPath.clear();
         sCfgPath.setCfgPath(CfgPath::TypeAll, XPR_STRING_LITERAL("%flyExplorer%"));
     }
-    else if (((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_APPDATA))->GetCheck())
+    else if (((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_APPDATA))->GetCheck())
     {
         sCfgPath.clear();
         sCfgPath.setCfgPath(CfgPath::TypeAll, XPR_STRING_LITERAL("%AppData%\\flyExplorer"));
     }
-    else if (((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM))->GetCheck())
+    else if (((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM))->GetCheck())
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        GetDlgItemText(IDC_CFG_ADV_PATH_CUSTOM_PATH, sPath, XPR_MAX_PATH);
+        GetDlgItemText(IDC_CFG_CFG_PATH_CUSTOM_PATH, sPath, XPR_MAX_PATH);
 
         sCfgPath.clear();
         sCfgPath.setCfgPath(CfgPath::TypeAll, sPath);
@@ -173,40 +178,6 @@ void CfgAdvPathDlg::OnApply(void)
     {
         sCfgPath.moveToNewCfgPath();
     }
-
-    sOptionMgr.applyFolderCtrl(3, XPR_FALSE);
-    sOptionMgr.applyExplorerView(3, XPR_FALSE);
-    sOptionMgr.applyEtc(3);
-}
-
-xpr_bool_t CfgAdvPathDlg::OnCommand(WPARAM wParam, LPARAM lParam) 
-{
-    xpr_uint_t sNotifyMsg = HIWORD(wParam);
-    xpr_uint_t sId = LOWORD(wParam);
-
-    if (sNotifyMsg == BN_CLICKED)
-    {
-        switch (sId)
-        {
-        case IDC_CFG_ADV_PATH_PROGRAM:
-        case IDC_CFG_ADV_PATH_APPDATA:
-        case IDC_CFG_ADV_PATH_CUSTOM:
-        case IDC_CFG_ADV_PATH_EACH_CUSTOM:
-            setModified();
-            break;
-        }
-    }
-    else if (sNotifyMsg == EN_UPDATE)
-    {
-        switch (sId)
-        {
-        case IDC_CFG_ADV_PATH_CUSTOM_PATH:
-            setModified();
-            break;
-        }
-    }
-
-    return super::OnCommand(wParam, lParam);
 }
 
 void CfgAdvPathDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
@@ -298,7 +269,7 @@ static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM
 void CfgAdvPathDlg::OnCustomPathBrowse(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    GetDlgItemText(IDC_CFG_ADV_PATH_CUSTOM_PATH, sPath, XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_CFG_PATH_CUSTOM_PATH, sPath, XPR_MAX_PATH);
 
     LPITEMIDLIST sOldFullPidl = fxb::Path2Pidl(sPath);
 
@@ -319,7 +290,7 @@ void CfgAdvPathDlg::OnCustomPathBrowse(void)
 
         if (_tcsicmp(sOldPath, sNewPath) != 0)
         {
-            SetDlgItemText(IDC_CFG_ADV_PATH_CUSTOM_PATH, sNewPath);
+            SetDlgItemText(IDC_CFG_CFG_PATH_CUSTOM_PATH, sNewPath);
 
             setModified();
         }
@@ -356,23 +327,23 @@ void CfgAdvPathDlg::OnSetPath(void)
     mListCtrl.Invalidate(XPR_FALSE);
     mListCtrl.UpdateWindow();
 
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_PROGRAM    ))->SetCheck(XPR_FALSE);
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_APPDATA    ))->SetCheck(XPR_FALSE);
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM     ))->SetCheck(XPR_FALSE);
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_EACH_CUSTOM))->SetCheck(XPR_TRUE);
+    ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_PROGRAM    ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_APPDATA    ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM     ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_EACH_CUSTOM))->SetCheck(XPR_TRUE);
 
     setModified();
 }
 
 void CfgAdvPathDlg::OnCfgPath(void)
 {
-    xpr_bool_t sProgram    = ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_PROGRAM    ))->GetCheck();
-    xpr_bool_t sAppData    = ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_APPDATA    ))->GetCheck();
-    xpr_bool_t sCustom     = ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM     ))->GetCheck();
-    xpr_bool_t sEachCustom = ((CButton *)GetDlgItem(IDC_CFG_ADV_PATH_EACH_CUSTOM))->GetCheck();
+    xpr_bool_t sProgram    = ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_PROGRAM    ))->GetCheck();
+    xpr_bool_t sAppData    = ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_APPDATA    ))->GetCheck();
+    xpr_bool_t sCustom     = ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM     ))->GetCheck();
+    xpr_bool_t sEachCustom = ((CButton *)GetDlgItem(IDC_CFG_CFG_PATH_EACH_CUSTOM))->GetCheck();
 
-    GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM_PATH       )->EnableWindow(sCustom);
-    GetDlgItem(IDC_CFG_ADV_PATH_CUSTOM_PATH_BROWSE)->EnableWindow(sCustom);
-    GetDlgItem(IDC_CFG_ADV_PATH_LIST              )->EnableWindow(sEachCustom);
-    GetDlgItem(IDC_CFG_ADV_PATH_SET_PATH          )->EnableWindow(sEachCustom);
+    GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM_PATH       )->EnableWindow(sCustom);
+    GetDlgItem(IDC_CFG_CFG_PATH_CUSTOM_PATH_BROWSE)->EnableWindow(sCustom);
+    GetDlgItem(IDC_CFG_CFG_PATH_LIST              )->EnableWindow(sEachCustom);
+    GetDlgItem(IDC_CFG_CFG_PATH_SET_PATH          )->EnableWindow(sEachCustom);
 }

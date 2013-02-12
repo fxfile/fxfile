@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,18 +18,12 @@ namespace cmd
 XPR_COMMAND_DECLARE_CLASS(ShowToolBarCommand);
 XPR_COMMAND_DECLARE_CLASS(ShowDriveBarCommand);
 XPR_COMMAND_DECLARE_CLASS(ShowBookmarkBarCommand);
-XPR_COMMAND_DECLARE_CLASS(ShowAddressBarCommand);
-XPR_COMMAND_DECLARE_CLASS(ShowPathBarCommand);
-XPR_COMMAND_DECLARE_CLASS(ShowActivateWndCommand);
 
 XPR_COMMAND_DECLARE_CLASS(AddressBarDropCommand);
 
 XPR_COMMAND_DECLARE_CLASS(DriveBarShortTextCommand);
 XPR_COMMAND_DECLARE_CLASS(DriveBarLongTextCommand);
 XPR_COMMAND_DECLARE_CLASS(DriveBarWrapableCommand);
-XPR_COMMAND_DECLARE_CLASS(DriveBarEachAssignCommand);
-XPR_COMMAND_DECLARE_CLASS(DriveBarLeftPlaceCommand);
-XPR_COMMAND_DECLARE_CLASS(DriveBarRightPlaceCommand);
 XPR_COMMAND_DECLARE_CLASS(DriveBarRefreshCommand);
 
 XPR_COMMAND_DECLARE_CLASS(BookmarkBarNoNameCommand);
@@ -39,8 +33,6 @@ XPR_COMMAND_DECLARE_CLASS(BookmarkBarRefreshCommand);
 
 XPR_COMMAND_DECLARE_CLASS(ToolLockCommand);
 XPR_COMMAND_DECLARE_CLASS(ToolBarCustomizeCommand);
-
-XPR_COMMAND_DECLARE_CLASS(ShowStatusBarCommand);
 
 XPR_COMMAND_DECLARE_CLASS(NoneFolderPaneCommand);
 XPR_COMMAND_DECLARE_CLASS(SingleFolderPaneCommand);

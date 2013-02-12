@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -40,7 +40,7 @@ public:
     HICON getIcon(void);
     LPITEMIDLIST getPidl(void);
     xpr_bool_t getPidl(LPITEMIDLIST *aFullPidl);
-    void getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithPending = XPR_FALSE);
+    void getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithName, xpr_bool_t aWithPending = XPR_FALSE);
 
     xpr_uint_t newSignature(void);
     void setPending(xpr_bool_t aPending);
@@ -94,6 +94,10 @@ protected: BookmarkMgr(void);
 public:   ~BookmarkMgr(void);
 
 public:
+    // option
+    void setFastNetIcon(xpr_bool_t aFastNetIcon);
+
+public:
     xpr_sint_t addBookmark(BookmarkItem *aBookmark);
     xpr_sint_t addBookmark(const xpr_tchar_t *aName, const xpr_tchar_t *aPath, const xpr_tchar_t *aIconPath, xpr_sint_t aIconIndex, const xpr_tchar_t *aParam, const xpr_tchar_t *aStartup, xpr_sint_t aShowCmd, DWORD aHotKey);
     xpr_sint_t insertBookmark(xpr_sint_t aBookmarkIndex, BookmarkItem *aBookmark);
@@ -126,6 +130,8 @@ public:
 protected:
     BookmarkDeque mBookmarkDeque;
     xpr_uint_t    mSignature;
+
+    xpr_bool_t mFastNetIcon;
 
     typedef std::map<HWND, xpr_uint_t> ASYNC_NOTIFY_MAP;
     ASYNC_NOTIFY_MAP mAsyncNotifyMap;

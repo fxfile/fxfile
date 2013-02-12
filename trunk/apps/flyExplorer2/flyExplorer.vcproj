@@ -555,27 +555,107 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgContentsDlg.cpp"
+				RelativePath=".\cfg\CfgAppearanceColorDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgContentsDlg.h"
+				RelativePath=".\cfg\CfgAppearanceColorDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgDispDlg.cpp"
+				RelativePath=".\cfg\CfgAppearanceColorViewDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgDispDlg.h"
+				RelativePath=".\cfg\CfgAppearanceColorViewDlg.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgDispSizeDlg.cpp"
+				RelativePath=".\cfg\CfgAppearanceDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgDispSizeDlg.h"
+				RelativePath=".\cfg\CfgAppearanceDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFileListDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFileListDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFilteringDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFilteringDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFolderTreeDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFolderTreeDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFontDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceFontDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceHistoryDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceHistoryDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceLanguageDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceLanguageDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceLayoutDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceLayoutDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceSizeFormatDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceSizeFormatDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceThumbnailDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceThumbnailDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceViewSetDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAppearanceViewSetDlg.h"
 				>
 			</File>
 			<File
@@ -587,67 +667,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgExpDispDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpDispDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpFilterDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpFilterDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpThumbDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpThumbDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpViewSetDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpViewSetDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpWndDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgExpWndDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFldDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFldDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFldWndDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFldWndDlg.h"
+				RelativePath=".\cfg\CfgDlgObserver.h"
 				>
 			</File>
 			<File
@@ -675,14 +695,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgFuncFileAssDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFuncFileAssDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cfg\CfgFuncFileOpDlg.cpp"
 				>
 			</File>
@@ -699,11 +711,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgFuncHistoryDlg.cpp"
+				RelativePath=".\cfg\CfgFuncProgramAssDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgFuncHistoryDlg.h"
+				RelativePath=".\cfg\CfgFuncProgramAssDlg.h"
 				>
 			</File>
 			<File
@@ -723,19 +735,27 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\CfgFuncSplitDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgFuncSplitDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cfg\CfgGeneralDlg.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\cfg\CfgGeneralDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgGeneralStartupDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgGeneralStartupDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgGeneralStartupViewDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgGeneralStartupViewDlg.h"
 				>
 			</File>
 			<File
@@ -747,19 +767,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cfg\FileAssSetDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\FileAssSetDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cfg\FilterSetDlg.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\cfg\FilterSetDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\ProgramAssSetDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\ProgramAssSetDlg.h"
 				>
 			</File>
 			<File
@@ -1219,14 +1239,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fxb\fxb_file_ass.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\fxb\fxb_file_ass.h"
-				>
-			</File>
-			<File
 				RelativePath=".\fxb\fxb_file_change_watcher.cpp"
 				>
 			</File>
@@ -1460,6 +1472,14 @@
 			</File>
 			<File
 				RelativePath=".\fxb\fxb_pidl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fxb\fxb_program_ass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\fxb\fxb_program_ass.h"
 				>
 			</File>
 			<File
@@ -1775,6 +1795,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Defines.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DlgState.cpp"
 				>
 			</File>
@@ -1947,6 +1971,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\LauncherMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\LauncherMgr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainCoolBar.cpp"
 				>
 			</File>
@@ -2068,6 +2100,14 @@
 			</File>
 			<File
 				RelativePath=".\SearchResultPane.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ShellRegistry.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ShellRegistry.h"
 				>
 			</File>
 			<File
@@ -2497,14 +2537,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\cmd_file_ass.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\cmd_file_ass.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cmd\cmd_file_list.cpp"
 				>
 			</File>
@@ -2614,6 +2646,14 @@
 			</File>
 			<File
 				RelativePath=".\cmd\cmd_print.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\cmd_program_ass.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\cmd_program_ass.h"
 				>
 			</File>
 			<File
@@ -2809,14 +2849,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmd\FileAssDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cmd\FileAssDlg.h"
-				>
-			</File>
-			<File
 				RelativePath=".\cmd\FileCombineDlg.cpp"
 				>
 			</File>
@@ -2926,6 +2958,14 @@
 			</File>
 			<File
 				RelativePath=".\cmd\PicCnvOptDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\ProgramAssDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd\ProgramAssDlg.h"
 				>
 			</File>
 			<File

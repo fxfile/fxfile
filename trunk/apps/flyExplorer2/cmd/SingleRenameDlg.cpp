@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -83,7 +83,7 @@ void SingleRenameDlg::setItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LP
     fxb::RenameHelper::RenameStyle sRenameStyle = fxb::RenameHelper::RenameStyleNone;
     if (sCtrlKey == XPR_FALSE)
     {
-        switch (gOpt->mRenameExtType)
+        switch (gOpt->mConfig.mRenameExtType)
         {
         case RENAME_EXT_TYPE_KEEP:               sRenameStyle = fxb::RenameHelper::RenameStyleKeepExt;         break;
         case RENAME_EXT_TYPE_SEL_EXCEPT_FOR_EXT: sRenameStyle = fxb::RenameHelper::RenameStyleSelExceptForExt; break;

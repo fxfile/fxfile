@@ -22,6 +22,7 @@
 #include "fxb/fxb_wnet_mgr.h"
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_sys_img_list.h"
+#include "fxb/fxb_context_menu.h"
 
 #include "rgc/FileDialogST.h"
 #include "rgc/SysTray.h"
@@ -105,12 +106,6 @@ MainFrame::MainFrame(void)
     mSplitFullPidl[0] = XPR_NULL;
     mSplitFullPidl[1] = XPR_NULL;
 
-    xpr_sint_t i;
-    for (i = 0; i < MAX_VIEW_SPLIT; ++i)
-    {
-        mFolderPane[i] = XPR_NULL;
-    }
-
     mCommandExecutor = new cmd::CommandExecutor;
     cmd::CommandMap::map(*mCommandExecutor);
 }
@@ -138,8 +133,8 @@ xpr_bool_t MainFrame::PreCreateWindow(CREATESTRUCT &aCreateStruct)
     DESTROY_CURSOR(sCursor);
     DESTROY_ICON(sIcon);
 
-    xpr_sint_t sCmdShow = gOpt->mCmdShow;
-    CRect sWindowRect = gOpt->mWindow;
+    xpr_sint_t sCmdShow = gOpt->mMain.mWindowStatus;
+    CRect sWindowRect = gOpt->mMain.mWindowRect;
 
     xpr_bool_t sDefWindow = XPR_TRUE;
 
@@ -251,12 +246,8 @@ void MainFrame::init(void)
 
     fxb::SysImgListMgr::instance().getSystemImgList();
 
-    // Load Tray State
-    if (XPR_IS_TRUE(gOpt->mTray))
-        createTray();
-
     // Load File Scrap
-    if (XPR_IS_TRUE(gOpt->mFileScrapSave))
+    if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         CfgPath::instance().getLoadPath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
@@ -264,9 +255,9 @@ void MainFrame::init(void)
         fxb::FileScrap::instance().loadFromFile(sPath);
     }
 
-    fxb::ClipFormat::instance().registerClipFormat();
+    setOption(*gOpt);
 
-    setDragContents(!gOpt->mDragNoContents);
+    fxb::ClipFormat::instance().registerClipFormat();
 }
 
 xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
@@ -294,16 +285,16 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
     }
 
-    if (XPR_IS_TRUE(gOpt->mPicViewer))
+    if (XPR_IS_TRUE(gOpt->mMain.mPicViewer))
     {
         mPicViewer = new PicViewer;
         mPicViewer->Create(this);
 
-        if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+        if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
             mPicViewer->setDocking(XPR_FALSE);
     }
 
-    if (XPR_IS_TRUE(gOpt->mFileScrapDrop))
+    if (XPR_IS_TRUE(gOpt->mMain.mFileScrapDrop))
     {
         mFileScrapDropDlg = new FileScrapDropDlg;
         mFileScrapDropDlg->Create(this);
@@ -329,8 +320,8 @@ xpr_bool_t MainFrame::LoadFrame(xpr_uint_t aIdResource, DWORD aDefaultStyle, CWn
 
 xpr_bool_t MainFrame::OnCreateClient(LPCREATESTRUCT aCreateStruct, CCreateContext *aCreateContext)
 {
-    xpr_sint_t sRowCount    = gOpt->mViewSplitRowCount;
-    xpr_sint_t sColumnCount = gOpt->mViewSplitColumnCount;
+    xpr_sint_t sRowCount    = gOpt->mMain.mViewSplitRowCount;
+    xpr_sint_t sColumnCount = gOpt->mMain.mViewSplitColumnCount;
 
     std::tstring sSplitArg;
     if (fxb::CmdLineParser::instance().getArg(XPR_STRING_LITERAL("W"), sSplitArg) == XPR_TRUE)
@@ -357,15 +348,15 @@ xpr_bool_t MainFrame::OnCreateClient(LPCREATESTRUCT aCreateStruct, CCreateContex
     mSplitter.setPaneSizeLimit(MIN_PANE_SIZE, ksintmax);
     mSplitter.setSplitSize(SPLITTER_SIZE);
 
-    mOneFolderSplitter.setObserver(dynamic_cast<SplitterObserver *>(this));
-    mOneFolderSplitter.setMaxSplitCount(1, 2);
-    mOneFolderSplitter.setPaneSizeLimit(MIN_PANE_SIZE, ksintmax);
-    mOneFolderSplitter.setSplitSize(SPLITTER_SIZE);
+    mSingleFolderSplitter.setObserver(dynamic_cast<SplitterObserver *>(this));
+    mSingleFolderSplitter.setMaxSplitCount(1, 2);
+    mSingleFolderSplitter.setPaneSizeLimit(MIN_PANE_SIZE, ksintmax);
+    mSingleFolderSplitter.setSplitSize(SPLITTER_SIZE);
 
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode) && XPR_IS_TRUE(gOpt->mShowSingleFolderPane))
-        mOneFolderSplitter.split(1, 2);
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode) && XPR_IS_TRUE(gOpt->mMain.mShowSingleFolderPane))
+        mSingleFolderSplitter.split(1, 2);
     else
-        mOneFolderSplitter.split(0, 0);
+        mSingleFolderSplitter.split(0, 0);
 
     splitView(sRowCount, sColumnCount, XPR_TRUE);
 
@@ -378,10 +369,10 @@ xpr_bool_t MainFrame::OnCreateClient(LPCREATESTRUCT aCreateStruct, CCreateContex
 // from SplitterObserver
 CWnd *MainFrame::onSplitterPaneCreate(Splitter &aSplitter, xpr_sint_t aRow, xpr_sint_t aColumn)
 {
-    if (aSplitter == mOneFolderSplitter)
+    if (aSplitter == mSingleFolderSplitter)
     {
-        if ((XPR_IS_TRUE (gOpt->mLeftSingleFolderPane) && aRow == 0 && aColumn == 0) ||
-            (XPR_IS_FALSE(gOpt->mLeftSingleFolderPane) && aRow == 0 && aColumn == 1))
+        if ((XPR_IS_TRUE (gOpt->mMain.mLeftSingleFolderPane) && aRow == 0 && aColumn == 0) ||
+            (XPR_IS_FALSE(gOpt->mMain.mLeftSingleFolderPane) && aRow == 0 && aColumn == 1))
         {
             FolderView *sFolderView = new FolderView;
             if (XPR_IS_NULL(sFolderView))
@@ -491,7 +482,7 @@ void MainFrame::OnDestroy(void)
 // when exited windows by called ExitWindow or ExitWindowEx function
 void MainFrame::OnEndSession(xpr_bool_t aEnding)
 {
-    saveExplicitOption();
+    theApp.saveAllOptions();
 
     destroy();
 }
@@ -501,7 +492,7 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
     if (XPR_IS_FALSE(aForce))
     {
         // Animation Minimization Tray
-        if (XPR_IS_TRUE(gOpt->mTray) && XPR_IS_TRUE(gOpt->mTrayOnClose) && XPR_IS_FALSE(mExit))
+        if (XPR_IS_TRUE(gOpt->mConfig.mTray) && XPR_IS_TRUE(gOpt->mConfig.mTrayOnClose) && XPR_IS_FALSE(mExit))
         {
             if (XPR_IS_NOT_NULL(mSysTray))
                 mSysTray->hideToTray();
@@ -523,7 +514,7 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
         }
 
         // Confirm Exit
-        if (XPR_IS_TRUE(gOpt->mConfirmExit))
+        if (XPR_IS_TRUE(gOpt->mConfig.mConfirmExit))
         {
             const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("main_frame.msg.confirm_exit"));
             xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_SYSTEMMODAL | MB_ICONQUESTION | MB_YESNO);
@@ -538,49 +529,124 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
 void MainFrame::saveOption(void)
 {
     // save visible state for one folder pane
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        gOpt->mShowSingleFolderPane = isVisibleFolderPane();
+        gOpt->mMain.mShowSingleFolderPane = isVisibleFolderPane();
     }
 
     // save file scrap
-    if (XPR_IS_TRUE(gOpt->mFileScrapSave))
+    if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         CfgPath::instance().getSavePath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
 
-        fxb::FileScrap::instance().saveToFile(sPath);
+        fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
+        sFileScrap.saveToFile(sPath);
     }
 
     // verify viewSet
-    if (XPR_IS_TRUE(gOpt->mExplorerExitVerifyViewSet))
+    if (XPR_IS_TRUE(gOpt->mConfig.mExplorerExitVerifyViewSet))
     {
         ViewSet sViewSet;
         sViewSet.verify();
     }
 
-    DlgStateMgr::instance().save();
+    // save dialog states
+    DlgStateMgr &sDlgStateMgr = DlgStateMgr::instance();
+    sDlgStateMgr.save();
 
-    gOpt->mPicViewer = XPR_IS_NOT_NULL(mPicViewer) && XPR_IS_NOT_NULL(mPicViewer->m_hWnd);
-    gOpt->mFileScrapDrop = XPR_IS_NOT_NULL(mFileScrapDropDlg) && XPR_IS_NOT_NULL(mFileScrapDropDlg->m_hWnd);
+    gOpt->mMain.mPicViewer     = XPR_IS_NOT_NULL(mPicViewer       ) && XPR_IS_NOT_NULL(mPicViewer->m_hWnd       );
+    gOpt->mMain.mFileScrapDrop = XPR_IS_NOT_NULL(mFileScrapDropDlg) && XPR_IS_NOT_NULL(mFileScrapDropDlg->m_hWnd);
 
     // save view split state
     xpr_sint_t sRowCount = 0, sColumnCount = 0;
     mSplitter.getPaneCount(&sRowCount, &sColumnCount);
 
-    gOpt->mViewSplitRowCount    = sRowCount;
-    gOpt->mViewSplitColumnCount = sColumnCount;
+    gOpt->mMain.mViewSplitRowCount    = sRowCount;
+    gOpt->mMain.mViewSplitColumnCount = sColumnCount;
 
     // Save MainFrame Position
     WINDOWPLACEMENT sWindowPlacement = {0};
     GetWindowPlacement(&sWindowPlacement);
 
-    gOpt->mCmdShow = sWindowPlacement.showCmd;
-    gOpt->mWindow = sWindowPlacement.rcNormalPosition;
+    gOpt->mMain.mWindowStatus = sWindowPlacement.showCmd;
+    gOpt->mMain.mWindowRect   = sWindowPlacement.rcNormalPosition;
 }
 
-void MainFrame::saveExplicitOption(void)
+void MainFrame::setOption(Option &aOption)
 {
+    // tray
+    if (XPR_IS_FALSE(aOption.mConfig.mTray))
+    {
+        destroyTray();
+    }
+    else
+    {
+        createTray();
+    }
+
+    // set shell context menu option
+    fxb::ContextMenu::setFileScrapMenu(aOption.mConfig.mFileScrapContextMenu);
+    fxb::ContextMenu::setAnimationMenu(aOption.mConfig.mAnimationMenu);
+
+    // set bookmark option
+    fxb::BookmarkMgr &sBookmarkMgr = fxb::BookmarkMgr::instance();
+    sBookmarkMgr.setFastNetIcon(aOption.mConfig.mBookmarkFastNetIcon);
+
+    // set task button flash when file operation complete
+    fxb::FileOpThread::setCompleteFlash(aOption.mConfig.mFileOpCompleteFlash);
+
+    // set auto refresh option
+    fxb::ShellChangeNotify::setNoRefresh(aOption.mConfig.mNoRefresh);
+
+    // set menu option
+    BCMenu::setStandardMenuStyle(aOption.mConfig.mStandardMenu);
+    BCMenu::setAnimationMenu(aOption.mConfig.mAnimationMenu);
+
+    // set contents display while dragging
+    setDragContents(!aOption.mConfig.mDragNoContents);
+}
+
+void MainFrame::setChangedOption(Option &aOption)
+{
+    // set new option
+    setOption(aOption);
+
+    // TODO
+    // update bookmark
+    updateBookmark();
+
+    // release docking if contents is not explorer style.
+    if (aOption.mConfig.mContentsStyle != CONTENTS_EXPLORER)
+    {
+        if (XPR_IS_NOT_NULL(gFrame->mPicViewer))
+            mPicViewer->setDocking(XPR_FALSE);
+    }
+
+    // apply new option to folder view
+    FolderView *sFolderView = getFolderView();
+    if (XPR_IS_NOT_NULL(sFolderView))
+    {
+        sFolderView->setChangedOption(aOption);
+    }
+
+    // apply new option to explorer view
+    xpr_sint_t i;
+    ExplorerView *sExplorerView;
+
+    for (i = 0; i < MAX_VIEW_SPLIT; ++i)
+    {
+        sExplorerView = getExplorerView(i);
+        if (XPR_IS_NOT_NULL(sExplorerView))
+        {
+            sExplorerView->setChangedOption(aOption);
+        }
+    }
+}
+
+void MainFrame::saveAllOptions(void)
+{
+    // get explorer view options for save
     xpr_sint_t i;
     xpr_sint_t sViewCount = getViewCount();
     ExplorerView *sExplorerView;
@@ -589,16 +655,22 @@ void MainFrame::saveExplicitOption(void)
     {
         sExplorerView = getExplorerView(i);
         if (XPR_IS_NOT_NULL(sExplorerView))
+        {
             sExplorerView->saveOption();
+        }
     }
 
+    // get main frame options for save
     saveOption();
 
+    // save coolbar and toolbar
+    m_wndReBar.saveStateFile();
+
+    // save main options and config options
     OptionMgr &sOptionMgr = OptionMgr::instance();
+    sOptionMgr.save();
 
-    sOptionMgr.saveOption();
-    sOptionMgr.saveMainOption();
-
+    // save configuration path
     if (CfgPath::isInstance() == XPR_TRUE)
         CfgPath::instance().save();
 }
@@ -607,21 +679,11 @@ void MainFrame::destroy(void)
 {
     destroyTray();
 
-    //m_wndCoolBar.mMenuBar.DestroyMenuData();
-
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = getViewCount();
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        if (XPR_IS_NOT_NULL(mFolderPane[i]))
-            mFolderPane[i]->DestroyWindow(); // self delete
-    }
-
     DESTROY_DELETE(mFileScrapDropDlg);
     DESTROY_DELETE(mPicViewer);
     DESTROY_DELETE(mSearchDlg);
 
+    xpr_sint_t i;
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
         mDrivePathMap[i].clear();
@@ -656,12 +718,12 @@ void MainFrame::OnPaint(void)
         xpr_sint_t sSplitterCount;
         CRect sSplitterRect;
 
-        sSplitterCount = mOneFolderSplitter.getSplitterCount();
+        sSplitterCount = mSingleFolderSplitter.getSplitterCount();
         if (sSplitterCount > 0)
         {
             for (i = 0; i < sSplitterCount; ++i)
             {
-                mOneFolderSplitter.getSplitterRect(i, sSplitterRect);
+                mSingleFolderSplitter.getSplitterRect(i, sSplitterRect);
 
                 sDC.FillSolidRect(&sSplitterRect, ::GetSysColor(COLOR_BTNFACE));
             }
@@ -745,33 +807,33 @@ void MainFrame::recalcLayout(xpr_uint_t aType)
     HDWP sHdwp = ::BeginDeferWindowPos(sRowCount * sColumnCount + 1);
 
     // adjust single folder splitter size
-    CRect sOneFolderSplitterRect(sClientRect);
-    mOneFolderSplitter.setWindowRect(sOneFolderSplitterRect);
+    CRect sSingleFolderSplitterRect(sClientRect);
+    mSingleFolderSplitter.setWindowRect(sSingleFolderSplitterRect);
 
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        xpr_sint_t sPaneSize = gOpt->mSingleFolderPaneSize;
-        if (XPR_IS_FALSE(gOpt->mLeftSingleFolderPane))
+        xpr_sint_t sPaneSize = gOpt->mMain.mSingleFolderPaneSize;
+        if (XPR_IS_FALSE(gOpt->mMain.mLeftSingleFolderPane))
         {
-            xpr_sint_t sSplitSize = mOneFolderSplitter.getSplitSize();
-            sPaneSize = sOneFolderSplitterRect.Width() - sPaneSize - sSplitSize;
+            xpr_sint_t sSplitSize = mSingleFolderSplitter.getSplitSize();
+            sPaneSize = sSingleFolderSplitterRect.Width() - sPaneSize - sSplitSize;
         }
 
-        mOneFolderSplitter.moveColumn(0, sPaneSize);
+        mSingleFolderSplitter.moveColumn(0, sPaneSize);
     }
 
-    mOneFolderSplitter.resize(sHdwp);
+    mSingleFolderSplitter.resize(sHdwp);
 
     // adjust view splitter size
     CRect sSplitterRect(sClientRect);
 
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         xpr_sint_t sColumn = 1;
-        if (XPR_IS_FALSE(gOpt->mLeftSingleFolderPane))
+        if (XPR_IS_FALSE(gOpt->mMain.mLeftSingleFolderPane))
             sColumn = 0;
 
-        mOneFolderSplitter.getPaneRect(0, sColumn, sSplitterRect);
+        mSingleFolderSplitter.getPaneRect(0, sColumn, sSplitterRect);
     }
 
     mSplitter.setWindowRect(sSplitterRect);
@@ -788,88 +850,88 @@ void MainFrame::recalcLayout(xpr_uint_t aType)
         mSplitter.moveColumn(0, sWidth);
         mSplitter.moveRow   (0, sHeight);
     }
-    else if (XPR_IS_TRUE(gOpt->mViewSplitByRatio) && (sRowCount >= 1 || sColumnCount >= 1))
+    else if (XPR_IS_TRUE(gOpt->mConfig.mViewSplitByRatio) && (sRowCount >= 1 || sColumnCount >= 1))
     {
         if (sRowCount == 1 && sColumnCount == 2)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
         }
         else if (sRowCount == 2 && sColumnCount == 1)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-            mSplitter.moveRow(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveRow(0, gOpt->mMain.mViewSplitSize[0]);
         }
         else if (sRowCount == 2 && sColumnCount == 2)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[1]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[1]);
         }
         else if (sRowCount == 1 && sColumnCount == 3)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
         }
         else if (sRowCount == 2 && sColumnCount == 3)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
-            gOpt->mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[2] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[2] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
         }
     }
     else if (sRowCount >= 1 || sColumnCount >= 1)
     {
         if (sRowCount == 1 && sColumnCount == 2)
         {
-            gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
         }
         else if (sRowCount == 2 && sColumnCount == 1)
         {
-            gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sHeight;
+            gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sHeight;
 
-            mSplitter.moveRow(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveRow(0, gOpt->mMain.mViewSplitSize[0]);
         }
         else if (sRowCount == 2 && sColumnCount == 2)
         {
-            gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
-            gOpt->mViewSplitRatio[1] = (xpr_double_t)gOpt->mViewSplitSize[1] / (xpr_double_t)sHeight;
+            gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[1] = (xpr_double_t)gOpt->mMain.mViewSplitSize[1] / (xpr_double_t)sHeight;
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[1]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[1]);
         }
         else if (sRowCount == 1 && sColumnCount == 3)
         {
-            gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
-            gOpt->mViewSplitRatio[1] = (xpr_double_t)gOpt->mViewSplitSize[1] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[1] = (xpr_double_t)gOpt->mMain.mViewSplitSize[1] / (xpr_double_t)sWidth;
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
         }
         else if (sRowCount == 2 && sColumnCount == 3)
         {
-            gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
-            gOpt->mViewSplitRatio[1] = (xpr_double_t)gOpt->mViewSplitSize[1] / (xpr_double_t)sWidth;
-            gOpt->mViewSplitRatio[2] = (xpr_double_t)gOpt->mViewSplitSize[2] / (xpr_double_t)sHeight;
+            gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[1] = (xpr_double_t)gOpt->mMain.mViewSplitSize[1] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitRatio[2] = (xpr_double_t)gOpt->mMain.mViewSplitSize[2] / (xpr_double_t)sHeight;
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
         }
     }
 
@@ -913,14 +975,14 @@ void MainFrame::OnSetFocus(CWnd *aOldWnd)
 
 void MainFrame::OnSysCommand(xpr_uint_t aId, LPARAM lParam)
 {
-    if (XPR_IS_TRUE(gOpt->mTray) && XPR_IS_TRUE(gOpt->mTrayOnClose) && aId == SC_CLOSE)
+    if (XPR_IS_TRUE(gOpt->mConfig.mTray) && XPR_IS_TRUE(gOpt->mConfig.mTrayOnClose) && aId == SC_CLOSE)
     {
         if (XPR_IS_NOT_NULL(mSysTray))
             mSysTray->hideToTray();
 
         SetForegroundWindow();
     }
-    else if (XPR_IS_TRUE(gOpt->mTrayOnMinmize) && aId == SC_MINIMIZE)
+    else if (XPR_IS_TRUE(gOpt->mConfig.mTrayOnMinmize) && aId == SC_MINIMIZE)
     {
         minimizeToTray();
     }
@@ -1351,7 +1413,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         if (sGoWorkingFolderInsert      >= 0) { insertGoWorkingFolderPopupMenu     (sBCPopupMenu, sGoWorkingFolderInsert     ); }
         if (sGoWorkingFolderResetInsert >= 0) { insertGoWorkingFolderResetPopupMenu(sBCPopupMenu, sGoWorkingFolderResetInsert); }
 
-        if (XPR_IS_TRUE(gOpt->mShellNewMenu) && sShellNewInsert >= 0)
+        if (XPR_IS_TRUE(gOpt->mConfig.mShellNewMenu) && sShellNewInsert >= 0)
         {
             insertShellNewPopupMenu(sBCPopupMenu, sShellNewInsert);
         }
@@ -1571,8 +1633,8 @@ xpr_sint_t MainFrame::insertGoBackwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t a
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
     sCount = (xpr_sint_t)sBackwardDeque->size();
-    if (sCount > gOpt->mBackwardMenuCount)
-        sCount = gOpt->mBackwardMenuCount;
+    if (sCount > gOpt->mConfig.mBackwardMenuCount)
+        sCount = gOpt->mConfig.mBackwardMenuCount;
 
     sReverseIterator = sBackwardDeque->rbegin();
     for (i = 0; i < sCount; ++i)
@@ -1614,8 +1676,8 @@ xpr_sint_t MainFrame::insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
     sCount = (xpr_sint_t)sForwardDeque->size();
-    if (sCount > gOpt->mBackwardMenuCount)
-        sCount = gOpt->mBackwardMenuCount;
+    if (sCount > gOpt->mConfig.mBackwardMenuCount)
+        sCount = gOpt->mConfig.mBackwardMenuCount;
 
     sReverseIterator = sForwardDeque->rbegin();
     for (i = 0; i < sCount; ++i)
@@ -1657,8 +1719,8 @@ xpr_sint_t MainFrame::insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
     sCount = (xpr_sint_t)sHistoryDeque->size();
-    if (sCount > gOpt->mHistoryMenuCount)
-        sCount = gOpt->mHistoryMenuCount;
+    if (sCount > gOpt->mConfig.mHistoryMenuCount)
+        sCount = gOpt->mConfig.mHistoryMenuCount;
 
     sReverseIterator = sHistoryDeque->rbegin();
     for (i = 0; i < sCount; ++i)
@@ -1837,10 +1899,10 @@ void MainFrame::setFileScrapPane(FileScrapPane *aFileScrapPane)
 FolderView *MainFrame::getFolderView(void) const
 {
     xpr_sint_t sRow = 0, sColumn = 0;
-    if (XPR_IS_FALSE(gOpt->mLeftSingleFolderPane))
+    if (XPR_IS_FALSE(gOpt->mMain.mLeftSingleFolderPane))
         sColumn = 1;
 
-    return dynamic_cast<FolderView *>(mOneFolderSplitter.getPaneWnd(sRow, sColumn));
+    return dynamic_cast<FolderView *>(mSingleFolderSplitter.getPaneWnd(sRow, sColumn));
 }
 
 Splitter *MainFrame::getSplitter(void) const
@@ -1850,7 +1912,7 @@ Splitter *MainFrame::getSplitter(void) const
 
 FolderPane *MainFrame::getFolderPane(xpr_sint_t aIndex) const
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         FolderView *sFolderView = getFolderView();
         if (XPR_IS_NOT_NULL(sFolderView))
@@ -1950,7 +2012,7 @@ LRESULT MainFrame::OnTrayNotify(WPARAM wParam, LPARAM lParam)
         {
         case WM_LBUTTONDOWN:
             {
-                if (XPR_IS_TRUE(gOpt->mTrayOneClick))
+                if (XPR_IS_TRUE(gOpt->mConfig.mTrayOneClick))
                 {
                     if (IsWindowVisible() == XPR_TRUE)
                     {
@@ -1970,7 +2032,7 @@ LRESULT MainFrame::OnTrayNotify(WPARAM wParam, LPARAM lParam)
 
         case WM_LBUTTONDBLCLK:
             {
-                if (XPR_IS_FALSE(gOpt->mTrayOneClick))
+                if (XPR_IS_FALSE(gOpt->mConfig.mTrayOneClick))
                 {
                     if (IsWindowVisible() == XPR_TRUE)
                     {
@@ -2011,7 +2073,7 @@ LRESULT MainFrame::OnTrayNotify(WPARAM wParam, LPARAM lParam)
 
 LRESULT MainFrame::OnTaskRestarted(WPARAM wParam, LPARAM lParam)
 {
-    if (XPR_IS_TRUE(gOpt->mTray))
+    if (XPR_IS_TRUE(gOpt->mConfig.mTray))
     {
         if (XPR_IS_NOT_NULL(mSysTray))
             mSysTray->recreateTray();
@@ -2156,7 +2218,7 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
     else if (XPR_IS_RANGE(ID_GO_WORKING_FOLDER_FIRST, aId, ID_GO_WORKING_FOLDER_LAST))
     {
         xpr_sint_t sWorkingFolderIndex = aId - ID_GO_WORKING_FOLDER_FIRST;
-        aMessage = gOpt->mWorkingFolder[sWorkingFolderIndex];
+        aMessage = gOpt->mMain.mWorkingFolder[sWorkingFolderIndex];
     }
     else if (XPR_IS_RANGE(ID_FILE_RECENT_FIRST, aId, ID_FILE_RECENT_LAST))
     {
@@ -2242,7 +2304,7 @@ void MainFrame::OnToolbarDropDown(NMHDR *aNmHdr, LRESULT *aLResult)
 
 xpr_bool_t MainFrame::isNoneFolderPane(void) const
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         return isVisibleFolderPane() ? XPR_FALSE : XPR_TRUE;
     }
@@ -2266,7 +2328,7 @@ xpr_bool_t MainFrame::isNoneFolderPane(void) const
 
 xpr_bool_t MainFrame::isVisibleFolderPane(void) const
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         FolderView *sFolderView = getFolderView();
         if (XPR_IS_NOT_NULL(sFolderView))
@@ -2288,9 +2350,9 @@ xpr_bool_t MainFrame::isVisibleFolderPane(void) const
 
 xpr_bool_t MainFrame::isLeftFolderPane(void) const
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        return gOpt->mLeftSingleFolderPane;
+        return gOpt->mMain.mLeftSingleFolderPane;
     }
 
     ExplorerView *sExplorerView = getExplorerView();
@@ -2315,7 +2377,7 @@ void MainFrame::initFolderCtrl(void)
             HTREEITEM sTreeItem = sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
             if (XPR_IS_NOT_NULL(sTreeItem))
             {
-                if (XPR_IS_FALSE(gOpt->mFolderTreeInitNoExpand))
+                if (XPR_IS_FALSE(gOpt->mConfig.mFolderTreeInitNoExpand))
                     sFolderCtrl->Expand(sTreeItem, TVE_EXPAND);
 
                 sFolderCtrl->EnsureVisible(sTreeItem);
@@ -2326,20 +2388,20 @@ void MainFrame::initFolderCtrl(void)
 
 void MainFrame::showFolderPane(xpr_bool_t aShow)
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         if (XPR_IS_TRUE(aShow))
         {
-            mOneFolderSplitter.split(1, 2);
+            mSingleFolderSplitter.split(1, 2);
 
             initFolderCtrl();
         }
         else
         {
-            mOneFolderSplitter.split(0, 0);
+            mSingleFolderSplitter.split(0, 0);
         }
 
-        gOpt->mShowSingleFolderPane = aShow;
+        gOpt->mMain.mShowSingleFolderPane = aShow;
 
         recalcLayout();
     }
@@ -2355,15 +2417,15 @@ void MainFrame::showFolderPane(xpr_bool_t aShow)
 
 xpr_bool_t MainFrame::isSingleFolderPaneMode(void) const
 {
-    return XPR_IS_TRUE(gOpt->mSingleFolderPaneMode) ? XPR_TRUE : XPR_FALSE;
+    return XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode) ? XPR_TRUE : XPR_FALSE;
 }
 
 void MainFrame::setSingleFolderPaneMode(xpr_bool_t aSingleFolderPaneMode)
 {
-    if (gOpt->mSingleFolderPaneMode == aSingleFolderPaneMode)
+    if (gOpt->mMain.mSingleFolderPaneMode == aSingleFolderPaneMode)
         return;
 
-    gOpt->mSingleFolderPaneMode = aSingleFolderPaneMode;
+    gOpt->mMain.mSingleFolderPaneMode = aSingleFolderPaneMode;
 
     if (XPR_IS_TRUE(aSingleFolderPaneMode))
     {
@@ -2380,14 +2442,14 @@ void MainFrame::setSingleFolderPaneMode(xpr_bool_t aSingleFolderPaneMode)
             }
         }
 
-        mOneFolderSplitter.split(1, 2);
+        mSingleFolderSplitter.split(1, 2);
 
         // initialize folder control for one folder pane
         initFolderCtrl();
     }
     else
     {
-        mOneFolderSplitter.split(0, 0);
+        mSingleFolderSplitter.split(0, 0);
 
         xpr_sint_t i;
         xpr_sint_t sViewCount = getViewCount();
@@ -2398,7 +2460,7 @@ void MainFrame::setSingleFolderPaneMode(xpr_bool_t aSingleFolderPaneMode)
             sExplorerView = getExplorerView(i);
             if (XPR_IS_NOT_NULL(sExplorerView))
             {
-                if (XPR_IS_TRUE(gOpt->mShowEachFolderPane[i]))
+                if (XPR_IS_TRUE(gOpt->mMain.mShowEachFolderPane[i]))
                     sExplorerView->visibleFolderPane(XPR_TRUE);
             }
         }
@@ -2409,7 +2471,7 @@ void MainFrame::setSingleFolderPaneMode(xpr_bool_t aSingleFolderPaneMode)
 
 void MainFrame::setNoneFolderPane(void)
 {
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
         showFolderPane(XPR_FALSE);
         return;
@@ -2434,13 +2496,13 @@ void MainFrame::setLeftFolderPane(xpr_bool_t aLeft)
     if (isVisibleFolderPane() == XPR_FALSE)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+    if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        if (gOpt->mLeftSingleFolderPane != aLeft)
+        if (gOpt->mMain.mLeftSingleFolderPane != aLeft)
         {
-            gOpt->mLeftSingleFolderPane = aLeft;
+            gOpt->mMain.mLeftSingleFolderPane = aLeft;
 
-            mOneFolderSplitter.switchPane(0, 0, 0, 1);
+            mSingleFolderSplitter.switchPane(0, 0, 0, 1);
 
             recalcLayout();
         }
@@ -2650,7 +2712,7 @@ xpr_bool_t MainFrame::PreTranslateMessage(MSG *aMsg)
 
     if (aMsg->message == WM_SYSKEYDOWN || aMsg->message == WM_KEYDOWN)
     {
-        if (XPR_IS_TRUE(gOpt->mDriveShiftKey))
+        if (XPR_IS_TRUE(gOpt->mConfig.mDriveShiftKey))
         {
             if (GetKeyState(VK_SHIFT) < 0)
             {
@@ -2707,13 +2769,13 @@ xpr_bool_t MainFrame::goWorkingFolder(xpr_sint_t aIndex)
     if (!XPR_IS_RANGE(0, aIndex, MAX_WORKING_FOLDER-1))
         return XPR_FALSE;
 
-    if (fxb::IsEmptyString(gOpt->mWorkingFolder[aIndex]) == XPR_TRUE)
+    if (fxb::IsEmptyString(gOpt->mMain.mWorkingFolder[aIndex]) == XPR_TRUE)
         return XPR_FALSE;
 
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        LPITEMIDLIST sFullPidl = fxb::Path2Pidl(gOpt->mWorkingFolder[aIndex]);
+        LPITEMIDLIST sFullPidl = fxb::Path2Pidl(gOpt->mMain.mWorkingFolder[aIndex]);
         if (XPR_IS_NOT_NULL(sFullPidl))
         {
             if (sExplorerCtrl->explore(sFullPidl) == XPR_FALSE)
@@ -2733,7 +2795,7 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
 
     xpr_bool_t sOnlyFileSystemPath = XPR_FALSE;
 
-    if (XPR_IS_TRUE(gOpt->mWorkingFolderRealPath))
+    if (XPR_IS_TRUE(gOpt->mConfig.mWorkingFolderRealPath))
         sOnlyFileSystemPath = XPR_TRUE;
     else
     {
@@ -2758,7 +2820,7 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
         }
     }
 
-    return fxb::Pidl2Path(aFullPidl, gOpt->mWorkingFolder[aIndex], sOnlyFileSystemPath);
+    return fxb::Pidl2Path(aFullPidl, gOpt->mMain.mWorkingFolder[aIndex], sOnlyFileSystemPath);
 }
 
 void MainFrame::resetWorkingFolder(xpr_size_t aIndex)
@@ -2772,7 +2834,7 @@ void MainFrame::resetWorkingFolder(xpr_size_t aIndex)
     if (sMsgId != IDYES)
         return;
 
-    gOpt->mWorkingFolder[aIndex][0] = XPR_STRING_LITERAL('\0');
+    gOpt->mMain.mWorkingFolder[aIndex][0] = XPR_STRING_LITERAL('\0');
 }
 
 void MainFrame::resetWorkingFolder(void)
@@ -2785,7 +2847,7 @@ void MainFrame::resetWorkingFolder(void)
     xpr_size_t i;
     for (i = 0; i < MAX_WORKING_FOLDER; ++i)
     {
-        gOpt->mWorkingFolder[i][0] = XPR_STRING_LITERAL('\0');
+        gOpt->mMain.mWorkingFolder[i][0] = XPR_STRING_LITERAL('\0');
     }
 }
 
@@ -2827,7 +2889,7 @@ xpr_sint_t MainFrame::insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aIn
 
 void MainFrame::showTrayMainFrame(void)
 {
-    if (XPR_IS_TRUE(gOpt->mTrayRestoreInitFolder))
+    if (XPR_IS_TRUE(gOpt->mConfig.mTrayRestoreInitFolder))
     {
         goInitFolder();
     }
@@ -2837,7 +2899,7 @@ void MainFrame::showTrayMainFrame(void)
     mSysTray->showFromTray();
 
     // minimize to tray on file menu
-    if (XPR_IS_FALSE(gOpt->mTray))
+    if (XPR_IS_FALSE(gOpt->mConfig.mTray))
         destroyTray();
 }
 
@@ -2863,54 +2925,54 @@ void MainFrame::setSplitEqually(void)
         {
             if (sRowCount == 1 && sColumnCount == 2)
             {
-                gOpt->mViewSplitRatio[0] = 0.5;
-                gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mViewSplitRatio[0] + 0.5);
+                gOpt->mMain.mViewSplitRatio[0] = 0.5;
+                gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-                mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
+                mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
                 mSplitter.resize();
             }
             else if (sRowCount == 2 && sColumnCount == 1)
             {
-                gOpt->mViewSplitRatio[0] = 0.5;
-                gOpt->mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[0] + 0.5);
+                gOpt->mMain.mViewSplitRatio[0] = 0.5;
+                gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-                mSplitter.moveRow(0, gOpt->mViewSplitSize[0]);
+                mSplitter.moveRow(0, gOpt->mMain.mViewSplitSize[0]);
                 mSplitter.resize();
             }
             else if (sRowCount == 2 && sColumnCount == 2)
             {
-                gOpt->mViewSplitRatio[0] = 0.5;
-                gOpt->mViewSplitRatio[1] = 0.5;
-                gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-                gOpt->mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[1] + 0.5);
+                gOpt->mMain.mViewSplitRatio[0] = 0.5;
+                gOpt->mMain.mViewSplitRatio[1] = 0.5;
+                gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+                gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-                mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-                mSplitter.moveRow   (0, gOpt->mViewSplitSize[1]);
+                mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+                mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[1]);
                 mSplitter.resize();
             }
             else if (sRowCount == 1 && sColumnCount == 3)
             {
-                gOpt->mViewSplitRatio[0] = 0.333;
-                gOpt->mViewSplitRatio[1] = 0.333;
-                gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-                gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
+                gOpt->mMain.mViewSplitRatio[0] = 0.333;
+                gOpt->mMain.mViewSplitRatio[1] = 0.333;
+                gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+                gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-                mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-                mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
+                mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+                mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
                 mSplitter.resize();
             }
             else if (sRowCount == 2 && sColumnCount == 3)
             {
-                gOpt->mViewSplitRatio[0] = 0.333;
-                gOpt->mViewSplitRatio[1] = 0.333;
-                gOpt->mViewSplitRatio[2] = 0.5;
-                gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-                gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
-                gOpt->mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[2] + 0.5);
+                gOpt->mMain.mViewSplitRatio[0] = 0.333;
+                gOpt->mMain.mViewSplitRatio[1] = 0.333;
+                gOpt->mMain.mViewSplitRatio[2] = 0.5;
+                gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+                gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
+                gOpt->mMain.mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[2] + 0.5);
 
-                mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-                mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-                mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+                mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+                mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+                mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
                 mSplitter.resize();
             }
         }
@@ -2988,7 +3050,7 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
     // old view
     if (XPR_IS_FALSE(aLoading))
     {
-        if (XPR_IS_TRUE(gOpt->mSingleFolderPaneMode))
+        if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
         {
             // TODO
         }
@@ -3032,42 +3094,42 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
     // evaluate ratio for new view split
     if (aRowCount == 1 && aColumnCount == 2)
     {
-        if (gOpt->mViewSplitRatio[0] <= 0.0 || gOpt->mViewSplitRatio[0] >= 1.0)
-            gOpt->mViewSplitRatio[0] = 0.5;
+        if (gOpt->mMain.mViewSplitRatio[0] <= 0.0 || gOpt->mMain.mViewSplitRatio[0] >= 1.0)
+            gOpt->mMain.mViewSplitRatio[0] = 0.5;
     }
     else if (aRowCount == 2 && aColumnCount == 1)
     {
-        if (gOpt->mViewSplitRatio[0] <= 0.0 || gOpt->mViewSplitRatio[0] >= 1.0)
-            gOpt->mViewSplitRatio[0] = 0.5;
+        if (gOpt->mMain.mViewSplitRatio[0] <= 0.0 || gOpt->mMain.mViewSplitRatio[0] >= 1.0)
+            gOpt->mMain.mViewSplitRatio[0] = 0.5;
     }
     else if (aRowCount == 2 && aColumnCount == 2)
     {
-        if (gOpt->mViewSplitRatio[0] <= 0.0 || gOpt->mViewSplitRatio[0] >= 1.0)
-            gOpt->mViewSplitRatio[0] = 0.5;
+        if (gOpt->mMain.mViewSplitRatio[0] <= 0.0 || gOpt->mMain.mViewSplitRatio[0] >= 1.0)
+            gOpt->mMain.mViewSplitRatio[0] = 0.5;
 
-        if (gOpt->mViewSplitRatio[1] <= 0.0 || gOpt->mViewSplitRatio[1] >= 1.0)
-            gOpt->mViewSplitRatio[1] = 0.5;
+        if (gOpt->mMain.mViewSplitRatio[1] <= 0.0 || gOpt->mMain.mViewSplitRatio[1] >= 1.0)
+            gOpt->mMain.mViewSplitRatio[1] = 0.5;
     }
     else if (aRowCount == 1 && aColumnCount == 3)
     {
-        if (((gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]) <= 0.0) ||
-            ((gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]) >= 1.0))
+        if (((gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]) <= 0.0) ||
+            ((gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]) >= 1.0))
         {
-            gOpt->mViewSplitRatio[0] = 0.333;
-            gOpt->mViewSplitRatio[1] = 0.333;
+            gOpt->mMain.mViewSplitRatio[0] = 0.333;
+            gOpt->mMain.mViewSplitRatio[1] = 0.333;
         }
     }
     else if (aRowCount == 2 && aColumnCount == 3)
     {
-        if (((gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]) <= 0.0) ||
-            ((gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]) >= 1.0))
+        if (((gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]) <= 0.0) ||
+            ((gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]) >= 1.0))
         {
-            gOpt->mViewSplitRatio[0] = 0.333;
-            gOpt->mViewSplitRatio[1] = 0.333;
+            gOpt->mMain.mViewSplitRatio[0] = 0.333;
+            gOpt->mMain.mViewSplitRatio[1] = 0.333;
         }
 
-        if (gOpt->mViewSplitRatio[2] <= 0.0 || gOpt->mViewSplitRatio[2] >= 1.0)
-            gOpt->mViewSplitRatio[2] = 0.5;
+        if (gOpt->mMain.mViewSplitRatio[2] <= 0.0 || gOpt->mMain.mViewSplitRatio[2] >= 1.0)
+            gOpt->mMain.mViewSplitRatio[2] = 0.5;
     }
 
     // change view split
@@ -3087,23 +3149,23 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
                 (sOldRowCount == 2 && sOldColumnCount == 1) ||
                 (sOldRowCount == 2 && sOldColumnCount == 2))
             {
-                gOpt->mViewSplitRatio[0] = 0.333;
-                gOpt->mViewSplitRatio[1] = 0.333;
-                gOpt->mViewSplitRatio[2] = 0.5;
+                gOpt->mMain.mViewSplitRatio[0] = 0.333;
+                gOpt->mMain.mViewSplitRatio[1] = 0.333;
+                gOpt->mMain.mViewSplitRatio[2] = 0.5;
             }
         }
         else if (aRowCount == 2 && aColumnCount == 2)
         {
             if (sOldRowCount == 2 && sOldColumnCount == 1)
             {
-                gOpt->mViewSplitRatio[1] = gOpt->mViewSplitRatio[0];
+                gOpt->mMain.mViewSplitRatio[1] = gOpt->mMain.mViewSplitRatio[0];
             }
             else if ((sOldRowCount == 1 && sOldColumnCount == 3) ||
                      (sOldRowCount == 2 && sOldColumnCount == 3))
             {
-                gOpt->mViewSplitRatio[0] = 0.5;
-                gOpt->mViewSplitRatio[1] = 0.5;
-                gOpt->mViewSplitRatio[2] = 0;
+                gOpt->mMain.mViewSplitRatio[0] = 0.5;
+                gOpt->mMain.mViewSplitRatio[1] = 0.5;
+                gOpt->mMain.mViewSplitRatio[2] = 0;
             }
         }
         else if ((aRowCount == 1 && aColumnCount == 2) ||
@@ -3112,9 +3174,9 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
             if ((sOldRowCount == 1 && sOldColumnCount == 3) ||
                 (sOldRowCount == 2 && sOldColumnCount == 3))
             {
-                gOpt->mViewSplitRatio[0] = 0.5;
-                gOpt->mViewSplitRatio[1] = 0;
-                gOpt->mViewSplitRatio[2] = 0;
+                gOpt->mMain.mViewSplitRatio[0] = 0.5;
+                gOpt->mMain.mViewSplitRatio[1] = 0;
+                gOpt->mMain.mViewSplitRatio[2] = 0;
             }
         }
         else if (aRowCount == 1 && aColumnCount == 1)
@@ -3122,9 +3184,9 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
             if ((sOldRowCount == 1 && sOldColumnCount == 3) ||
                 (sOldRowCount == 2 && sOldColumnCount == 3))
             {
-                gOpt->mViewSplitRatio[0] = 0;
-                gOpt->mViewSplitRatio[1] = 0;
-                gOpt->mViewSplitRatio[2] = 0;
+                gOpt->mMain.mViewSplitRatio[0] = 0;
+                gOpt->mMain.mViewSplitRatio[1] = 0;
+                gOpt->mMain.mViewSplitRatio[2] = 0;
             }
         }
 
@@ -3138,7 +3200,7 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
             mSplitter.setActivePane(0, 0);
 
             // 1x2 or 2x1 view -> single(1x1) view: focused folder
-            if (XPR_IS_TRUE(gOpt->mSingleViewActivatePath) && XPR_IS_FALSE(sActivedView00))
+            if (XPR_IS_TRUE(gOpt->mConfig.mSingleViewSplitAsActivedView) && XPR_IS_FALSE(sActivedView00))
             {
                 std::swap(mSplitFullPidl[0], mSplitFullPidl[1]);
 
@@ -3158,45 +3220,45 @@ void MainFrame::splitView(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_boo
         }
         else if (aRowCount == 1 && aColumnCount == 2)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
             mSplitter.resize();
         }
         else if (aRowCount == 2 && aColumnCount == 1)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-            mSplitter.moveRow(0, gOpt->mViewSplitSize[0]);
+            mSplitter.moveRow(0, gOpt->mMain.mViewSplitSize[0]);
             mSplitter.resize();
         }
         else if (aRowCount == 2 && aColumnCount == 2)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[1]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[1]);
             mSplitter.resize();
         }
         else if (aRowCount == 1 && aColumnCount == 3)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
             mSplitter.resize();
         }
         else if (aRowCount == 2 && aColumnCount == 3)
         {
-            gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-            gOpt->mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[1] + 0.5);
-            gOpt->mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[2] + 0.5);
+            gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+            gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[1] + 0.5);
+            gOpt->mMain.mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[2] + 0.5);
 
-            mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-            mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-            mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+            mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+            mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+            mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
             mSplitter.resize();
         }
     }
@@ -3430,7 +3492,7 @@ void MainFrame::gotoDrive(xpr_tchar_t aDriveChar)
     }
 
     // Load
-    if (XPR_IS_TRUE(sCtrlKey) || XPR_IS_TRUE(gOpt->mDriveLastFolder))
+    if (XPR_IS_TRUE(sCtrlKey) || XPR_IS_TRUE(gOpt->mConfig.mDriveLastFolder))
     {
         const xpr_tchar_t *sDrivePath = getDrivePath(sViewIndex, aDriveChar);
         if (XPR_IS_NOT_NULL(sDrivePath) && fxb::IsExistFile(sDrivePath) == XPR_TRUE)
@@ -3459,65 +3521,22 @@ void MainFrame::gotoDrive(xpr_tchar_t aDriveChar)
 
 void MainFrame::setDriveBar(xpr_bool_t aVisible)
 {
-    gOpt->mDriveBar = aVisible;
+    gOpt->mMain.mDriveBar = aVisible;
 }
 
 xpr_bool_t MainFrame::isDriveBar(void) const
 {
-    return gOpt->mDriveBar;
+    return gOpt->mMain.mDriveBar;
 }
 
 xpr_bool_t MainFrame::isDriveShortText(void) const
 {
-    return gOpt->mDriveBarShortText;
-}
-
-xpr_bool_t MainFrame::isDriveViewSplit(void) const
-{
-    return gOpt->mDriveBarViewSplit;
-}
-
-xpr_bool_t MainFrame::isDriveViewSplitLeft(void) const
-{
-    return gOpt->mLeftDriveBarViewSplit;
-}
-
-void MainFrame::setDriveViewSplit(xpr_bool_t aDriveViewSplit)
-{
-    if (gOpt->mDriveBarViewSplit == aDriveViewSplit)
-        return;
-
-    m_wndReBar.setBandVisible(AFX_IDW_DRIVE_BAR, !aDriveViewSplit);
-
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = getViewCount();
-    ExplorerPane *sExplorerPane;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerPane = getExplorerPane(i);
-        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-            sExplorerPane->visibleDrivePathBar(aDriveViewSplit);
-    }
-
-    gOpt->mDriveBar = XPR_TRUE;
-    gOpt->mDriveBarViewSplit = aDriveViewSplit;
+    return gOpt->mMain.mDriveBarShortText;
 }
 
 DriveToolBar *MainFrame::getDriveBar(void) const
 {
-    DriveToolBar *sDriveBar = XPR_NULL;
-    if (isDriveViewSplit() == XPR_TRUE)
-    {
-        ExplorerPane *sExplorerPane = getExplorerPane();
-        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-            sDriveBar = (DriveToolBar *)sExplorerPane->getDrivePathBar();
-    }
-    else
-    {
-        sDriveBar = (DriveToolBar *)&m_wndReBar.mDriveToolBar;
-    }
-
+    DriveToolBar *sDriveBar = (DriveToolBar *)&m_wndReBar.mDriveToolBar;
     return sDriveBar;
 }
 
@@ -3632,7 +3651,7 @@ void MainFrame::gotoBookmark(xpr_sint_t aBookmarkIndex)
                         sResult = sExplorerCtrl->explore(sUpdateFullPidl);
                         if (XPR_IS_TRUE(sResult))
                         {
-                            if (XPR_IS_TRUE(gOpt->mContentsBookmarkExpandFolder) && XPR_IS_FALSE(gOpt->mSingleFolderPaneMode))
+                            if (XPR_IS_TRUE(gOpt->mConfig.mBookmarkExpandFolder) && XPR_IS_FALSE(gOpt->mMain.mSingleFolderPaneMode))
                             {
                                 FolderCtrl *sFolderCtrl = getFolderCtrl(sIndex);
                                 if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sFolderCtrl->m_hWnd))
@@ -3795,20 +3814,9 @@ xpr_sint_t MainFrame::addBookmark(LPITEMIDLIST aFullPidl, xpr_sint_t aInsert)
     return sResult;
 }
 
-xpr_bool_t MainFrame::isUpdateBookmark(void) const
-{
-    if (gOpt->mContentsStyle == CONTENTS_EXPLORER && XPR_IS_TRUE(gOpt->mContentsBookmark))
-        return XPR_TRUE;
-
-    if (m_wndReBar.mBookmarkToolBar.IsVisible() == XPR_TRUE)
-        return XPR_TRUE;
-
-    return XPR_FALSE;
-}
-
 void MainFrame::updateBookmark(void)
 {
-    if (gOpt->mContentsStyle == CONTENTS_EXPLORER && XPR_IS_TRUE(gOpt->mContentsBookmark))
+    if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER && XPR_IS_TRUE(gOpt->mConfig.mContentsBookmark))
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = getViewCount();
@@ -3899,7 +3907,7 @@ void MainFrame::moveFocus(xpr_sint_t aCurWnd, xpr_bool_t aShiftKey, xpr_bool_t a
     aCtrlKey = XPR_FALSE;
 
     // aCurWnd
-    // 0 - CExplroerCtrl
+    // 0 - ExplroerCtrl
     // 1 - AddressBar
     // 2 - FolderCtrl
 
@@ -3907,8 +3915,7 @@ void MainFrame::moveFocus(xpr_sint_t aCurWnd, xpr_bool_t aShiftKey, xpr_bool_t a
     getViewSplit(sRowCount, sColumnCount);
 
     xpr_bool_t sFocus = XPR_TRUE;
-    if ((XPR_IS_TRUE (gOpt->mSplitViewTabKey) && sRowCount > 0 && sColumnCount > 0 && XPR_IS_FALSE(aCtrlKey)) ||
-        (XPR_IS_FALSE(gOpt->mSplitViewTabKey) && sRowCount > 0 && sColumnCount > 0 && XPR_IS_TRUE (aCtrlKey)))
+    if (sRowCount > 0 && sColumnCount > 0 && XPR_IS_TRUE (aCtrlKey))
         sFocus = XPR_FALSE;
 
     xpr_bool_t sMovePane = XPR_TRUE;
@@ -4109,7 +4116,7 @@ void MainFrame::setMainTitle(xpr_tchar_t *aTitle)
 void MainFrame::setMainTitle(LPITEMIDLIST aFullPidl)
 {
     xpr_tchar_t sTitle[XPR_MAX_PATH * 2 + 1] = {0};
-    if (XPR_IS_TRUE(gOpt->mTitleFullPath))
+    if (XPR_IS_TRUE(gOpt->mConfig.mTitleFullPath))
     {
         fxb::GetName(aFullPidl, SHGDN_FORPARSING, sTitle);
         if (sTitle[0] == XPR_STRING_LITERAL(':') && sTitle[1] == XPR_STRING_LITERAL(':'))
@@ -4129,7 +4136,7 @@ void MainFrame::setMainTitle(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl)
         return;
 
     xpr_tchar_t sTitle[XPR_MAX_PATH * 2 + 1] = {0};
-    if (XPR_IS_TRUE(gOpt->mTitleFullPath))
+    if (XPR_IS_TRUE(gOpt->mConfig.mTitleFullPath))
     {
         fxb::GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sTitle);
         if (sTitle[0] == XPR_STRING_LITERAL(':') && sTitle[1] == XPR_STRING_LITERAL(':'))
@@ -4171,7 +4178,7 @@ void MainFrame::goInitFolder(xpr_sint_t aIndex)
 
     for (; i < sCount; ++i)
     {
-        sInitFolder = gOpt->mExplorerInitFolder[i];
+        sInitFolder = gOpt->mConfig.mExplorerInitFolder[i];
         if (sInitFolder[0] == 0)
             continue;
 
@@ -4361,10 +4368,10 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
         if (sRow == 0 && sColumn == 1)
             sXRatio = 1.0 - sXRatio;
 
-        gOpt->mViewSplitRatio[0] = sXRatio;
-        gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mViewSplitRatio[0] + 0.5);
+        gOpt->mMain.mViewSplitRatio[0] = sXRatio;
+        gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-        mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
+        mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
         mSplitter.resize();
     }
     else if (sRowCount == 2 && sColumnCount == 1)
@@ -4374,10 +4381,10 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
         if (sRow == 1 && sColumn == 0)
             sYRatio = 1.0 - sYRatio;
 
-        gOpt->mViewSplitRatio[0] = sYRatio;
-        gOpt->mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[0] + 0.5);
+        gOpt->mMain.mViewSplitRatio[0] = sYRatio;
+        gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[0] + 0.5);
 
-        mSplitter.moveRow(0, gOpt->mViewSplitSize[0]);
+        mSplitter.moveRow(0, gOpt->mMain.mViewSplitSize[0]);
         mSplitter.resize();
     }
     else if (sRowCount == 2 && sColumnCount == 2)
@@ -4395,42 +4402,42 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
             sYRatio = 1.0 - sYRatio;
         }
 
-        gOpt->mViewSplitRatio[0] = sXRatio;
-        gOpt->mViewSplitRatio[1] = sYRatio;
-        gOpt->mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mViewSplitRatio[0] + 0.5);
-        gOpt->mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[1] + 0.5);
+        gOpt->mMain.mViewSplitRatio[0] = sXRatio;
+        gOpt->mMain.mViewSplitRatio[1] = sYRatio;
+        gOpt->mMain.mViewSplitSize[0] = (xpr_sint_t)(sWidth  * gOpt->mMain.mViewSplitRatio[0] + 0.5);
+        gOpt->mMain.mViewSplitSize[1] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[1] + 0.5);
 
-        mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-        mSplitter.moveRow   (0, gOpt->mViewSplitSize[1]);
+        mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+        mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[1]);
         mSplitter.resize();
     }
     else if (sRowCount == 1 && sColumnCount == 3)
     {
         if (sColumn == 0)
         {
-            xpr_sint_t sOldPaneSize = gOpt->mViewSplitSize[0];
+            xpr_sint_t sOldPaneSize = gOpt->mMain.mViewSplitSize[0];
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
 
-            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]);
-            xpr_sint_t sDiff1 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[1] / (gOpt->mViewSplitRatio[1] + sSplitRatio2)));
+            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]);
+            xpr_sint_t sDiff1 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[1] / (gOpt->mMain.mViewSplitRatio[1] + sSplitRatio2)));
 
-            gOpt->mViewSplitSize[0]  = sNewPaneSize;
-            gOpt->mViewSplitSize[1] -= sDiff1;
+            gOpt->mMain.mViewSplitSize[0]  = sNewPaneSize;
+            gOpt->mMain.mViewSplitSize[1] -= sDiff1;
         }
         else if (sColumn == 1)
         {
-            xpr_sint_t sOldPaneSize = gOpt->mViewSplitSize[1];
+            xpr_sint_t sOldPaneSize = gOpt->mMain.mViewSplitSize[1];
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
 
-            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]);
-            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[0] / (gOpt->mViewSplitRatio[0] + sSplitRatio2)));
+            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]);
+            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[0] / (gOpt->mMain.mViewSplitRatio[0] + sSplitRatio2)));
 
-            gOpt->mViewSplitSize[0] -= sDiff0;
-            gOpt->mViewSplitSize[1]  = sNewPaneSize;
+            gOpt->mMain.mViewSplitSize[0] -= sDiff0;
+            gOpt->mMain.mViewSplitSize[1]  = sNewPaneSize;
         }
         else if (sColumn == 2)
         {
@@ -4441,17 +4448,17 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
-            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[0] / (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1])));
+            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[0] / (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1])));
 
-            gOpt->mViewSplitSize[0] -= sDiff0;
-            gOpt->mViewSplitSize[1] -= sDiff - sDiff0;
+            gOpt->mMain.mViewSplitSize[0] -= sDiff0;
+            gOpt->mMain.mViewSplitSize[1] -= sDiff - sDiff0;
         }
 
-        gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
-        gOpt->mViewSplitRatio[1] = (xpr_double_t)gOpt->mViewSplitSize[1] / (xpr_double_t)sWidth;
+        gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
+        gOpt->mMain.mViewSplitRatio[1] = (xpr_double_t)gOpt->mMain.mViewSplitSize[1] / (xpr_double_t)sWidth;
 
-        mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-        mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
+        mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+        mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
         mSplitter.resize();
     }
     else if (sRowCount == 2 && sColumnCount == 3)
@@ -4459,29 +4466,29 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
         // caculate x axis
         if (sColumn == 0)
         {
-            xpr_sint_t sOldPaneSize = gOpt->mViewSplitSize[0];
+            xpr_sint_t sOldPaneSize = gOpt->mMain.mViewSplitSize[0];
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
 
-            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]);
-            xpr_sint_t sDiff1 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[1] / (gOpt->mViewSplitRatio[1] + sSplitRatio2)));
+            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]);
+            xpr_sint_t sDiff1 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[1] / (gOpt->mMain.mViewSplitRatio[1] + sSplitRatio2)));
 
-            gOpt->mViewSplitSize[0]  = sNewPaneSize;
-            gOpt->mViewSplitSize[1] -= sDiff1;
+            gOpt->mMain.mViewSplitSize[0]  = sNewPaneSize;
+            gOpt->mMain.mViewSplitSize[1] -= sDiff1;
         }
         else if (sColumn == 1)
         {
-            xpr_sint_t sOldPaneSize = gOpt->mViewSplitSize[1];
+            xpr_sint_t sOldPaneSize = gOpt->mMain.mViewSplitSize[1];
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
 
-            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1]);
-            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[0] / (gOpt->mViewSplitRatio[0] + sSplitRatio2)));
+            xpr_double_t sSplitRatio2 = 1.0 - (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1]);
+            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[0] / (gOpt->mMain.mViewSplitRatio[0] + sSplitRatio2)));
 
-            gOpt->mViewSplitSize[0] -= sDiff0;
-            gOpt->mViewSplitSize[1]  = sNewPaneSize;
+            gOpt->mMain.mViewSplitSize[0] -= sDiff0;
+            gOpt->mMain.mViewSplitSize[1]  = sNewPaneSize;
         }
         else if (sColumn == 2)
         {
@@ -4492,14 +4499,14 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
             xpr_sint_t sNewPaneSize = (xpr_sint_t)(sWidth * aRatio + 0.5);
 
             xpr_sint_t sDiff = sNewPaneSize - sOldPaneSize;
-            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mViewSplitRatio[0] / (gOpt->mViewSplitRatio[0] + gOpt->mViewSplitRatio[1])));
+            xpr_sint_t sDiff0 = (xpr_sint_t)((xpr_double_t)sDiff * (gOpt->mMain.mViewSplitRatio[0] / (gOpt->mMain.mViewSplitRatio[0] + gOpt->mMain.mViewSplitRatio[1])));
 
-            gOpt->mViewSplitSize[0] -= sDiff0;
-            gOpt->mViewSplitSize[1] -= sDiff - sDiff0;
+            gOpt->mMain.mViewSplitSize[0] -= sDiff0;
+            gOpt->mMain.mViewSplitSize[1] -= sDiff - sDiff0;
         }
 
-        gOpt->mViewSplitRatio[0] = (xpr_double_t)gOpt->mViewSplitSize[0] / (xpr_double_t)sWidth;
-        gOpt->mViewSplitRatio[1] = (xpr_double_t)gOpt->mViewSplitSize[1] / (xpr_double_t)sWidth;
+        gOpt->mMain.mViewSplitRatio[0] = (xpr_double_t)gOpt->mMain.mViewSplitSize[0] / (xpr_double_t)sWidth;
+        gOpt->mMain.mViewSplitRatio[1] = (xpr_double_t)gOpt->mMain.mViewSplitSize[1] / (xpr_double_t)sWidth;
 
         // caculate y axis
         xpr_double_t sYRatio = aRatio;
@@ -4507,12 +4514,12 @@ void MainFrame::setSplitRatio(xpr_double_t aRatio)
         if (sRow == 1)
             sYRatio = 1.0 - sYRatio;
 
-        gOpt->mViewSplitRatio[2] = sYRatio;
-        gOpt->mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mViewSplitRatio[2] + 0.5);
+        gOpt->mMain.mViewSplitRatio[2] = sYRatio;
+        gOpt->mMain.mViewSplitSize[2] = (xpr_sint_t)(sHeight * gOpt->mMain.mViewSplitRatio[2] + 0.5);
 
-        mSplitter.moveColumn(0, gOpt->mViewSplitSize[0]);
-        mSplitter.moveColumn(1, gOpt->mViewSplitSize[1]);
-        mSplitter.moveRow   (0, gOpt->mViewSplitSize[2]);
+        mSplitter.moveColumn(0, gOpt->mMain.mViewSplitSize[0]);
+        mSplitter.moveColumn(1, gOpt->mMain.mViewSplitSize[1]);
+        mSplitter.moveRow   (0, gOpt->mMain.mViewSplitSize[2]);
         mSplitter.resize();
     }
 }
@@ -4732,7 +4739,7 @@ void MainFrame::OnSetPreviewMode(xpr_bool_t aPreview, CPrintPreviewState *aState
 
     if (XPR_IS_TRUE(aPreview))
     {
-        mOneFolderSplitter.showPane(XPR_FALSE);
+        mSingleFolderSplitter.showPane(XPR_FALSE);
         mSplitter.showPane(XPR_FALSE);
     }
 
@@ -4742,7 +4749,7 @@ void MainFrame::OnSetPreviewMode(xpr_bool_t aPreview, CPrintPreviewState *aState
 
     if (XPR_IS_FALSE(aPreview))
     {
-        mOneFolderSplitter.showPane(XPR_TRUE);
+        mSingleFolderSplitter.showPane(XPR_TRUE);
         mSplitter.showPane(XPR_TRUE);
 
         recalcLayout();
@@ -4764,7 +4771,7 @@ void MainFrame::OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint)
 {
     if (mSplitter.beginTracking(m_hWnd, aPoint) == XPR_FALSE)
     {
-        mOneFolderSplitter.beginTracking(m_hWnd, aPoint);
+        mSingleFolderSplitter.beginTracking(m_hWnd, aPoint);
     }
 
     super::OnLButtonDown(aFlags, aPoint);
@@ -4796,8 +4803,8 @@ void MainFrame::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
             sPaneSize = CSize(0, 0);
             mSplitter.getPaneSize(0, i, sPaneSize);
 
-            gOpt->mViewSplitSize[sIndex] = sPaneSize.cx;
-            gOpt->mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mViewSplitSize[sIndex] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitSize[sIndex] = sPaneSize.cx;
+            gOpt->mMain.mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mMain.mViewSplitSize[sIndex] / (xpr_double_t)sWidth;
             ++sIndex;
         }
 
@@ -4806,32 +4813,32 @@ void MainFrame::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
             sPaneSize = CSize(0, 0);
             mSplitter.getPaneSize(i, 0, sPaneSize);
 
-            gOpt->mViewSplitSize[sIndex] = sPaneSize.cy;
-            gOpt->mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mViewSplitSize[sIndex] / (xpr_double_t)sHeight;
+            gOpt->mMain.mViewSplitSize[sIndex] = sPaneSize.cy;
+            gOpt->mMain.mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mMain.mViewSplitSize[sIndex] / (xpr_double_t)sHeight;
             ++sIndex;
         }
 
         recalcLayout();
     }
-    else if (mOneFolderSplitter.isTracking() == XPR_TRUE)
+    else if (mSingleFolderSplitter.isTracking() == XPR_TRUE)
     {
-        mOneFolderSplitter.moveTracking(aPoint);
+        mSingleFolderSplitter.moveTracking(aPoint);
 
         xpr_sint_t sRow = 0, sColumn = 0;
         if (isLeftFolderPane() == XPR_FALSE)
             sColumn = 1;
 
         CSize sPaneSize(0, 0);
-        mOneFolderSplitter.getPaneSize(0, sColumn, sPaneSize);
+        mSingleFolderSplitter.getPaneSize(0, sColumn, sPaneSize);
 
-        gOpt->mSingleFolderPaneSize = sPaneSize.cx;
+        gOpt->mMain.mSingleFolderPaneSize = sPaneSize.cx;
 
         recalcLayout();
     }
     else
     {
         mSplitter.moveTracking(aPoint);
-        mOneFolderSplitter.moveTracking(aPoint);
+        mSingleFolderSplitter.moveTracking(aPoint);
     }
 
     super::OnMouseMove(aFlags, aPoint);
@@ -4863,8 +4870,8 @@ void MainFrame::OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint)
             sPaneSize = CSize(0, 0);
             mSplitter.getPaneSize(0, i, sPaneSize);
 
-            gOpt->mViewSplitSize[sIndex] = sPaneSize.cx;
-            gOpt->mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mViewSplitSize[sIndex] / (xpr_double_t)sWidth;
+            gOpt->mMain.mViewSplitSize[sIndex] = sPaneSize.cx;
+            gOpt->mMain.mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mMain.mViewSplitSize[sIndex] / (xpr_double_t)sWidth;
             ++sIndex;
         }
 
@@ -4873,16 +4880,16 @@ void MainFrame::OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint)
             sPaneSize = CSize(0, 0);
             mSplitter.getPaneSize(i, 0, sPaneSize);
 
-            gOpt->mViewSplitSize[sIndex] = sPaneSize.cy;
-            gOpt->mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mViewSplitSize[sIndex] / (xpr_double_t)sHeight;
+            gOpt->mMain.mViewSplitSize[sIndex] = sPaneSize.cy;
+            gOpt->mMain.mViewSplitRatio[sIndex] = (xpr_double_t)gOpt->mMain.mViewSplitSize[sIndex] / (xpr_double_t)sHeight;
             ++sIndex;
         }
 
         recalcLayout();
     }
-    else if (mOneFolderSplitter.isTracking() == XPR_TRUE)
+    else if (mSingleFolderSplitter.isTracking() == XPR_TRUE)
     {
-        mOneFolderSplitter.endTracking(aPoint);
+        mSingleFolderSplitter.endTracking(aPoint);
 
         // update new split size
         xpr_sint_t sRow = 0, sColumn = 0;
@@ -4890,9 +4897,9 @@ void MainFrame::OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint)
             sColumn = 1;
 
         CSize sPaneSize(0, 0);
-        mOneFolderSplitter.getPaneSize(sRow, sColumn, sPaneSize);
+        mSingleFolderSplitter.getPaneSize(sRow, sColumn, sPaneSize);
 
-        gOpt->mSingleFolderPaneSize = sPaneSize.cx;
+        gOpt->mMain.mSingleFolderPaneSize = sPaneSize.cx;
 
         recalcLayout();
     }
@@ -4906,9 +4913,9 @@ void MainFrame::OnCaptureChanged(CWnd *aWnd)
     {
         mSplitter.cancelTracking();
     }
-    else if (mOneFolderSplitter.isTracking() == XPR_TRUE)
+    else if (mSingleFolderSplitter.isTracking() == XPR_TRUE)
     {
-        mOneFolderSplitter.cancelTracking();
+        mSingleFolderSplitter.cancelTracking();
     }
 
     super::OnCaptureChanged(aWnd);

@@ -9,12 +9,13 @@
 
 #include "stdafx.h"
 #include "FileScrapCtrl.h"
+#include "FileScrapCtrlObserver.h"
 
 #include "fxb/fxb_fnmatch.h"        // for Name Selection, match
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_file_op_thread.h"
 #include "fxb/fxb_filter.h"
-#include "fxb/fxb_file_ass.h"
+#include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_file_scrap.h"
 #include "fxb/fxb_shell_icon.h"
 
@@ -22,7 +23,7 @@
 #include "rgc/DropSource.h"     // for Drag & Drop
 #include "rgc/BCMenu.h"
 
-#include "FileScrapCtrlObserver.h"
+#include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerCtrl.h"
 #include "command_string_table.h"
@@ -828,7 +829,7 @@ void FileScrapCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             }
 
             xpr_uint_t sFlags = TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON;
-            if (XPR_IS_FALSE(gOpt->mAnimationMenu))
+            if (XPR_IS_FALSE(gOpt->mConfig.mAnimationMenu))
                 sFlags |= 0x4000L;
 
             CMenu sMenu;
@@ -991,7 +992,7 @@ void FileScrapCtrl::beginDragDrop(NM_LISTVIEW *aNmListView)
         {
             IDragSourceHelper *sDragSourceHelper = XPR_NULL;
 
-            if (XPR_IS_FALSE(gOpt->mDragNoContents))
+            if (XPR_IS_FALSE(gOpt->mConfig.mDragNoContents))
             {
                 ::CoCreateInstance(
                     CLSID_DragDropHelper,
@@ -1312,7 +1313,7 @@ void FileScrapCtrl::sortItems(xpr_sint_t aColumn)
 
 void FileScrapCtrl::sortItems(xpr_sint_t aColumn, xpr_bool_t aAscending)
 {
-    if (gOpt->mExplorerNoSort == XPR_TRUE)
+    if (gOpt->mConfig.mExplorerNoSort == XPR_TRUE)
         return;
 
     mSortColumn = aColumn;

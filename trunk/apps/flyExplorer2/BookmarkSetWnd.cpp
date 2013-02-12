@@ -76,10 +76,10 @@ xpr_bool_t BookmarkSetWnd::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &
         }
     }
 
-    return CWnd::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
+    return super::Create(kClassName, XPR_NULL, sStyle, aRect, aParentWnd, aId);
 }
 
-BEGIN_MESSAGE_MAP(BookmarkSetWnd, CWnd)
+BEGIN_MESSAGE_MAP(BookmarkSetWnd, super)
     ON_WM_CREATE()
     ON_WM_DESTROY()
     ON_WM_PAINT()
@@ -91,7 +91,7 @@ END_MESSAGE_MAP()
 
 xpr_sint_t BookmarkSetWnd::OnCreate(LPCREATESTRUCT lpCreateStruct) 
 {
-    if (CWnd::OnCreate(lpCreateStruct) == -1)
+    if (super::OnCreate(lpCreateStruct) == -1)
         return -1;
 
     return 0;
@@ -99,7 +99,7 @@ xpr_sint_t BookmarkSetWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void BookmarkSetWnd::OnDestroy(void) 
 {
-    CWnd::OnDestroy();
+    super::OnDestroy();
 
     if (mBookmarkWnd != XPR_NULL)
     {
@@ -116,7 +116,7 @@ void BookmarkSetWnd::OnDestroy(void)
 
 void BookmarkSetWnd::OnSettingChange(xpr_uint_t uFlags, const xpr_tchar_t *lpszSection) 
 {
-    CWnd::OnSettingChange(uFlags, lpszSection);
+    super::OnSettingChange(uFlags, lpszSection);
 
 }
 
@@ -134,7 +134,7 @@ void BookmarkSetWnd::OnPaint(void)
 xpr_bool_t BookmarkSetWnd::OnEraseBkgnd(CDC* pDC) 
 {
     return XPR_TRUE;
-    //return CWnd::OnEraseBkgnd(pDC);
+    //return super::OnEraseBkgnd(pDC);
 }
 
 void BookmarkSetWnd::updateBookmark(void)
@@ -156,10 +156,10 @@ void BookmarkSetWnd::updateBookmark(void)
     mBookmarkWnd = XPR_NULL;
     mBookmarkCount = 0;
 
-    if (gOpt->mContentsStyle != CONTENTS_EXPLORER)
+    if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
         return;
 
-    if (gOpt->mContentsBookmark == XPR_FALSE)
+    if (gOpt->mConfig.mContentsBookmark == XPR_FALSE)
         return;
 
     fxb::BookmarkMgr &sBookmarkMgr = fxb::BookmarkMgr::instance();
@@ -244,7 +244,7 @@ void BookmarkSetWnd::setBookmarkPopup(xpr_bool_t aPopup)
     }
 }
 
-void BookmarkSetWnd::setBookmarkColor(COLORREF clrBookmark)
+void BookmarkSetWnd::setBookmarkColor(COLORREF aBookmarkColor)
 {
     if (mBookmarkWnd == XPR_NULL)
         return;
@@ -253,13 +253,13 @@ void BookmarkSetWnd::setBookmarkColor(COLORREF clrBookmark)
     for (i = 0; i < mBookmarkCount; ++i)
     {
         if (mBookmarkWnd[i].m_hWnd != XPR_NULL)
-            mBookmarkWnd[i].setBookmarkColor(clrBookmark);
+            mBookmarkWnd[i].setBookmarkColor(aBookmarkColor);
     }
 }
 
 void BookmarkSetWnd::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy)
 {
-    CWnd::OnSize(nType, cx, cy);
+    super::OnSize(nType, cx, cy);
 
     recalcLayout();
 }
@@ -334,5 +334,5 @@ void BookmarkSetWnd::OnVScroll(xpr_uint_t nSBCode, xpr_uint_t nPos, CScrollBar* 
         mScrollDelta += sOldPos - sScrollInfo.nPos;
     }
 
-    CWnd::OnVScroll(nSBCode, nPos, pScrollBar);
+    super::OnVScroll(nSBCode, nPos, pScrollBar);
 }

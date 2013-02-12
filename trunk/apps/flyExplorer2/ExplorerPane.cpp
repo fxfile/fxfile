@@ -15,7 +15,7 @@
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_file_scrap.h"
 #include "fxb/fxb_cmd_line_parser.h"
-#include "fxb/fxb_file_ass.h"
+#include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_size_format.h"
 
@@ -29,7 +29,7 @@
 #include "DrivePathBar.h"
 #include "AddressBar.h"
 #include "ContentsWnd.h"
-#include "OptionMgr.h"
+#include "Option.h"
 #include "ExplorerStatusBar.h"
 #include "TabType.h"
 
@@ -93,7 +93,7 @@ ExplorerPane::ExplorerPane(void)
     , mCurExplorerCtrlId(0)
     , mAddressBar(XPR_NULL), mPathBar(XPR_NULL), mDrivePathBar(XPR_NULL), mContentsWnd(XPR_NULL), mStatusBar(XPR_NULL)
     , mIsDrivePathBar(XPR_FALSE)
-    , mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
+    , mContentsStyle(CONTENTS_NONE), mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
 {
     registerWindowClass(kClassName);
 }
@@ -128,16 +128,16 @@ xpr_sint_t ExplorerPane::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
-    setContentsStyle(gOpt->mContentsStyle);
-    visiblePathBar(gOpt->mPathBar[mViewIndex], XPR_TRUE);
-    visibleDrivePathBar(gFrame->isDriveBar() == XPR_TRUE && gFrame->isDriveViewSplit() == XPR_TRUE, XPR_TRUE);
-    visibleAddressBar(gOpt->mAddressBar[mViewIndex], XPR_TRUE);
-    visibleStatusBar(gOpt->mStatusBar[mViewIndex], XPR_TRUE);
+    setContentsStyle(gOpt->mConfig.mShowInfoBar, gOpt->mConfig.mContentsStyle);
+    visiblePathBar(gOpt->mConfig.mShowPathBar, XPR_TRUE);
+    visibleDrivePathBar(gOpt->mConfig.mShowEachDriveBar, XPR_TRUE);
+    visibleAddressBar(gOpt->mConfig.mShowAddressBar, XPR_TRUE);
+    visibleStatusBar(gOpt->mConfig.mShowStatusBar, XPR_TRUE);
 
     // register for drag and drop
     mDropTarget.Register(this);
 
-    setDragContents(!gOpt->mDragNoContents);
+    setDragContents(!gOpt->mConfig.mDragNoContents);
 
     return 0;
 }
@@ -160,12 +160,120 @@ void ExplorerPane::OnDestroy(void)
     mDropTarget.Revoke();
 }
 
+void ExplorerPane::setChangedOption(Option &aOption)
+{
+    // set contents style
+    setContentsStyle(aOption.mConfig.mShowInfoBar, aOption.mConfig.mContentsStyle);
+    visiblePathBar(aOption.mConfig.mShowPathBar, XPR_FALSE);
+    visibleDrivePathBar(aOption.mConfig.mShowEachDriveBar, XPR_FALSE);
+    visibleAddressBar(aOption.mConfig.mShowAddressBar, XPR_FALSE);
+    visibleStatusBar(aOption.mConfig.mShowStatusBar, XPR_FALSE);
+
+    // set path bar options
+    if (XPR_IS_NOT_NULL(mPathBar))
+    {
+        mPathBar->setMode(aOption.mConfig.mPathBarRealPath);
+        mPathBar->setIconDisp(aOption.mConfig.mPathBarIcon);
+        mPathBar->setCustomFont(aOption.mConfig.mCustomFontText);
+        mPathBar->setHighlightColor(aOption.mConfig.mPathBarHighlight, aOption.mConfig.mPathBarHighlightColor);
+    }
+
+    // set address bar options
+    if (XPR_IS_NOT_NULL(mAddressBar))
+    {
+        mAddressBar->setAutoComplete();
+        mAddressBar->setCustomFont(aOption.mConfig.mCustomFontText);
+
+        mAddressBar->Invalidate();
+        mAddressBar->UpdateWindow();
+    }
+
+    // set drive bar options
+    if (XPR_IS_NOT_NULL(mAddressBar))
+    {
+        mDrivePathBar->setShortText(gOpt->mConfig.mDriveBarShortText);
+    }
+
+    // set explorer control options
+    ExplorerCtrlData *sExplorerCtrlData;
+    ExplorerCtrlMap::iterator sIterator;
+
+    sIterator = mExplorerCtrlMap.begin();
+    for (; sIterator != mExplorerCtrlMap.end(); ++sIterator)
+    {
+        sExplorerCtrlData = sIterator->second;
+
+        XPR_ASSERT(sExplorerCtrlData != XPR_NULL);
+
+        setExplorerOption(sExplorerCtrlData->mExplorerCtrl, aOption);
+
+        sExplorerCtrlData->mExplorerCtrl->refresh();
+    }
+
+    // update layout
+    recalcLayout();
+    invalidateContentsWnd();
+}
+
 void ExplorerPane::saveOption(void)
 {
+    // TODO
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
         sExplorerCtrl->saveOption();
+
+        // save last folder
+        LPTVITEMDATA sTvItemData = XPR_NULL;
+        if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
+        {
+            gOpt->mMain.mLastFolder[mViewIndex][0] = 0;
+
+            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+            if (XPR_IS_NOT_NULL(sTvItemData))
+            {
+                LPITEMIDLIST sInternetFullPidl = XPR_NULL;
+                HRESULT sHResult = ::SHGetSpecialFolderLocation(m_hWnd, CSIDL_INTERNET, &sInternetFullPidl);
+
+                xpr_bool_t sSaveLastFolder = XPR_FALSE;
+
+                if (FAILED(sHResult))
+                    sSaveLastFolder = XPR_TRUE;
+                else if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sInternetFullPidl))
+                {
+                    if (sTvItemData->mShellFolder->CompareIDs(0, sTvItemData->mPidl, sInternetFullPidl) != 0)
+                        sSaveLastFolder = XPR_TRUE;
+                }
+
+                if (XPR_IS_TRUE(sSaveLastFolder))
+                {
+                    sSaveLastFolder = XPR_TRUE;
+
+                    const xpr_tchar_t *sCurPath = sExplorerCtrl->getCurPath();
+                    if (gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex] == XPR_TRUE && fxb::IsNetItem(sCurPath) == XPR_TRUE)
+                        sSaveLastFolder = XPR_FALSE;
+
+                    if (XPR_IS_TRUE(sSaveLastFolder))
+                    {
+                        fxb::Pidl2Path(sTvItemData->mFullPidl, gOpt->mMain.mLastFolder[mViewIndex]);
+                    }
+                }
+
+                COM_FREE(sInternetFullPidl);
+            }
+        }
+
+        // save view style
+        if (gOpt->mConfig.mExplorerSaveViewStyle == XPR_TRUE)
+        {
+            gOpt->mMain.mViewStyle[mViewIndex] = sExplorerCtrl->getViewStyle();
+        }
+
+        // save history
+        if (gOpt->mConfig.mSaveHistory == XPR_TRUE)
+        {
+            sExplorerCtrl->saveHistory();
+        }
     }
 }
 
@@ -226,7 +334,7 @@ void ExplorerPane::recalcLayout(void)
         mDrivePathBar->getToolBarSize(&sDriveWidth, &sDriveHeight);
         if (XPR_IS_NOT_NULL(mPathBar) && XPR_IS_NOT_NULL(mPathBar->m_hWnd))
         {
-            if (gFrame->isDriveViewSplitLeft() == XPR_TRUE)
+            if (XPR_IS_TRUE(gOpt->mConfig.mDriveBarLeftSide))
             {
                 sDriveBarRect.left  = sRect.left;
                 sDriveBarRect.right = sDriveBarRect.left + sDriveWidth;
@@ -373,7 +481,7 @@ void ExplorerPane::OnContextMenu(CWnd *aWnd, CPoint aPoint)
                 if (XPR_IS_NOT_NULL(sPopupMenu))
                 {
                     BCMenu *sSubMenu = XPR_NULL;
-                    if (XPR_IS_TRUE(gOpt->mFileScrapContextMenu))
+                    if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapContextMenu))
                         sSubMenu = (BCMenu *)sPopupMenu->GetSubMenu(14);
                     else
                     {
@@ -462,6 +570,8 @@ CWnd *ExplorerPane::newSubPane(xpr_uint_t aId)
         sExplorerCtrl->setObserver(dynamic_cast<ExplorerCtrlObserver *>(this));
         sExplorerCtrl->setViewIndex(mViewIndex);
 
+        setExplorerOption(sExplorerCtrl, *gOpt);
+
         if (sExplorerCtrl->Create(this, aId, CRect(0, 0, 0, 0)) == XPR_TRUE)
         {
             // nothing to do
@@ -483,6 +593,79 @@ CWnd *ExplorerPane::newSubPane(xpr_uint_t aId)
     mExplorerCtrlMap[aId] = sExplorerCtrlData;
 
     return sExplorerCtrl;
+}
+
+void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &aOption)
+{
+    ExplorerCtrl::Option sOption;
+
+    sOption.mMouseClick                       = aOption.mConfig.mMouseClick;
+    sOption.mShowHiddenAttribute              = aOption.mConfig.mShowHiddenAttribute;
+    sOption.mShowSystemAttribute              = aOption.mConfig.mShowSystemAttribute;
+    sOption.mTooltip                          = aOption.mConfig.mTooltip;
+    sOption.mTooltipWithFileName              = aOption.mConfig.mTooltipWithFileName;
+    sOption.mGridLines                        = aOption.mConfig.mGridLines;
+    sOption.mFullRowSelect                    = aOption.mConfig.mFullRowSelect;
+    sOption.mFileExtType                      = aOption.mConfig.mFileExtType;
+    sOption.mRenameExtType                    = aOption.mConfig.mRenameExtType;
+    sOption.mRenameByMouse                    = aOption.mConfig.mRenameByMouse;
+
+    sOption.mCustomFont                       = aOption.mConfig.mCustomFont;
+    _tcscpy(sOption.mCustomFontText,            aOption.mConfig.mCustomFontText);
+
+    sOption.mBkgndImage                       = aOption.mConfig.mExplorerBkgndImage[mViewIndex];
+    _tcscpy(sOption.mBkgndImagePath,            aOption.mConfig.mExplorerBkgndImagePath[mViewIndex]);
+    sOption.mBkgndColorType                   = aOption.mConfig.mExplorerBkgndColorType[mViewIndex];
+    sOption.mBkgndColor                       = aOption.mConfig.mExplorerBkgndColor[mViewIndex];
+    sOption.mTextColorType                    = aOption.mConfig.mExplorerTextColorType[mViewIndex];
+    sOption.mTextColor                        = aOption.mConfig.mExplorerTextColor[mViewIndex];
+    sOption.mSizeUnit                         = aOption.mConfig.mExplorerSizeUnit;
+    sOption.mListType                         = aOption.mConfig.mExplorerListType;
+    sOption.mParentFolder                     = aOption.mConfig.mExplorerParentFolder;
+    sOption.mGoUpSelSubFolder                 = aOption.mConfig.mExplorerGoUpSelSubFolder;
+    sOption.mCustomIcon                       = aOption.mConfig.mExplorerCustomIcon;
+    _tcscpy(sOption.mCustomIconFile[0],         aOption.mConfig.mExplorerCustomIconFile[0]);
+    _tcscpy(sOption.mCustomIconFile[1],         aOption.mConfig.mExplorerCustomIconFile[1]);
+    sOption.m24HourTime                       = aOption.mConfig.mExplorer24HourTime;
+    sOption.m2YearDate                        = aOption.mConfig.mExplorer2YearDate;
+    sOption.mShowDrive                        = aOption.mConfig.mExplorerShowDrive;
+    sOption.mShowDriveItem                    = aOption.mConfig.mExplorerShowDriveItem;
+    sOption.mShowDriveSize                    = aOption.mConfig.mExplorerShowDriveSize;
+    sOption.mNameCaseType                     = aOption.mConfig.mExplorerNameCaseType;
+    sOption.mCreateAndEditText                = aOption.mConfig.mExplorerCreateAndEditText;
+    sOption.mAutoColumnWidth                  = aOption.mConfig.mExplorerAutoColumnWidth;
+    sOption.mSaveViewSet                      = aOption.mConfig.mExplorerSaveViewSet;
+    sOption.mSaveViewStyle                    = aOption.mConfig.mExplorerSaveViewStyle;
+    sOption.mDefaultViewStyle                 = aOption.mConfig.mExplorerDefaultViewStyle;
+    sOption.mDefaultSort                      = aOption.mConfig.mExplorerDefaultSort;
+    sOption.mDefaultSortOrder                 = aOption.mConfig.mExplorerDefaultSortOrder;
+    sOption.mNoSort                           = aOption.mConfig.mExplorerNoSort;
+    sOption.mExitVerifyViewSet                = aOption.mConfig.mExplorerExitVerifyViewSet;
+
+    sOption.mThumbnailWidth                   = aOption.mConfig.mThumbnailWidth;
+    sOption.mThumbnailHeight                  = aOption.mConfig.mThumbnailHeight;
+    sOption.mThumbnailSaveCache               = aOption.mConfig.mThumbnailSaveCache;
+    sOption.mThumbnailPriority                = aOption.mConfig.mThumbnailPriority;
+    sOption.mThumbnailLoadByExt               = aOption.mConfig.mThumbnailLoadByExt;
+
+    sOption.mFileScrapContextMenu             = aOption.mConfig.mFileScrapContextMenu;
+
+    sOption.mDragType                         = aOption.mConfig.mDragType;
+    sOption.mDragDist                         = aOption.mConfig.mDragDist;
+    sOption.mDragScrollTime                   = aOption.mConfig.mDragScrollTime;
+    sOption.mDragDefaultFileOp                = aOption.mConfig.mDragDefaultFileOp;
+    sOption.mDragNoContents                   = aOption.mConfig.mDragNoContents;
+
+    sOption.mExternalCopyFileOp               = aOption.mConfig.mExternalCopyFileOp;
+    sOption.mExternalMoveFileOp               = aOption.mConfig.mExternalMoveFileOp;
+
+    sOption.mNoRefresh                        = aOption.mConfig.mNoRefresh;
+    sOption.mRefreshSort                      = aOption.mConfig.mRefreshSort;
+
+    sOption.mHistoryCount                     = aOption.mConfig.mHistoryCount;
+    sOption.mBackwardCount                    = aOption.mConfig.mBackwardCount;
+
+    aExplorerCtrl->setOption(sOption);
 }
 
 void ExplorerPane::destroySubPane(xpr_uint_t aId)
@@ -629,8 +812,6 @@ void ExplorerPane::visibleAddressBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
         destroyAddressBar();
     }
 
-    gOpt->mAddressBar[mViewIndex] = aVisible;
-
     if (XPR_IS_FALSE(aLoading))
     {
         recalcLayout();
@@ -640,7 +821,7 @@ void ExplorerPane::visibleAddressBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 
 xpr_bool_t ExplorerPane::isVisibleAddressBar(void) const
 {
-    return gOpt->mAddressBar[mViewIndex];
+    return gOpt->mConfig.mShowAddressBar;
 }
 
 xpr_bool_t ExplorerPane::createAddressBar(void)
@@ -656,7 +837,7 @@ xpr_bool_t ExplorerPane::createAddressBar(void)
         if (mAddressBar->Create(this, CTRL_ID_ADDRESS_BAR, CRect(0,0,0,300)) == XPR_TRUE)
         {
             mAddressBar->setSystemImageList(&fxb::SysImgListMgr::instance().mSysImgList16);
-            mAddressBar->setCustomFont(gOpt->mCustomFontText);
+            mAddressBar->setCustomFont(gOpt->mConfig.mCustomFontText);
         }
         else
         {
@@ -687,10 +868,10 @@ xpr_bool_t ExplorerPane::createPathBar(void)
 
         if (mPathBar->Create(this, CTRL_ID_PATH_BAR, CRect(0,0,0,0)) == XPR_TRUE)
         {
-            mPathBar->setIconDisp(gOpt->mPathBarIcon);
-            mPathBar->setCustomFont(gOpt->mCustomFontText);
-            mPathBar->setHighlightColor(gOpt->mPathBarHighlight, gOpt->mPathBarHighlightColor);
-            mPathBar->setMode(gOpt->mPathBarRealPath);
+            mPathBar->setIconDisp(gOpt->mConfig.mPathBarIcon);
+            mPathBar->setCustomFont(gOpt->mConfig.mCustomFontText);
+            mPathBar->setHighlightColor(gOpt->mConfig.mPathBarHighlight, gOpt->mConfig.mPathBarHighlightColor);
+            mPathBar->setMode(gOpt->mConfig.mPathBarRealPath);
         }
         else
         {
@@ -728,8 +909,6 @@ void ExplorerPane::visiblePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
         destroyPathBar();
     }
 
-    gOpt->mPathBar[mViewIndex] = aVisible;
-
     if (XPR_IS_FALSE(aLoading))
     {
         recalcLayout();
@@ -739,7 +918,7 @@ void ExplorerPane::visiblePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 
 xpr_bool_t ExplorerPane::isVisiblePathBar(void) const
 {
-    return gOpt->mPathBar[mViewIndex];
+    return gOpt->mConfig.mShowPathBar;
 }
 
 xpr_bool_t ExplorerPane::createDrivePathBar(void)
@@ -752,6 +931,7 @@ xpr_bool_t ExplorerPane::createDrivePathBar(void)
     {
         if (mDrivePathBar->CreateEx(this) == XPR_TRUE)
         {
+            mDrivePathBar->setShortText(gOpt->mConfig.mDriveBarShortText);
             mDrivePathBar->createDriveBar();
         }
         else
@@ -777,20 +957,6 @@ DrivePathBar *ExplorerPane::getDrivePathBar(void) const
     return mDrivePathBar;
 }
 
-void ExplorerPane::setDrivePathBarLeft(xpr_bool_t aLeft)
-{
-    recalcLayout();
-}
-
-void ExplorerPane::setDrivePathBarShortText(xpr_bool_t aShortText)
-{
-    if (XPR_IS_NOT_NULL(mDrivePathBar) && XPR_IS_NOT_NULL(mDrivePathBar->m_hWnd))
-    {
-        mDrivePathBar->setShortText(aShortText);
-        recalcLayout();
-    }
-}
-
 void ExplorerPane::visibleDrivePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 {
     if (XPR_IS_TRUE(aVisible))
@@ -808,6 +974,14 @@ void ExplorerPane::visibleDrivePathBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
     {
         recalcLayout();
         RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+    }
+}
+
+void ExplorerPane::refreshDrivePathBar(void)
+{
+    if (XPR_IS_NOT_NULL(mDrivePathBar))
+    {
+        mDrivePathBar->refresh();
     }
 }
 
@@ -841,53 +1015,67 @@ xpr_bool_t ExplorerPane::isVisibleContentsWnd(void) const
     return (mContentsWnd != XPR_NULL);
 }
 
-void ExplorerPane::setContentsStyle(xpr_sint_t aContentsStyle)
+void ExplorerPane::setContentsStyle(xpr_bool_t aShowInfoBar, xpr_sint_t aContentsStyle)
 {
-    switch (aContentsStyle)
+    if (XPR_IS_TRUE(aShowInfoBar))
     {
-    case CONTENTS_EXPLORER:
+        switch (aContentsStyle)
         {
-            createContentsWnd();
+        case CONTENTS_EXPLORER:
+            {
+                if (mContentsStyle != aContentsStyle)
+                {
+                    createContentsWnd();
 
-            // default contents
-            mMarginRect = CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0);
+                    mMarginRect = CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0);
+                }
 
-            ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-                sExplorerCtrl->resetStatus();
+                ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+                if (XPR_IS_NOT_NULL(sExplorerCtrl))
+                    sExplorerCtrl->resetStatus();
 
-            setBookmarkColor(gOpt->mContentsBookmarkColor);
-            updateBookmark();
-            setBookmarkPopup(gOpt->mContentsTooltip);
-            enableBookmark(gOpt->mContentsBookmark);
+                setBookmarkColor(gOpt->mConfig.mContentsBookmarkColor);
+                updateBookmark();
+                setBookmarkPopup(gOpt->mConfig.mBookmarkTooltip);
+                enableBookmark(gOpt->mConfig.mContentsBookmark);
 
-            break;
-        }
+                break;
+            }
 
-    case CONTENTS_BASIC:
-        {
-            createContentsWnd();
+        case CONTENTS_BASIC:
+            {
+                if (mContentsStyle != aContentsStyle)
+                {
+                    createContentsWnd();
 
-            // basic contents
-            mMarginRect = CRect(0, CONTENTS_BASIC_STYLE_HEIGHT, 0, 0);
+                    mMarginRect = CRect(0, CONTENTS_BASIC_STYLE_HEIGHT, 0, 0);
+                }
 
-            updateBookmark();
-            setBookmarkPopup(XPR_FALSE);
-            enableBookmark(XPR_FALSE);
+                updateBookmark();
+                setBookmarkPopup(XPR_FALSE);
+                enableBookmark(XPR_FALSE);
 
-            break;
-        }
+                break;
+            }
 
-    case CONTENTS_NONE:
-    default:
-        {
-            destroyContentsWnd();
-
-            mMarginRect = CRect(0, 0, 0, 0);
-
-            break;
+        default:
+            {
+                aShowInfoBar = XPR_FALSE;
+                break;
+            }
         }
     }
+
+    if (XPR_IS_FALSE(aShowInfoBar))
+    {
+        aContentsStyle = CONTENTS_NONE;
+
+        destroyContentsWnd();
+
+        mMarginRect = CRect(0, 0, 0, 0);
+    }
+
+    mContentsStyle = aContentsStyle;
 }
 
 void ExplorerPane::setContentsFolder(LPTVITEMDATA aTvItemData)
@@ -1019,8 +1207,6 @@ void ExplorerPane::visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
         destroyStatusBar();
     }
 
-    gOpt->mStatusBar[mViewIndex] = aVisible;
-
     if (XPR_IS_TRUE(aVisible))
     {
         updateStatusBar();
@@ -1035,7 +1221,7 @@ void ExplorerPane::visibleStatusBar(xpr_bool_t aVisible, xpr_bool_t aLoading)
 
 xpr_bool_t ExplorerPane::isVisibleStatusBar(void) const
 {
-    return gOpt->mStatusBar[mViewIndex];
+    return gOpt->mConfig.mShowStatusBar;
 }
 
 StatusBar *ExplorerPane::getStatusBar(void) const
@@ -1342,7 +1528,7 @@ void ExplorerPane::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *a
 
 void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh)
 {
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1365,7 +1551,7 @@ void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle
 
 void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 {
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1388,7 +1574,7 @@ void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 
 void ExplorerPane::onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending)
 {
-    if (gOpt->mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1519,7 +1705,7 @@ void ExplorerPane::OnExpSelSingleItem(void)
 
     if (!XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
     {
-        xpr_sint_t sUnit = gOpt->mSingleSelFileSizeUnit;
+        xpr_sint_t sUnit = gOpt->mConfig.mSingleSelFileSizeUnit;
         switch (sUnit)
         {
         case SIZE_UNIT_DEFAULT:
@@ -1588,7 +1774,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
 
     sSelFileSize = sExplorerCtrl->getSelFileSize();
 
-    xpr_sint_t sUnit = gOpt->mMultiSelFileSizeUnit;
+    xpr_sint_t sUnit = gOpt->mConfig.mMultiSelFileSizeUnit;
     switch (sUnit)
     {
     case SIZE_UNIT_DEFAULT:
@@ -1643,7 +1829,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
         fxb::GetFormatedNumber(sRealSelFileCount,   sRealSelFileCountText,   XPR_COUNT_OF(sRealSelFileCountText  ) - 1);
         fxb::GetFormatedNumber(sRealSelFolderCount, sRealSelFolderCountText, XPR_COUNT_OF(sRealSelFolderCountText) - 1);
 
-        switch (gOpt->mExplorerListType)
+        switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
@@ -1660,7 +1846,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
     }
     else
     {
-        switch (gOpt->mExplorerListType)
+        switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
@@ -1718,7 +1904,7 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
         fxb::GetFormatedNumber(sFileCount,   sFileCountText,   XPR_COUNT_OF(sFileCountText  ) - 1);
         fxb::GetFormatedNumber(sFolderCount, sFolderCountText, XPR_COUNT_OF(sFolderCountText) - 1);
 
-        switch (gOpt->mExplorerListType)
+        switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
@@ -1733,7 +1919,7 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
             break;
         }
 
-        xpr_sint_t sUnit = gOpt->mMultiSelFileSizeUnit;
+        xpr_sint_t sUnit = gOpt->mConfig.mMultiSelFileSizeUnit;
         switch (sUnit)
         {
         case SIZE_UNIT_DEFAULT:
@@ -1755,7 +1941,7 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
     }
     else
     {
-        switch (gOpt->mExplorerListType)
+        switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
@@ -1809,7 +1995,7 @@ void ExplorerPane::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint
             }
 
             if (sText[0] == XPR_STRING_LITERAL('\0'))
-                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.file_association")), sBookmarkItem->mPath.c_str());
+                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.program_ass")), sBookmarkItem->mPath.c_str());
         }
     }
     else

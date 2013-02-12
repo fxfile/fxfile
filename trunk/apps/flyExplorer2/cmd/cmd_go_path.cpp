@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,12 +10,12 @@
 #include "stdafx.h"
 #include "cmd_go_path.h"
 
-#include "GoPathDlg.h"
-#include "HistoryDlg.h"
-
+#include "Option.h"
 #include "MainFrame.h"
 #include "FolderCtrl.h"
 #include "ExplorerCtrl.h"
+#include "GoPathDlg.h"
+#include "HistoryDlg.h"
 
 #include <Knownfolders.h>
 
@@ -543,7 +543,7 @@ void GoSystemAppDataCommand::execute(CommandContext &aContext)
 
 xpr_sint_t GoSiblingUpCommand::canExecute(CommandContext &aContext)
 {
-    xpr_bool_t sEnable = (gOpt->mSingleFolderPaneMode == XPR_FALSE) ? XPR_TRUE : XPR_FALSE;
+    xpr_bool_t sEnable = (gOpt->mMain.mSingleFolderPaneMode == XPR_FALSE) ? XPR_TRUE : XPR_FALSE;
 
     return (sEnable == XPR_TRUE) ? StateEnable : StateDisable;
 }
@@ -560,7 +560,7 @@ void GoSiblingUpCommand::execute(CommandContext &aContext)
 
 xpr_sint_t GoSiblingDownCommand::canExecute(CommandContext &aContext)
 {
-    xpr_bool_t sEnable = (gOpt->mSingleFolderPaneMode == XPR_FALSE) ? XPR_TRUE : XPR_FALSE;
+    xpr_bool_t sEnable = (gOpt->mMain.mSingleFolderPaneMode == XPR_FALSE) ? XPR_TRUE : XPR_FALSE;
 
     return (sEnable == XPR_TRUE) ? StateEnable : StateDisable;
 }

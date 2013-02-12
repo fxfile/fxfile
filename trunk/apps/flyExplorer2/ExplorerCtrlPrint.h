@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -20,8 +20,8 @@ public:
     virtual ~ExplorerCtrlPrint(void);
 
 public:
-    virtual CString GetItemText(xpr_sint_t aRow, xpr_sint_t aColumn);
-    virtual xpr_sint_t GetRowCount(void);
+    virtual CString getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const;
+    virtual xpr_sint_t getRowCount(void) const;
 };
 
 #endif // __FX_EXPLORER_CTRL_PRINT_H__

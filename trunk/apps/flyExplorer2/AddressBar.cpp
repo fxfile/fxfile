@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,7 +11,7 @@
 #include "AddressBar.h"
 
 #include "MainFrame.h"
-#include "OptionMgr.h"
+#include "Option.h"
 #include "AddressBarObserver.h"
 
 #ifdef _DEBUG
@@ -125,15 +125,15 @@ void AddressBar::setSystemImageList(CImageList *aSmallImgList)
 
 void AddressBar::setAutoComplete(void)
 {
-    if (mAutoComplete == 0 || mAutoComplete != (gOpt->mAddressBarUrl+1))
+    if (mAutoComplete == 0 || mAutoComplete != (gOpt->mConfig.mAddressBarUrl+1))
     {
         DWORD sFlags = SHACF_FILESYSTEM;
-        if (XPR_IS_TRUE(gOpt->mAddressBarUrl))
+        if (XPR_IS_TRUE(gOpt->mConfig.mAddressBarUrl))
             sFlags |= SHACF_URLALL;
 
         HRESULT sHResult = ::SHAutoComplete(GetEditCtrl()->m_hWnd, sFlags);
         if (SUCCEEDED(sHResult))
-            mAutoComplete = gOpt->mAddressBarUrl + 1;
+            mAutoComplete = gOpt->mConfig.mAddressBarUrl + 1;
     }
 }
 
@@ -304,7 +304,7 @@ xpr_bool_t AddressBar::fillItem(LPSHELLFOLDER  aShellFolder,
     // Then, hidden folder can explore regardless of 'Display hidden file' option.
 
     xpr_ulong_t sFlags = SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN;
-    if (XPR_IS_TRUE(gOpt->mShowSystemAttribute))
+    if (XPR_IS_TRUE(gOpt->mConfig.mShowSystemAttribute))
         sFlags |= SHCONTF_STORAGE;
 
     LPENUMIDLIST sEnumIdList = XPR_NULL;
@@ -399,7 +399,7 @@ xpr_bool_t AddressBar::fillItem(LPSHELLFOLDER  aShellFolder,
             sCbItemDataDeque.push_back(sCbItemData);
 
             sortItems(sCbItemDataDeque);
-            insertItems(sCbItemDataDeque, aInsert, gOpt->mAddressFullPath);
+            insertItems(sCbItemDataDeque, aInsert, gOpt->mConfig.mAddressFullPath);
             sInserted = XPR_FALSE;
             sResult = XPR_TRUE;
             break;
@@ -674,7 +674,7 @@ xpr_bool_t AddressBar::exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aNotifyBud
 
         if (sCbItemDataDeque.empty() == false)
         {
-            insertItems(sCbItemDataDeque, sIndex+1, gOpt->mAddressFullPath);
+            insertItems(sCbItemDataDeque, sIndex+1, gOpt->mConfig.mAddressFullPath);
 
             sCurSel = sIndex + (xpr_sint_t)sCbItemDataDeque.size();
 
@@ -847,7 +847,7 @@ xpr_bool_t AddressBar::execute(const xpr_tchar_t *aPath)
     // 9. navigate URL
     if (XPR_IS_FALSE(sResult))
     {
-        if (gOpt->mAddressBarUrl == XPR_TRUE)
+        if (gOpt->mConfig.mAddressBarUrl == XPR_TRUE)
         {
             fxb::NavigateURL(sPath);
             sResult = sNavigateUrl = XPR_TRUE;
@@ -943,7 +943,7 @@ xpr_bool_t AddressBar::PreTranslateMessage(MSG* pMsg)
 
 void AddressBar::setCustomFont(xpr_tchar_t *aFontText)
 {
-    if (gOpt->mCustomFont == XPR_FALSE)
+    if (gOpt->mConfig.mCustomFont == XPR_FALSE)
     {
         SetFont(XPR_NULL);
         return;
@@ -958,7 +958,7 @@ void AddressBar::setCustomFont(xpr_tchar_t *aFontText)
         mCustomFont = new CFont;
 
     LOGFONT sLogFont = {0};
-    OptionMgr::instance().StringToLogFont(aFontText, sLogFont);
+    fxb::StringToLogFont(aFontText, sLogFont);
 
     mCustomFont->CreateFontIndirect(&sLogFont);
     if (XPR_IS_NOT_NULL(mCustomFont->m_hObject))
@@ -967,7 +967,7 @@ void AddressBar::setCustomFont(xpr_tchar_t *aFontText)
 
 void AddressBar::setCustomFont(CFont *aFont)
 {
-    if (gOpt->mCustomFont == XPR_FALSE)
+    if (gOpt->mConfig.mCustomFont == XPR_FALSE)
     {
         SetFont(XPR_NULL);
         return;

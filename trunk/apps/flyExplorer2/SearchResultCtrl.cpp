@@ -9,12 +9,13 @@
 
 #include "stdafx.h"
 #include "SearchResultCtrl.h"
+#include "SearchResultCtrlObserver.h"
 
 #include "fxb/fxb_fnmatch.h"        // for Name Selection, match
 #include "fxb/fxb_context_menu.h"
 #include "fxb/fxb_file_op_thread.h"
 #include "fxb/fxb_filter.h"
-#include "fxb/fxb_file_ass.h"
+#include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_file_scrap.h"
 #include "fxb/fxb_shell_icon.h"
 
@@ -22,7 +23,7 @@
 #include "rgc/DropSource.h"     // for Drag & Drop
 #include "rgc/BCMenu.h"
 
-#include "SearchResultCtrlObserver.h"
+#include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerCtrl.h"
 #include "command_string_table.h"
@@ -899,7 +900,7 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             }
 
             xpr_uint_t sFlags = TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON;
-            if (XPR_IS_FALSE(gOpt->mAnimationMenu))
+            if (XPR_IS_FALSE(gOpt->mConfig.mAnimationMenu))
                 sFlags |= 0x4000L;
 
             CMenu sMenu;
@@ -1082,7 +1083,7 @@ void SearchResultCtrl::beginDragDrop(NM_LISTVIEW *aNmListView)
         {
             IDragSourceHelper *sDragSourceHelper = XPR_NULL;
 
-            if (XPR_IS_FALSE(gOpt->mDragNoContents))
+            if (XPR_IS_FALSE(gOpt->mConfig.mDragNoContents))
             {
                 ::CoCreateInstance(
                     CLSID_DragDropHelper,
@@ -1558,7 +1559,7 @@ void SearchResultCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     LV_DISPINFO *sLvDispInfo = (LV_DISPINFO *)aNmHdr;
     *aResult = 0;
 
-    if (XPR_IS_FALSE(gOpt->mRenameByMouse) && XPR_IS_TRUE(mMouseEdit))
+    if (XPR_IS_FALSE(gOpt->mConfig.mRenameByMouse) && XPR_IS_TRUE(mMouseEdit))
     {
         *aResult = 1;
         mMouseEdit = XPR_TRUE;
@@ -1580,7 +1581,7 @@ void SearchResultCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     xpr_bool_t sCtrlKey = GetAsyncKeyState(VK_CONTROL) < 0;
 
     if (XPR_IS_FALSE(sCtrlKey) &&
-        gOpt->mRenameExtType > RENAME_EXT_TYPE_DEFAULT &&
+        gOpt->mConfig.mRenameExtType > RENAME_EXT_TYPE_DEFAULT &&
         !XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
     {
         xpr_tchar_t sEditName[XPR_MAX_PATH + 1] = {0};
@@ -1589,7 +1590,7 @@ void SearchResultCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
         xpr_tchar_t *sExt = (xpr_tchar_t *)fxb::GetFileExt(sEditName);
         if (XPR_IS_NOT_NULL(sExt))
         {
-            if (gOpt->mRenameExtType == RENAME_EXT_TYPE_KEEP)
+            if (gOpt->mConfig.mRenameExtType == RENAME_EXT_TYPE_KEEP)
             {
                 XPR_SAFE_DELETE_ARRAY(mEditExt);
                 mEditExt = new xpr_tchar_t[_tcslen(sExt)+1];
@@ -1755,7 +1756,7 @@ void SearchResultCtrl::sortItems(xpr_sint_t aColumn)
 
 void SearchResultCtrl::sortItems(xpr_sint_t aColumn, xpr_bool_t aAscending)
 {
-    if (gOpt->mExplorerNoSort == XPR_TRUE)
+    if (gOpt->mConfig.mExplorerNoSort == XPR_TRUE)
         return;
 
     mSortColumn = aColumn;

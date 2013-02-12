@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -96,13 +96,13 @@ enum
     WM_SHCHANGENOTIFY_END = 0x7FFF,
 };
 
-xpr_uint_t ShellChangeNotify::mIdMgr = 100;
+xpr_uint_t ShellChangeNotify::mIdMgr     = 100;
+xpr_bool_t ShellChangeNotify::mNoRefresh = XPR_FALSE;
 
 ShellChangeNotify::ShellChangeNotify(void)
     : mThread(XPR_NULL)
     , mEvent(XPR_NULL)
     , mStopEvent(XPR_NULL)
-    , mShellFolder(XPR_NULL)
 {
 }
 
@@ -116,10 +116,6 @@ END_MESSAGE_MAP()
 void ShellChangeNotify::create(void)
 {
     CreateEx(0, AfxRegisterWndClass(CS_GLOBALCLASS), XPR_STRING_LITERAL(""), 0,0,0,0,0,0,0);
-
-    HRESULT sHResult = ::SHGetDesktopFolder(&mShellFolder);
-    if (FAILED(sHResult))
-        mShellFolder = XPR_NULL;
 }
 
 void ShellChangeNotify::destroy(void)
@@ -146,9 +142,12 @@ void ShellChangeNotify::destroy(void)
     mNotifyMsgMap.clear();
     mMsgSet.clear();
 
-    COM_RELEASE(mShellFolder);
-
     DestroyWindow();
+}
+
+void ShellChangeNotify::setNoRefresh(xpr_bool_t aNoRefresh)
+{
+    mNoRefresh = aNoRefresh;
 }
 
 void ShellChangeNotify::start(void)
@@ -393,7 +392,7 @@ LRESULT ShellChangeNotify::WindowProc(xpr_uint_t aMsg, WPARAM wParam, LPARAM lPa
 {
     if (XPR_IS_RANGE(WM_SHCHANGENOTIFY, aMsg, WM_SHCHANGENOTIFY_END))
     {
-        if (XPR_IS_FALSE(gOpt->mNoRefresh))
+        if (XPR_IS_FALSE(mNoRefresh))
         {
             NotifyItem *sNotifyItem;
             NotifyMsgMap::iterator sNotifyMsgIterator;

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2013-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "cmd_main_gui.h"
 
+#include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
 #include "ExplorerPane.h"
@@ -50,7 +51,7 @@ xpr_sint_t ShowDriveBarCommand::canExecute(CommandContext &aContext)
 {
     xpr_bool_t sState = StateEnable;
 
-    if (gOpt->mDriveBar == XPR_TRUE)
+    if (gOpt->mMain.mDriveBar == XPR_TRUE)
         sState |= StateCheck;
 
     return sState;
@@ -60,27 +61,11 @@ void ShowDriveBarCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    xpr_bool_t sVisible = !gOpt->mDriveBar;
+    xpr_bool_t sVisible = !gOpt->mMain.mDriveBar;
 
-    if (gOpt->mDriveBarViewSplit == XPR_TRUE)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = sMainFrame->getViewCount();
-        ExplorerPane *sExplorerPane;
+    sMainFrame->m_wndReBar.setBandVisible(AFX_IDW_DRIVE_BAR, sVisible);
 
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerPane = sMainFrame->getExplorerPane(i);
-            if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-                sExplorerPane->visibleDrivePathBar(sVisible);
-        }
-    }
-    else
-    {
-        sMainFrame->m_wndReBar.setBandVisible(AFX_IDW_DRIVE_BAR, sVisible);
-    }
-
-    gOpt->mDriveBar = sVisible;
+    gOpt->mMain.mDriveBar = sVisible;
 }
 
 xpr_sint_t ShowBookmarkBarCommand::canExecute(CommandContext &aContext)
@@ -101,81 +86,6 @@ void ShowBookmarkBarCommand::execute(CommandContext &aContext)
 
     xpr_bool_t sVisible = sMainFrame->m_wndReBar.isBandVislble(AFX_IDW_BOOKMARK_BAR);
     sMainFrame->m_wndReBar.setBandVisible(AFX_IDW_BOOKMARK_BAR, !sVisible);
-}
-
-xpr_sint_t ShowAddressBarCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-    {
-        if (sExplorerPane->isVisibleAddressBar() == XPR_TRUE)
-            sState |= StateCheck;
-    }
-
-    return sState;
-}
-
-void ShowAddressBarCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-        sExplorerPane->visibleAddressBar(!sExplorerPane->isVisibleAddressBar());
-}
-
-xpr_sint_t ShowPathBarCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-    {
-        if (sExplorerPane->isVisiblePathBar() == XPR_TRUE)
-            sState |= StateCheck;
-    }
-
-    return sState;
-}
-
-void ShowPathBarCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-        sExplorerPane->visiblePathBar(!sExplorerPane->isVisiblePathBar());
-}
-
-xpr_sint_t ShowActivateWndCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
-    if (XPR_IS_NOT_NULL(sExplorerView))
-    {
-        if (sExplorerView->isVisibleActivateBar() == XPR_TRUE)
-            sState |= StateCheck;
-    }
-
-    return sState;
-}
-
-void ShowActivateWndCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    ExplorerView *sExplorerView = sMainFrame->getExplorerView();
-    if (XPR_IS_NOT_NULL(sExplorerView))
-        sExplorerView->visibleActivateBar(!sExplorerView->isVisibleActivateBar());
 }
 
 xpr_sint_t AddressBarDropCommand::canExecute(CommandContext &aContext)
@@ -240,26 +150,10 @@ void DriveBarShortTextCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    gOpt->mDriveBarShortText = XPR_TRUE;
+    gOpt->mMain.mDriveBarShortText = XPR_TRUE;
 
-    if (gOpt->mDriveBarViewSplit == XPR_TRUE)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = sMainFrame->getViewCount();
-        ExplorerPane *sExplorerPane;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerPane = sMainFrame->getExplorerPane(i);
-            if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-                sExplorerPane->setDrivePathBarShortText(gOpt->mDriveBarShortText);
-        }
-    }
-    else
-    {
-        DriveToolBar *sDriveToolBar = (DriveToolBar *)&sMainFrame->m_wndReBar.mDriveToolBar;
-        sDriveToolBar->setShortText(gOpt->mDriveBarShortText);
-    }
+    DriveToolBar *sDriveToolBar = (DriveToolBar *)&sMainFrame->m_wndReBar.mDriveToolBar;
+    sDriveToolBar->setShortText(gOpt->mMain.mDriveBarShortText);
 }
 
 xpr_sint_t DriveBarLongTextCommand::canExecute(CommandContext &aContext)
@@ -278,36 +172,17 @@ void DriveBarLongTextCommand::execute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    gOpt->mDriveBarShortText = XPR_FALSE;
+    gOpt->mMain.mDriveBarShortText = XPR_FALSE;
 
-    if (gOpt->mDriveBarViewSplit == XPR_TRUE)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = sMainFrame->getViewCount();
-        ExplorerPane *sExplorerPane;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            sExplorerPane = sMainFrame->getExplorerPane(i);
-            if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-                sExplorerPane->setDrivePathBarShortText(gOpt->mDriveBarShortText);
-        }
-    }
-    else
-    {
-        DriveToolBar *sDriveToolBar = (DriveToolBar *)&sMainFrame->m_wndReBar.mDriveToolBar;
-        sDriveToolBar->setShortText(gOpt->mDriveBarShortText);
-    }
+    DriveToolBar *sDriveToolBar = (DriveToolBar *)&sMainFrame->m_wndReBar.mDriveToolBar;
+    sDriveToolBar->setShortText(gOpt->mMain.mDriveBarShortText);
 }
 
 xpr_sint_t DriveBarWrapableCommand::canExecute(CommandContext &aContext)
 {
     XPR_COMMAND_DECLARE_CTRL;
 
-    xpr_bool_t sState = 0;
-
-    if (gOpt->mDriveBarViewSplit == XPR_FALSE)
-        sState |= StateEnable;
+    xpr_bool_t sState = StateEnable;
 
     if (sMainFrame->m_wndReBar.isWrapable(AFX_IDW_DRIVE_BAR) == XPR_TRUE)
         sState |= StateCheck;
@@ -323,87 +198,6 @@ void DriveBarWrapableCommand::execute(CommandContext &aContext)
     sMainFrame->m_wndReBar.setWrapable(sId, !sMainFrame->m_wndReBar.isWrapable(sId));
 }
 
-xpr_sint_t DriveBarEachAssignCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    if (gOpt->mDriveBarViewSplit == XPR_TRUE)
-        sState |= StateCheck;
-
-    return sState;
-}
-
-void DriveBarEachAssignCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    sMainFrame->setDriveViewSplit(!gOpt->mDriveBarViewSplit);
-}
-
-xpr_sint_t DriveBarLeftPlaceCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    if (sMainFrame->isDriveViewSplitLeft() == XPR_TRUE)
-        sState |= StateRadio;
-
-    return sState;
-}
-
-void DriveBarLeftPlaceCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = sMainFrame->getViewCount();
-    ExplorerPane *sExplorerPane;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerPane = sMainFrame->getExplorerPane(i);
-        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-        {
-            gOpt->mLeftDriveBarViewSplit = XPR_TRUE;
-            sExplorerPane->setDrivePathBarLeft(gOpt->mLeftDriveBarViewSplit);
-        }
-    }
-}
-
-xpr_sint_t DriveBarRightPlaceCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    if (sMainFrame->isDriveViewSplitLeft() == XPR_FALSE)
-        sState |= StateRadio;
-
-    return sState;
-}
-
-void DriveBarRightPlaceCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = sMainFrame->getViewCount();
-    ExplorerPane *sExplorerPane;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerPane = sMainFrame->getExplorerPane(i);
-        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
-        {
-            gOpt->mLeftDriveBarViewSplit = XPR_FALSE;
-            sExplorerPane->setDrivePathBarLeft(gOpt->mLeftDriveBarViewSplit);
-        }
-    }
-}
-
 xpr_sint_t DriveBarRefreshCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
@@ -414,6 +208,17 @@ void DriveBarRefreshCommand::execute(CommandContext &aContext)
     XPR_COMMAND_DECLARE_CTRL;
 
     sMainFrame->m_wndReBar.mDriveToolBar.refresh();
+
+    xpr_sint_t i;
+    xpr_sint_t sViewCount = sMainFrame->getViewCount();
+    ExplorerPane *sExplorerPane;
+
+    for (i = 0; i < sViewCount; ++i)
+    {
+        sExplorerPane = sMainFrame->getExplorerPane(i);
+        if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
+            sExplorerPane->refreshDrivePathBar();
+    }
 }
 
 xpr_sint_t BookmarkBarNoNameCommand::canExecute(CommandContext &aContext)
@@ -515,44 +320,6 @@ void ToolBarCustomizeCommand::execute(CommandContext &aContext)
     XPR_COMMAND_DECLARE_CTRL;
 
     sMainFrame->m_wndReBar.mMainToolBar.Customize();
-}
-
-xpr_sint_t ShowStatusBarCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    // TODO
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-    {
-        if (sExplorerPane->isVisibleStatusBar() == XPR_TRUE)
-        {
-            sState |= StateCheck;
-        }
-    }
-
-    return sState;
-}
-
-void ShowStatusBarCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    // TODO
-    ExplorerPane *sExplorerPane = sMainFrame->getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
-    {
-        xpr_bool_t sVisible = !sExplorerPane->isVisibleStatusBar();
-        sExplorerPane->visibleStatusBar(sVisible);
-
-        if (XPR_IS_TRUE(sVisible))
-        {
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-                sExplorerCtrl->updateStatus();
-        }
-    }
 }
 
 xpr_sint_t NoneFolderPaneCommand::canExecute(CommandContext &aContext)

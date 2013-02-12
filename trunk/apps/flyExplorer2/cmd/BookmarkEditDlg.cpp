@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -13,6 +13,7 @@
 #include "fxb/fxb_shell_icon.h"
 
 #include "resource.h"
+#include "Option.h"
 #include "DlgState.h"
 #include "DlgStateMgr.h"
 #include "MainFrame.h"
@@ -213,7 +214,7 @@ void BookmarkEditDlg::addBookmark(fxb::BookmarkItem *aBookmarkItem, IconReq aIco
 
                 fxb::ShellIcon::AsyncIcon *sAsyncIcon = new fxb::ShellIcon::AsyncIcon;
                 sAsyncIcon->mType       = fxb::ShellIcon::TypeIcon;
-                sAsyncIcon->mFlags      = XPR_IS_TRUE(gOpt->mContentsBookmarkFastNetIcon) ? fxb::ShellIcon::FlagFastNetIcon : fxb::ShellIcon::FlagNone;
+                sAsyncIcon->mFlags      = XPR_IS_TRUE(gOpt->mConfig.mBookmarkFastNetIcon) ? fxb::ShellIcon::FlagFastNetIcon : fxb::ShellIcon::FlagNone;
                 sAsyncIcon->mCode       = 0;
                 sAsyncIcon->mItem       = aBookmarkIndex;
                 sAsyncIcon->mSignature  = aBookmarkItem->getSignature();
@@ -459,34 +460,6 @@ void BookmarkEditDlg::OnDblclkList(NMHDR* pNMHDR, LRESULT* pResult)
     *pResult = 0;
 }
 
-void BookmarkEditDlg::apply(void)
-{
-    fxb::BookmarkMgr &theBookmarkMgr = fxb::BookmarkMgr::instance();
-
-    theBookmarkMgr.clear();
-
-    xpr_sint_t i, sCount;
-    fxb::BookmarkItem *sBookmarkItem;
-    fxb::BookmarkItem *sBookmarkItem2;
-
-    sCount = mListCtrl.GetItemCount();
-    for (i = 0; i < sCount; ++i)
-    {
-        sBookmarkItem = (fxb::BookmarkItem *)mListCtrl.GetItemData(i);
-        if (sBookmarkItem == XPR_NULL)
-            continue;
-
-        sBookmarkItem2 = new fxb::BookmarkItem;
-        *sBookmarkItem2 = *sBookmarkItem;
-
-        theBookmarkMgr.addBookmark(sBookmarkItem2);
-    }
-
-    theBookmarkMgr.save();
-
-    gFrame->updateBookmark();
-}
-
 void BookmarkEditDlg::OnSetFocus(CWnd* pOldWnd) 
 {
     super::OnSetFocus(pOldWnd);
@@ -507,6 +480,32 @@ void BookmarkEditDlg::OnOK(void)
     apply();
 
     super::OnOK();
+}
+
+void BookmarkEditDlg::apply(void)
+{
+    fxb::BookmarkMgr &sBookmarkMgr = fxb::BookmarkMgr::instance();
+
+    sBookmarkMgr.clear();
+
+    xpr_sint_t i, sCount;
+    fxb::BookmarkItem *sBookmarkItem;
+    fxb::BookmarkItem *sBookmarkItem2;
+
+    sCount = mListCtrl.GetItemCount();
+    for (i = 0; i < sCount; ++i)
+    {
+        sBookmarkItem = (fxb::BookmarkItem *)mListCtrl.GetItemData(i);
+        if (sBookmarkItem == XPR_NULL)
+            continue;
+
+        sBookmarkItem2 = new fxb::BookmarkItem;
+        *sBookmarkItem2 = *sBookmarkItem;
+
+        sBookmarkMgr.addBookmark(sBookmarkItem2);
+    }
+
+    sBookmarkMgr.save();
 }
 
 void BookmarkEditDlg::setItemFocus(xpr_sint_t aIndex)

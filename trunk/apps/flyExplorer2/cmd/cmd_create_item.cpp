@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -12,6 +12,7 @@
 
 #include "fxb/fxb_shell_new.h"
 
+#include "Option.h"
 #include "CreateItemDlg.h"
 #include "ShortcutDlg.h"
 #include "BatchCreateDlg.h"
@@ -53,7 +54,7 @@ void CreateFolderCommand::execute(CommandContext &aContext)
         fxb::RemoveLastSplit(sDir);
 
         xpr_bool_t sResult = XPR_FALSE;
-        if (gOpt->mNewItemDlg == XPR_TRUE)
+        if (gOpt->mConfig.mNewItemDlg == XPR_TRUE)
         {
             std::tstring sCurDir;
             sExplorerCtrl->getCurPath(sCurDir);
@@ -80,7 +81,7 @@ void CreateFolderCommand::execute(CommandContext &aContext)
 
         if (sResult == XPR_TRUE)
         {
-            sExplorerCtrl->createFolder(sPath, !gOpt->mNewItemDlg);
+            sExplorerCtrl->createFolder(sPath, !gOpt->mConfig.mNewItemDlg);
         }
     }
 }
@@ -112,7 +113,7 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
         fxb::RemoveLastSplit(sDir);
 
         xpr_bool_t sResult = XPR_FALSE;
-        if (gOpt->mNewItemDlg == XPR_TRUE)
+        if (gOpt->mConfig.mNewItemDlg == XPR_TRUE)
         {
             HICON sIcon = fxb::GetFileExtIcon(XPR_STRING_LITERAL(".flyExplorer"), XPR_TRUE);
 
@@ -144,7 +145,7 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
 
         if (sResult == XPR_TRUE)
         {
-            sExplorerCtrl->createGeneralFile(sPath, !gOpt->mNewItemDlg);
+            sExplorerCtrl->createGeneralFile(sPath, !gOpt->mConfig.mNewItemDlg);
         }
     }
 }
@@ -176,7 +177,7 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
         fxb::RemoveLastSplit(sDir);
 
         xpr_bool_t sResult = XPR_FALSE;
-        if (gOpt->mNewItemDlg == XPR_TRUE)
+        if (gOpt->mConfig.mNewItemDlg == XPR_TRUE)
         {
             HICON sIcon = fxb::GetFileExtIcon(XPR_STRING_LITERAL(".txt"), XPR_TRUE);
 
@@ -208,7 +209,7 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
 
         if (sResult == XPR_TRUE)
         {
-            sExplorerCtrl->createTextFile(sPath, !gOpt->mNewItemDlg);
+            sExplorerCtrl->createTextFile(sPath, !gOpt->mConfig.mNewItemDlg);
         }
     }
 }

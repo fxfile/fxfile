@@ -123,6 +123,10 @@ public:
 	// Implementation
 
 public:
+    static void setStandardMenuStyle(xpr_bool_t aStandardMenuStyle);
+    static void setAnimationMenu(xpr_bool_t aAnimationMenu);
+
+public:
 	void SetBitmapBackground(COLORREF color);
 	void UnSetBitmapBackground(void);
 	BOOL AddBitmapToImageList(CImageList *list,UINT nResourceID);
@@ -270,6 +274,9 @@ protected:
 
 	COLORREF m_bitmapBackground;
 	BOOL m_bitmapBackgroundFlag;
+
+    static xpr_bool_t mStandardMenuStyle;
+    static xpr_bool_t mAnimationMenu;
 }; 
 
 #endif

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -311,23 +311,23 @@ const xpr_tchar_t *CfgPath::getDispName(xpr_sint_t aType)
 {
     switch (aType)
     {
-    case TypeMain:      return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.main"));
-    case TypeConfig:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.config"));
-    case TypeBookmark:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.bookmark"));
-    case TypeFileScrap: return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.file_scrap"));
-    case TypeFileAss:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.file_ass"));
-    case TypeFilter:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.filter"));
-    case TypeSearchDir: return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.search_dir"));
-    case TypeSizeFmt:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.size_format"));
-    case TypeViewSet:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.view_set"));
-    case TypeDlgState:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.dialog"));
-    case TypeAccel:     return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.accel"));
-    case TypeCoolBar:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.coolbar"));
-    case TypeToolBar:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.toolbar"));
-    case TypeBarState:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.bar_state"));
-    case TypeThumbnail: return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.thumbnail"));
-    case TypeRecent:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.recent"));
-    case TypeHistory:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.history"));
+    case TypeMain:       return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.main"));
+    case TypeConfig:     return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.config"));
+    case TypeBookmark:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.bookmark"));
+    case TypeFileScrap:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.file_scrap"));
+    case TypeProgramAss: return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.program_ass"));
+    case TypeFilter:     return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.filter"));
+    case TypeSearchDir:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.search_dir"));
+    case TypeSizeFmt:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.size_format"));
+    case TypeViewSet:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.view_set"));
+    case TypeDlgState:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.dialog"));
+    case TypeAccel:      return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.accel"));
+    case TypeCoolBar:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.coolbar"));
+    case TypeToolBar:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.toolbar"));
+    case TypeBarState:   return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.bar_state"));
+    case TypeThumbnail:  return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.thumbnail"));
+    case TypeRecent:     return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.recent"));
+    case TypeHistory:    return theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.cfg_path.type.history"));
     }
 
     return XPR_NULL;
@@ -337,23 +337,23 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
 {
     switch (aType)
     {
-    case TypeMain:      return XPR_STRING_LITERAL("main.ini");
-    case TypeConfig:    return XPR_STRING_LITERAL("config.ini");
-    case TypeBookmark:  return XPR_STRING_LITERAL("bookmark.ini");
-    case TypeFileScrap: return XPR_STRING_LITERAL("filescrap.ini");
-    case TypeFileAss:   return XPR_STRING_LITERAL("fileass.ini");
-    case TypeFilter:    return XPR_STRING_LITERAL("filter.ini");
-    case TypeSearchDir: return XPR_STRING_LITERAL("searchdir.ini");
-    case TypeSizeFmt:   return XPR_STRING_LITERAL("sizefmt.ini");
-    case TypeViewSet:   return XPR_STRING_LITERAL("*.ini");
-    case TypeDlgState:  return XPR_STRING_LITERAL("dlgstate.ini");
-    case TypeAccel:     return XPR_STRING_LITERAL("accel.dat");
-    case TypeCoolBar:   return XPR_STRING_LITERAL("coolbar.dat");
-    case TypeToolBar:   return XPR_STRING_LITERAL("toolbar.dat");
-    case TypeBarState:  return XPR_STRING_LITERAL("barstate.ini");
-    case TypeThumbnail: return XPR_STRING_LITERAL("thumbnail.*");
-    case TypeRecent:    return XPR_STRING_LITERAL("recent.ini");
-    case TypeHistory:   return XPR_STRING_LITERAL("history*.ini");
+    case TypeMain:       return XPR_STRING_LITERAL("main.ini");
+    case TypeConfig:     return XPR_STRING_LITERAL("config.ini");
+    case TypeBookmark:   return XPR_STRING_LITERAL("bookmark.ini");
+    case TypeFileScrap:  return XPR_STRING_LITERAL("filescrap.ini");
+    case TypeProgramAss: return XPR_STRING_LITERAL("programass.ini");
+    case TypeFilter:     return XPR_STRING_LITERAL("filter.ini");
+    case TypeSearchDir:  return XPR_STRING_LITERAL("searchdir.ini");
+    case TypeSizeFmt:    return XPR_STRING_LITERAL("sizefmt.ini");
+    case TypeViewSet:    return XPR_STRING_LITERAL("*.ini");
+    case TypeDlgState:   return XPR_STRING_LITERAL("dlgstate.ini");
+    case TypeAccel:      return XPR_STRING_LITERAL("accel.dat");
+    case TypeCoolBar:    return XPR_STRING_LITERAL("coolbar.dat");
+    case TypeToolBar:    return XPR_STRING_LITERAL("toolbar.dat");
+    case TypeBarState:   return XPR_STRING_LITERAL("barstate.ini");
+    case TypeThumbnail:  return XPR_STRING_LITERAL("thumbnail.*");
+    case TypeRecent:     return XPR_STRING_LITERAL("recent.ini");
+    case TypeHistory:    return XPR_STRING_LITERAL("history*.ini");
     }
 
     return XPR_NULL;
@@ -378,24 +378,24 @@ const xpr_tchar_t *CfgPath::getEntry(xpr_sint_t aType)
 {
     switch (aType)
     {
-    case TypeAll:       return XPR_STRING_LITERAL("all");
-    case TypeMain:      return XPR_STRING_LITERAL("main");
-    case TypeConfig:    return XPR_STRING_LITERAL("config");
-    case TypeBookmark:  return XPR_STRING_LITERAL("bookmark");
-    case TypeFileScrap: return XPR_STRING_LITERAL("filescrap");
-    case TypeFileAss:   return XPR_STRING_LITERAL("fileass");
-    case TypeFilter:    return XPR_STRING_LITERAL("filter");
-    case TypeSearchDir: return XPR_STRING_LITERAL("searchdir");
-    case TypeSizeFmt:   return XPR_STRING_LITERAL("sizefmt");
-    case TypeViewSet:   return XPR_STRING_LITERAL("viewset");
-    case TypeDlgState:  return XPR_STRING_LITERAL("dlgstate");
-    case TypeAccel:     return XPR_STRING_LITERAL("accel");
-    case TypeCoolBar:   return XPR_STRING_LITERAL("coolbar");
-    case TypeToolBar:   return XPR_STRING_LITERAL("toolbar");
-    case TypeBarState:  return XPR_STRING_LITERAL("barstate");
-    case TypeThumbnail: return XPR_STRING_LITERAL("thumbnail");
-    case TypeRecent:    return XPR_STRING_LITERAL("recent");
-    case TypeHistory:   return XPR_STRING_LITERAL("hitory");
+    case TypeAll:        return XPR_STRING_LITERAL("all");
+    case TypeMain:       return XPR_STRING_LITERAL("main");
+    case TypeConfig:     return XPR_STRING_LITERAL("config");
+    case TypeBookmark:   return XPR_STRING_LITERAL("bookmark");
+    case TypeFileScrap:  return XPR_STRING_LITERAL("filescrap");
+    case TypeProgramAss: return XPR_STRING_LITERAL("programass");
+    case TypeFilter:     return XPR_STRING_LITERAL("filter");
+    case TypeSearchDir:  return XPR_STRING_LITERAL("searchdir");
+    case TypeSizeFmt:    return XPR_STRING_LITERAL("sizefmt");
+    case TypeViewSet:    return XPR_STRING_LITERAL("viewset");
+    case TypeDlgState:   return XPR_STRING_LITERAL("dlgstate");
+    case TypeAccel:      return XPR_STRING_LITERAL("accel");
+    case TypeCoolBar:    return XPR_STRING_LITERAL("coolbar");
+    case TypeToolBar:    return XPR_STRING_LITERAL("toolbar");
+    case TypeBarState:   return XPR_STRING_LITERAL("barstate");
+    case TypeThumbnail:  return XPR_STRING_LITERAL("thumbnail");
+    case TypeRecent:     return XPR_STRING_LITERAL("recent");
+    case TypeHistory:    return XPR_STRING_LITERAL("hitory");
     }
 
     return XPR_NULL;

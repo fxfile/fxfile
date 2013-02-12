@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -48,7 +48,7 @@ void FileListCommand::execute(CommandContext &aContext)
         _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.text_files")));
 
         CFileDialogST sFileDialog(XPR_FALSE, XPR_STRING_LITERAL("*.txt"), XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, sExplorerCtrl);
-        if (gOpt->mFileListCurDir == XPR_TRUE && sExplorerCtrl->isFileSystemFolder() == XPR_TRUE)
+        if (gOpt->mConfig.mFileListCurDir == XPR_TRUE && sExplorerCtrl->isFileSystemFolder() == XPR_TRUE)
             sFileDialog.SetInitDir(sExplorerCtrl->getCurPath());
 
         if (sFileDialog.DoModal() != IDOK)

@@ -104,6 +104,7 @@ public:
 
     void recalcLayout(void);
 
+    void setChangedOption(Option &aOption);
     void saveOption(void);
 
 protected:

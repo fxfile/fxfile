@@ -304,3 +304,7 @@ xpr_bool_t SearchResultPane::onOpenFolder(SearchResultCtrl &aSearchResultCtrl, L
 
     return mObserver->onOpenFolder(*this, aFullPidl);
 }
+
+void SearchResultPane::setChangedOption(Option &aOption)
+{
+}

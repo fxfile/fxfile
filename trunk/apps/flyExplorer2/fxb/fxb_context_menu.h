@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -45,6 +45,10 @@ public:
     virtual ~ContextMenu(void);
 
 public:
+    static void setFileScrapMenu(xpr_bool_t aShowFileScrapMenu);
+    static void setAnimationMenu(xpr_bool_t aAnimationMenu);
+
+public:
     xpr_bool_t init(LPSHELLFOLDER aShellFolder, LPITEMIDLIST *aPidls, xpr_uint_t aCount);
     xpr_bool_t init(LPSHELLFOLDER aShellFolder);
     xpr_bool_t getMenu(CMenu *aMenu, xpr_uint_t aIdFirst = CMID_DEF_ID_FIRST, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
@@ -76,6 +80,9 @@ protected:
     LPCONTEXTMENU2 mContextMenu2;
     LPSUBCLASSDATA mSubclassData;
     xpr_uint_t     mIdFirst;
+
+    static xpr_bool_t mShowFileScrapMenu;
+    static xpr_bool_t mAnimationMenu;
 };
 } // namespace fxb
 

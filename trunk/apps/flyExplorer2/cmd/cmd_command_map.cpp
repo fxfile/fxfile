@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -20,7 +20,7 @@
 #include "cmd_attr_time.h"
 #include "cmd_file_property.h"
 #include "cmd_execute.h"
-#include "cmd_file_ass.h"
+#include "cmd_program_ass.h"
 #include "cmd_checksum.h"
 #include "cmd_file_split.h"
 #include "cmd_file_list.h"
@@ -259,18 +259,12 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_VIEW_TOOLBAR,                     new cmd::ShowToolBarCommand);
     aExecutor.bindCommand(ID_VIEW_DRIVEBAR,                    new cmd::ShowDriveBarCommand);
     aExecutor.bindCommand(ID_VIEW_BOOKMARKBAR,                 new cmd::ShowBookmarkBarCommand);
-    aExecutor.bindCommand(ID_VIEW_ADDRESSBAR,                  new cmd::ShowAddressBarCommand);
-    aExecutor.bindCommand(ID_VIEW_PATHBAR,                     new cmd::ShowPathBarCommand);
-    aExecutor.bindCommand(ID_VIEW_ACTIVATEWND,                 new cmd::ShowActivateWndCommand);
 
     aExecutor.bindCommand(ID_VIEW_ADDRESSBAR_SHOW,             new cmd::AddressBarDropCommand);
 
     aExecutor.bindCommand(ID_VIEW_DRIVEBAR_SHORTTEXT,          new cmd::DriveBarShortTextCommand);
     aExecutor.bindCommand(ID_VIEW_DRIVEBAR_LONGTEXT,           new cmd::DriveBarLongTextCommand);
     aExecutor.bindCommand(ID_VIEW_DRIVEBAR_WRAPABLE,           new cmd::DriveBarWrapableCommand);
-    aExecutor.bindCommand(ID_VIEW_DRIVEBAR_VIEWSPLIT,          new cmd::DriveBarEachAssignCommand);
-    aExecutor.bindCommand(ID_VIEW_DRIVEBAR_LEFT,               new cmd::DriveBarLeftPlaceCommand);
-    aExecutor.bindCommand(ID_VIEW_DRIVEBAR_RIGHT,              new cmd::DriveBarRightPlaceCommand);
     aExecutor.bindCommand(ID_VIEW_DRIVEBAR_REFRESH,            new cmd::DriveBarRefreshCommand);
 
     aExecutor.bindCommand(ID_VIEW_BOOKMARKBAR_NONAME,          new cmd::BookmarkBarNoNameCommand);
@@ -280,8 +274,6 @@ void CommandMap::map(CommandExecutor &aExecutor)
 
     aExecutor.bindCommand(ID_VIEW_TOOL_LOCK,                   new cmd::ToolLockCommand);
     aExecutor.bindCommand(ID_VIEW_TOOLBAR_CUSTOMIZE,           new cmd::ToolBarCustomizeCommand);
-
-    aExecutor.bindCommand(ID_VIEW_STATUS_BAR,                  new cmd::ShowStatusBarCommand);
 
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_NONE,            new cmd::NoneFolderPaneCommand);
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_SHOW,            new cmd::ShowFolderPaneCommand);
@@ -359,9 +351,8 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_WINDOW_TAB_LAST,                  new cmd::LastTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE,                 new cmd::CloseTabCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ON_CURSOR,       new cmd::CloseTabOnCursorCommand);
-    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS,    new cmd::CloseAllTabsButThisCommand);
-    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL_BUT_THIS_ON_CURSOR,
-                                                               new cmd::CloseAllTabsButThisOnCursorCommand);
+    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_OTHERS,          new cmd::CloseOtherTabsCommand);
+    aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_OTHERS_ON_CURSOR,new cmd::CloseOtherTabsOnCursorCommand);
     aExecutor.bindCommand(ID_WINDOW_TAB_CLOSE_ALL,             new cmd::CloseAllTabsCommand);
     aExecutor.bindCommand(ID_WINDOW_NEXT,                      new cmd::WindowNextCommand);
     aExecutor.bindCommand(ID_WINDOW_PREV,                      new cmd::WindowPrevCommand);

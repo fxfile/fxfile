@@ -17,6 +17,7 @@
 #include "rgc/DragImage.h"
 
 #include "MainFrame.h"
+#include "Option.h"
 #include "BookmarkToolBarObserver.h"
 
 #ifdef _DEBUG
@@ -187,9 +188,9 @@ void BookmarkToolBar::addBookmarkButton(xpr_sint_t aIndex, fxb::BookmarkItem *aB
     sToolBarCtrl.InsertButton(aIndex, &sTbButton);
 
     if (sSeparator == XPR_FALSE)
-        SetButtonText(CommandToIndex(sTbButton.idCommand), XPR_IS_TRUE(gOpt->mBookmarkBarText) ? aBookmarkItem->mName.c_str() : XPR_STRING_LITERAL(""));
+        SetButtonText(CommandToIndex(sTbButton.idCommand), XPR_IS_TRUE(gOpt->mMain.mBookmarkBarText) ? aBookmarkItem->mName.c_str() : XPR_STRING_LITERAL(""));
 
-    if (sSeparator == XPR_FALSE && gOpt->mBookmarkBarText == XPR_FALSE)
+    if (sSeparator == XPR_FALSE && gOpt->mMain.mBookmarkBarText == XPR_FALSE)
     {
         TBBUTTONINFO sTbButtonInfo = {0};
         sTbButtonInfo.cbSize = sizeof(TBBUTTONINFO);
@@ -233,7 +234,7 @@ xpr_bool_t BookmarkToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pRes
 
     if (pnmhdr->code == TTN_GETDISPINFO)
     {
-        if (gOpt->mContentsTooltip == XPR_TRUE)
+        if (gOpt->mConfig.mBookmarkTooltip == XPR_TRUE)
         {
             LPNMTTDISPINFO sNmTtDispInfo = (LPNMTTDISPINFO)pnmhdr;
 
@@ -247,7 +248,7 @@ xpr_bool_t BookmarkToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pRes
             if (sBookmarkItem == XPR_NULL)
                 return XPR_FALSE;
 
-            sBookmarkItem->getTooltip(mToolTipText, XPR_TRUE);
+            sBookmarkItem->getTooltip(mToolTipText, !gOpt->mMain.mBookmarkBarText, XPR_TRUE);
 
             sNmTtDispInfo->lpszText = mToolTipText;
         }
@@ -263,7 +264,7 @@ void BookmarkToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)
 
 xpr_bool_t BookmarkToolBar::isText(void)
 {
-    return gOpt->mBookmarkBarText;
+    return gOpt->mMain.mBookmarkBarText;
 }
 
 void BookmarkToolBar::setText(xpr_bool_t aText)
@@ -315,7 +316,7 @@ void BookmarkToolBar::setText(xpr_bool_t aText)
         UpdateToolbarSize();
     }
 
-    gOpt->mBookmarkBarText = aText;
+    gOpt->mMain.mBookmarkBarText = aText;
 }
 
 DROPEFFECT BookmarkToolBar::OnDragEnter(COleDataObject *aOleDataObject, DWORD aKeyState, CPoint aPoint)
@@ -482,7 +483,7 @@ DROPEFFECT BookmarkToolBar::OnDragOver(COleDataObject* aOleDataObject, DWORD aKe
                 else if (aKeyState & MK_SHIFT)   sDropEffect = DROPEFFECT_MOVE;
                 else
                 {
-                    switch (gOpt->mDragDefaultFileOp)
+                    switch (gOpt->mConfig.mDragDefaultFileOp)
                     {
                     case DRAG_FILE_OP_DEFAULT:  sDropEffect = DROPEFFECT_MOVE; break;
                     case DRAG_FILE_OP_COPY:     sDropEffect = DROPEFFECT_COPY; break;

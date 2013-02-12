@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,8 @@ class BookmarkSetWnd;
 
 class ContentsWnd : public CWnd
 {
+    typedef CWnd super;
+
 public:
     enum Mode
     {
@@ -142,7 +144,7 @@ protected:
     void setContentsDrive(LPTVITEMDATA sTvItemData, xpr_tchar_t aDrive, xpr_bool_t aShowBookmark, xpr_bool_t aUpdate = XPR_FALSE);
     void setContentsDrive(LPSHELLFOLDER sShellFolder, LPITEMIDLIST aPidl, xpr_ulong_t aAttributes, xpr_tchar_t aDrive, xpr_bool_t aShowBookmark, xpr_bool_t aUpdate = XPR_FALSE);
 
-    void updateChildWnd(void);
+    void updateFont(void);
     void updateBookmark(xpr_sint_t aTop);
 
     xpr_sint_t drawItem(CDC *aDc, xpr_sint_t aTop);
