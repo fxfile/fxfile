@@ -1358,6 +1358,7 @@
 			<String ID="popup.cfg.tree.advanced.global_hotkey">전역 단축키</String>
 			<String ID="popup.cfg.msg.confirm_default">환경 설정을 모두 기본값으로 설정하시겠습니까?&#10;지금 기본값으로 설정되면 이전 설정값으로 되돌릴 수 없습니다.</String>
 			<String ID="popup.cfg.msg.default_ok">환경 설정의 모든 내용을 초기화하였습니다.</String>
+			<String ID="popup.cfg.msg.apply_language_on_next_loading_time">적용하고자 하는 언어는 다음번 프로그램 실행시 적용됩니다.</String>
 			<String ID="popup.cfg.button.default">기본값</String>
 			<String ID="popup.cfg.button.apply">적용(&amp;A)</String>
 
