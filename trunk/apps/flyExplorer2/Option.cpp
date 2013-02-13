@@ -293,7 +293,7 @@ xpr_bool_t Option::loadConfigOption(const xpr_tchar_t *aFileName)
     mConfig.mContentsStyle                = sIniFile.getValueI(CFG_CONTENTS, CFG_CONTENTS,                                 CONTENTS_EXPLORER);
     mConfig.mContentsBookmark             = sIniFile.getValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Link"),                   XPR_TRUE);
     mConfig.mContentsBookmarkColor        = sIniFile.getValueC(CFG_CONTENTS, XPR_STRING_LITERAL("Link Color"),             RGB(0,0,255));
-    mConfig.mContentsNoDispInfo           = sIniFile.getValueB(CFG_CONTENTS, XPR_STRING_LITERAL("No Disp Info"));
+    mConfig.mContentsNoDispSelFileInfo    = sIniFile.getValueB(CFG_CONTENTS, XPR_STRING_LITERAL("No Disp Info"));
     mConfig.mContentsARHSAttribute        = sIniFile.getValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Attributes ARHS Style"));
 
     mConfig.mBookmarkTooltip              = sIniFile.getValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Popup"),                  XPR_TRUE);
@@ -693,7 +693,7 @@ xpr_bool_t Option::saveConfigOption(const xpr_tchar_t *aFileName)
     sIniFile.setValueI(CFG_CONTENTS, CFG_CONTENTS,                                          mConfig.mContentsStyle);
     sIniFile.setValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Link"),                            mConfig.mContentsBookmark);
     sIniFile.setValueC(CFG_CONTENTS, XPR_STRING_LITERAL("Link Color"),                      mConfig.mContentsBookmarkColor);
-    sIniFile.setValueB(CFG_CONTENTS, XPR_STRING_LITERAL("No Disp Info"),                    mConfig.mContentsNoDispInfo);
+    sIniFile.setValueB(CFG_CONTENTS, XPR_STRING_LITERAL("No Disp Info"),                    mConfig.mContentsNoDispSelFileInfo);
     sIniFile.setValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Attributes ARHS Style"),           mConfig.mContentsARHSAttribute);
 
     sIniFile.setValueB(CFG_CONTENTS, XPR_STRING_LITERAL("Popup"),                           mConfig.mBookmarkTooltip);

@@ -118,7 +118,7 @@ public:
     void setActiveView(xpr_sint_t aRow, xpr_sint_t aColumn);
 
     xpr_sint_t addBookmark(LPITEMIDLIST aFullPidl, xpr_sint_t aInsert = -1);
-    void updateBookmark(void);
+    void updateBookmark(xpr_bool_t aAllBookmarks = XPR_TRUE);
 
     void gotoBookmark(xpr_sint_t aBookmarkIndex);
     void gotoDrive(xpr_tchar_t aDriveChar);

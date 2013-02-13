@@ -995,6 +995,7 @@ xpr_bool_t ExplorerPane::createContentsWnd(void)
     {
         if (mContentsWnd->Create(this, CTRL_ID_CONTENTS_WND, CRect(0,0,0,0)) == XPR_TRUE)
         {
+            // nothing to do
         }
         else
         {
@@ -1034,9 +1035,8 @@ void ExplorerPane::setContentsStyle(xpr_bool_t aShowInfoBar, xpr_sint_t aContent
                 if (XPR_IS_NOT_NULL(sExplorerCtrl))
                     sExplorerCtrl->resetStatus();
 
-                setBookmarkColor(gOpt->mConfig.mContentsBookmarkColor);
                 updateBookmark();
-                setBookmarkPopup(gOpt->mConfig.mBookmarkTooltip);
+                mContentsWnd->setBookmarkOption(gOpt->mConfig.mContentsBookmarkColor, gOpt->mConfig.mBookmarkTooltip);
                 enableBookmark(gOpt->mConfig.mContentsBookmark);
 
                 break;
@@ -1052,7 +1052,7 @@ void ExplorerPane::setContentsStyle(xpr_bool_t aShowInfoBar, xpr_sint_t aContent
                 }
 
                 updateBookmark();
-                setBookmarkPopup(XPR_FALSE);
+                mContentsWnd->setBookmarkOption(XPR_FALSE, XPR_FALSE);
                 enableBookmark(XPR_FALSE);
 
                 break;
@@ -1107,18 +1107,6 @@ void ExplorerPane::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aS
         mContentsWnd->setContentsMultiItem(aCount, aSize, aNames);
 }
 
-void ExplorerPane::setBookmarkPopup(xpr_bool_t aPopup)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setBookmarkPopup(aPopup);
-}
-
-void ExplorerPane::setBookmarkColor(COLORREF aBookmarkColor)
-{
-    if (XPR_IS_NOT_NULL(mContentsWnd))
-        mContentsWnd->setBookmarkColor(aBookmarkColor);
-}
-
 void ExplorerPane::updateBookmark(xpr_bool_t aUpdatePosition)
 {
     if (XPR_IS_NOT_NULL(mContentsWnd))
@@ -1128,7 +1116,7 @@ void ExplorerPane::updateBookmark(xpr_bool_t aUpdatePosition)
         if (XPR_IS_TRUE(aUpdatePosition))
         {
             mContentsWnd->updateBookmarkPosition();
-            mContentsWnd->enableBookmark(mContentsWnd->isEnableBookmark());
+            mContentsWnd->enableBookmark(mContentsWnd->isEnabledBookmark());
         }
     }
 }
@@ -1139,20 +1127,12 @@ void ExplorerPane::enableBookmark(xpr_bool_t aEnable)
         mContentsWnd->enableBookmark(aEnable);
 }
 
-xpr_bool_t ExplorerPane::isEnableBookmark(void) const
+xpr_bool_t ExplorerPane::isEnabledBookmark(void) const
 {
     if (XPR_IS_NULL(mContentsWnd))
         return XPR_FALSE;
 
-    return mContentsWnd->isEnableBookmark();
-}
-
-xpr_bool_t ExplorerPane::isVisibleBookmark(void) const
-{
-    if (XPR_IS_NULL(mContentsWnd))
-        return XPR_FALSE;
-
-    return mContentsWnd->isVisibleBookmark();
+    return mContentsWnd->isEnabledBookmark();
 }
 
 void ExplorerPane::invalidateContentsWnd(void)

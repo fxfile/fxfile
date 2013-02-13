@@ -612,9 +612,8 @@ void MainFrame::setChangedOption(Option &aOption)
     // set new option
     setOption(aOption);
 
-    // TODO
     // update bookmark
-    updateBookmark();
+    updateBookmark(XPR_FALSE);
 
     // release docking if contents is not explorer style.
     if (aOption.mConfig.mContentsStyle != CONTENTS_EXPLORER)
@@ -3814,20 +3813,23 @@ xpr_sint_t MainFrame::addBookmark(LPITEMIDLIST aFullPidl, xpr_sint_t aInsert)
     return sResult;
 }
 
-void MainFrame::updateBookmark(void)
+void MainFrame::updateBookmark(xpr_bool_t aAllBookmarks)
 {
     if (gOpt->mConfig.mContentsStyle == CONTENTS_EXPLORER && XPR_IS_TRUE(gOpt->mConfig.mContentsBookmark))
     {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = getViewCount();
-        ExplorerPane *sExplorerPane;
-
-        for (i = 0; i < sViewCount; ++i)
+        if (XPR_IS_TRUE(aAllBookmarks))
         {
-            sExplorerPane = getExplorerPane(i);
-            if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
+            xpr_sint_t i;
+            xpr_sint_t sViewCount = getViewCount();
+            ExplorerPane *sExplorerPane;
+
+            for (i = 0; i < sViewCount; ++i)
             {
-                sExplorerPane->updateBookmark(XPR_TRUE);
+                sExplorerPane = getExplorerPane(i);
+                if (XPR_IS_NOT_NULL(sExplorerPane) && XPR_IS_NOT_NULL(sExplorerPane->m_hWnd))
+                {
+                    sExplorerPane->updateBookmark(XPR_TRUE);
+                }
             }
         }
     }

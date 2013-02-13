@@ -55,7 +55,7 @@ xpr_bool_t CfgAppearanceLayoutDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CFG_LAYOUT_GROUP_INFO_BAR_STYLE_OPTION,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.group.info_bar_style")));
     SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_standard_style")));
     SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_BASIC_STYLE,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_basic_style")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_no_display_detailed_info")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_no_display_selected_file_info")));
     SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_bookmark")));
     SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_arhs_attribute_style")));
     SetDlgItemText(IDC_CFG_LAYOUT_SHOW_STATUS_BAR,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_status_bar")));
@@ -83,7 +83,7 @@ void CfgAppearanceLayoutDlg::onInit(Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_INFO_BAR                 ))->SetCheck(aConfig.mShowInfoBar);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_BASIC_STYLE          ))->SetCheck((aConfig.mContentsStyle == CONTENTS_BASIC) ? 1 : 0);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE       ))->SetCheck((aConfig.mContentsStyle == CONTENTS_EXPLORER) ? 1 : 0);
-    ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO))->SetCheck(aConfig.mContentsNoDispInfo);
+    ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO))->SetCheck(aConfig.mContentsNoDispSelFileInfo);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK        ))->SetCheck(aConfig.mContentsBookmark);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE ))->SetCheck(aConfig.mContentsARHSAttribute);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_STATUS_BAR               ))->SetCheck(aConfig.mShowStatusBar);
@@ -100,20 +100,20 @@ void CfgAppearanceLayoutDlg::onApply(Option::Config &aConfig)
     else
         aConfig.mContentsStyle = CONTENTS_EXPLORER;
 
-    aConfig.mViewSplitByRatio      = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_VIEW_SPLIT_RESIZE_BY_RATIO    ))->GetCheck();
-    aConfig.mShowAddressBar        = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_ADDRESS_BAR              ))->GetCheck();
-    aConfig.mShowPathBar           = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_PATH_BAR                 ))->GetCheck();
-    aConfig.mPathBarIcon           = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_PATH_BAR_ICON                 ))->GetCheck();
-    aConfig.mPathBarRealPath       = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_PATH_BAR_REAL_PATH            ))->GetCheck();
-    aConfig.mShowEachDriveBar      = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_EACH_DRIVE_BAR           ))->GetCheck();
-    aConfig.mDriveBarLeftSide      = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_DRIVE_BAR_LEFT_SIDE           ))->GetCheck();
-    aConfig.mDriveBarShortText     = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_DRIVE_BAR_SHORT_TEXT          ))->GetCheck();
-    aConfig.mShowActivateBar       = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_ACTIVATE_BAR             ))->GetCheck();
-    aConfig.mShowInfoBar           = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_INFO_BAR                 ))->GetCheck();
-    aConfig.mContentsNoDispInfo    = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO))->GetCheck();
-    aConfig.mContentsBookmark      = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK        ))->GetCheck();
-    aConfig.mContentsARHSAttribute = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE ))->GetCheck();
-    aConfig.mShowStatusBar         = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_STATUS_BAR               ))->GetCheck();
+    aConfig.mViewSplitByRatio          = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_VIEW_SPLIT_RESIZE_BY_RATIO    ))->GetCheck();
+    aConfig.mShowAddressBar            = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_ADDRESS_BAR              ))->GetCheck();
+    aConfig.mShowPathBar               = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_PATH_BAR                 ))->GetCheck();
+    aConfig.mPathBarIcon               = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_PATH_BAR_ICON                 ))->GetCheck();
+    aConfig.mPathBarRealPath           = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_PATH_BAR_REAL_PATH            ))->GetCheck();
+    aConfig.mShowEachDriveBar          = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_EACH_DRIVE_BAR           ))->GetCheck();
+    aConfig.mDriveBarLeftSide          = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_DRIVE_BAR_LEFT_SIDE           ))->GetCheck();
+    aConfig.mDriveBarShortText         = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_DRIVE_BAR_SHORT_TEXT          ))->GetCheck();
+    aConfig.mShowActivateBar           = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_ACTIVATE_BAR             ))->GetCheck();
+    aConfig.mShowInfoBar               = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_INFO_BAR                 ))->GetCheck();
+    aConfig.mContentsNoDispSelFileInfo = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO))->GetCheck();
+    aConfig.mContentsBookmark          = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK        ))->GetCheck();
+    aConfig.mContentsARHSAttribute     = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE ))->GetCheck();
+    aConfig.mShowStatusBar             = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_STATUS_BAR               ))->GetCheck();
 }
 
 void CfgAppearanceLayoutDlg::OnPathBar(void)
@@ -142,18 +142,18 @@ void CfgAppearanceLayoutDlg::OnInfoBar(void)
 
     if (XPR_IS_FALSE(sShowInfoBar))
     {
-        GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO)->EnableWindow(XPR_FALSE);
+        GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO)->EnableWindow(XPR_FALSE);
     }
     else
     {
         xpr_bool_t sStandardStyle = ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE))->GetCheck();
         if (XPR_IS_FALSE(sStandardStyle))
         {
-            GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO)->EnableWindow(XPR_FALSE);
+            GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO)->EnableWindow(XPR_FALSE);
         }
         else
         {
-            GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO)->EnableWindow(XPR_TRUE);
+            GetDlgItem(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO)->EnableWindow(XPR_TRUE);
         }
     }
 }
