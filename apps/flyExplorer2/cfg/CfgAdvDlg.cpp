@@ -19,22 +19,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-// option id
-enum
-{
-    OPT_ID_SINGLE_INSTANCE        = 1,
-    OPT_ID_CONFIRM_EXIT           = 2,
-    OPT_ID_RECENT_FILE            = 3,
-    OPT_ID_REG_SHELL_CONTEXT_MENU = 4,
-
-    OPT_ID_TRAY_HIDE              = 30,
-    OPT_ID_TRAY_SHOW              = 31,
-    OPT_ID_TRAY_CLOSE             = 32,
-    OPT_ID_TRAY_MINIMIZE          = 33,
-    OPT_ID_TRAY_INIT_FOLDER       = 34,
-    OPT_ID_TRAY_ONE_CLICK         = 35,
-};
-
 CfgAdvDlg::CfgAdvDlg(void)
     : super(IDD_CFG_ADV, XPR_NULL)
 {
@@ -43,13 +27,13 @@ CfgAdvDlg::CfgAdvDlg(void)
 void CfgAdvDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_CFG_ADV_OPTION, mOptionPanel);
 }
 
 BEGIN_MESSAGE_MAP(CfgAdvDlg, super)
+    ON_BN_CLICKED(IDC_CFG_ADV_TRAY_NONE,              OnTray)
+    ON_BN_CLICKED(IDC_CFG_ADV_TRAY_SHOW,              OnTray)
     ON_BN_CLICKED(IDC_CFG_ADV_DEFAULT,                OnDefault)
     ON_BN_CLICKED(IDC_CFG_ADV_REMOVE_RECENT_FILELIST, OnRemoveRecentFileList)
-    ON_NOTIFY(OPN_SELCHANGE, IDC_CFG_ADV_OPTION, OnOptionsSelChange)
 END_MESSAGE_MAP()
 
 xpr_bool_t CfgAdvDlg::OnInitDialog(void) 
@@ -60,134 +44,72 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
     addIgnoreApply(IDC_CFG_ADV_OPTION);
     addIgnoreApply(IDC_CFG_ADV_REMOVE_RECENT_FILELIST);
 
-    CImageList sImgList;
-    sImgList.Create(13, 13, ILC_COLORDDB | ILC_MASK, 5, 1);
-
-    CBitmap sBitmap;
-    sBitmap.LoadBitmap(IDB_OPTIONS_PANEL_IMAGES);
-    sImgList.Add(&sBitmap, RGB(255,0,255));
-
-    mOptionPanel.SetImageList(sImgList);
-
-    sImgList.DeleteImageList();
-    sBitmap.DeleteObject();
-
-    SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
-    SetDlgItemText(IDC_CFG_ADV_DEFAULT,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
+    SetDlgItemText(IDC_CFG_ADV_SINGLE_INSTANCE,                      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.single_instance")));
+    SetDlgItemText(IDC_CFG_ADV_CONFIRM_TO_EXIT,                      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.confirm_to_exit")));
+    SetDlgItemText(IDC_CFG_ADV_RECENT_FILE_LIST,                     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.use_recent_file_list")));
+    SetDlgItemText(IDC_CFG_ADV_SHELL_CONTEXT_MENU,                   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.register_to_shell_context_menu")));
+    SetDlgItemText(IDC_CFG_ADV_GROUP_TRAY,                           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.group.system_tray")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_NONE,                            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_none")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW,                            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_show")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT,                    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_hide_on_exit")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_show_tray_when_minimizing")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_restore_on_one_click")));
+    SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST,               theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
+    SetDlgItemText(IDC_CFG_ADV_DEFAULT,                              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
 
     return XPR_TRUE;
 }
 
 void CfgAdvDlg::onInit(Option::Config &aConfig)
 {
-    mOptionPanel.AddGroup(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.advanced")),
-        OptionsPanel::groupBold,
-        0,
-        4);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->SetCheck(aConfig.mSingleInstance);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->SetCheck(aConfig.mConfirmExit);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->SetCheck(aConfig.mRecentFile);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->SetCheck(aConfig.mRegShellContextMenu);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_NONE                           ))->SetCheck(XPR_IS_FALSE(aConfig.mTray));
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW                           ))->SetCheck(XPR_IS_TRUE(aConfig.mTray));
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT                   ))->SetCheck(aConfig.mTrayOnClose);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING           ))->SetCheck(aConfig.mTrayOnMinmize);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->SetCheck(aConfig.mTrayRestoreInitFolder);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->SetCheck(aConfig.mTrayOneClick);
 
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.advanced.single_instance")),
-        XPR_IS_TRUE(aConfig.mSingleInstance) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_SINGLE_INSTANCE);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.advanced.confirm_exit")),
-        XPR_IS_TRUE(aConfig.mConfirmExit) ? OptionsPanel::itemChecked : 0,
-        1, OPT_ID_CONFIRM_EXIT);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.advanced.enable_recent_file_list")),
-        XPR_IS_TRUE(aConfig.mRecentFile) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_RECENT_FILE);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.advanced.enable_shell_context_menu")),
-        XPR_IS_TRUE(aConfig.mRegShellContextMenu) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_REG_SHELL_CONTEXT_MENU);
-
-    mOptionPanel.AddGroup(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray")),
-        OptionsPanel::groupBold,
-        0,
-        4);
-
-    mOptionPanel.AddRadio(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.none")),
-        XPR_IS_FALSE(aConfig.mTray) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_TRAY_HIDE);
-
-    mOptionPanel.AddRadio(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.show_tray")),
-        XPR_IS_TRUE(aConfig.mTray) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_TRAY_SHOW);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.show_tray_on_exit")),
-        XPR_IS_TRUE(aConfig.mTrayOnClose) ? OptionsPanel::itemChecked : 0,
-        2,
-        OPT_ID_TRAY_CLOSE);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.show_tray_on_minimize")),
-        XPR_IS_TRUE(aConfig.mTrayOnMinmize) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_TRAY_MINIMIZE);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.go_init_folder_on_restore")),
-        XPR_IS_TRUE(aConfig.mTrayRestoreInitFolder) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_TRAY_INIT_FOLDER);
-
-    mOptionPanel.AddCheck(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.option.system_tray.restore_hide_on_one_click")),
-        XPR_IS_TRUE(aConfig.mTrayOneClick) ? OptionsPanel::itemChecked : 0,
-        1,
-        OPT_ID_TRAY_ONE_CLICK);
+    OnTray();
 }
 
 void CfgAdvDlg::onApply(Option::Config &aConfig)
 {
-    aConfig.mSingleInstance        = mOptionPanel.GetCheckState(OPT_ID_SINGLE_INSTANCE);
-    aConfig.mConfirmExit           = mOptionPanel.GetCheckState(OPT_ID_CONFIRM_EXIT);
-    aConfig.mRecentFile            = mOptionPanel.GetCheckState(OPT_ID_RECENT_FILE);
-    aConfig.mRegShellContextMenu   = mOptionPanel.GetCheckState(OPT_ID_REG_SHELL_CONTEXT_MENU);
+    aConfig.mSingleInstance        = ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->GetCheck();
+    aConfig.mConfirmExit           = ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->GetCheck();
+    aConfig.mRecentFile            = ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->GetCheck();
+    aConfig.mRegShellContextMenu   = ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->GetCheck();
+    aConfig.mTray                  = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW                           ))->GetCheck() ? XPR_TRUE : XPR_FALSE;
+    aConfig.mTrayOnClose           = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT                   ))->GetCheck();
+    aConfig.mTrayOnMinmize         = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING           ))->GetCheck();
+    aConfig.mTrayRestoreInitFolder = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->GetCheck();
+    aConfig.mTrayOneClick          = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->GetCheck();
+}
 
-    aConfig.mTray                  = mOptionPanel.GetCheckState(OPT_ID_TRAY_SHOW);
-    aConfig.mTrayOnClose           = mOptionPanel.GetCheckState(OPT_ID_TRAY_CLOSE);
-    aConfig.mTrayOnMinmize         = mOptionPanel.GetCheckState(OPT_ID_TRAY_MINIMIZE);
-    aConfig.mTrayRestoreInitFolder = mOptionPanel.GetCheckState(OPT_ID_TRAY_INIT_FOLDER);
-    aConfig.mTrayOneClick          = mOptionPanel.GetCheckState(OPT_ID_TRAY_ONE_CLICK);
+void CfgAdvDlg::OnTray(void)
+{
+    xpr_bool_t sShowTray = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW))->GetCheck();
+
+    GetDlgItem(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT)->EnableWindow(sShowTray);
 }
 
 void CfgAdvDlg::OnDefault(void) 
 {
-    mOptionPanel.SetCheckState(OPT_ID_SINGLE_INSTANCE,        XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_CONFIRM_EXIT,           XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_RECENT_FILE,            XPR_TRUE);
-    mOptionPanel.SetCheckState(OPT_ID_REG_SHELL_CONTEXT_MENU, XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->SetCheck(XPR_TRUE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_NONE                           ))->SetCheck(XPR_TRUE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW                           ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT                   ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING           ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->SetCheck(XPR_FALSE);
 
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_HIDE,              XPR_TRUE);
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_SHOW,              XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_CLOSE,             XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_MINIMIZE,          XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_INIT_FOLDER,       XPR_FALSE);
-    mOptionPanel.SetCheckState(OPT_ID_TRAY_ONE_CLICK,         XPR_FALSE);
-
-    mOptionPanel.RedrawWindow();
-    mOptionPanel.UpdateWindow();
-
-    setModified();
-}
-
-void CfgAdvDlg::OnOptionsSelChange(NMHDR *pNMHDR, LRESULT *pResult)
-{
     setModified();
 }
 
