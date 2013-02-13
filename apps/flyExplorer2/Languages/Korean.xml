@@ -217,7 +217,6 @@
 			<String ID="cmd.bookmark_bar.refresh">북마크 새로 고침(&amp;R)</String>
 			<String ID="cmd.tools.lock">도구 이동 잠금(&amp;L)</String>
 			<String ID="cmd.tool_bar.customize">사용자 지정(&amp;C)...</String>
-			<String ID="cmd.bar.popup">창 모음(&amp;W)</String>
 			<String ID="cmd.folder_tree">폴더 트리(&amp;F)</String>
 			<String ID="cmd.folder_tree.show">보이기(&amp;W)</String>
 			<String ID="cmd.folder_tree.none">표시 안함(&amp;N)</String>
@@ -225,7 +224,6 @@
 			<String ID="cmd.folder_tree.each_pane">분할된 창마다 폴더 트리(&amp;E)</String>
 			<String ID="cmd.folder_tree.left_pane">왼쪽 폴더 트리(&amp;L)</String>
 			<String ID="cmd.folder_tree.right_pane">오른쪽 폴더 트리(&amp;R)</String>
-			<String ID="cmd.search_bar">검색창(&amp;S)</String>
 			<String ID="cmd.picture.show">그림 보기(&amp;P)</String>
 			<String ID="cmd.picture.popup">그림 보기 옵션(&amp;O)</String>
 			<String ID="cmd.picture.zoom_in">확대(&amp;I)</String>
@@ -273,6 +271,7 @@
 			<String ID="cmd.refresh">새로 고침(&amp;R)</String>
 
 			<!-- main menu: tool -->
+			<String ID="cmd.file_search">파일 검색(&amp;S)</String>
 			<String ID="cmd.recycle_bin.empty">휴지통 비우기(&amp;R)</String>
 			<String ID="cmd.windows_explorer">윈도우즈 탐색기 실행(&amp;W)</String>
 			<String ID="cmd.command_prompt">명령 프롬프트(&amp;M)</String>
@@ -440,7 +439,7 @@
 			<String ID="tool_bar.cmd.go.up">위로</String>
 			<String ID="tool_bar.cmd.navigate.history">히스토리</String>
 			<String ID="tool_bar.cmd.folder_tree.show">폴더</String>
-			<String ID="tool_bar.cmd.search_bar">검색</String>
+			<String ID="tool_bar.cmd.file_search">검색</String>
 			<String ID="tool_bar.cmd.bookmark.popup_menu">북마크</String>
 			<String ID="tool_bar.cmd.go.drive">드라이브</String>
 			<String ID="tool_bar.cmd.working_folder.popup_menu">작업폴더</String>
@@ -1801,7 +1800,7 @@
 			<String ID="bar.folder.title">폴더 트리</String>
 
 			<!-- popup: search -->
-			<String ID="popup.search.title">검색창</String>
+			<String ID="popup.search.title">파일 검색</String>
 			<String ID="popup.search.label.name">검색할 파일 및 폴더(&amp;N):</String>
 			<String ID="popup.search.label.text">포함하는 텍스트(&amp;X):</String>
 			<String ID="popup.search.label.location">찾는 위치(&amp;L):</String>

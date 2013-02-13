@@ -40,7 +40,6 @@ XPR_COMMAND_DECLARE_CLASS(EachFolderPaneCommand);
 XPR_COMMAND_DECLARE_CLASS(ShowFolderPaneCommand);
 XPR_COMMAND_DECLARE_CLASS(LeftFolderPaneCommand);
 XPR_COMMAND_DECLARE_CLASS(RightFolderPaneCommand);
-XPR_COMMAND_DECLARE_CLASS(ShowSearchBarCommand);
 } // namespace cmd
 
 #endif // __FX_CMD_MAIN_GUI_H__

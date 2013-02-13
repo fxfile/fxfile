@@ -813,7 +813,7 @@ END
 
 IDD_SEARCH DIALOGEX 0, 0, 237, 213
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Search"
+CAPTION "File search"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "&Name:",IDC_SEARCH_LABEL_NAME,5,7,104,8
@@ -2393,10 +2393,6 @@ BEGIN
             MENUITEM "&Left folder pane",           ID_VIEW_FOLDER_TREE_LEFT_PANE
             MENUITEM "&Right folder pane",          ID_VIEW_FOLDER_TREE_RIGHT_PANE
         END
-        POPUP "cmd.bar.popup"
-        BEGIN
-            MENUITEM "&Search bar",                 ID_VIEW_BAR_SEARCH
-        END
         MENUITEM SEPARATOR
         MENUITEM "Open &picture",               ID_VIEW_PICVIEWER
         POPUP "cmd.picture.popup"
@@ -2460,6 +2456,8 @@ BEGIN
     END
     POPUP "cmd.main_menu.tool"
     BEGIN
+        MENUITEM "File &search",                ID_TOOL_FILE_SEARCH
+        MENUITEM SEPARATOR
         MENUITEM "Empty &recycle bin",          ID_TOOL_EMPTY_RECYCLEBIN
         MENUITEM "Open &Windows Explorer",      ID_TOOL_WINDOWS_EXPLORER
         MENUITEM SEPARATOR
@@ -3198,8 +3196,8 @@ BEGIN
     "R",            ID_TOOL_EMPTY_RECYCLEBIN, VIRTKEY, CONTROL, NOINVERT
     VK_F12,         ID_TOOL_OPTION,         VIRTKEY, CONTROL, NOINVERT
     VK_F4,          ID_VIEW_ADDRESSBAR_SHOW, VIRTKEY, NOINVERT
-    "E",            ID_VIEW_BAR_SEARCH,     VIRTKEY, CONTROL, NOINVERT
-    VK_F3,          ID_VIEW_BAR_SEARCH,     VIRTKEY, NOINVERT
+    "E",            ID_TOOL_FILE_SEARCH,    VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_TOOL_FILE_SEARCH,    VIRTKEY, NOINVERT
     "D",            ID_VIEW_FOLDER_TREE_SHOW, VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_VIEW_REFRESH,        VIRTKEY, NOINVERT
     VK_F6,          ID_WINDOW_NEXT,         VIRTKEY, NOINVERT

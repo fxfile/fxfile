@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,6 +18,7 @@
 #include "ExplorerCtrl.h"
 #include "DosCmdDlg.h"
 #include "SharedProcDlg.h"
+#include "SearchDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -27,6 +28,43 @@ static char THIS_FILE[] = __FILE__;
 
 namespace cmd
 {
+xpr_sint_t FileSearchCommand::canExecute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    xpr_bool_t sState = StateEnable;
+
+    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
+        sState |= StateCheck;
+
+    return sState;
+}
+
+void FileSearchCommand::execute(CommandContext &aContext)
+{
+    XPR_COMMAND_DECLARE_CTRL;
+
+    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
+    {
+        sMainFrame->destroySearchDlg();
+    }
+    else
+    {
+        LPITEMIDLIST sFullPidl = XPR_NULL;
+
+        if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
+        {
+            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+            if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
+            {
+                sFullPidl = fxb::CopyItemIDList(sTvItemData->mFullPidl);
+            }
+        }
+
+        sMainFrame->showSearchDlg(sFullPidl);
+    }
+}
+
 xpr_sint_t EmptyRecycleBinCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;

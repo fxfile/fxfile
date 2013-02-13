@@ -115,7 +115,7 @@ BEGIN_MESSAGE_MAP(SearchDlg, super)
     ON_NOTIFY(CBEN_DELETEITEM, IDC_SEARCH_LOC, OnDeleteitemLocation)
     ON_BN_CLICKED(IDC_SEARCH_CUR_LOC, OnCurLocation)
     ON_BN_CLICKED(IDC_SEARCH_START,   OnStart)
-    ON_COMMAND(ID_VIEW_BAR_SEARCH,    OnViewBarSearch)
+    ON_COMMAND(ID_TOOL_FILE_SEARCH,   OnFileSearch)
     ON_MESSAGE(WM_FINALIZE, OnFinalize)
 END_MESSAGE_MAP()
 
@@ -1609,9 +1609,9 @@ void SearchDlg::OnTimer(xpr_uint_t aIdEvent)
     super::OnTimer(aIdEvent);
 }
 
-void SearchDlg::OnViewBarSearch(void) 
+void SearchDlg::OnFileSearch(void) 
 {
-    gFrame->SendMessage(WM_COMMAND, ID_VIEW_BAR_SEARCH, (LPARAM)gFrame->m_hWnd);
+    gFrame->SendMessage(WM_COMMAND, ID_TOOL_FILE_SEARCH, (LPARAM)gFrame->m_hWnd);
 }
 
 void SearchDlg::OnCurLocation(void)

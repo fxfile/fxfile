@@ -195,7 +195,6 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_VIEW_FOLDER_TREE_EACH_PANE]     = XPR_STRING_LITERAL("cmd.folder_tree.each_pane");
     mCommandString[ID_VIEW_FOLDER_TREE_LEFT_PANE]     = XPR_STRING_LITERAL("cmd.folder_tree.left_pane");
     mCommandString[ID_VIEW_FOLDER_TREE_RIGHT_PANE]    = XPR_STRING_LITERAL("cmd.folder_tree.right_pane");
-    mCommandString[ID_VIEW_BAR_SEARCH]                = XPR_STRING_LITERAL("cmd.search_bar");
     mCommandString[ID_VIEW_PICVIEWER]                 = XPR_STRING_LITERAL("cmd.picture.show");
     mCommandString[ID_VIEW_PIC_ZOOM_IN]               = XPR_STRING_LITERAL("cmd.picture.zoom_in");
     mCommandString[ID_VIEW_PIC_ZOOM_OUT]              = XPR_STRING_LITERAL("cmd.picture.zoom_out");
@@ -238,6 +237,7 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_VIEW_REFRESH]                   = XPR_STRING_LITERAL("cmd.refresh");
 
     // main menu - tool
+    mCommandString[ID_TOOL_FILE_SEARCH]               = XPR_STRING_LITERAL("cmd.file_search");
     mCommandString[ID_TOOL_EMPTY_RECYCLEBIN]          = XPR_STRING_LITERAL("cmd.recycle_bin.empty");
     mCommandString[ID_TOOL_WINDOWS_EXPLORER]          = XPR_STRING_LITERAL("cmd.windows_explorer");
     mCommandString[ID_TOOL_CMD]                       = XPR_STRING_LITERAL("cmd.command_prompt");
@@ -413,7 +413,7 @@ void CommandStringTable::loadCommandButtons(void)
     mCommandButtonString[ID_GO_HISTORY]               = XPR_STRING_LITERAL("tool_bar.cmd.navigate.history");
 
     mCommandButtonString[ID_VIEW_FOLDER_TREE_SHOW]    = XPR_STRING_LITERAL("tool_bar.cmd.folder_tree.show");
-    mCommandButtonString[ID_VIEW_BAR_SEARCH]          = XPR_STRING_LITERAL("tool_bar.cmd.search_bar");
+    mCommandButtonString[ID_TOOL_FILE_SEARCH]         = XPR_STRING_LITERAL("tool_bar.cmd.file_search");
 
     mCommandButtonString[ID_GO_BOOKMARK]              = XPR_STRING_LITERAL("tool_bar.cmd.bookmark.popup_menu");
     mCommandButtonString[ID_GO_DRIVE]                 = XPR_STRING_LITERAL("tool_bar.cmd.go.drive");
