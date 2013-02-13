@@ -31,7 +31,6 @@
 #define IDD_CFG_MGR                     175
 #define IDI_TRAY                        181
 #define IDD_CFG_ADV                     190
-#define IDB_OPTIONS_PANEL_IMAGES        218
 #define IDD_CONTENTS                    223
 #define IDD_LINK_EDIT                   223
 #define IDD_BOOKMARK_ITEM_EDIT          223
@@ -1384,6 +1383,19 @@
 #define IDC_CFG_FONT_FOLDER_TREE_ITEM_HEIGHT_SIZE 1823
 #define IDC_CFG_FONT_FOLDER_TREE_ITEM_HEIGHT_SIZE_SPIN 1824
 #define IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT 1825
+#define IDC_CFG_ADV_SINGLE_INSTANCE     1826
+#define IDC_CFG_ADV_CONFIRM_EXIT        1827
+#define IDC_CFG_ADV_CONFIRM_TO_EXIT     1827
+#define IDC_CFG_ADV_RECENT_FILE         1828
+#define IDC_CFG_ADV_RECENT_FILE_LIST    1828
+#define IDC_CFG_ADV_SHELL_CONTEXT_MENU  1829
+#define IDC_CFG_ADV_TRAY_HIDE_ON_EXIT   1830
+#define IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING 1831
+#define IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING 1832
+#define IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK 1833
+#define IDC_CFG_ADV_GROUP_TRAY          1834
+#define IDC_CFG_ADV_TRAY_NONE           1835
+#define IDC_CFG_ADV_TRAY_SHOW           1836
 #define ID_FILE_NEW_FOLDER              30000
 #define ID_FILE_NEW_FILE                30001
 #define ID_FILE_NEW_TEXT                30002
@@ -1784,7 +1796,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        424
 #define _APS_NEXT_COMMAND_VALUE         50006
-#define _APS_NEXT_CONTROL_VALUE         1826
+#define _APS_NEXT_CONTROL_VALUE         1837
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

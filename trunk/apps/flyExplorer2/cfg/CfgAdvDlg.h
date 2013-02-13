@@ -12,7 +12,6 @@
 #pragma once
 
 #include "CfgDlg.h"
-#include "../rgc/OptionsPanel.h"
 
 class CfgAdvDlg : public CfgDlg
 {
@@ -26,17 +25,14 @@ protected:
     virtual void onApply(Option::Config &aConfig);
 
 protected:
-    OptionsPanel mOptionPanel;
-
-protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
+    afx_msg void OnTray(void);
     afx_msg void OnDefault(void);
     afx_msg void OnRemoveRecentFileList(void);
-    afx_msg void OnOptionsSelChange(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #endif // __FX_CFG_ADV_DLG_H__

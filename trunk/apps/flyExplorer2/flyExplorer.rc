@@ -1090,8 +1090,25 @@ IDD_CFG_ADV DIALOGEX 0, 0, 255, 241
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_CFG_ADV_OPTION,"Button",BS_OWNERDRAW | WS_TABSTOP,0,0,254,223
-    PUSHBUTTON      "Cl&ear recently executed file list",IDC_CFG_ADV_REMOVE_RECENT_FILELIST,91,227,99,14
+    CONTROL         "&Single instance program",IDC_CFG_ADV_SINGLE_INSTANCE,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,0,254,10
+    CONTROL         "Confirm to e&xit program",IDC_CFG_ADV_CONFIRM_EXIT,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,12,254,10
+    CONTROL         "Use &recent file list",IDC_CFG_ADV_RECENT_FILE,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,24,254,10
+    CONTROL         "Register to shell context &menu",IDC_CFG_ADV_SHELL_CONTEXT_MENU,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,36,254,10
+    GROUPBOX        "System tray",IDC_CFG_ADV_GROUP_TRAY,0,59,254,91
+    CONTROL         "None",IDC_CFG_ADV_TRAY_NONE,"Button",BS_AUTORADIOBUTTON | BS_FLAT | WS_GROUP,8,71,241,10
+    CONTROL         "Show system tray",IDC_CFG_ADV_TRAY_SHOW,"Button",BS_AUTORADIOBUTTON | BS_FLAT,8,83,241,10
+    CONTROL         "Hide program on exit",IDC_CFG_ADV_TRAY_HIDE_ON_EXIT,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,17,95,232,10
+    CONTROL         "Show system tray when minimizing program",IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,107,241,10
+    CONTROL         "Open init folder when restoring on system tray",IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,119,241,10
+    CONTROL         "Restore program on one click",IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,131,241,10
+    PUSHBUTTON      "Cl&ear recently executed file list",IDC_CFG_ADV_REMOVE_RECENT_FILELIST,78,227,112,14
     PUSHBUTTON      "Default(&R)",IDC_CFG_ADV_DEFAULT,192,227,63,14
 END
 
@@ -3105,7 +3122,6 @@ END
 
 IDB_TB_MAIN_HOT_LARGE   BITMAP                  "res\\tb_main_hot_large.bmp"
 IDB_TB_MAIN_COLD_LARGE  BITMAP                  "res\\tb_main_cold_large.bmp"
-IDB_OPTIONS_PANEL_IMAGES BITMAP                  "res\\options_panel.bmp"
 IDB_ABOUT               BITMAP                  "res\\about.bmp"
 IDB_PREVIEW_ZOOMIN_COLD BITMAP                  "res\\preview_zoomin_cold.bmp"
 IDB_PREVIEW_NEXT_HOT    BITMAP                  "res\\preview_next_hot.bmp"
