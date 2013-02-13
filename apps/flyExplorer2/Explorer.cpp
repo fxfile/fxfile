@@ -453,8 +453,16 @@ void ExplorerApp::onChangedConfig(Option &aOption)
     // unregister shell registry for old language
     ShellRegistry::unregisterShell();
 
-    // load language
-    loadLanguage(aOption.mConfig.mLanguage);
+    // popup warning message about language change
+    const fxb::LanguagePack::Desc *sLoadedLanguagePackDesc = mLanguageTable->getLanguageDesc();
+    if (_tcsicmp(sLoadedLanguagePackDesc->mLanguage, aOption.mConfig.mLanguage) != 0)
+    {
+        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.apply_language_on_next_loading_time"));
+        AfxMessageBox(sMsg, MB_OK | MB_ICONWARNING);
+    }
+
+    // load language on runtime
+    //loadLanguage(aOption.mConfig.mLanguage);
 
     // set single instance
     setSingleInstance(aOption.mConfig.mSingleInstance);
