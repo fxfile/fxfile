@@ -1449,7 +1449,7 @@ BEGIN
     CONTROL         "Show &info bar",IDC_CFG_LAYOUT_SHOW_INFO_BAR,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,1,108,249,10
     CONTROL         "&Standard style",IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE,
                     "Button",BS_AUTORADIOBUTTON | BS_FLAT,17,131,232,10
-    CONTROL         "N&o display for detailed information",IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO,
+    CONTROL         "N&o display for selected file information",IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_SEL_FILE_INFO,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,26,143,223,10
     CONTROL         "&Basic style",IDC_CFG_LAYOUT_INFO_BAR_BASIC_STYLE,
                     "Button",BS_AUTORADIOBUTTON | BS_FLAT,17,155,232,10

@@ -71,10 +71,7 @@ public:
 
     void updateBookmark(xpr_bool_t aUpdatePosition = XPR_FALSE);
     void enableBookmark(xpr_bool_t aEnable);
-    xpr_bool_t isEnableBookmark(void) const;
-    xpr_bool_t isVisibleBookmark(void) const;
-    void setBookmarkPopup(xpr_bool_t aPopup);
-    void setBookmarkColor(COLORREF aBookmarkColor);
+    xpr_bool_t isEnabledBookmark(void) const;
 
     void visibleAddressBar(xpr_bool_t aVisible, xpr_bool_t aLoading = XPR_FALSE);
     xpr_bool_t isVisibleAddressBar(void) const;

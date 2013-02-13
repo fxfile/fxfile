@@ -231,7 +231,7 @@ void BookmarkSetWnd::enableBookmark(xpr_bool_t aEnable)
     ShowWindow((aEnable == XPR_TRUE) ? SW_SHOW : SW_HIDE);
 }
 
-void BookmarkSetWnd::setBookmarkPopup(xpr_bool_t aPopup)
+void BookmarkSetWnd::setBookmarkOption(COLORREF aColor, xpr_bool_t aPopup)
 {
     if (mBookmarkWnd == XPR_NULL)
         return;
@@ -240,20 +240,10 @@ void BookmarkSetWnd::setBookmarkPopup(xpr_bool_t aPopup)
     for (i = 0; i < mBookmarkCount; ++i)
     {
         if (mBookmarkWnd[i].m_hWnd != XPR_NULL)
+        {
+            mBookmarkWnd[i].setBookmarkColor(aColor);
             mBookmarkWnd[i].setTooltip(aPopup);
-    }
-}
-
-void BookmarkSetWnd::setBookmarkColor(COLORREF aBookmarkColor)
-{
-    if (mBookmarkWnd == XPR_NULL)
-        return;
-
-    xpr_sint_t i;
-    for (i = 0; i < mBookmarkCount; ++i)
-    {
-        if (mBookmarkWnd[i].m_hWnd != XPR_NULL)
-            mBookmarkWnd[i].setBookmarkColor(aBookmarkColor);
+        }
     }
 }
 

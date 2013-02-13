@@ -134,10 +134,8 @@ public:
     void enableBookmark(xpr_bool_t aEnable);
     void updateBookmark(void);
     void updateBookmarkPosition(void);
-    xpr_bool_t isEnableBookmark(void) { return mEnableBookmark; }
-    xpr_bool_t isVisibleBookmark(void) { return mVisibleBookmark; }
-    void setBookmarkPopup(xpr_bool_t aPopup);
-    void setBookmarkColor(COLORREF aBookmarkColor);
+    xpr_bool_t isEnabledBookmark(void) { return mEnabledBookmark; }
+    void setBookmarkOption(COLORREF aColor, xpr_bool_t aPopup);
 
 protected:
     void setContentsDrive(LPLVITEMDATA sLvItemData, xpr_tchar_t aDrive, xpr_bool_t aShowBookmark, xpr_bool_t aUpdate = XPR_FALSE);
@@ -162,8 +160,7 @@ protected:
 
     BookmarkSetWnd *mBookmarkSetWnd;
     xpr_sint_t      mBookmarkTop;
-    xpr_bool_t      mEnableBookmark;
-    xpr_bool_t      mVisibleBookmark;
+    xpr_bool_t      mEnabledBookmark;
 
     CFont          *mTitleFont;
     CFont          *mTextFont;

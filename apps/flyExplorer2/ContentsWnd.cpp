@@ -40,8 +40,7 @@ ContentsWnd::ContentsWnd(void)
     , mFolderIcon(XPR_NULL)
     , mTitleFont(XPR_NULL), mTextFont(XPR_NULL), mFileNameFont(XPR_NULL), mFullPathFont(XPR_NULL)
     , mBookmarkSetWnd(XPR_NULL)
-    , mEnableBookmark(XPR_FALSE)
-    , mVisibleBookmark(XPR_FALSE)
+    , mEnabledBookmark(XPR_FALSE)
     , mBookmarkTop(0)
 {
 }
@@ -221,7 +220,7 @@ void ContentsWnd::OnPaint(void)
 
             // bookmark
             CFont *sOldFont = sMemDc.SelectObject(mTextFont);
-            if (fxb::BookmarkMgr::instance().getCount() > 0 && mEnableBookmark == XPR_TRUE)
+            if (fxb::BookmarkMgr::instance().getCount() > 0 && mEnabledBookmark == XPR_TRUE)
             {
                 xpr_tchar_t sBookmark[0xff] = {0};
                 _stprintf(sBookmark, XPR_STRING_LITERAL("%s:"), theApp.loadString(XPR_STRING_LITERAL("contents.bookmark")));
@@ -531,7 +530,7 @@ void ContentsWnd::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate
     if (aTvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
     {
         clear();
         return;
@@ -597,7 +596,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
     if (aLvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
     {
         clear();
         return;
@@ -703,7 +702,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
 
 void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSize, const xpr_tchar_t *aNames)
 {
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
     {
         clear();
         return;
@@ -762,7 +761,7 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
                                    xpr_bool_t    aShowBookmark,
                                    xpr_bool_t    aUpdate)
 {
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
     {
         clear();
         return;
@@ -856,25 +855,16 @@ void ContentsWnd::updateBookmarkPosition(void)
 
 void ContentsWnd::enableBookmark(xpr_bool_t aEnable)
 {
-    if (mMode == ModeSingleItem || mMode == ModeMultiItem || gOpt->mConfig.mContentsBookmark == XPR_FALSE)
-        aEnable = XPR_FALSE;
-
     if (mBookmarkSetWnd != XPR_NULL)
         mBookmarkSetWnd->enableBookmark(aEnable);
 
-    mEnableBookmark = aEnable;
+    mEnabledBookmark = aEnable;
 }
 
-void ContentsWnd::setBookmarkPopup(xpr_bool_t aPopup)
+void ContentsWnd::setBookmarkOption(COLORREF aColor, xpr_bool_t aPopup)
 {
     if (mBookmarkSetWnd != XPR_NULL)
-        mBookmarkSetWnd->setBookmarkPopup(aPopup);
-}
-
-void ContentsWnd::setBookmarkColor(COLORREF aBookmarkColor)
-{
-    if (mBookmarkSetWnd != XPR_NULL)
-        mBookmarkSetWnd->setBookmarkColor(aBookmarkColor);
+        mBookmarkSetWnd->setBookmarkOption(aColor, aPopup);
 }
 
 void ContentsWnd::updateFont(void)

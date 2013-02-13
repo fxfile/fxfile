@@ -134,7 +134,7 @@ public:
         xpr_sint_t      mContentsStyle;
         xpr_bool_t      mContentsBookmark;
         xpr_uint_t      mContentsBookmarkColor;
-        xpr_bool_t      mContentsNoDispInfo;
+        xpr_bool_t      mContentsNoDispSelFileInfo;
         xpr_bool_t      mContentsARHSAttribute;
 
         xpr_bool_t      mBookmarkTooltip;

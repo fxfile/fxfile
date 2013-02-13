@@ -28,8 +28,7 @@ public:
     void updateBookmark(void);
 
     void enableBookmark(xpr_bool_t aEnable);
-    void setBookmarkPopup(xpr_bool_t aPopup);
-    void setBookmarkColor(COLORREF aBookmarkColor);
+    void setBookmarkOption(COLORREF aColor, xpr_bool_t aPopup);
 
 protected:
     void recalcLayout(void);

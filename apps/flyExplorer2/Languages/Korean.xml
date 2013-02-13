@@ -1414,7 +1414,7 @@
 			<String ID="popup.cfg.body.appearance.layout.group.info_bar_style">스타일(&amp;T)</String>
 			<String ID="popup.cfg.body.appearance.layout.radio.info_bar_standard_style">표준 스타일(&amp;S)</String>
 			<String ID="popup.cfg.body.appearance.layout.radio.info_bar_basic_style">기본 스타일(&amp;B)</String>
-			<String ID="popup.cfg.body.appearance.layout.check.info_bar_no_display_detailed_info">자세한 정보 표시 안함(&amp;O)</String>
+			<String ID="popup.cfg.body.appearance.layout.check.info_bar_no_display_selected_file_info">선택된 파일 세부 정보 표시 안함(&amp;O)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.info_bar_show_bookmark">북마크 표시(&amp;M)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.info_bar_show_arhs_attribute_style">속성 ARHS 스타일 표시(&amp;A)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.show_status_bar">상태 표시줄 표시(&amp;I)</String>

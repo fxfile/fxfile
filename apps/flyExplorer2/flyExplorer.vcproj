@@ -935,14 +935,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\rgc\OptionsPanel.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\rgc\OptionsPanel.h"
-				>
-			</File>
-			<File
 				RelativePath=".\rgc\Print.cpp"
 				>
 			</File>
