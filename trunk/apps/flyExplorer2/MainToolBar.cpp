@@ -38,7 +38,7 @@ static TBBUTTONEX kTbButtons[] = {
     { {  3, ID_GO_HISTORY,            TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 0 },
     { {  0, 0,                        TBSTATE_ENABLED, TBSTYLE_2, 0, 0, 0 }, 1 },
     { {  7, ID_VIEW_FOLDER_TREE_SHOW, TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
-    { {  8, ID_VIEW_BAR_SEARCH,       TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
+    { {  8, ID_TOOL_FILE_SEARCH,      TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
     { {  0, 0,                        TBSTATE_ENABLED, TBSTYLE_2, 0, 0, 0 }, 1 },
     { { 10, ID_GO_BOOKMARK,           TBSTATE_ENABLED, TBSTYLE_4, 0, 0, 0 }, 1 },
     { { 11, ID_GO_DRIVE,              TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 1 },
@@ -125,7 +125,7 @@ xpr_bool_t MainToolBar::HasButtonText(xpr_uint_t aId)
         {
         case ID_GO_BACK:
         case ID_VIEW_FOLDER_TREE_SHOW:
-        case ID_VIEW_BAR_SEARCH:
+        case ID_TOOL_FILE_SEARCH:
         case ID_FILE_RENAME:
         case ID_FILE_NEW_FOLDER:
             sResult = XPR_TRUE;
@@ -148,7 +148,7 @@ xpr_bool_t MainToolBar::HasButtonTip(xpr_uint_t aId)
         {
         case ID_GO_BACK:
         case ID_VIEW_FOLDER_TREE_SHOW:
-        case ID_VIEW_BAR_SEARCH:
+        case ID_TOOL_FILE_SEARCH:
         case ID_FILE_RENAME:
         case ID_FILE_NEW_FOLDER:
             sResult = XPR_FALSE;

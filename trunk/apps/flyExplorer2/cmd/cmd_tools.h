@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,7 @@
 
 namespace cmd
 {
+XPR_COMMAND_DECLARE_CLASS(FileSearchCommand);
 XPR_COMMAND_DECLARE_CLASS(EmptyRecycleBinCommand);
 XPR_COMMAND_DECLARE_CLASS(WindowsExplorerCommand);
 XPR_COMMAND_DECLARE_CLASS(CmdCommand);

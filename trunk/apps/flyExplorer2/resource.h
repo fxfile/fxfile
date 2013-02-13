@@ -1551,7 +1551,6 @@
 #define ID_VIEW_FOLDER_TREE_EACH_PANE   33022
 #define ID_VIEW_FOLDER_TREE_LEFT_PANE   33023
 #define ID_VIEW_FOLDER_TREE_RIGHT_PANE  33024
-#define ID_VIEW_BAR_SEARCH              33025
 #define ID_VIEW_REFRESH                 33040
 #define ID_VIEW_STOP                    33041
 #define ID_VIEW_SHOW_MAINFRAME          33042
@@ -1611,6 +1610,7 @@
 #define ID_TOOL_SHARED_PROC             34011
 #define ID_TOOL_FOLDER_SYNC             34012
 #define ID_TOOL_SAVE_OPTION             34013
+#define ID_TOOL_FILE_SEARCH             34014
 #define ID_WINDOW_NEXT                  35000
 #define ID_WINDOW_PREV                  35001
 #define ID_WINDOW_SPLIT_SINGLE          35002

@@ -111,7 +111,7 @@ protected:
     afx_msg void OnDeleteitemLocation(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnPaint(void);
     afx_msg void OnTimer(xpr_uint_t aIdEvent);
-    afx_msg void OnViewBarSearch(void);
+    afx_msg void OnFileSearch(void);
     afx_msg void OnCurLocation(void);
     afx_msg LRESULT OnFinalize(WPARAM wParam, LPARAM lParam);
 };

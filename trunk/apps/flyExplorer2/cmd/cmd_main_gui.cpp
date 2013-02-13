@@ -16,7 +16,6 @@
 #include "ExplorerPane.h"
 #include "ExplorerCtrl.h"
 #include "AddressBar.h"
-#include "SearchDlg.h"
 #include "CtrlId.h"
 
 #ifdef _DEBUG
@@ -419,42 +418,5 @@ void RightFolderPaneCommand::execute(CommandContext &aContext)
     XPR_COMMAND_DECLARE_CTRL;
 
     sMainFrame->setLeftFolderPane(XPR_FALSE);
-}
-
-xpr_sint_t ShowSearchBarCommand::canExecute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    xpr_bool_t sState = StateEnable;
-
-    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
-        sState |= StateCheck;
-
-    return sState;
-}
-
-void ShowSearchBarCommand::execute(CommandContext &aContext)
-{
-    XPR_COMMAND_DECLARE_CTRL;
-
-    if (sMainFrame->isVisibleSearchDlg() == XPR_TRUE)
-    {
-        sMainFrame->destroySearchDlg();
-    }
-    else
-    {
-        LPITEMIDLIST sFullPidl = XPR_NULL;
-
-        if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
-        {
-            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-            if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
-            {
-                sFullPidl = fxb::CopyItemIDList(sTvItemData->mFullPidl);
-            }
-        }
-
-        sMainFrame->showSearchDlg(sFullPidl);
-    }
 }
 } // namespace cmd

@@ -281,7 +281,6 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_EACH_PANE,       new cmd::EachFolderPaneCommand);
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_LEFT_PANE,       new cmd::LeftFolderPaneCommand);
     aExecutor.bindCommand(ID_VIEW_FOLDER_TREE_RIGHT_PANE,      new cmd::RightFolderPaneCommand);
-    aExecutor.bindCommand(ID_VIEW_BAR_SEARCH,                  new cmd::ShowSearchBarCommand);
 
     aExecutor.bindCommand(ID_VIEW_PICVIEWER,                   new cmd::PicViewerCommand);
 
@@ -327,6 +326,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     //
     // Tool Menu
     //
+    aExecutor.bindCommand(ID_TOOL_FILE_SEARCH,                 new cmd::FileSearchCommand);
     aExecutor.bindCommand(ID_TOOL_EMPTY_RECYCLEBIN,            new cmd::EmptyRecycleBinCommand);
     aExecutor.bindCommand(ID_TOOL_WINDOWS_EXPLORER,            new cmd::WindowsExplorerCommand);
     aExecutor.bindCommand(ID_TOOL_CMD,                         new cmd::CmdCommand);
