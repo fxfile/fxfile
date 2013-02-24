@@ -42,9 +42,6 @@ public:
     void saveConfigOption(fxb::IniFileEx &aIniFile) const;
 
 public:
-    static COLORREF getPathBarDefaultHighlightColor(void);
-
-public:
     struct Config;
 
     void copyConfig(Config &aConfig) const;

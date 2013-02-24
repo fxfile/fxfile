@@ -142,22 +142,22 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.path_bar.real_path"),                         OptionKey::TypeBoolean, &Option::mConfig.mPathBarRealPath,              (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.path_bar.icon"),                              OptionKey::TypeBoolean, &Option::mConfig.mPathBarIcon,                  (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.path_bar.highlight"),                         OptionKey::TypeBoolean, &Option::mConfig.mPathBarHighlight,             (void *)XPR_TRUE                       },
-    { XPR_STRING_LITERAL("config.path_bar.highlight_color"),                   OptionKey::TypeColor,   &Option::mConfig.mPathBarHighlightColor,        (void *)(xpr_sintptr_t)Option::getPathBarDefaultHighlightColor() },
+    { XPR_STRING_LITERAL("config.path_bar.highlight_color"),                   OptionKey::TypeColor,   &Option::mConfig.mPathBarHighlightColor,        (void *)(xpr_sintptr_t)DEF_PATH_BAR_HIGHLIGHT_COLOR },
 
     { XPR_STRING_LITERAL("config.drive_bar.show"),                             OptionKey::TypeBoolean, &Option::mConfig.mShowEachDriveBar,             (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.drive_bar.left_side"),                        OptionKey::TypeBoolean, &Option::mConfig.mDriveBarLeftSide,             (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.drive_bar.short_text"),                       OptionKey::TypeBoolean, &Option::mConfig.mDriveBarShortText,            (void *)XPR_TRUE                       },
 
     { XPR_STRING_LITERAL("config.activate_bar.show"),                          OptionKey::TypeBoolean, &Option::mConfig.mShowActivateBar,              (void *)XPR_TRUE                       },
-    { XPR_STRING_LITERAL("config.activate_bar.active_color"),                  OptionKey::TypeColor,   &Option::mConfig.mActiveViewColor,              (void *)RGB(48,192,48)                 },
+    { XPR_STRING_LITERAL("config.activate_bar.active_color"),                  OptionKey::TypeColor,   &Option::mConfig.mActiveViewColor,              (void *)DEF_ACTIVED_VIEW_COLOR         },
 
     { XPR_STRING_LITERAL("config.status_bar.show"),                            OptionKey::TypeBoolean, &Option::mConfig.mShowStatusBar,                (void *)XPR_TRUE                       },
 
     { XPR_STRING_LITERAL("config.info_bar.show"),                              OptionKey::TypeBoolean, &Option::mConfig.mShowInfoBar,                  (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.info_bar.style"),                             OptionKey::TypeInteger, &Option::mConfig.mContentsStyle,                (void *)CONTENTS_EXPLORER              },
     { XPR_STRING_LITERAL("config.info_bar.show_bookmark"),                     OptionKey::TypeBoolean, &Option::mConfig.mContentsBookmark,             (void *)XPR_TRUE                       },
-    { XPR_STRING_LITERAL("config.info_bar.bookmark_color"),                    OptionKey::TypeColor,   &Option::mConfig.mContentsBookmarkColor,        (void *)RGB(0,0,255)                   },
-    { XPR_STRING_LITERAL("config.info_bar.no_display_detailed_info"),          OptionKey::TypeBoolean, &Option::mConfig.mContentsNoDispDetailedInfo,    (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.info_bar.bookmark_color"),                    OptionKey::TypeColor,   &Option::mConfig.mContentsBookmarkColor,        (void *)DEF_INFO_BAR_BOOKMARK_COLOR    },
+    { XPR_STRING_LITERAL("config.info_bar.no_display_detailed_info"),          OptionKey::TypeBoolean, &Option::mConfig.mContentsNoDispDetailedInfo,   (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.info_bar.show_ARHS_file_attributes"),         OptionKey::TypeBoolean, &Option::mConfig.mContentsARHSAttribute,        (void *)XPR_FALSE                      },
 
     { XPR_STRING_LITERAL("config.bookmark.tooltip"),                           OptionKey::TypeBoolean, &Option::mConfig.mBookmarkTooltip,              (void *)XPR_TRUE                       },
@@ -428,11 +428,6 @@ Option::~Option(void)
 void Option::setObserver(OptionObserver *aObserver)
 {
     mObserver = aObserver;
-}
-
-COLORREF Option::getPathBarDefaultHighlightColor(void)
-{
-    return ::GetSysColor(COLOR_ACTIVECAPTION);
 }
 
 void Option::copyConfig(Config &aConfig) const

@@ -45,7 +45,7 @@ PathBar::PathBar(void)
     mPath[0]      = 0;
     mPathMouse[0] = 0;
 
-    mHighlightColor = Option::getPathBarDefaultHighlightColor();
+    mHighlightColor = DEF_PATH_BAR_HIGHLIGHT_COLOR;
 }
 
 PathBar::~PathBar(void)
