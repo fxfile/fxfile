@@ -121,11 +121,11 @@ public:
     xpr_bool_t initDefault(void);
     static xpr_bool_t getDefaultBookmark(BookmarkDeque &aBookmarkDeque);
 
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath);
-    xpr_bool_t saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t load(const xpr_tchar_t *aPath);
+    xpr_bool_t save(const xpr_tchar_t *aPath) const;
 
     xpr_bool_t load(void);
-    xpr_bool_t save(void);
+    xpr_bool_t save(void) const;
 
 protected:
     BookmarkDeque mBookmarkDeque;

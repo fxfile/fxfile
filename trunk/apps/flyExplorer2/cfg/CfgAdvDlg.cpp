@@ -10,6 +10,8 @@
 #include "stdafx.h"
 #include "CfgAdvDlg.h"
 
+#include "fxb/fxb_recent_file_list.h"
+
 #include "../resource.h"
 #include "../Option.h"
 
@@ -120,5 +122,6 @@ void CfgAdvDlg::OnRemoveRecentFileList(void)
     if (sMsgId != IDYES)
         return;
 
-    theApp.removeRecentFileList();
+    fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+    sRecentFileList.clear();
 }

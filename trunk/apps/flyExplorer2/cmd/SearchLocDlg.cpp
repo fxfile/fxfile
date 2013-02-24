@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -203,12 +203,12 @@ xpr_bool_t SearchLocDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-fxb::SearchUserLocDeque *SearchLocDlg::getSearchLoc(xpr_bool_t aNull) const
+fxb::SearchUserLocDeque *SearchLocDlg::getSearchLoc(xpr_bool_t aNull)
 {
     fxb::SearchUserLocDeque *sSearchUserLoc = mSearchUserLoc;
 
     if (aNull == XPR_TRUE)
-        sSearchUserLoc = XPR_NULL;
+        mSearchUserLoc = XPR_NULL;
 
     return sSearchUserLoc;
 }

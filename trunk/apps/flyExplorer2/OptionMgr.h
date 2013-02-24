@@ -13,6 +13,11 @@
 
 #include "xpr_pattern.h"
 
+namespace fxb
+{
+    class IniFileEx;
+}
+
 class Option;
 class ExplorerView;
 class ExplorerCtrl;
@@ -29,7 +34,7 @@ public:
     void initDefault(void);
 
     void load(xpr_bool_t &aInitCfg);
-    xpr_bool_t save(xpr_bool_t aOnlyConfig = XPR_FALSE);
+    xpr_bool_t save(void);
 
     xpr_bool_t loadMainOption(void);
     xpr_bool_t saveMainOption(void);
@@ -37,16 +42,20 @@ public:
     xpr_bool_t loadConfigOption(void);
     xpr_bool_t saveConfigOption(void);
 
-    xpr_bool_t loadFilter(void);
-    xpr_bool_t saveFilter(void);
+    Option *getOption(void) const { return mOption; }
 
-    xpr_bool_t loadProgramAss(void);
-    xpr_bool_t saveProgramAss(void);
+protected:
+    void loadFilter(fxb::IniFileEx &aIniFile);
+    void saveFilter(fxb::IniFileEx &aIniFile);
 
-    xpr_bool_t loadSizeFormat(void);
-    xpr_bool_t saveSizeFormat(void);
+    void loadProgramAss(fxb::IniFileEx &aIniFile);
+    void saveProgramAss(fxb::IniFileEx &aIniFile);
 
-    Option *getOption(void) { return mOption; }
+    void loadSizeFormat(fxb::IniFileEx &aIniFile);
+    void saveSizeFormat(fxb::IniFileEx &aIniFile);
+
+    void loadRecentFileList(fxb::IniFileEx &aIniFile);
+    void saveRecentFileList(fxb::IniFileEx &aIniFile);
 
 private:
     Option *mOption;

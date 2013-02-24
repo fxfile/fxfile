@@ -32,19 +32,12 @@ protected:
     } Item;
 
 protected:
-    CListCtrl  mListCtrl;
-    CImageList mImageList;
-
-protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
     virtual xpr_bool_t PreTranslateMessage(MSG* pMsg);
 
 protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
-    afx_msg void OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnLvnItemActivate(NMHDR *pNMHDR, LRESULT *pResult);
-    afx_msg void OnLvnDeleteitemList(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnSetPath(void);
     afx_msg void OnCustomPathBrowse(void);
     afx_msg void OnCfgPath(void);

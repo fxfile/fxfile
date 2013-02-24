@@ -116,8 +116,7 @@ protected:
         InitFolderSplit     = 0x00000001,
         InitFolderCmdParam  = 0x00000002,
         InitFolderCfgInit   = 0x00000004,
-        InitFolderLastSaved = 0x00000008,
-        InitFolderDefault   = 0x00000010,
+        InitFolderDefault   = 0x00000008,
         InitFolderAll       = 0xffffffff,
     };
 

@@ -29,8 +29,8 @@ public:
     TBBUTTONEX *getButton(xpr_sint_t *aCount = XPR_NULL);
     COLORREF    getColorMask(void);
 
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath);
-    void saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t load(const xpr_tchar_t *aPath);
+    void save(const xpr_tchar_t *aPath) const;
 
 protected:
     // from DropTargetObserver

@@ -13,9 +13,13 @@
 
 #include "Defines.h"
 
-typedef std::deque<std::tstring> TabPathDeque;
-
 class OptionObserver;
+
+namespace fxb
+{
+    class IniFileEx;
+    class History;
+}
 
 class Option
 {
@@ -31,11 +35,11 @@ public:
 public:
     void initDefault(void);
 
-    xpr_bool_t loadMainOption(const xpr_tchar_t *aPath);
-    xpr_bool_t saveMainOption(const xpr_tchar_t *aPath);
+    void loadMainOption(fxb::IniFileEx &aIniFile);
+    void saveMainOption(fxb::IniFileEx &aIniFile) const;
 
-    xpr_bool_t loadConfigOption(const xpr_tchar_t *aPath);
-    xpr_bool_t saveConfigOption(const xpr_tchar_t *aPath);
+    void loadConfigOption(fxb::IniFileEx &aIniFile);
+    void saveConfigOption(fxb::IniFileEx &aIniFile) const;
 
 public:
     static COLORREF getPathBarDefaultHighlightColor(void);
@@ -48,7 +52,7 @@ public:
     void notifyConfig(void);
 
 public:
-    struct Main
+    static struct Main
     {
         CRect           mWindowRect;
         xpr_sint_t      mWindowStatus;
@@ -69,22 +73,42 @@ public:
         xpr_double_t    mViewSplitRatio[MAX_VIEW_SPLIT_COLUMN + MAX_VIEW_SPLIT_ROW - 2];
         xpr_sint_t      mViewSplitSize[MAX_VIEW_SPLIT_COLUMN + MAX_VIEW_SPLIT_ROW - 2];
         xpr_bool_t      mViewStyle[MAX_VIEW_SPLIT];
-        xpr_tchar_t     mLastFolder[MAX_VIEW_SPLIT][XPR_MAX_PATH * 2 + 1];
         xpr_tchar_t     mWorkingFolder[MAX_WORKING_FOLDER][XPR_MAX_PATH * 2 + 1];
         xpr_bool_t      mFileScrapDrop;
         xpr_bool_t      mPicViewer;
         xpr_bool_t      mTipOfTheToday;
 
-        struct ViewSplitTab
+        void clearView(void);
+
+        struct Tab;
+        struct View;
+        typedef std::list <std::tstring> HistoryList;
+        typedef std::deque<Tab        *> TabDeque;
+        typedef std::deque<View       *> ViewDeque;
+
+        struct Tab
         {
-            TabPathDeque mTabPathDeque;
-            xpr_size_t   mCurTab;
+            std::tstring mPath;
+            HistoryList  mBackwardList;
+            HistoryList  mForwardList;
+            HistoryList  mHistoryList;
         };
 
-        ViewSplitTab mViewSplitTab[MAX_VIEW_SPLIT];
+        struct View
+        {
+            View(void);
+            ~View(void);
+
+            void clear(void);
+
+            TabDeque   mTabDeque;
+            xpr_size_t mCurTab;
+        };
+
+        View mView[MAX_VIEW_SPLIT];
     } mMain;
 
-    struct Config
+    static struct Config
     {
         // general
         xpr_sint_t      mMouseClick;
@@ -134,7 +158,7 @@ public:
         xpr_sint_t      mContentsStyle;
         xpr_bool_t      mContentsBookmark;
         xpr_uint_t      mContentsBookmarkColor;
-        xpr_bool_t      mContentsNoDispSelFileInfo;
+        xpr_bool_t      mContentsNoDispDetailedInfo;
         xpr_bool_t      mContentsARHSAttribute;
 
         xpr_bool_t      mBookmarkTooltip;

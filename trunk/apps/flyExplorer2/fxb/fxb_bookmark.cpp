@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_bookmark.h"
 
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 #include "fxb_shell_icon.h"
 
 #include "../Option.h"
@@ -25,6 +25,16 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
+static const xpr_tchar_t kBookmarkSection[] = XPR_STRING_LITERAL("bookmark");
+static const xpr_tchar_t kNameKey[]         = XPR_STRING_LITERAL("bookmark.item%d.name");
+static const xpr_tchar_t kPathKey[]         = XPR_STRING_LITERAL("bookmark.item%d.path");
+static const xpr_tchar_t kIconKey[]         = XPR_STRING_LITERAL("bookmark.item%d.icon");
+static const xpr_tchar_t kIconIndexKey[]    = XPR_STRING_LITERAL("bookmark.item%d.icon_idex");
+static const xpr_tchar_t kParameterKey[]    = XPR_STRING_LITERAL("bookmark.item%d.paramter");
+static const xpr_tchar_t kStartupKey[]      = XPR_STRING_LITERAL("bookmark.item%d.startup");
+static const xpr_tchar_t kShowStatusKey[]   = XPR_STRING_LITERAL("bookmark.item%d.show_status");
+static const xpr_tchar_t kHotKeyKey[]       = XPR_STRING_LITERAL("bookmark.item%d.hotkey");
+
 // user defined message
 enum
 {
@@ -395,106 +405,150 @@ void BookmarkMgr::clear(void)
     mBookmarkDeque.clear();
 }
 
-xpr_bool_t BookmarkMgr::loadFromFile(const xpr_tchar_t *lpcszPath)
+xpr_bool_t BookmarkMgr::load(const xpr_tchar_t *aPath)
 {
-    IniFile sIniFile(lpcszPath);
+    clear();
+
+    IniFileEx sIniFile(aPath);
     if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
-    xpr_size_t sCount = sIniFile.getKeyCount();
-    if (sCount <= 0)
+    xpr_size_t         i;
+    BookmarkItem      *sBookmark;
+    xpr_sint_t         sHotKey;
+    xpr_tchar_t        sKey[0xff];
+    const xpr_tchar_t *sValue;
+    IniFile::Section  *sSection;
+
+    sSection = sIniFile.findSection(kBookmarkSection);
+    if (XPR_IS_NULL(sSection))
         return XPR_FALSE;
 
-    clear();
-
-    sCount = min(sCount, MAX_BOOKMARK);
-
-    xpr_size_t i;
-    BookmarkItem *sBookmark;
-
-    xpr_sint_t sHotKey;
-    const xpr_tchar_t *sString;
-    xpr_tchar_t sKey[0xff];
-
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; ; ++i)
     {
-        _stprintf(sKey, XPR_STRING_LITERAL("Bookmark%02d"), i+1);
+        _stprintf(sKey, kNameKey, i + 1);
+
+        sValue = sIniFile.getValueS(sSection, kNameKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+            break;
 
         sBookmark = new BookmarkItem;
 
-        sBookmark->mName = sIniFile.getValueS(sKey, XPR_STRING_LITERAL("Name"), XPR_STRING_LITERAL(""));
-        sBookmark->mPath = sIniFile.getValueS(sKey, XPR_STRING_LITERAL("Path"), XPR_STRING_LITERAL(""));
+        sBookmark->mName = sValue;
 
-        sString = sIniFile.getValueS(sKey, XPR_STRING_LITERAL("Icon"), XPR_NULL);
-        if (sString != XPR_NULL && _tcslen(sString) > 0)
+        _stprintf(sKey, kPathKey, i + 1);
+        sBookmark->mPath = sIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
+
+        _stprintf(sKey, kIconKey, i + 1);
+        sValue = sIniFile.getValueS(sSection, sKey, XPR_NULL);
+
+        if (XPR_IS_NOT_NULL(sValue) && _tcslen(sValue) > 0)
         {
-            sBookmark->mIconPath = sString;
-            sBookmark->mIconIndex = sIniFile.getValueI(sKey, XPR_STRING_LITERAL("Index"), -1);
+            sBookmark->mIconPath = sValue;
+
+            _stprintf(sKey, kIconIndexKey, i + 1);
+            sBookmark->mIconIndex = sIniFile.getValueI(sSection, sKey, -1);
         }
 
-        sString = sIniFile.getValueS(sKey, XPR_STRING_LITERAL("Parameter"), XPR_NULL);
-        if (sString != XPR_NULL && _tcslen(sString) > 0)
-            sBookmark->mParam = sString;
+        _stprintf(sKey, kParameterKey, i + 1);
+        sValue = sIniFile.getValueS(sSection, sKey, XPR_NULL);
 
-        sString = sIniFile.getValueS(sKey, XPR_STRING_LITERAL("Startup"), XPR_NULL);
-        if (sString != XPR_NULL && _tcslen(sString) > 0)
-            sBookmark->mStartup = sString;
+        if (XPR_IS_NOT_NULL(sValue) && _tcslen(sValue) > 0)
+        {
+            sBookmark->mParam = sValue;
+        }
 
-        sBookmark->mShowCmd = sIniFile.getValueI(sKey, XPR_STRING_LITERAL("ShowCmd"), 0);
+        _stprintf(sKey, kStartupKey, i + 1);
+        sValue = sIniFile.getValueS(sSection, sKey, XPR_NULL);
+
+        if (XPR_IS_NOT_NULL(sValue) && _tcslen(sValue) > 0)
+        {
+            sBookmark->mStartup = sValue;
+        }
+
+        _stprintf(sKey, kShowStatusKey, i + 1);
+        sBookmark->mShowCmd = sIniFile.getValueI(sSection, sKey, 0);
+
         if (sBookmark->mShowCmd < 0) sBookmark->mShowCmd = 0;
         if (sBookmark->mShowCmd > 2) sBookmark->mShowCmd = 0;
 
-        sHotKey = sIniFile.getValueI(sKey, XPR_STRING_LITERAL("HotKey"), -1);
-        if (sHotKey >= 0) sHotKey += 0x20030; // Ctrl Key
-        sBookmark->mHotKey = sHotKey != -1 ? sHotKey : 0;
+        _stprintf(sKey, kHotKeyKey, i + 1);
+        sHotKey = sIniFile.getValueI(sSection, sKey, -1);
+
+        if (sHotKey >= 0)
+            sHotKey += 0x20030; // CTRL key
+        sBookmark->mHotKey = (sHotKey != -1) ? sHotKey : 0;
 
         mBookmarkDeque.push_back(sBookmark);
+
+        if (mBookmarkDeque.size() == MAX_BOOKMARK)
+            break;
     }
 
     return XPR_TRUE;
 }
 
-xpr_bool_t BookmarkMgr::saveToFile(const xpr_tchar_t *lpcszPath)
+xpr_bool_t BookmarkMgr::save(const xpr_tchar_t *aPath) const
 {
-    IniFile sIniFile(lpcszPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer Bookmark Items File"));
+    IniFileEx sIniFile(aPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer bookmark configuration file"));
 
-    BookmarkItem *sBookmark;
-    BookmarkDeque::iterator sIterator;
+    xpr_sint_t        i;
+    xpr_sint_t        sHotKey;
+    xpr_tchar_t       sKey[0xff];
+    IniFile::Section *sSection;
+    BookmarkItem     *sBookmark;
+    BookmarkDeque::const_iterator sIterator;
 
-    xpr_sint_t i;
-    xpr_sint_t sHotKey;
-    xpr_tchar_t sKey[0xff];
+    sSection = sIniFile.addSection(kBookmarkSection);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sIterator = mBookmarkDeque.begin();
     for (i = 0; sIterator != mBookmarkDeque.end(); ++sIterator, ++i)
     {
         sBookmark = *sIterator;
+        XPR_ASSERT(sBookmark != XPR_NULL);
 
-        _stprintf(sKey, XPR_STRING_LITERAL("Bookmark%02d"), i+1);
+        _stprintf(sKey, kNameKey, i + 1);
+        sIniFile.setValueS(sSection, sKey, sBookmark->mName);
 
-        sIniFile.setValueS(sKey, XPR_STRING_LITERAL("Name"), sBookmark->mName.c_str());
-        sIniFile.setValueS(sKey, XPR_STRING_LITERAL("Path"), sBookmark->mPath.c_str());
+        _stprintf(sKey, kPathKey, i + 1);
+        sIniFile.setValueS(sSection, sKey, sBookmark->mPath);
 
         if (sBookmark->mIconPath.empty() == false)
         {
-            sIniFile.setValueS(sKey, XPR_STRING_LITERAL("Icon"),  sBookmark->mIconPath.c_str());
-            sIniFile.setValueI(sKey, XPR_STRING_LITERAL("Index"), sBookmark->mIconIndex);
+            _stprintf(sKey, kIconKey, i + 1);
+            sIniFile.setValueS(sSection, sKey,      sBookmark->mIconPath);
+
+            _stprintf(sKey, kIconIndexKey, i + 1);
+            sIniFile.setValueI(sSection, sKey, sBookmark->mIconIndex);
         }
 
         if (sBookmark->mParam.empty() == false)
-            sIniFile.setValueS(sKey, XPR_STRING_LITERAL("Parameter"), sBookmark->mParam.c_str());
+        {
+            _stprintf(sKey, kParameterKey, i + 1);
+            sIniFile.setValueS(sSection, sKey, sBookmark->mParam);
+        }
 
-        if (!sBookmark->mStartup.empty())
-            sIniFile.setValueS(sKey, XPR_STRING_LITERAL("Startup"), sBookmark->mStartup.c_str());
+        if (sBookmark->mStartup.empty() == false)
+        {
+            _stprintf(sKey, kStartupKey, i + 1);
+            sIniFile.setValueS(sSection, sKey, sBookmark->mStartup);
+        }
 
         if (sBookmark->mShowCmd > 0)
-            sIniFile.setValueI(sKey, XPR_STRING_LITERAL("ShowCmd"), sBookmark->mShowCmd);
+        {
+            _stprintf(sKey, kShowStatusKey, i + 1);
+            sIniFile.setValueI(sSection, sKey, sBookmark->mShowCmd);
+        }
 
         sHotKey = sBookmark->mHotKey;
-        sHotKey = sHotKey >= 0x20030 ? sHotKey -= 0x20030 : -1; // Ctrl Key
+        sHotKey = (sHotKey >= 0x20030) ? (sHotKey -= 0x20030) : (-1); // CTRL Key
         if (sHotKey != -1)
-            sIniFile.setValueI(sKey, XPR_STRING_LITERAL("HotKey"), sHotKey);
+        {
+            _stprintf(sKey, kHotKeyKey, i + 1);
+            sIniFile.setValueI(sSection, sKey, sHotKey);
+        }
     }
 
     sIniFile.writeFile(xpr::CharSetUtf16);
@@ -507,19 +561,19 @@ xpr_bool_t BookmarkMgr::load(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getLoadPath(CfgPath::TypeBookmark, sPath, XPR_MAX_PATH);
 
-    xpr_bool_t sResult = BookmarkMgr::instance().loadFromFile(sPath);
+    xpr_bool_t sResult = BookmarkMgr::instance().load(sPath);
     if (sResult == XPR_FALSE)
         BookmarkMgr::instance().initDefault();
 
     return sResult;
 }
 
-xpr_bool_t BookmarkMgr::save(void)
+xpr_bool_t BookmarkMgr::save(void) const
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getSavePath(CfgPath::TypeBookmark, sPath, XPR_MAX_PATH);
 
-    BookmarkMgr::instance().saveToFile(sPath);
+    BookmarkMgr::instance().save(sPath);
 
     return XPR_TRUE;
 }

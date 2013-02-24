@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,6 +18,8 @@ namespace fxb
 #define MIN_SIZE_FORMAT_DECIAML_DIGIT 0
 #define MAX_SIZE_FORMAT_DECIAML_DIGIT 9
 
+class IniFileEx;
+
 class SizeFormat : public xpr::Singleton<SizeFormat>
 {
     friend class xpr::Singleton<SizeFormat>;
@@ -31,8 +33,8 @@ public:
         std::tstring mText;
         xpr_uint64_t mSize;
         xpr_sint_t   mSizeUnit;
-        xpr_bool_t   mDefaultDecimalDigit;
-        xpr_sint_t   mDecimalDigit;
+        xpr_bool_t   mDefaultDecimalPlace;
+        xpr_sint_t   mDecimalPlace;
         xpr_bool_t   mRoundOff;
     } Item;
 
@@ -40,8 +42,8 @@ public:
     static void setText(const xpr_tchar_t *aNoneText, const xpr_tchar_t *aAutoText, const xpr_tchar_t *aDefaultText, const xpr_tchar_t *aCustomText, const xpr_tchar_t *aByteUnitText);
 
     void initDefault(void);
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath);
-    xpr_bool_t saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t load(fxb::IniFileEx &aIniFile);
+    void save(fxb::IniFileEx &aIniFile) const;
 
 public:
     void addItem(Item *aItem);

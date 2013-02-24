@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,7 +11,7 @@
 #define __FX_ACCEL_TABLE_DLG_H__
 #pragma once
 
-#define MAX_ACCEL 200
+#include "Defines.h"
 
 class AccelTableDlg : public CDialog
 {

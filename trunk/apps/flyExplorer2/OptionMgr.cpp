@@ -10,12 +10,13 @@
 #include "stdafx.h"
 #include "OptionMgr.h"
 
-#include "fxb/fxb_ini_file.h"
+#include "fxb/fxb_ini_file_ex.h"
 #include "fxb/fxb_filter.h"
 #include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_thumbnail.h"
 #include "fxb/fxb_size_format.h"
 #include "fxb/fxb_sys_img_list.h"
+#include "fxb/fxb_recent_file_list.h"
 
 #include "Option.h"
 #include "MainFrame.h"
@@ -47,9 +48,13 @@ OptionMgr::~OptionMgr(void)
 
 void OptionMgr::initDefault(void)
 {
-    fxb::FilterMgr::instance().initDefault();
-    fxb::ProgramAssMgr::instance().initDefault();
-    fxb::SizeFormat::instance().initDefault();
+    fxb::FilterMgr     &sFilterMgr     = fxb::FilterMgr::instance();
+    fxb::ProgramAssMgr &sProgramAssMgr = fxb::ProgramAssMgr::instance();
+    fxb::SizeFormat    &sSizeFormat    = fxb::SizeFormat::instance();
+
+    sFilterMgr.initDefault();
+    sProgramAssMgr.initDefault();
+    sSizeFormat.initDefault();
     mOption->initDefault();
 }
 
@@ -77,24 +82,6 @@ void OptionMgr::load(xpr_bool_t &aInitCfg)
         aInitCfg = XPR_TRUE;
     }
 
-    // load filter
-    if (loadFilter() == XPR_FALSE)
-    {
-        saveFilter();
-    }
-
-    // load program association
-    if (loadProgramAss() == XPR_FALSE)
-    {
-        saveProgramAss();
-    }
-
-    // load size format
-    if (loadSizeFormat() == XPR_FALSE)
-    {
-        saveSizeFormat();
-    }
-
 #if defined(XPR_CFG_BUILD_DEBUG)
 
     xpr_time_t sTime2 = xpr::timer_ms();
@@ -104,25 +91,13 @@ void OptionMgr::load(xpr_bool_t &aInitCfg)
 #endif
 }
 
-xpr_bool_t OptionMgr::save(xpr_bool_t aOnlyConfig)
+xpr_bool_t OptionMgr::save(void)
 {
-    if (XPR_IS_TRUE(aOnlyConfig))
-    {
-        // save main option
-        saveMainOption();
-    }
+    // save main option
+    saveMainOption();
 
     // save config option
     saveConfigOption();
-
-    // save filter
-    saveFilter();
-
-    // save program association
-    saveProgramAss();
-
-    // save size format
-    saveSizeFormat();
 
     return XPR_TRUE;
 }
@@ -132,7 +107,16 @@ xpr_bool_t OptionMgr::loadMainOption(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getLoadPath(CfgPath::TypeMain, sPath, XPR_MAX_PATH);
 
-    return mOption->loadMainOption(sPath);
+    fxb::IniFileEx sIniFile(sPath);
+    xpr_bool_t sResult = sIniFile.readFile();
+
+    // load main options
+    mOption->loadMainOption(sIniFile);
+
+    // load recent file list
+    loadRecentFileList(sIniFile);
+
+    return sResult;
 }
 
 xpr_bool_t OptionMgr::loadConfigOption(void)
@@ -140,7 +124,22 @@ xpr_bool_t OptionMgr::loadConfigOption(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getLoadPath(CfgPath::TypeConfig, sPath, XPR_MAX_PATH);
 
-    return mOption->loadConfigOption(sPath);
+    fxb::IniFileEx sIniFile(sPath);
+    xpr_bool_t sResult = sIniFile.readFile();
+
+    // config options
+    mOption->loadConfigOption(sIniFile);
+
+    // load filter
+    loadFilter(sIniFile);
+
+    // load program association
+    loadProgramAss(sIniFile);
+
+    // load size format
+    loadSizeFormat(sIniFile);
+
+    return sResult;
 }
 
 xpr_bool_t OptionMgr::saveMainOption(void)
@@ -148,7 +147,16 @@ xpr_bool_t OptionMgr::saveMainOption(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getSavePath(CfgPath::TypeMain, sPath, XPR_MAX_PATH);
 
-    return mOption->saveMainOption(sPath);
+    fxb::IniFileEx sIniFile(sPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer main option file"));
+
+    // save main options
+    mOption->saveMainOption(sIniFile);
+
+    // save recent file list
+    saveRecentFileList(sIniFile);
+
+    return sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 xpr_bool_t OptionMgr::saveConfigOption(void)
@@ -156,65 +164,88 @@ xpr_bool_t OptionMgr::saveConfigOption(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getSavePath(CfgPath::TypeConfig, sPath, XPR_MAX_PATH);
 
-    return mOption->saveConfigOption(sPath);
+    fxb::IniFileEx sIniFile(sPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer configuration option file"));
+
+    // save config options
+    mOption->saveConfigOption(sIniFile);
+
+    // save filter
+    saveFilter(sIniFile);
+
+    // save program association
+    saveProgramAss(sIniFile);
+
+    // save size format
+    saveSizeFormat(sIniFile);
+
+    return sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
-xpr_bool_t OptionMgr::loadFilter(void)
+void OptionMgr::loadFilter(fxb::IniFileEx &aIniFile)
 {
     fxb::FilterMgr &sFilterMgr = fxb::FilterMgr::instance();
 
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeFilter, sPath, XPR_MAX_PATH);
-
-    xpr_bool_t sResult = sFilterMgr.loadFromFile(sPath);
+    xpr_bool_t sResult = sFilterMgr.load(aIniFile);
     if (XPR_IS_FALSE(sResult))
+    {
         sFilterMgr.initDefault();
-
-    return sResult;
+    }
 }
 
-xpr_bool_t OptionMgr::saveFilter(void)
+void OptionMgr::saveFilter(fxb::IniFileEx &aIniFile)
 {
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeFilter, sPath, XPR_MAX_PATH);
+    fxb::FilterMgr &sFilterMgr = fxb::FilterMgr::instance();
 
-    return fxb::FilterMgr::instance().saveToFile(sPath);
+    sFilterMgr.save(aIniFile);
 }
 
-xpr_bool_t OptionMgr::loadProgramAss(void)
+void OptionMgr::loadProgramAss(fxb::IniFileEx &aIniFile)
 {
     fxb::ProgramAssMgr &sProgramAssMgr = fxb::ProgramAssMgr::instance();
 
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeProgramAss, sPath, XPR_MAX_PATH);
-
-    xpr_bool_t sResult = sProgramAssMgr.loadFromFile(sPath);
+    xpr_bool_t sResult = sProgramAssMgr.load(aIniFile);
     if (XPR_IS_FALSE(sResult))
+    {
         sProgramAssMgr.initDefault();
-
-    return sResult;
+    }
 }
 
-xpr_bool_t OptionMgr::saveProgramAss(void)
+void OptionMgr::saveProgramAss(fxb::IniFileEx &aIniFile)
 {
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeProgramAss, sPath, XPR_MAX_PATH);
+    fxb::ProgramAssMgr &sProgramAssMgr = fxb::ProgramAssMgr::instance();
 
-    return fxb::ProgramAssMgr::instance().saveToFile(sPath);
+    sProgramAssMgr.save(aIniFile);
 }
 
-xpr_bool_t OptionMgr::loadSizeFormat(void)
+void OptionMgr::loadSizeFormat(fxb::IniFileEx &aIniFile)
 {
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeSizeFmt, sPath, XPR_MAX_PATH);
+    fxb::SizeFormat &sSizeFormat = fxb::SizeFormat::instance();
 
-    return fxb::SizeFormat::instance().loadFromFile(sPath);
+    xpr_bool_t sResult = sSizeFormat.load(aIniFile);
+    if (XPR_IS_FALSE(sResult))
+    {
+        sSizeFormat.initDefault();
+    }
 }
 
-xpr_bool_t OptionMgr::saveSizeFormat(void)
+void OptionMgr::saveSizeFormat(fxb::IniFileEx &aIniFile)
 {
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeSizeFmt, sPath, XPR_MAX_PATH);
+    fxb::SizeFormat &sSizeFormat = fxb::SizeFormat::instance();
 
-    return fxb::SizeFormat::instance().saveToFile(sPath);
+    sSizeFormat.save(aIniFile);
+}
+
+void OptionMgr::loadRecentFileList(fxb::IniFileEx &aIniFile)
+{
+    fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+
+    sRecentFileList.load(aIniFile);
+}
+
+void OptionMgr::saveRecentFileList(fxb::IniFileEx &aIniFile)
+{
+    fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+
+    sRecentFileList.save(aIniFile);
 }

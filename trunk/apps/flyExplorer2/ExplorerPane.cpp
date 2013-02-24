@@ -18,6 +18,7 @@
 #include "fxb/fxb_program_ass.h"
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_size_format.h"
+#include "fxb/fxb_recent_file_list.h"
 
 #include "rgc/DropTarget.h"
 #include "rgc/MemDC.h"
@@ -144,8 +145,6 @@ xpr_sint_t ExplorerPane::OnCreate(LPCREATESTRUCT aCreateStruct)
 
 void ExplorerPane::OnDestroy(void)
 {
-    saveOption();
-
     DESTROY_DELETE(mAddressBar);
     DESTROY_DELETE(mPathBar);
     DESTROY_DELETE(mStatusBar);
@@ -189,7 +188,7 @@ void ExplorerPane::setChangedOption(Option &aOption)
     }
 
     // set drive bar options
-    if (XPR_IS_NOT_NULL(mAddressBar))
+    if (XPR_IS_NOT_NULL(mDrivePathBar))
     {
         mDrivePathBar->setShortText(gOpt->mConfig.mDriveBarShortText);
     }
@@ -217,63 +216,10 @@ void ExplorerPane::setChangedOption(Option &aOption)
 
 void ExplorerPane::saveOption(void)
 {
-    // TODO
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
         sExplorerCtrl->saveOption();
-
-        // save last folder
-        LPTVITEMDATA sTvItemData = XPR_NULL;
-        if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
-        {
-            gOpt->mMain.mLastFolder[mViewIndex][0] = 0;
-
-            LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-            if (XPR_IS_NOT_NULL(sTvItemData))
-            {
-                LPITEMIDLIST sInternetFullPidl = XPR_NULL;
-                HRESULT sHResult = ::SHGetSpecialFolderLocation(m_hWnd, CSIDL_INTERNET, &sInternetFullPidl);
-
-                xpr_bool_t sSaveLastFolder = XPR_FALSE;
-
-                if (FAILED(sHResult))
-                    sSaveLastFolder = XPR_TRUE;
-                else if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sInternetFullPidl))
-                {
-                    if (sTvItemData->mShellFolder->CompareIDs(0, sTvItemData->mPidl, sInternetFullPidl) != 0)
-                        sSaveLastFolder = XPR_TRUE;
-                }
-
-                if (XPR_IS_TRUE(sSaveLastFolder))
-                {
-                    sSaveLastFolder = XPR_TRUE;
-
-                    const xpr_tchar_t *sCurPath = sExplorerCtrl->getCurPath();
-                    if (gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex] == XPR_TRUE && fxb::IsNetItem(sCurPath) == XPR_TRUE)
-                        sSaveLastFolder = XPR_FALSE;
-
-                    if (XPR_IS_TRUE(sSaveLastFolder))
-                    {
-                        fxb::Pidl2Path(sTvItemData->mFullPidl, gOpt->mMain.mLastFolder[mViewIndex]);
-                    }
-                }
-
-                COM_FREE(sInternetFullPidl);
-            }
-        }
-
-        // save view style
-        if (gOpt->mConfig.mExplorerSaveViewStyle == XPR_TRUE)
-        {
-            gOpt->mMain.mViewStyle[mViewIndex] = sExplorerCtrl->getViewStyle();
-        }
-
-        // save history
-        if (gOpt->mConfig.mSaveHistory == XPR_TRUE)
-        {
-            sExplorerCtrl->saveHistory();
-        }
     }
 }
 
@@ -1599,6 +1545,18 @@ void ExplorerPane::onMoveFocus(ExplorerCtrl &aExplorerCtrl)
     if (XPR_IS_NOT_NULL(mObserver))
     {
         mObserver->onMoveFocus(*this, 0);
+    }
+}
+
+void ExplorerPane::onRunFile(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NOT_NULL(aFullPidl))
+    {
+        xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+        fxb::GetName(aFullPidl, SHGDN_FORPARSING, sPath);
+
+        fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+        sRecentFileList.addFile(sPath);
     }
 }
 

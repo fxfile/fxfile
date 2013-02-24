@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -12,7 +12,7 @@
 #include "fxb_file_scrap_observer.h"
 
 #include "fxb_context_menu.h"
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -29,6 +29,13 @@ enum
     MODE_DELETE,
     MODE_TRASH,
 };
+
+static const xpr_tchar_t kFileScrapSection[] = XPR_STRING_LITERAL("file_scrap");
+static const xpr_tchar_t kGroupSection    [] = XPR_STRING_LITERAL("file_scrap_group_%s");
+static const xpr_tchar_t kNoGroup         [] = XPR_STRING_LITERAL("no_group");
+static const xpr_tchar_t kGroupKey        [] = XPR_STRING_LITERAL("file_scrap.group%d");
+static const xpr_tchar_t kFileKey         [] = XPR_STRING_LITERAL("file_scrap.file%d");
+static const xpr_tchar_t kDefaultKey      [] = XPR_STRING_LITERAL("file_scrap.default");
 
 FileScrap::FileScrap(void)
     : mObserver(XPR_NULL)
@@ -792,39 +799,39 @@ xpr_size_t FileScrap::removeItemNotExist(xpr_uint_t aGroupId)
     return sIdSet.size();
 }
 
-static const xpr_tchar_t kFileScrap[] = XPR_STRING_LITERAL("FileScrap");
-static const xpr_tchar_t kDefault[]   = XPR_STRING_LITERAL("Default");
-static const xpr_tchar_t kNoGroup[]   = XPR_STRING_LITERAL("NoGroup");
-static const xpr_tchar_t kVersion[]   = XPR_STRING_LITERAL("version");
-
-xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
+xpr_bool_t FileScrap::load(const xpr_tchar_t *aPath)
 {
+    // clear all
     removeAllGroups();
     setDefGroup();
 
-    xpr_tchar_t sDir[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
-    SplitPathExt(aPath, sDir, sFileName, sExt);
-
-    IniFile sIniFile(aPath);
+    IniFileEx sIniFile(aPath);
     if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
     typedef std::map<std::tstring, xpr_uint_t> GroupIdMap;
     GroupIdMap sGroupIdMap;
+    GroupIdMap::const_iterator sIterator;
 
-    xpr_sint_t i;
-    xpr_uint_t sGroupId;
-    xpr_tchar_t sEntry[0xff];
+    xpr_sint_t         i;
+    xpr_uint_t         sGroupId;
+    xpr_tchar_t        sKey[0xff];
+    xpr_tchar_t        sSectionName[0xff];
     const xpr_tchar_t *sGroup;
     const xpr_tchar_t *sFile;
+    const xpr_tchar_t *sDefGroupName;
+    IniFile::Section  *sSection;
+
+    // base section
+    sSection = sIniFile.findSection(kFileScrapSection);
+    if (XPR_IS_NULL(sSection))
+        return XPR_FALSE;
 
     for (i = 0; i < MAX_FILE_SCRAP_GROUP; ++i)
     {
-        _stprintf(sEntry, XPR_STRING_LITERAL("Group%d"), i);
+        _stprintf(sKey, kGroupKey, i);
 
-        sGroup = sIniFile.getValueS(kFileScrap, sEntry);
+        sGroup = sIniFile.getValueS(sSection, sKey, XPR_NULL);
         if (XPR_IS_NULL(sGroup))
             break;
 
@@ -833,7 +840,7 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
             sGroupIdMap[sGroup] = sGroupId;
     }
 
-    const xpr_tchar_t *sDefGroupName = sIniFile.getValueS(kFileScrap, kDefault, XPR_NULL);
+    sDefGroupName = sIniFile.getValueS(sSection, kDefaultKey, XPR_NULL);
     if (XPR_IS_NOT_NULL(sDefGroupName))
     {
         sGroupId = findGroupId(sDefGroupName);
@@ -841,65 +848,70 @@ xpr_bool_t FileScrap::loadFromFile(const xpr_tchar_t *aPath)
             mCurGroupId = sGroupId;
     }
 
-    for (i = 0; ; ++i)
+    // no group section
+    _stprintf(sSectionName, kGroupSection, kNoGroup);
+
+    sSection = sIniFile.findSection(sSectionName);
+    if (XPR_IS_NOT_NULL(sSection))
     {
-        _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), i);
-
-        sFile = sIniFile.getValueS(kNoGroup, sEntry);
-        if (XPR_IS_NULL(sFile))
-            break;
-
-        addItem(mDefGroupId, sFile);
-    }
-
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-    GroupIdMap::iterator sIterator;
-
-    sIterator = sGroupIdMap.begin();
-    for (; sIterator != sGroupIdMap.end(); ++sIterator)
-    {
-        _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s_%s%s"), sDir, sFileName, sIterator->first.c_str(), sExt);
-
-        IniFile sIniFile(sPath);
-        if (sIniFile.readFile() == XPR_FALSE)
-            continue;
-
         for (i = 0; ; ++i)
         {
-            _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), i);
+            _stprintf(sKey, kFileKey, i);
 
-            sFile = sIniFile.getValueS(kFileScrap, sEntry);
+            sFile = sIniFile.getValueS(sSection, sKey, XPR_NULL);
             if (XPR_IS_NULL(sFile))
                 break;
 
-            addItem((xpr_uint_t)sIterator->second, sFile);
+            addItem(mDefGroupId, sFile);
+        }
+    }
+
+    // each group sections
+    sIterator = sGroupIdMap.begin();
+    for (; sIterator != sGroupIdMap.end(); ++sIterator)
+    {
+        const std::tstring &sGroupName = sIterator->first;
+        const xpr_uint_t   &sGroupId   = sIterator->second;
+
+        _stprintf(sSectionName, kGroupSection, sGroupName.c_str());
+
+        sSection = sIniFile.findSection(sSectionName);
+        if (XPR_IS_NOT_NULL(sSection))
+        {
+            for (i = 0; ; ++i)
+            {
+                _stprintf(sKey, kFileKey, i);
+
+                sFile = sIniFile.getValueS(sSection, sKey, XPR_NULL);
+                if (XPR_IS_NULL(sFile))
+                    break;
+
+                addItem((xpr_uint_t)sIterator->second, sFile);
+            }
         }
     }
 
     return XPR_TRUE;
 }
 
-xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
+xpr_bool_t FileScrap::save(const xpr_tchar_t *aPath) const
 {
-    xpr_tchar_t sDir[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
-    SplitPathExt(aPath, sDir, sFileName, sExt);
+    IniFileEx sIniFile(aPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer file scrap file"));
 
-    IniFile sIniFile(aPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer FileScrap File"));
+    xpr_sint_t        sIndex;
+    xpr_tchar_t       sKey[0xff];
+    xpr_tchar_t       sValue[0xff];
+    xpr_tchar_t       sSectionName[0xff];
+    Group            *sGroup;
+    Item             *sItem;
+    IniFile::Section *sSection;
+    GroupDeque::const_iterator sGroupIterator;
+    ItemDeque::const_iterator  sIterator;
 
-    // version
-    sIniFile.setValueS(kFileScrap, kVersion, XPR_STRING_LITERAL("1.2"));
-
-    xpr_sint_t sIndex;
-    xpr_tchar_t sEntry[0xff];
-    xpr_tchar_t sValue[0xff];
-
-    GroupDeque::iterator sGroupIterator;
-    Group *sGroup;
-    ItemDeque::iterator sIterator;
-    Item *sItem;
+    // base section
+    sSection = sIniFile.addSection(kFileScrapSection);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sGroup = findGroup(mCurGroupId);
     if (XPR_IS_NOT_NULL(sGroup))
@@ -908,22 +920,28 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
         if (mCurGroupId == mDefGroupId)
             _tcscpy(sValue, kNoGroup);
 
-        sIniFile.setValueS(kFileScrap, kDefault, sValue);
+        sIniFile.setValueS(sSection, kDefaultKey, sValue);
     }
 
     sGroupIterator = mGroupDeque.begin();
     for (sIndex = 0; sGroupIterator != mGroupDeque.end(); ++sGroupIterator)
     {
         sGroup = *sGroupIterator;
-        if (XPR_IS_NULL(sGroup))
-            continue;
+        XPR_ASSERT(sGroup != XPR_NULL);
 
         if (sGroup->mGroupId == mDefGroupId)
             continue;
 
-        _stprintf(sEntry, XPR_STRING_LITERAL("Group%d"), sIndex++);
-        sIniFile.setValueS(kFileScrap, sEntry, sGroup->mGroupName.c_str());
+        _stprintf(sKey, kGroupKey, sIndex++);
+
+        sIniFile.setValueS(sSection, sKey, sGroup->mGroupName);
     }
+
+    // no group section
+    _stprintf(sSectionName, kGroupSection, kNoGroup);
+
+    sSection = sIniFile.addSection(sSectionName);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sGroup = findGroup(mDefGroupId);
     if (XPR_IS_NOT_NULL(sGroup))
@@ -932,48 +950,42 @@ xpr_bool_t FileScrap::saveToFile(const xpr_tchar_t *aPath)
         for (sIndex = 0; sIterator != sGroup->mItemDeque.end(); ++sIterator)
         {
             sItem = *sIterator;
-            if (XPR_IS_NULL(sItem))
-                continue;
+            XPR_ASSERT(sItem != XPR_NULL);
 
-            _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), sIndex++);
-            sIniFile.setValueS(kNoGroup, sEntry, sItem->mPath.c_str());
+            _stprintf(sKey, kFileKey, sIndex++);
+
+            sIniFile.setValueS(sSection, sKey, sItem->mPath);
+        }
+    }
+
+    // each group sections
+    sGroupIterator = mGroupDeque.begin();
+    for (; sGroupIterator != mGroupDeque.end(); ++sGroupIterator)
+    {
+        sGroup = *sGroupIterator;
+        XPR_ASSERT(sGroup != XPR_NULL);
+
+        if (sGroup->mGroupId == mDefGroupId)
+            continue;
+
+        _stprintf(sSectionName, kGroupSection, sGroup->mGroupName.c_str());
+
+        sSection = sIniFile.addSection(sSectionName);
+        XPR_ASSERT(sSection != XPR_NULL);
+
+        sIterator = sGroup->mItemDeque.begin();
+        for (sIndex = 0; sIterator != sGroup->mItemDeque.end(); ++sIterator)
+        {
+            sItem = *sIterator;
+            XPR_ASSERT(sItem != XPR_NULL);
+
+            _stprintf(sKey, kFileKey, sIndex++);
+
+            sIniFile.setValueS(sSection, sKey, sItem->mPath);
         }
     }
 
     sIniFile.writeFile(xpr::CharSetUtf16);
-
-    {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-
-        sGroupIterator = mGroupDeque.begin();
-        for (; sGroupIterator != mGroupDeque.end(); ++sGroupIterator)
-        {
-            sGroup = *sGroupIterator;
-            if (XPR_IS_NULL(sGroup))
-                continue;
-
-            if (sGroup->mGroupId == mDefGroupId)
-                continue;
-
-            _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s_%s%s"), sDir, sFileName, sGroup->mGroupName.c_str(), sExt);
-
-            IniFile sIniFile(sPath);
-            sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer FileScrap File"));
-
-            sIterator = sGroup->mItemDeque.begin();
-            for (sIndex = 0; sIterator != sGroup->mItemDeque.end(); ++sIterator)
-            {
-                sItem = *sIterator;
-                if (XPR_IS_NULL(sItem))
-                    continue;
-
-                _stprintf(sEntry, XPR_STRING_LITERAL("File%d"), sIndex++);
-                sIniFile.setValueS(kFileScrap, sEntry, sItem->mPath.c_str());
-            }
-
-            sIniFile.writeFile(xpr::CharSetUtf16);
-        }
-    }
 
     return XPR_TRUE;
 }

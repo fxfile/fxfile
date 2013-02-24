@@ -24,68 +24,57 @@ public:
     enum
     {
         TypeNone = 0,
+
         TypeAll,
         TypeBegin,
+
         TypeMain = TypeBegin,
         TypeConfig,
         TypeBookmark,
         TypeFileScrap,
-        TypeProgramAss,
-        TypeFilter,
         TypeSearchDir,
-        TypeSizeFmt,
         TypeViewSet,
         TypeDlgState,
         TypeAccel,
         TypeCoolBar,
         TypeToolBar,
-        TypeBarState,
         TypeThumbnail,
-        TypeRecent,
-        TypeHistory,
         TypeEnd,
     };
 
 public:
-    xpr_bool_t getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL);
-    xpr_bool_t getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL);
-    xpr_bool_t getLoadDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen);
-    xpr_bool_t getSaveDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen);
-    xpr_bool_t getLoadDir(xpr_sint_t aType, std::tstring &aDir);
-    xpr_bool_t getSaveDir(xpr_sint_t aType, std::tstring &aDir);
+    xpr_bool_t load(void);
+    xpr_bool_t save(void) const;
 
-public:
-    void clear(void);
-    xpr_bool_t getCfgPath(xpr_sint_t aType, std::tstring &aCfgPath);
-    xpr_bool_t setCfgPath(xpr_sint_t aType, const xpr_tchar_t *aPath);
+    const xpr_tchar_t *getRootDir(void) const;
+    void setRootDir(const xpr_tchar_t *aDir);
 
     xpr_bool_t setBackup(xpr_bool_t aOldBackup);
-    xpr_bool_t isChangedCfgPath(void);
+    xpr_bool_t checkChangedCfgPath(void);
     void moveToNewCfgPath(void);
 
-    xpr_bool_t isTypeAll(void);
-
-    static const xpr_tchar_t *getDispName(xpr_sint_t aType);
-    static const xpr_tchar_t *getFileName(xpr_sint_t aType);
-
 public:
-    xpr_bool_t load(void);
-    xpr_bool_t save(void);
+    xpr_bool_t getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getLoadDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+    xpr_bool_t getSaveDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+
+    static const xpr_tchar_t *getDefRootDir(void);
 
 protected:
-    xpr_bool_t getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL);
-    xpr_bool_t getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen);
-    xpr_bool_t getDir(xpr_sint_t aType, std::tstring &aDir);
+    xpr_bool_t getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
-    static const xpr_tchar_t *getDefPath(xpr_sint_t aType);
-    static const xpr_tchar_t *getDefSubPath(xpr_sint_t aType);
-    static const xpr_tchar_t *getEntry(xpr_sint_t aType);
+    static const xpr_tchar_t *getFileName(xpr_sint_t aType);
+    static const xpr_tchar_t *getDefSubDir(xpr_sint_t aType);
 
-public:
+    void clear(void);
+
+protected:
     typedef std::map<xpr_sint_t, std::tstring> CfgPathMap;
-    CfgPathMap mCfgPathMap;
-    CfgPathMap mBakOldCfgPathMap;
-    CfgPathMap mBakNewCfgPathMap;
+    std::tstring mDir;
+    CfgPathMap   mBakOldCfgPathMap;
+    CfgPathMap   mBakNewCfgPathMap;
 };
 
 #endif // __FX_CFG_PATH_H__

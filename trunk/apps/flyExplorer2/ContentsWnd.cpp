@@ -530,7 +530,7 @@ void ContentsWnd::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate
     if (aTvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispDetailedInfo))
     {
         clear();
         return;
@@ -596,7 +596,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
     if (aLvItemData == XPR_NULL)
         return;
 
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispDetailedInfo))
     {
         clear();
         return;
@@ -702,7 +702,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
 
 void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSize, const xpr_tchar_t *aNames)
 {
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispDetailedInfo))
     {
         clear();
         return;
@@ -761,7 +761,7 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
                                    xpr_bool_t    aShowBookmark,
                                    xpr_bool_t    aUpdate)
 {
-    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispSelFileInfo))
+    if (XPR_IS_TRUE(gOpt->mConfig.mContentsNoDispDetailedInfo))
     {
         clear();
         return;

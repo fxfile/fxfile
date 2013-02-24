@@ -25,7 +25,6 @@
 #include "Option.h"
 #include "OptionMgr.h"
 #include "CfgPath.h"
-#include "RecentFileListEx.h"
 #include "AppVer.h"
 #include "command_string_table.h"
 #include "ShellRegistry.h"
@@ -47,8 +46,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static const xpr_tchar_t kFileSection[]    = XPR_STRING_LITERAL("Recent File List");
-static const xpr_tchar_t kFileEntry[]      = XPR_STRING_LITERAL("File%d");
 static const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
 static const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
 
@@ -261,10 +258,6 @@ xpr_sint_t ExplorerApp::ExitInstance(void)
     if (OptionMgr::isInstance() == XPR_TRUE)
         OptionMgr::instance().saveMainOption();
 
-    // save configuration path
-    if (CfgPath::isInstance() == XPR_TRUE)
-        CfgPath::instance().save();
-
     // destroy shell change notify
     fxb::ShellChangeNotify &sShellChangeNotify = fxb::ShellChangeNotify::instance();
     sShellChangeNotify.stop();
@@ -304,54 +297,12 @@ void ExplorerApp::setSingleInstance(xpr_bool_t aSingleInstance)
     }
 }
 
-void ExplorerApp::LoadStdProfileSettings(xpr_uint_t nMaxMRU)
+void ExplorerApp::LoadStdProfileSettings(xpr_uint_t aMaxMRU)
 {
     ASSERT_VALID(this);
-    ASSERT(m_pRecentFileList == XPR_NULL);
-
-    if (nMaxMRU != 0)
-    {
-        // create file MRU since nMaxMRU not zero
-        m_pRecentFileList = new RecentFileListEx(0, kFileSection, kFileEntry, nMaxMRU);
-        m_pRecentFileList->ReadList();
-    }
 
     // 0 by default means not set
     m_nNumPreviewPages = GetProfileInt(kPreviewSection, kPreviewEntry, 0);
-}
-
-xpr_bool_t ExplorerApp::updateRecentMenu(BCMenu *aMenu, xpr_sint_t aInsert)
-{
-    RecentFileListEx *sRecentFileListEx = (RecentFileListEx *)m_pRecentFileList;
-    if (sRecentFileListEx == XPR_NULL)
-        return XPR_FALSE;
-
-    sRecentFileListEx->updateMenu(aMenu, aInsert);
-
-    return XPR_TRUE;
-}
-
-xpr_bool_t ExplorerApp::getRecentFile(xpr_uint_t aId, xpr_tchar_t *aPath)
-{
-    if (!XPR_IS_RANGE(ID_FILE_RECENT_FIRST, aId, ID_FILE_RECENT_LAST))
-        return XPR_FALSE;
-
-    RecentFileListEx *sRecentFileListEx = (RecentFileListEx *)m_pRecentFileList;
-    if (sRecentFileListEx == XPR_NULL)
-        return XPR_FALSE;
-
-    xpr_sint_t sIndex = aId - ID_FILE_RECENT_FIRST;
-    sRecentFileListEx->getRecentFile(sIndex, aPath);
-
-    return XPR_TRUE;
-}
-
-void ExplorerApp::removeRecentFileList(void)
-{
-    xpr_sint_t i;
-    xpr_sint_t sSize = m_pRecentFileList->GetSize();
-    for (i = sSize - 1; i >= 0; --i)
-        m_pRecentFileList->Remove(i);
 }
 
 void ExplorerApp::OnFileNew(void)
@@ -506,8 +457,4 @@ void ExplorerApp::saveAllOptions(void)
     // save main frame options
     MainFrame *sMainFrame = (MainFrame *)GetMainWnd();
     sMainFrame->saveAllOptions();
-
-    // save recent executed file list
-    RecentFileListEx *sRecentFileListEx = (RecentFileListEx *)m_pRecentFileList;
-    sRecentFileListEx->WriteList();
 }

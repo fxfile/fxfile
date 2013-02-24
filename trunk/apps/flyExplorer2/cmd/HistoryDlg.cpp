@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -242,7 +242,7 @@ void HistoryDlg::getSelHistory(xpr_size_t &aHistory, xpr_uint_t &aIndex)
     aIndex   = mIndex;
 }
 
-xpr_sint_t HistoryDlg::addHistory(const xpr_tchar_t *aTitleText, const xpr_tchar_t *aTabText, fxb::HistoryDeque *aHistoryDeque)
+xpr_sint_t HistoryDlg::addHistory(const xpr_tchar_t *aTitleText, const xpr_tchar_t *aTabText, const fxb::HistoryDeque *aHistoryDeque)
 {
     if (aTitleText == XPR_NULL || aTabText == XPR_NULL || aHistoryDeque == XPR_NULL)
         return -1;
@@ -360,7 +360,7 @@ void HistoryDlg::getContextMenu(xpr_bool_t sRightClick)
     if (XPR_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque) == XPR_FALSE)
         return;
 
-    fxb::HistoryDeque::reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
     if (sReverseIterator == sHistoryDisp->mHistoryDeque->rend())
         return;
 
@@ -398,7 +398,7 @@ void HistoryDlg::OnTvnSelchangedTree(NMHDR *pNMHDR, LRESULT *pResult)
         xpr_uint_t sIndex = getItemIndex(sTreeItem);
         if (XPR_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque))
         {
-            fxb::HistoryDeque::reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
+            fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
             if (sReverseIterator != sHistoryDisp->mHistoryDeque->rend())
             {
                 LPITEMIDLIST sFullPidl = *sReverseIterator;
@@ -426,7 +426,7 @@ void HistoryDlg::OnTvnGetInfoTipTree(NMHDR *pNMHDR, LRESULT *pResult)
         return;
 
     xpr_sint_t sIndex = (xpr_sint_t)pGetInfoTip->lParam;
-    fxb::HistoryDeque::reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
     if (sReverseIterator != sHistoryDisp->mHistoryDeque->rend())
     {
         LPITEMIDLIST sFullPidl = *sReverseIterator;
@@ -486,7 +486,7 @@ void HistoryDlg::showTab(xpr_size_t aIndex)
     xpr_tchar_t sName[XPR_MAX_PATH * 2];
     HTREEITEM sTreeItem;
 
-    fxb::HistoryDeque::reverse_iterator sReverseIterator;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator;
     LPITEMIDLIST sFullPidl;
 
     sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin();

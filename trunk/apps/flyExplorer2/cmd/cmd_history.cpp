@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -88,9 +88,9 @@ static void goHistoryBox(ExplorerCtrl *sExplorerCtrl, xpr_sint_t aType)
         return;
 
     HistoryDlg sDlg(aType);
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.backward")), theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.backward")), sExplorerCtrl->getBackwardList());
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.forward")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.forward")),  sExplorerCtrl->getForwardList());
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.history")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.history")),  sExplorerCtrl->getHistoryList());
+    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.backward")), theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.backward")), sExplorerCtrl->getBackwardDeque());
+    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.forward")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.forward")),  sExplorerCtrl->getForwardDeque());
+    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.history")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.history")),  sExplorerCtrl->getHistoryDeque());
     xpr_sintptr_t sId = sDlg.DoModal();
     if (sId != IDOK)
         return;

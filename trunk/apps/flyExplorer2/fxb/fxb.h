@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -12,7 +12,7 @@
 #pragma once
 
 //
-// standard libraries
+// C++ standard libraries
 //
 #include <stack>
 #include <queue>
@@ -28,7 +28,7 @@
 #include <cctype>
 
 //
-// windows shell
+// windows
 //
 #include <shlwapi.h>
 #include <shlobj.h>

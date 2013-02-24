@@ -45,8 +45,8 @@ xpr_bool_t CfgAdvHotKeyDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.enable")));
     SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_HOTKEY,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.hotkey")));
     SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_WINDOW_KEY,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.window_key")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_CF,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.cf")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_WIN_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.windows_boot")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_REF,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.ref")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_WIN_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.windows_startup")));
     SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_TRAY,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.show_tray")));
 
     return XPR_TRUE;

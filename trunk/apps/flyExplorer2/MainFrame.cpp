@@ -23,6 +23,7 @@
 #include "fxb/fxb_clip_format.h"
 #include "fxb/fxb_sys_img_list.h"
 #include "fxb/fxb_context_menu.h"
+#include "fxb/fxb_recent_file_list.h"
 
 #include "rgc/FileDialogST.h"
 #include "rgc/SysTray.h"
@@ -252,7 +253,7 @@ void MainFrame::init(void)
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         CfgPath::instance().getLoadPath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
 
-        fxb::FileScrap::instance().loadFromFile(sPath);
+        fxb::FileScrap::instance().load(sPath);
     }
 
     setOption(*gOpt);
@@ -528,6 +529,22 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
 
 void MainFrame::saveOption(void)
 {
+    // save options of all of explorer views
+    xpr_sint_t i;
+    xpr_sint_t sViewCount = getViewCount();
+    ExplorerView *sExplorerView;
+
+    gOpt->mMain.clearView();
+
+    for (i = 0; i < sViewCount; ++i)
+    {
+        sExplorerView = getExplorerView(i);
+        if (XPR_IS_NOT_NULL(sExplorerView))
+        {
+            sExplorerView->saveOption();
+        }
+    }
+
     // save visible state for one folder pane
     if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
@@ -541,10 +558,10 @@ void MainFrame::saveOption(void)
         CfgPath::instance().getSavePath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
 
         fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
-        sFileScrap.saveToFile(sPath);
+        sFileScrap.save(sPath);
     }
 
-    // verify viewSet
+    // verify view set
     if (XPR_IS_TRUE(gOpt->mConfig.mExplorerExitVerifyViewSet))
     {
         ViewSet sViewSet;
@@ -565,7 +582,7 @@ void MainFrame::saveOption(void)
     gOpt->mMain.mViewSplitRowCount    = sRowCount;
     gOpt->mMain.mViewSplitColumnCount = sColumnCount;
 
-    // Save MainFrame Position
+    // save main frame position
     WINDOWPLACEMENT sWindowPlacement = {0};
     GetWindowPlacement(&sWindowPlacement);
 
@@ -645,20 +662,6 @@ void MainFrame::setChangedOption(Option &aOption)
 
 void MainFrame::saveAllOptions(void)
 {
-    // get explorer view options for save
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = getViewCount();
-    ExplorerView *sExplorerView;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerView = getExplorerView(i);
-        if (XPR_IS_NOT_NULL(sExplorerView))
-        {
-            sExplorerView->saveOption();
-        }
-    }
-
     // get main frame options for save
     saveOption();
 
@@ -668,10 +671,6 @@ void MainFrame::saveAllOptions(void)
     // save main options and config options
     OptionMgr &sOptionMgr = OptionMgr::instance();
     sOptionMgr.save();
-
-    // save configuration path
-    if (CfgPath::isInstance() == XPR_TRUE)
-        CfgPath::instance().save();
 }
 
 void MainFrame::destroy(void)
@@ -1040,17 +1039,17 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         xpr_uint_t sId;
         xpr_sint_t sCount = aPopupMenu->GetMenuItemCount();
 
-        xpr_sint_t sBookmarkInsert = -1;
-        xpr_sint_t sDriveInsert = -1;
-        xpr_sint_t sGoUpInsert = -1;
-        xpr_sint_t sGoBackwardInsert = -1;
-        xpr_sint_t sGoForwardInsert = -1;
-        xpr_sint_t sGoHistoryInsert = -1;
-        xpr_sint_t sGoWorkingFolderInsert = -1;
-        xpr_sint_t sGoWorkingFolderSetInsert = -1;
+        xpr_sint_t sBookmarkInsert             = -1;
+        xpr_sint_t sDriveInsert                = -1;
+        xpr_sint_t sGoUpInsert                 = -1;
+        xpr_sint_t sGoBackwardInsert           = -1;
+        xpr_sint_t sGoForwardInsert            = -1;
+        xpr_sint_t sGoHistoryInsert            = -1;
+        xpr_sint_t sGoWorkingFolderInsert      = -1;
+        xpr_sint_t sGoWorkingFolderSetInsert   = -1;
         xpr_sint_t sGoWorkingFolderResetInsert = -1;
-        xpr_sint_t sShellNewInsert = -1;
-        xpr_sint_t sRecentInsert = -1;
+        xpr_sint_t sShellNewInsert             = -1;
+        xpr_sint_t sRecentFileListInsert       = -1;
 
         typedef std::deque<xpr_uint_t> CmdIdDeque;
         CmdIdDeque sDelCmdIdDeque;
@@ -1224,10 +1223,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                 ++sDelCount;
             }
 
-            if (XPR_IS_RANGE(ID_FILE_RECENT_FIRST, sId, ID_FILE_RECENT_LAST))
+            if (XPR_IS_RANGE(ID_FILE_RECENT_FILE_LIST_FIRST, sId, ID_FILE_RECENT_FILE_LIST_LAST))
             {
-                if (sRecentInsert == -1)
-                    sRecentInsert = i - sDelCount;
+                if (sRecentFileListInsert == -1)
+                    sRecentFileListInsert = i - sDelCount;
 
                 sDelCmdIdDeque.push_back(sId);
                 ++sDelCount;
@@ -1346,11 +1345,11 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                 }
             }
 
-            if (sRecentInsert == -1)
+            if (sRecentFileListInsert == -1)
             {
                 if (sId == ID_FILE_RECENT_DYNAMIC_MENU)
                 {
-                    sRecentInsert = i - sDelCount;
+                    sRecentFileListInsert = i - sDelCount;
 
                     sDelCmdIdDeque.push_back(sId);
                     ++sDelCount;
@@ -1411,15 +1410,11 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         if (sGoWorkingFolderSetInsert   >= 0) { insertGoWorkingFolderSetPopupMenu  (sBCPopupMenu, sGoWorkingFolderSetInsert  ); }
         if (sGoWorkingFolderInsert      >= 0) { insertGoWorkingFolderPopupMenu     (sBCPopupMenu, sGoWorkingFolderInsert     ); }
         if (sGoWorkingFolderResetInsert >= 0) { insertGoWorkingFolderResetPopupMenu(sBCPopupMenu, sGoWorkingFolderResetInsert); }
+        if (sRecentFileListInsert       >= 0) { insertRecentFileListPopupMenu      (sBCPopupMenu, sRecentFileListInsert      ); }
 
         if (XPR_IS_TRUE(gOpt->mConfig.mShellNewMenu) && sShellNewInsert >= 0)
         {
             insertShellNewPopupMenu(sBCPopupMenu, sShellNewInsert);
-        }
-
-        if (sRecentInsert >= 0)
-        {
-            theApp.updateRecentMenu(sBCPopupMenu, sRecentInsert);
         }
 
         // remove last seperator
@@ -1620,14 +1615,13 @@ xpr_sint_t MainFrame::insertGoBackwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t a
     if (XPR_IS_NULL(sExplorerCtrl))
         return 0;
 
-    fxb::HistoryDeque *sBackwardDeque = sExplorerCtrl->getBackwardList();
-    if (XPR_IS_NULL(sBackwardDeque))
-        return 0;
+    const fxb::HistoryDeque *sBackwardDeque = sExplorerCtrl->getBackwardDeque();
+    XPR_ASSERT(sBackwardDeque != XPR_NULL);
 
     xpr_sint_t i, sCount, sIconIndex;
     xpr_tchar_t sText[XPR_MAX_PATH + 1];
     LPITEMIDLIST sFullPidl = XPR_NULL;
-    fxb::HistoryDeque::reverse_iterator sReverseIterator;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator;
 
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
@@ -1636,19 +1630,14 @@ xpr_sint_t MainFrame::insertGoBackwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t a
         sCount = gOpt->mConfig.mBackwardMenuCount;
 
     sReverseIterator = sBackwardDeque->rbegin();
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < sCount && sReverseIterator != sBackwardDeque->rend(); ++sReverseIterator, ++i)
     {
-        if (sReverseIterator == sBackwardDeque->rend())
-            break;
-
         sFullPidl = *sReverseIterator;
 
         fxb::GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = fxb::GetItemIconIndex(sFullPidl, XPR_FALSE);
 
         aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_BACKWARD_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
-
-        sReverseIterator++;
     }
 
     return sCount;
@@ -1663,14 +1652,13 @@ xpr_sint_t MainFrame::insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     if (XPR_IS_NULL(sExplorerCtrl))
         return 0;
 
-    fxb::HistoryDeque *sForwardDeque = sExplorerCtrl->getForwardList();
-    if (XPR_IS_NULL(sForwardDeque))
-        return 0;
+    const fxb::HistoryDeque *sForwardDeque = sExplorerCtrl->getForwardDeque();
+    XPR_ASSERT(sForwardDeque != XPR_NULL);
 
     xpr_sint_t i, sCount, sIconIndex;
     xpr_tchar_t sText[XPR_MAX_PATH + 1];
     LPITEMIDLIST sFullPidl = XPR_NULL;
-    fxb::HistoryDeque::reverse_iterator sReverseIterator;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator;
 
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
@@ -1679,19 +1667,14 @@ xpr_sint_t MainFrame::insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
         sCount = gOpt->mConfig.mBackwardMenuCount;
 
     sReverseIterator = sForwardDeque->rbegin();
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < sCount && sReverseIterator != sForwardDeque->rend(); ++sReverseIterator, ++i)
     {
-        if (sReverseIterator == sForwardDeque->rend())
-            break;
-
         sFullPidl = *sReverseIterator;
 
         fxb::GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = fxb::GetItemIconIndex(sFullPidl, XPR_FALSE);
 
         aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_FORWARD_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
-
-        sReverseIterator++;
     }
 
     return sCount;
@@ -1706,14 +1689,13 @@ xpr_sint_t MainFrame::insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     if (XPR_IS_NULL(sExplorerCtrl))
         return 0;
 
-    fxb::HistoryDeque *sHistoryDeque = sExplorerCtrl->getHistoryList();
-    if (XPR_IS_NULL(sHistoryDeque))
-        return 0;
+    const fxb::HistoryDeque *sHistoryDeque = sExplorerCtrl->getHistoryDeque();
+    XPR_ASSERT(sHistoryDeque != XPR_NULL);
 
     xpr_sint_t i, sCount, sIconIndex;
     xpr_tchar_t sText[XPR_MAX_PATH + 1];
     LPITEMIDLIST sFullPidl = XPR_NULL;
-    fxb::HistoryDeque::reverse_iterator sReverseIterator;
+    fxb::HistoryDeque::const_reverse_iterator sReverseIterator;
 
     fxb::SysImgListMgr &sSysImgListMgr = fxb::SysImgListMgr::instance();
 
@@ -1722,19 +1704,14 @@ xpr_sint_t MainFrame::insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
         sCount = gOpt->mConfig.mHistoryMenuCount;
 
     sReverseIterator = sHistoryDeque->rbegin();
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < sCount && sReverseIterator != sHistoryDeque->rend(); ++sReverseIterator, ++i)
     {
-        if (sReverseIterator == sHistoryDeque->rend())
-            break;
-
         sFullPidl = *sReverseIterator;
 
         fxb::GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = fxb::GetItemIconIndex(sFullPidl, XPR_FALSE);
 
         aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_HISTORY_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
-
-        sReverseIterator++;
     }
 
     return sCount;
@@ -1804,6 +1781,69 @@ xpr_sint_t MainFrame::insertGoWorkingFolderResetPopupMenu(BCMenu *aPopupMenu, xp
     }
 
     return sCount;
+}
+
+xpr_sint_t MainFrame::insertRecentFileListPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert)
+{
+    if (XPR_IS_NULL(aPopupMenu))
+        return 0;
+
+    if (XPR_IS_FALSE(gOpt->mConfig.mRecentFile))
+    {
+        const xpr_tchar_t *sText = theApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.not_used"));
+
+        aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_DYNAMIC_MENU, (xpr_tchar_t *)sText);
+        aPopupMenu->EnableMenuItem(aInsert, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+        return 1;
+    }
+
+    fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+
+    xpr_size_t sCount = sRecentFileList.getFileCount();
+    if (sCount == 0)
+    {
+        const xpr_tchar_t *sText = theApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.none"));
+
+        aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_DYNAMIC_MENU, (xpr_tchar_t *)sText);
+        aPopupMenu->EnableMenuItem(aInsert, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+        return 1;
+    }
+
+    sCount = min(sCount, DEF_RECENT_FILE_LIST_MENU);
+
+    xpr_size_t         i;
+    const xpr_tchar_t *sPath;
+    xpr_tchar_t        sDispPath[(XPR_MAX_PATH * 2) + 1];
+    xpr_tchar_t        sText[XPR_MAX_PATH + 1];
+    const xpr_tchar_t *sSrc;
+    xpr_tchar_t       *sDest;
+
+    for (i = 0; i < sCount; ++i)
+    {
+        sPath = sRecentFileList.getFile(i);
+        XPR_ASSERT(sPath != XPR_NULL);
+
+        sSrc  = sPath;
+        sDest = sDispPath;
+
+        while (*sSrc != 0)
+        {
+            if (*sSrc == '&')
+                *sDest++ = '&';
+
+            if (_istlead(*sSrc))
+                *sDest++ = *sSrc++;
+
+            *sDest++ = *sSrc++;
+        }
+
+        *sDest = 0;
+
+        wsprintf(sText, XPR_WIDE_STRING_LITERAL("%d %s"), i + 1, sDispPath);
+        aPopupMenu->InsertMenu(aInsert + (xpr_uint_t)i, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_FILE_LIST_FIRST + i, sText);
+    }
+
+    return (xpr_sint_t)sCount;
 }
 
 LRESULT MainFrame::WindowProc(xpr_uint_t aMsg, WPARAM wParam, LPARAM lParam) 
@@ -2108,20 +2148,20 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
 
     if (XPR_IS_RANGE(ID_BOOKMARK_FIRST, aId, ID_BOOKMARK_LAST))
     {
-        xpr_sint_t sBookmarkIndex = aId - ID_BOOKMARK_FIRST;
-        aMessage = fxb::BookmarkMgr::instance().getBookmark(sBookmarkIndex)->mPath.c_str();
+        xpr_sint_t sIndex = aId - ID_BOOKMARK_FIRST;
+
+        fxb::BookmarkMgr &sBookmarkMgr = fxb::BookmarkMgr::instance();
+        aMessage = sBookmarkMgr.getBookmark(sIndex)->mPath.c_str();
     }
     else if (XPR_IS_RANGE(ID_DRIVE_FIRST, aId, ID_DRIVE_LAST))
     {
-        MainFrame &sMainFrame = (MainFrame &)*this;
-
         xpr_sint_t sViewIndex = 0;
         ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
         if (XPR_IS_NOT_NULL(sExplorerCtrl))
             sViewIndex = sExplorerCtrl->getViewIndex();
 
         xpr_tchar_t sDriveChar = (aId - ID_DRIVE_FIRST) + XPR_STRING_LITERAL('A');
-        const xpr_tchar_t *sDriveLastPath = sMainFrame.getDrivePath(sViewIndex, aId);
+        const xpr_tchar_t *sDriveLastPath = getDrivePath(sViewIndex, aId);
 
         _stprintf(sMessage, theApp.loadFormatString(XPR_STRING_LITERAL("drive.status.desc"), XPR_STRING_LITERAL("%c")), sDriveChar);
 
@@ -2134,7 +2174,7 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
     }
     else if (XPR_IS_RANGE(ID_GO_UP_FIRST, aId, ID_GO_UP_LAST))
     {
-        xpr_sint_t sUpIndex = aId - ID_GO_UP_FIRST;
+        xpr_sint_t sIndex = aId - ID_GO_UP_FIRST;
 
         ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
         if (XPR_IS_NOT_NULL(sExplorerCtrl))
@@ -2149,7 +2189,7 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
 
                     xpr_sint_t i;
                     xpr_bool_t sRemoved;
-                    for (i = sItemIdCount - 1; i >= sUpIndex; --i)
+                    for (i = sItemIdCount - 1; i >= sIndex; --i)
                     {
                         sRemoved = fxb::IL_RemoveLastID(sFullPidl);
                         if (XPR_IS_FALSE(sRemoved))
@@ -2178,26 +2218,26 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
         else if (XPR_IS_RANGE(ID_GO_HISTORY_FIRST, aId, ID_GO_HISTORY_LAST))
             sType = 2;
 
-        xpr_sint_t sBackwardIndex = aId - ID_GO_BACKWARD_FIRST;
+        xpr_sint_t sIndex = aId - ID_GO_BACKWARD_FIRST;
         switch (sType)
         {
-        case 1: sBackwardIndex = aId - ID_GO_FORWARD_FIRST; break;
-        case 2: sBackwardIndex = aId - ID_GO_HISTORY_FIRST; break;
+        case 1: sIndex = aId - ID_GO_FORWARD_FIRST; break;
+        case 2: sIndex = aId - ID_GO_HISTORY_FIRST; break;
         }
 
         ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
         if (XPR_IS_NOT_NULL(sExplorerCtrl))
         {
-            fxb::HistoryDeque *sHistoryDeque = sExplorerCtrl->getBackwardList();
+            const fxb::HistoryDeque *sHistoryDeque = sExplorerCtrl->getBackwardDeque();
             switch (sType)
             {
-            case 1: sHistoryDeque = sExplorerCtrl->getForwardList(); break;
-            case 2: sHistoryDeque = sExplorerCtrl->getHistoryList(); break;
+            case 1: sHistoryDeque = sExplorerCtrl->getForwardDeque(); break;
+            case 2: sHistoryDeque = sExplorerCtrl->getHistoryDeque(); break;
             }
 
             if (XPR_IS_NOT_NULL(sHistoryDeque))
             {
-                fxb::HistoryDeque::reverse_iterator sReverseIterator = sHistoryDeque->rbegin() + sBackwardIndex;
+                fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDeque->rbegin() + sIndex;
                 if (sReverseIterator != sHistoryDeque->rend())
                 {
                     LPITEMIDLIST sFullPidl = *sReverseIterator;
@@ -2216,13 +2256,17 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
     }
     else if (XPR_IS_RANGE(ID_GO_WORKING_FOLDER_FIRST, aId, ID_GO_WORKING_FOLDER_LAST))
     {
-        xpr_sint_t sWorkingFolderIndex = aId - ID_GO_WORKING_FOLDER_FIRST;
-        aMessage = gOpt->mMain.mWorkingFolder[sWorkingFolderIndex];
+        xpr_sint_t sIndex = aId - ID_GO_WORKING_FOLDER_FIRST;
+        aMessage = gOpt->mMain.mWorkingFolder[sIndex];
     }
-    else if (XPR_IS_RANGE(ID_FILE_RECENT_FIRST, aId, ID_FILE_RECENT_LAST))
+    else if (XPR_IS_RANGE(ID_FILE_RECENT_FILE_LIST_FIRST, aId, ID_FILE_RECENT_FILE_LIST_LAST))
     {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        theApp.getRecentFile(aId, sPath);
+        xpr_sint_t sIndex = aId - ID_FILE_RECENT_FILE_LIST_FIRST;
+
+        fxb::RecentFileList &sRecentFileList = fxb::RecentFileList::instance();
+
+        const xpr_tchar_t *sPath = sRecentFileList.getFile(sIndex);
+        XPR_ASSERT(sPath != XPR_NULL);
 
         aMessage = sPath;
     }
@@ -3548,19 +3592,19 @@ void MainFrame::setDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
     mDrivePathMap[aIndex][sDriveChar] = aPath;
 }
 
-const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, xpr_tchar_t aDriveChar)
+const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, xpr_tchar_t aDriveChar) const
 {
     if (!XPR_IS_RANGE(0, aIndex, 1))
         return XPR_NULL;
 
-    DrivePathMap::iterator sIterator = mDrivePathMap[aIndex].find(aDriveChar);
+    DrivePathMap::const_iterator sIterator = mDrivePathMap[aIndex].find(aDriveChar);
     if (sIterator == mDrivePathMap[aIndex].end())
         return XPR_NULL;
 
     return sIterator->second.c_str();
 }
 
-const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
+const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath) const
 {
     if (XPR_IS_NULL(aPath))
         return XPR_NULL;
@@ -3568,7 +3612,7 @@ const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, const xpr_tchar_t 
     return getDrivePath(aIndex, aPath[0]);
 }
 
-const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, xpr_uint_t aId)
+const xpr_tchar_t *MainFrame::getDrivePath(xpr_sint_t aIndex, xpr_uint_t aId) const
 {
     DriveToolBar *sDriveBar = getDriveBar();
     if (XPR_IS_NULL(sDriveBar) || XPR_IS_NULL(sDriveBar->m_hWnd))
@@ -4023,7 +4067,7 @@ void MainFrame::loadAccelTable(void)
     xpr_bool_t sSucceeded;
 
     AccelTable sAccelTable;
-    sSucceeded = sAccelTable.loadFromFile(sPath, sAccel, &sCount, MAX_ACCEL);
+    sSucceeded = sAccelTable.load(sPath, sAccel, &sCount, MAX_ACCEL);
     if (sSucceeded == XPR_TRUE)
     {
         sSucceeded = XPR_FALSE;
@@ -4068,7 +4112,7 @@ void MainFrame::saveAccelTable(void)
     sCount = ::CopyAcceleratorTable(m_hAccelTable, sAccel, MAX_ACCEL);
 
     AccelTable sAccelTable;
-    sAccelTable.saveToFile(sPath, sAccel, sCount);
+    sAccelTable.save(sPath, sAccel, sCount);
 }
 
 void MainFrame::RecalcLayout(xpr_bool_t aNotify)

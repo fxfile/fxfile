@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -26,14 +26,14 @@ public:
 
 public:
     void getSelHistory(xpr_size_t &aHistory, xpr_uint_t &aIndex);
-    xpr_sint_t addHistory(const xpr_tchar_t *aTitleText, const xpr_tchar_t *aTabText, fxb::HistoryDeque *aHistoryDeque);
+    xpr_sint_t addHistory(const xpr_tchar_t *aTitleText, const xpr_tchar_t *aTabText, const fxb::HistoryDeque *aHistoryDeque);
 
 protected:
     struct HistoryDisp
     {
-        const xpr_tchar_t *mTitleText;
-        const xpr_tchar_t *mTabText;
-        fxb::HistoryDeque *mHistoryDeque;
+        const xpr_tchar_t       *mTitleText;
+        const xpr_tchar_t       *mTabText;
+        const fxb::HistoryDeque *mHistoryDeque;
     };
 
 protected:

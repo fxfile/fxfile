@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -52,7 +52,7 @@ AccelTable::~AccelTable(void)
 {
 }
 
-xpr_bool_t AccelTable::loadFromFile(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t *aCount, xpr_sint32_t aMaxCount)
+xpr_bool_t AccelTable::load(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t *aCount, xpr_sint32_t aMaxCount)
 {
     if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aAccel) || aCount <= 0 || aMaxCount <= 0)
         return XPR_FALSE;
@@ -119,7 +119,7 @@ xpr_bool_t AccelTable::loadFromFile(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr
     return sResult;
 }
 
-xpr_bool_t AccelTable::saveToFile(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCount)
+xpr_bool_t AccelTable::save(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCount) const
 {
     if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aAccel) || aCount < 0)
         return XPR_FALSE;

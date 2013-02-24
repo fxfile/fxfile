@@ -133,9 +133,9 @@ public:
     void setDriveBar(xpr_bool_t aVisible);
 
     void setDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath);
-    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, xpr_tchar_t aDriveChar);
-    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath);
-    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, xpr_uint_t aId);
+    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, xpr_tchar_t aDriveChar) const;
+    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, const xpr_tchar_t *aPath) const;
+    const xpr_tchar_t *getDrivePath(xpr_sint_t aIndex, xpr_uint_t aId) const;
 
     HACCEL getAccelTable(void) const { return m_hAccelTable; }
     void setAccelerator(ACCEL *aAccel, xpr_sint_t aCount);
@@ -202,6 +202,7 @@ protected:
     xpr_sint_t insertGoWorkingFolderPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertGoWorkingFolderSetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertGoWorkingFolderResetPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
+    xpr_sint_t insertRecentFileListPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
     xpr_sint_t insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert);
 
     void getClientRectExecptForControlBars(CRect &aRect);

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_size_format.h"
 
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 #include <math.h>
 
 #include "../Option.h"
@@ -23,12 +23,20 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
-const xpr_uint64_t SIZE_KB = 1024ui64;
-const xpr_uint64_t SIZE_MB = 1024ui64*1024ui64;
-const xpr_uint64_t SIZE_GB = 1024ui64*1024ui64*1024ui64;
-const xpr_uint64_t SIZE_TB = 1024ui64*1024ui64*1024ui64*1024ui64;
-const xpr_uint64_t SIZE_PB = 1024ui64*1024ui64*1024ui64*1024ui64*1024ui64;
-const xpr_uint64_t SIZE_EB = 1024ui64*1024ui64*1024ui64*1024ui64*1024ui64*1024ui64;
+static const xpr_uint64_t SIZE_KB = 1024ui64;
+static const xpr_uint64_t SIZE_MB = 1024ui64 * 1024ui64;
+static const xpr_uint64_t SIZE_GB = 1024ui64 * 1024ui64 * 1024ui64;
+static const xpr_uint64_t SIZE_TB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+static const xpr_uint64_t SIZE_PB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+static const xpr_uint64_t SIZE_EB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+
+static const xpr_tchar_t kSizeFormatSection[]      = XPR_STRING_LITERAL("size_format");
+static const xpr_tchar_t kSizeKey[]                = XPR_STRING_LITERAL("size_format.item%d.size");
+static const xpr_tchar_t kUnitKey[]                = XPR_STRING_LITERAL("size_format.item%d.unit");
+static const xpr_tchar_t kDisplayKey[]             = XPR_STRING_LITERAL("size_format.item%d.display");
+static const xpr_tchar_t kDefaultDecimalPlaceKey[] = XPR_STRING_LITERAL("size_format.item%d.default_decimal_place");
+static const xpr_tchar_t kDecimalPlaceKey[]        = XPR_STRING_LITERAL("size_format.item%d.decimal_place");
+static const xpr_tchar_t kRoundOffKey[]            = XPR_STRING_LITERAL("size_format.item%d.round_off");
 
 std::tstring SizeFormat::mNoneText;
 std::tstring SizeFormat::mAutoText;
@@ -146,7 +154,7 @@ xpr_bool_t SizeFormat::getSizeFormat(xpr_uint64_t aSize, xpr_tchar_t *aText, xpr
 
     xpr_tchar_t sSizeText[0xff] = {0};
 
-    if (XPR_IS_TRUE(sTargetSizeUnit->mDefaultDecimalDigit))
+    if (XPR_IS_TRUE(sTargetSizeUnit->mDefaultDecimalPlace))
     {
         if (sTargetSizeUnit->mSizeUnit == SIZE_UNIT_BYTE || sTargetSizeUnit->mSizeUnit == SIZE_UNIT_NONE)
             sNumberFmt.NumDigits = 0;
@@ -166,14 +174,14 @@ xpr_bool_t SizeFormat::getSizeFormat(xpr_uint64_t aSize, xpr_tchar_t *aText, xpr
     }
     else
     {
-        sNumberFmt.NumDigits = sTargetSizeUnit->mDecimalDigit;
-        xpr_uint_t sDecimalDigit = sTargetSizeUnit->mDecimalDigit;
+        sNumberFmt.NumDigits = sTargetSizeUnit->mDecimalPlace;
+        xpr_uint_t sDecimalPlace = sTargetSizeUnit->mDecimalPlace;
 
         if (sItem->mRoundOff == XPR_FALSE)
-            sDecimalDigit++;
+            sDecimalPlace++;
 
         xpr_tchar_t sFormat[0xff] = {0};
-        _stprintf(sFormat, XPR_STRING_LITERAL("%%.%df"), sDecimalDigit);
+        _stprintf(sFormat, XPR_STRING_LITERAL("%%.%df"), sDecimalPlace);
         _stprintf(sSizeText, sFormat, sUnitSize);
 
         if (sItem->mRoundOff == XPR_FALSE)
@@ -354,53 +362,49 @@ void SizeFormat::initDefault(void)
     clear();
 }
 
-const xpr_tchar_t kSizeFmt[]             = XPR_STRING_LITERAL("SizeFmt");
-const xpr_tchar_t kSize[]                = XPR_STRING_LITERAL("Size");
-const xpr_tchar_t kUnit[]                = XPR_STRING_LITERAL("Unit");
-const xpr_tchar_t kDisplay[]             = XPR_STRING_LITERAL("Display");
-const xpr_tchar_t kDefaultDecimalDigit[] = XPR_STRING_LITERAL("DefaultDecimalDigit");
-const xpr_tchar_t kDecimalDigit[]        = XPR_STRING_LITERAL("DecimalDigit");
-const xpr_tchar_t kRoundOff[]            = XPR_STRING_LITERAL("RoundOff");
-
-xpr_bool_t SizeFormat::loadFromFile(const xpr_tchar_t *aPath)
+xpr_bool_t SizeFormat::load(fxb::IniFileEx &aIniFile)
 {
     clear();
 
-    IniFile sIniFile(aPath);
-    if (sIniFile.readFile() == XPR_FALSE)
+    xpr_size_t        i;
+    xpr_tchar_t       sKey[0xff];
+    IniFile::Section *sSection;
+    Item             *sItem;
+
+    sSection = aIniFile.findSection(kSizeFormatSection);
+    if (XPR_IS_NULL(sSection))
         return XPR_FALSE;
 
-    xpr_size_t sCount = sIniFile.getKeyCount();
-    if (sCount <= 0)
-        return XPR_FALSE;
-
-    sCount = min(sCount, MAX_SIZE_FORMAT);
-
-    xpr_size_t i;
-    const xpr_tchar_t *sKey;
-    const xpr_tchar_t *sName;
-    Item *sItem;
-
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < MAX_SIZE_FORMAT; ++i)
     {
-        sKey = sIniFile.getKeyName(i);
-        if (sKey == XPR_NULL)
+        _stprintf(sKey, kSizeKey, i + 1);
+
+        if (aIniFile.findKey(sSection, sKey) == XPR_NULL)
             break;
 
         sItem = new Item;
+        if (XPR_IS_NULL(sItem))
+            break;
 
-        sItem->mSize                = sIniFile.getValueU64(sKey, kSize,                0);
-        sItem->mSizeUnit            = sIniFile.getValueU  (sKey, kUnit,                SIZE_UNIT_BYTE);
-        sItem->mDefaultDecimalDigit = sIniFile.getValueB  (sKey, kDefaultDecimalDigit, XPR_TRUE);
-        sItem->mDecimalDigit        = sIniFile.getValueI  (sKey, kDecimalDigit,        0);
-        sItem->mRoundOff            = sIniFile.getValueB  (sKey, kRoundOff,            XPR_FALSE);
+        sItem->mSize = aIniFile.getValueI64(sSection, sKey, 0);
 
-        sName = sIniFile.getValueS(sKey, kDisplay);
-        if (sName != XPR_NULL)
-            sItem->mText = sName;
+        _stprintf(sKey, kUnitKey, i + 1);
+        sItem->mSizeUnit = aIniFile.getValueI(sSection, sKey, SIZE_UNIT_BYTE);
 
-        if (!XPR_IS_RANGE(MIN_SIZE_FORMAT_DECIAML_DIGIT, sItem->mDecimalDigit, MAX_SIZE_FORMAT_DECIAML_DIGIT))
-            sItem->mDecimalDigit = 0;
+        _stprintf(sKey, kDisplayKey, i + 1);
+        sItem->mText = aIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
+
+        _stprintf(sKey, kDefaultDecimalPlaceKey, i + 1);
+        sItem->mDefaultDecimalPlace = aIniFile.getValueB(sSection, sKey, XPR_TRUE);
+
+        _stprintf(sKey, kDecimalPlaceKey, i + 1);
+        sItem->mDecimalPlace = aIniFile.getValueI(sSection, sKey, 0);
+
+        _stprintf(sKey, kRoundOffKey, i + 1);
+        sItem->mRoundOff = aIniFile.getValueB(sSection, sKey, XPR_FALSE);
+
+        if (!XPR_IS_RANGE(MIN_SIZE_FORMAT_DECIAML_DIGIT, sItem->mDecimalPlace, MAX_SIZE_FORMAT_DECIAML_DIGIT))
+            sItem->mDecimalPlace = 0;
 
         addItem(sItem);
     }
@@ -408,35 +412,40 @@ xpr_bool_t SizeFormat::loadFromFile(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t SizeFormat::saveToFile(const xpr_tchar_t *aPath)
+void SizeFormat::save(fxb::IniFileEx &aIniFile) const
 {
-    IniFile sIniFile(aPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer Size Format File"));
+    xpr_sint_t        i;
+    xpr_tchar_t       sKey[0xff];
+    IniFile::Section *sSection;
+    Item             *sItem;
+    FormatDeque::const_iterator sIterator;
 
-    xpr_sint_t i;
-    xpr_tchar_t sKey[0xff];
-    Item *sItem;
-    FormatDeque::iterator sIterator;
+    sSection = aIniFile.addSection(kSizeFormatSection);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sIterator = mFormatDeque.begin();
     for (i = 0; sIterator != mFormatDeque.end(); ++sIterator, ++i)
     {
         sItem = *sIterator;
-        if (sItem == XPR_NULL)
-            continue;
+        XPR_ASSERT(sItem != XPR_NULL);
 
-        _stprintf(sKey, XPR_STRING_LITERAL("%s%d"), kSizeFmt, i+1);
+        _stprintf(sKey, kSizeKey, i + 1);
+        aIniFile.setValueI64(sSection, sKey, sItem->mSize);
 
-        sIniFile.setValueU64(sKey, kSize,                sItem->mSize);
-        sIniFile.setValueU  (sKey, kUnit,                sItem->mSizeUnit);
-        sIniFile.setValueS  (sKey, kDisplay,             sItem->mText.c_str());
-        sIniFile.setValueB  (sKey, kDefaultDecimalDigit, sItem->mDefaultDecimalDigit);
-        sIniFile.setValueI  (sKey, kDecimalDigit,        sItem->mDecimalDigit);
-        sIniFile.setValueB  (sKey, kRoundOff,            sItem->mRoundOff);
+        _stprintf(sKey, kUnitKey, i + 1);
+        aIniFile.setValueI(sSection, sKey, sItem->mSizeUnit);
+
+        _stprintf(sKey, kDisplayKey, i + 1);
+        aIniFile.setValueS(sSection, sKey, sItem->mText);
+
+        _stprintf(sKey, kDefaultDecimalPlaceKey, i + 1);
+        aIniFile.setValueB(sSection, sKey, sItem->mDefaultDecimalPlace);
+
+        _stprintf(sKey, kDecimalPlaceKey, i + 1);
+        aIniFile.setValueI(sSection, sKey, sItem->mDecimalPlace);
+
+        _stprintf(sKey, kRoundOffKey, i + 1);
+        aIniFile.setValueB(sSection, sKey, sItem->mRoundOff);
     }
-
-    sIniFile.writeFile(xpr::CharSetUtf16);
-
-    return XPR_TRUE;
 }
 } // namespace fxb
