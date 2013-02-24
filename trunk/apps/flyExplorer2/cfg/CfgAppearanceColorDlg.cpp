@@ -90,17 +90,17 @@ void CfgAppearanceColorDlg::onInit(Option::Config &aConfig)
 {
     mActivedViewColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
     mActivedViewColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
-    mActivedViewColorCtrl.SetDefaultColor(RGB(48,192,48));
+    mActivedViewColorCtrl.SetDefaultColor(DEF_ACTIVED_VIEW_COLOR);
     mActivedViewColorCtrl.SetColor(aConfig.mActiveViewColor);
 
     mInfoBarBookmarkColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
     mInfoBarBookmarkColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
-    mInfoBarBookmarkColorCtrl.SetDefaultColor(RGB(0,0,255));
+    mInfoBarBookmarkColorCtrl.SetDefaultColor(DEF_INFO_BAR_BOOKMARK_COLOR);
     mInfoBarBookmarkColorCtrl.SetColor(aConfig.mContentsBookmarkColor);
 
     mPathBarHighlightColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
     mPathBarHighlightColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
-    mPathBarHighlightColorCtrl.SetDefaultColor(Option::getPathBarDefaultHighlightColor());
+    mPathBarHighlightColorCtrl.SetDefaultColor(DEF_PATH_BAR_HIGHLIGHT_COLOR);
     mPathBarHighlightColorCtrl.SetColor(aConfig.mPathBarHighlightColor);
 
     ((CButton *)GetDlgItem(IDC_CFG_COLOR_LABEL_PATH_BAR_HIGHLIGHT_COLOR))->SetCheck(aConfig.mPathBarHighlight);

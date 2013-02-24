@@ -24,7 +24,7 @@ static char THIS_FILE[] = __FILE__;
 BookmarkWnd::BookmarkWnd(void)
     : mBookmarkItem(XPR_NULL)
     , mBookmarkActive(XPR_FALSE)
-    , mBookmarkColor(RGB(0,0,255))
+    , mBookmarkColor(DEF_INFO_BAR_BOOKMARK_COLOR)
     , mCursor(XPR_NULL)
     , mIndex(-1)
 {
