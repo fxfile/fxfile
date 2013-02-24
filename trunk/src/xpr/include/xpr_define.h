@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -75,12 +75,17 @@ namespace xpr
     ClassName(const ClassName&); \
     void operator=(const ClassName&)
 
-#define XPR_STL_FOR_EACH(container, iterator) \
-    for (iterator = (container).begin(), iterator != (container).end(); ++iterator)
-#define XPR_STL_REVERSE_FOR_EACH(container, iterator) \
-    for (iterator = (container).rbegin(), iterator != (container).rend(); ++iterator)
-#define XPR_STL_IS_INDEXABLE(index, container) \
-    ((0 <= ((xpr_sint_t)(index))) && (((xpr_sint_t)(index)) < ((xpr_sint_t)(container).size())))
+#define XPR_FOR_EACH(i, aMax) \
+    for ((i) = (0); (i) < aMax; ++(i))
+#define XPR_FOR_EACH_REVERSE(i, aMin) \
+    for ((i) = (0); (i) >= aMin; --(i))
+
+#define XPR_STL_FOR_EACH(aIterator, aContainer) \
+    for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))
+#define XPR_STL_FOR_EACH_REVERSE(aIterator, aContainer) \
+    for ((aIterator) = (aContainer).rbegin(); (aIterator) != (aContainer).rend(); ++(aIterator))
+#define XPR_STL_IS_INDEXABLE(aIndex, aContainer) \
+    ((0 <= ((xpr_sint_t)(aIndex))) && (((xpr_sint_t)(aIndex)) < ((xpr_sint_t)(aContainer).size())))
 } // namespace xpr
 
 #endif // __XPR_DEFINE_H__
