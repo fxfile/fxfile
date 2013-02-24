@@ -46,10 +46,6 @@ public:
     ~ExplorerApp(void);
 
 public:
-    xpr_bool_t updateRecentMenu(BCMenu *aMenu, xpr_sint_t aInsert);
-    xpr_bool_t getRecentFile(xpr_uint_t aId, xpr_tchar_t *aPath);
-    void removeRecentFileList(void);
-
     void setSingleInstance(xpr_bool_t aSingleInstance);
 
     void saveAllOptions(void);

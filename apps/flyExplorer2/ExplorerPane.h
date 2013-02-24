@@ -174,6 +174,7 @@ protected:
     virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending);
     virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth);
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
+    virtual void onRunFile(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl);
 
     // from AddressBarObserver
     virtual xpr_bool_t onExplore(AddressBar &aAddressBar, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy);

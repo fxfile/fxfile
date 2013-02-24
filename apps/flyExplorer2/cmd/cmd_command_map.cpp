@@ -114,7 +114,8 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_FILE_PRINT_SETUP,                 new cmd::PrintSetupCommand);
 
     aExecutor.bindCommand(
-        ID_FILE_RECENT_FIRST, ID_FILE_RECENT_LAST,             new cmd::RecentFileCommand);
+        ID_FILE_RECENT_FILE_LIST_FIRST, ID_FILE_RECENT_FILE_LIST_LAST,
+                                                               new cmd::RecentFileCommand);
 
     aExecutor.bindCommand(ID_APP_MINIMIZE_TRAY,                new cmd::MinimizeTrayCommand);
     aExecutor.bindCommand(ID_APP_EXIT,                         new cmd::AppExitCommand);
@@ -192,9 +193,11 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(
         ID_GO_WORKING_FOLDER_FIRST, ID_GO_WORKING_FOLDER_LAST, new cmd::GoWorkingFolderCommand);
     aExecutor.bindCommand(
-        ID_GO_WORKING_FOLDER_SET_FIRST, ID_GO_WORKING_FOLDER_SET_LAST, new cmd::WorkingFolderSetCommand);
+        ID_GO_WORKING_FOLDER_SET_FIRST, ID_GO_WORKING_FOLDER_SET_LAST,
+                                                               new cmd::WorkingFolderSetCommand);
     aExecutor.bindCommand(
-        ID_GO_WORKING_FOLDER_RESET_FIRST, ID_GO_WORKING_FOLDER_RESET_LAST, new cmd::WorkingFolderResetCommand);
+        ID_GO_WORKING_FOLDER_RESET_FIRST, ID_GO_WORKING_FOLDER_RESET_LAST,
+                                                               new cmd::WorkingFolderResetCommand);
     aExecutor.bindCommand(ID_GO_WORKING_FOLDER_RESET_ALL,      new cmd::WorkingFolderResetAllCommand);
 
     aExecutor.bindCommand(ID_GO_PATH,                          new cmd::GoPathCommand);

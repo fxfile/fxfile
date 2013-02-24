@@ -469,7 +469,7 @@ void MainToolBar::OnDropWorkingFolder(xpr_sint_t aIndex, LPITEMIDLIST aFullPidl)
     gFrame->setWorkingFolder(aIndex, aFullPidl);
 }
 
-xpr_bool_t MainToolBar::loadFromFile(const xpr_tchar_t *aPath)
+xpr_bool_t MainToolBar::load(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NULL(aPath))
         return XPR_FALSE;
@@ -528,7 +528,7 @@ xpr_bool_t MainToolBar::loadFromFile(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-void MainToolBar::saveToFile(const xpr_tchar_t *aPath)
+void MainToolBar::save(const xpr_tchar_t *aPath) const
 {
     if (XPR_IS_NULL(aPath))
         return;

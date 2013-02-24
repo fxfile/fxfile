@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_filter.h"
 
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +31,12 @@ const xpr_tchar_t *Filter::mMovieFileString       = XPR_NULL;
 const xpr_tchar_t *Filter::mWebFileString         = XPR_NULL;
 const xpr_tchar_t *Filter::mProgrammingFileString = XPR_NULL;
 const xpr_tchar_t *Filter::mTemporaryFileString   = XPR_NULL;
+
+static const xpr_tchar_t kFilterSection[] = XPR_STRING_LITERAL("filter");
+static const xpr_tchar_t kNameKey      [] = XPR_STRING_LITERAL("filter.item%d_name");
+static const xpr_tchar_t kExtensionKey [] = XPR_STRING_LITERAL("filter.item%d_extension");
+static const xpr_tchar_t kColorKey     [] = XPR_STRING_LITERAL("filter.item%d_color");
+static const xpr_tchar_t kIconIndexKey [] = XPR_STRING_LITERAL("filter.item%d_icon_index");
 
 Filter::Filter(void)
 {
@@ -291,69 +297,39 @@ void Filter::clear(void)
     mFilterDeque.clear();
 }
 
-const xpr_tchar_t _fx_Filter[] = XPR_STRING_LITERAL("Filter");
-
-xpr_bool_t Filter::loadFromFile(const xpr_tchar_t *aPath)
+xpr_bool_t Filter::load(fxb::IniFileEx &aIniFile)
 {
-    IniFile sIniFile(aPath);
-    if (sIniFile.readFile() == XPR_FALSE)
+    xpr_size_t         i;
+    xpr_tchar_t        sKey[0xff];
+    const xpr_tchar_t *sValue;
+    FilterItem        *sFilterItem;
+    IniFile::Section  *sSection;
+
+    sSection = aIniFile.findSection(kFilterSection);
+    if (XPR_IS_NULL(sSection))
         return XPR_FALSE;
 
-    xpr_size_t sCount = sIniFile.getEntryCount(_fx_Filter);
-    if (sCount <= 0)
-        return XPR_FALSE;
-
-    sCount = XPR_MIN(sCount, MAX_FILTER);
-
-    xpr_size_t i;
-    xpr_sint_t r, g, b;
-    xpr_tchar_t sValue[0xff];
-    xpr_tchar_t *sSplit, *sSplit2;
-    FilterItem *sFilterItem;
-
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < MAX_FILTER; ++i)
     {
+        _stprintf(sKey, kNameKey, i + 1);
+
+        sValue = aIniFile.getValueS(sSection, sKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+            break;
+
         sFilterItem = new FilterItem;
+        XPR_ASSERT(sFilterItem != XPR_NULL);
 
-        sSplit  = XPR_NULL;
-        sSplit2 = XPR_NULL;
+        sFilterItem->mName = sValue;
 
-        sFilterItem->mName = sIniFile.getValueName((xpr_size_t)0, i);
-        _tcscpy(sValue, sIniFile.getValueS(_fx_Filter, sFilterItem->mName.c_str(), XPR_STRING_LITERAL("")));
+        _stprintf(sKey, kExtensionKey, i + 1);
+        sFilterItem->mExts = aIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
 
-        sSplit = _tcschr(sValue, '|');
-        if (XPR_IS_NOT_NULL(sSplit))
-            *sSplit = '\0';
+        _stprintf(sKey, kColorKey, i + 1);
+        sFilterItem->mColor = aIniFile.getValueC(sSection, sKey, RGB(0,0,0));
 
-        sFilterItem->mExts = sValue;
-
-        if (XPR_IS_NOT_NULL(sSplit))
-        {
-            sSplit++;
-
-            sSplit2 = _tcschr(sSplit, '|');
-            if (XPR_IS_NOT_NULL(sSplit2))
-            {
-                *sSplit2 = '\0';
-                sSplit2++;
-            }
-        }
-
-        if (XPR_IS_NOT_NULL(sSplit))
-        {
-            if (sSplit[0] == '#')
-                _stscanf(sSplit+1, XPR_STRING_LITERAL("%02x%02x%02x"), &r, &g, &b);
-            else
-                _stscanf(sSplit, XPR_STRING_LITERAL("%d,%d,%d"), &r, &g, &b);
-            sFilterItem->mColor = RGB((xpr_byte_t)r, (xpr_byte_t)g, (xpr_byte_t)b);
-        }
-        else
-            sFilterItem->mColor = ::GetSysColor(COLOR_WINDOWTEXT);
-
-        if (XPR_IS_NOT_NULL(sSplit2))
-            _stscanf(sSplit2, XPR_STRING_LITERAL("%d"), &sFilterItem->mIconIndex);
-        else
-            sFilterItem->mIconIndex = 0;
+        _stprintf(sKey, kIconIndexKey, i + 1);
+        sFilterItem->mIconIndex = aIniFile.getValueI(sSection, sKey, -1);
 
         addFilter(sFilterItem);
     }
@@ -361,35 +337,35 @@ xpr_bool_t Filter::loadFromFile(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t Filter::saveToFile(const xpr_tchar_t *aPath)
+void Filter::save(fxb::IniFileEx &aIniFile) const
 {
-    IniFile sIniFile(aPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer Filtering File"));
+    xpr_sint_t        i;
+    xpr_tchar_t       sKey[0xff];
+    IniFile::Section *sSection;
+    FilterItem       *sFilterItem;
+    FilterDeque::const_iterator sIterator;
 
-    xpr_byte_t r, g, b;
-    xpr_tchar_t sValue[0xff];
-
-    FilterItem *sFilterItem;
-    FilterDeque::iterator sIterator;
+    sSection = aIniFile.addSection(kFilterSection);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sIterator = mFilterDeque.begin();
-    for (; sIterator != mFilterDeque.end(); ++sIterator)
+    for (i = 0; sIterator != mFilterDeque.end(); ++i, ++sIterator)
     {
         sFilterItem = *sIterator;
-        if (XPR_IS_NULL(sFilterItem))
-            continue;
+        XPR_ASSERT(sFilterItem);
 
-        r = GetRValue(sFilterItem->mColor);
-        g = GetGValue(sFilterItem->mColor);
-        b = GetBValue(sFilterItem->mColor);
+        _stprintf(sKey, kNameKey, i + 1);
+        aIniFile.setValueS(sSection, sKey, sFilterItem->mName);
 
-        _stprintf(sValue, XPR_STRING_LITERAL("%s|%d,%d,%d|%d"), sFilterItem->mExts.c_str(), r, g, b, sFilterItem->mIconIndex);
-        sIniFile.setValueS(_fx_Filter, sFilterItem->mName.c_str(), sValue);
+        _stprintf(sKey, kExtensionKey, i + 1);
+        aIniFile.setValueS(sSection, sKey, sFilterItem->mExts);
+
+        _stprintf(sKey, kColorKey, i + 1);
+        aIniFile.setValueC(sSection, sKey, sFilterItem->mColor);
+
+        _stprintf(sKey, kIconIndexKey, i + 1);
+        aIniFile.setValueI(sSection, sKey, sFilterItem->mIconIndex);
     }
-
-    sIniFile.writeFile(xpr::CharSetUtf16);
-
-    return XPR_TRUE;
 }
 
 void Filter::setString(const xpr_tchar_t *aFolderString,

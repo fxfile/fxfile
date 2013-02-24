@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -156,18 +156,18 @@ FormatParser::Result FormatParser::parse(const std::tstring &aOrgPath,
                 }
                 else if (aFormat[i+1] == 'N' && aFormat[i+2] == '(' && (i+6) < sLen)
                 {
-                    const xpr_tchar_t *lpszLastBrackets = _tcschr(aFormat.c_str() + i + 3, ')');
-                    if (lpszLastBrackets)
+                    const xpr_tchar_t *sLastBrackets = _tcschr(aFormat.c_str() + i + 3, ')');
+                    if (XPR_IS_NOT_NULL(sLastBrackets))
                     {
-                        xpr_sint_t sLen = (xpr_sint_t)(lpszLastBrackets - (aFormat.c_str() + i) + 1);
-                        const xpr_tchar_t *lpszTemp = _tcschr(aFormat.c_str() + i + 2, '-');
-                        if (!lpszTemp)
+                        xpr_sint_t sLen = (xpr_sint_t)(sLastBrackets - (aFormat.c_str() + i) + 1);
+                        const xpr_tchar_t *sTemp = _tcschr(aFormat.c_str() + i + 2, '-');
+                        if (XPR_IS_NULL(sTemp))
                         {
                             sResult = PARSING_FORMAT_INCORRECT_FORMAT;
                             break;
                         }
-                        lpszTemp++;
-                        if (aFormat[i+3] < '0' || aFormat[i+3] > '9' || lpszTemp[0] < '0' || lpszTemp[0] > '9')
+                        sTemp++;
+                        if (aFormat[i+3] < '0' || aFormat[i+3] > '9' || sTemp[0] < '0' || sTemp[0] > '9')
                         {
                             sResult = PARSING_FORMAT_INCORRECT_FORMAT;
                             break;

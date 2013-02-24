@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,8 +18,8 @@ public:
     virtual ~AccelTable(void);
 
 public:
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t *aCount, xpr_sint32_t aMaxCount);
-    xpr_bool_t saveToFile(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCount);
+    xpr_bool_t load(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t *aCount, xpr_sint32_t aMaxCount);
+    xpr_bool_t save(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCount) const;
 };
 
 #endif // __FX_ACCEL_TABLE_H__

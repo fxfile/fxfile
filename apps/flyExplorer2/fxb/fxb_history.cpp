@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_history.h"
 
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,119 +29,6 @@ History::History(void)
 History::~History(void)
 {
     clear();
-}
-
-static const xpr_tchar_t _fx_key_backward[] = XPR_STRING_LITERAL("Backward");
-static const xpr_tchar_t _fx_key_forward[]  = XPR_STRING_LITERAL("Forward");
-static const xpr_tchar_t _fx_key_history[]  = XPR_STRING_LITERAL("History");
-
-xpr_bool_t History::loadFromFile(const xpr_tchar_t *aPath)
-{
-    IniFile sIniFile(aPath);
-    if (sIniFile.readFile() == XPR_FALSE)
-        return XPR_FALSE;
-
-    xpr_size_t i, j;
-    xpr_size_t sKeyCount;
-    xpr_size_t sEntryCount;
-    const xpr_tchar_t *sKey;
-    const xpr_tchar_t *sEntry;
-    const xpr_tchar_t *sValue;
-    HistoryDeque *sHistoryDeque;
-    LPITEMIDLIST sFullPidl;
-
-    sKeyCount = sIniFile.getKeyCount();
-    for (i = 0; i < sKeyCount; ++i)
-    {
-        sKey = sIniFile.getKeyName(i);
-        if (XPR_IS_NULL(sKey))
-            continue;
-
-        sHistoryDeque = XPR_NULL;
-
-        if (_tcsicmp(sKey, _fx_key_backward) == 0) sHistoryDeque = &mBackwardDeque;
-        else if (_tcsicmp(sKey, _fx_key_forward) == 0) sHistoryDeque = &mForwardDeque;
-        else if (_tcsicmp(sKey, _fx_key_history) == 0) sHistoryDeque = &mHistoryDeque;
-
-        if (XPR_IS_NULL(sHistoryDeque))
-            continue;
-
-        sEntryCount = sIniFile.getEntryCount(i);
-        for (j = 0; j < sEntryCount; ++j)
-        {
-            sEntry = sIniFile.getEntryName(i, j);
-            if (XPR_IS_NULL(sEntry))
-                break;
-
-            sValue = sIniFile.getValueS(sKey, sEntry);
-            if (XPR_IS_NULL(sValue))
-                continue;
-
-            sFullPidl = Path2Pidl(sValue);
-            if (XPR_IS_NOT_NULL(sFullPidl))
-            {
-                sHistoryDeque->push_back(sFullPidl);
-            }
-        }
-    }
-
-    return XPR_TRUE;
-}
-
-void History::saveToFile(const xpr_tchar_t *aPath)
-{
-    IniFile sIniFile(aPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer History File"));
-
-    xpr_size_t i;
-    xpr_tchar_t sEntry[0xff];
-    LPITEMIDLIST sFullPidl;
-    HistoryDeque::iterator sIterator;
-    xpr_tchar_t sPath[XPR_MAX_PATH * 2 + 1];
-
-    sIterator = mBackwardDeque.begin();
-    for (i = 0; sIterator != mBackwardDeque.end(); ++sIterator)
-    {
-        sFullPidl = *sIterator;
-        if (XPR_IS_NULL(sFullPidl))
-            continue;
-
-        if (Pidl2Path(sFullPidl, sPath) == XPR_FALSE)
-            continue;
-
-        _stprintf(sEntry, XPR_STRING_LITERAL("%s%d"), _fx_key_backward, i++);
-        sIniFile.setValueS(_fx_key_backward, sEntry, sPath);
-    }
-
-    sIterator = mForwardDeque.begin();
-    for (i = 0; sIterator != mForwardDeque.end(); ++sIterator)
-    {
-        sFullPidl = *sIterator;
-        if (XPR_IS_NULL(sFullPidl))
-            continue;
-
-        if (Pidl2Path(sFullPidl, sPath) == XPR_FALSE)
-            continue;
-
-        _stprintf(sEntry, XPR_STRING_LITERAL("%s%d"), _fx_key_forward, i++);
-        sIniFile.setValueS(_fx_key_forward, sEntry, sPath);
-    }
-
-    sIterator = mHistoryDeque.begin();
-    for (i = 0; sIterator != mHistoryDeque.end(); ++sIterator)
-    {
-        sFullPidl = *sIterator;
-        if (XPR_IS_NULL(sFullPidl))
-            continue;
-
-        if (Pidl2Path(sFullPidl, sPath) == XPR_FALSE)
-            continue;
-
-        _stprintf(sEntry, XPR_STRING_LITERAL("%s%d"), _fx_key_history, i++);
-        sIniFile.setValueS(_fx_key_history, sEntry, sPath);
-    }
-
-    sIniFile.writeFile(xpr::CharSetUtf16);
 }
 
 xpr_bool_t History::addBackward(LPITEMIDLIST aFullPidl)
@@ -352,12 +239,12 @@ LPITEMIDLIST History::popForward(LPITEMIDLIST aFullPidl, xpr_size_t aForward)
     return sFullPidl;
 }
 
-LPITEMIDLIST History::getHistory(void)
+LPITEMIDLIST History::getHistory(void) const
 {
     return getHistory(0);
 }
 
-LPITEMIDLIST History::getHistory(xpr_size_t aHistory)
+LPITEMIDLIST History::getHistory(xpr_size_t aHistory) const
 {
     aHistory = mHistoryDeque.size() - aHistory - 1;
 
@@ -367,34 +254,70 @@ LPITEMIDLIST History::getHistory(xpr_size_t aHistory)
     return mHistoryDeque.at(aHistory);
 }
 
-xpr_size_t History::getBackwardCount(void)
+xpr_size_t History::getBackwardCount(void) const
 {
     return mBackwardDeque.size();
 }
 
-xpr_size_t History::getForwardCount(void)
+xpr_size_t History::getForwardCount(void) const
 {
     return mForwardDeque.size();
 }
 
-xpr_size_t History::getHistoryCount(void)
+xpr_size_t History::getHistoryCount(void) const
 {
     return mHistoryDeque.size();
 }
 
-HistoryDeque *History::getBackwardList(void)
+const HistoryDeque *History::getBackwardDeque(void) const
 {
     return &mBackwardDeque;
 }
 
-HistoryDeque *History::getForwardList(void)
+const HistoryDeque *History::getForwardDeque(void) const
 {
     return &mForwardDeque;
 }
 
-HistoryDeque *History::getHistoryList(void)
+const HistoryDeque *History::getHistoryDeque(void) const
 {
     return &mHistoryDeque;
+}
+
+void History::setBackwardDeque(HistoryDeque *aBackwardDeque)
+{
+    clearBackward();
+
+    if (XPR_IS_NOT_NULL(aBackwardDeque))
+    {
+        mBackwardDeque.insert(mBackwardDeque.begin(), aBackwardDeque->begin(), aBackwardDeque->end());
+
+        aBackwardDeque->clear();
+    }
+}
+
+void History::setForwardDeque(HistoryDeque *aForwardDeque)
+{
+    clearForward();
+
+    if (XPR_IS_NOT_NULL(aForwardDeque))
+    {
+        mForwardDeque.insert(mForwardDeque.begin(), aForwardDeque->begin(), aForwardDeque->end());
+
+        aForwardDeque->clear();
+    }
+}
+
+void History::setHistoryDeque(HistoryDeque *aHistoryDeque)
+{
+    clearHistory();
+
+    if (XPR_IS_NOT_NULL(aHistoryDeque))
+    {
+        mHistoryDeque.insert(mHistoryDeque.begin(), aHistoryDeque->begin(), aHistoryDeque->end());
+
+        aHistoryDeque->clear();
+    }
 }
 
 void History::setMaxBackward(xpr_size_t aBackwardCount)

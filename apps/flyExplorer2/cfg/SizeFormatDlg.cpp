@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -62,9 +62,9 @@ xpr_bool_t SizeFormatDlg::OnInitDialog(void)
 
     ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_UNIT_SIZE))->LimitText(100);
     ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_UNIT_DISP))->LimitText(MAX_SIZE_FORMAT_DISP);
-    ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_DECIMAL_DIGIT))->LimitText(1);
+    ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_DECIMAL_PLACE))->LimitText(1);
 
-    ((CSpinButtonCtrl*)GetDlgItem(IDC_SIZE_FORMAT_DECIMAL_DIGIT_SPIN))->SetRange32(MIN_SIZE_FORMAT_DECIAML_DIGIT, MAX_SIZE_FORMAT_DECIAML_DIGIT);
+    ((CSpinButtonCtrl*)GetDlgItem(IDC_SIZE_FORMAT_DECIMAL_PLACE_SPIN))->SetRange32(MIN_SIZE_FORMAT_DECIAML_DIGIT, MAX_SIZE_FORMAT_DECIAML_DIGIT);
 
     xpr_sint_t i;
     xpr_sint_t sIndex;
@@ -109,10 +109,12 @@ xpr_bool_t SizeFormatDlg::OnInitDialog(void)
     SetDlgItemText(IDC_SIZE_FORMAT_LABEL_UNIT,             theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.unit")));
     SetDlgItemText(IDC_SIZE_FORMAT_LABEL_MORE,             theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.more")));
     SetDlgItemText(IDC_SIZE_FORMAT_SIZE_DISP,              theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.display")));
-    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_DECIMAL_DIGITS,   theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.decimal_digits")));
-    SetDlgItemText(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_DIGITS, theApp.loadString(XPR_STRING_LITERAL("popup.size_format.default_decimal_digits")));
-    SetDlgItemText(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_DIGITS,  theApp.loadString(XPR_STRING_LITERAL("popup.size_format.custom_decimal_digits")));
+    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_DECIMAL_PLACE,    theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.decimal_place")));
+    SetDlgItemText(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE,  theApp.loadString(XPR_STRING_LITERAL("popup.size_format.default_decimal_place")));
+    SetDlgItemText(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_PLACE,   theApp.loadString(XPR_STRING_LITERAL("popup.size_format.custom_decimal_place")));
     SetDlgItemText(IDC_SIZE_FORMAT_ROUND_OFF,              theApp.loadString(XPR_STRING_LITERAL("popup.size_format.round_off")));
+    SetDlgItemText(IDOK,                                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -240,9 +242,9 @@ void SizeFormatDlg::OnLvnItemchangedList(NMHDR *pNMHDR, LRESULT *pResult)
             mUnitComboBox.SetCurSel(sCurSel);
 
             SetDlgItemText(IDC_SIZE_FORMAT_UNIT_DISP, sItem->mText.c_str());
-            SetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_DIGIT, sItem->mDecimalDigit);
-            ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_DIGIT))->SetCheck(sItem->mDefaultDecimalDigit);
-            ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_DIGIT))->SetCheck(!sItem->mDefaultDecimalDigit);
+            SetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_PLACE, sItem->mDecimalPlace);
+            ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE))->SetCheck(sItem->mDefaultDecimalPlace);
+            ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_PLACE))->SetCheck(!sItem->mDefaultDecimalPlace);
             ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_ROUND_OFF))->SetCheck(sItem->mRoundOff);
         }
     }
@@ -296,8 +298,8 @@ void SizeFormatDlg::OnAdd(void)
     GetDlgItemText(IDC_SIZE_FORMAT_UNIT_SIZE, sUnitSizeText, 0xfe);
     GetDlgItemText(IDC_SIZE_FORMAT_UNIT_DISP, sUnitDispText, 0xfe);
 
-    xpr_bool_t sDefaultDecimalDigit = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_DIGIT))->GetCheck();
-    xpr_sint_t sDecimalDigit        = GetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_DIGIT);
+    xpr_bool_t sDefaultDecimalPlace = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE))->GetCheck();
+    xpr_sint_t sDecimalPlace        = GetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_PLACE);
     xpr_bool_t sRoundOff            = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_ROUND_OFF))->GetCheck();
 
     xpr_sint_t sCurSel = mUnitComboBox.GetCurSel();
@@ -315,8 +317,8 @@ void SizeFormatDlg::OnAdd(void)
     _stscanf(sUnitSizeText, XPR_STRING_LITERAL("%I64u"), &sItem->mSize);
     sItem->mSizeUnit            = sSizeUnit;
     sItem->mText                = sUnitDispText;
-    sItem->mDefaultDecimalDigit = sDefaultDecimalDigit;
-    sItem->mDecimalDigit        = sDecimalDigit;
+    sItem->mDefaultDecimalPlace = sDefaultDecimalPlace;
+    sItem->mDecimalPlace        = sDecimalPlace;
     sItem->mRoundOff            = sRoundOff;
 
     xpr_sint_t sIndex = addSizeFormat(sItem);
@@ -350,15 +352,15 @@ void SizeFormatDlg::OnModify(void)
     GetDlgItemText(IDC_SIZE_FORMAT_UNIT_SIZE, sUnitSizeText, 0xfe);
     GetDlgItemText(IDC_SIZE_FORMAT_UNIT_DISP, sUnitDispText, 0xfe);
 
-    xpr_bool_t sDefaultDecimalDigit = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_DIGIT))->GetCheck();
-    xpr_sint_t sDecimalDigit        = GetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_DIGIT);
+    xpr_bool_t sDefaultDecimalPlace = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE))->GetCheck();
+    xpr_sint_t sDecimalPlace        = GetDlgItemInt(IDC_SIZE_FORMAT_DECIMAL_PLACE);
     xpr_bool_t sRoundOff            = ((CButton *)GetDlgItem(IDC_SIZE_FORMAT_ROUND_OFF))->GetCheck();
 
     _stscanf(sUnitSizeText, XPR_STRING_LITERAL("%I64u"), &sItem->mSize);
     sItem->mSizeUnit            = sSizeUnit;
     sItem->mText                = sUnitDispText;
-    sItem->mDefaultDecimalDigit = sDefaultDecimalDigit;
-    sItem->mDecimalDigit        = sDecimalDigit;
+    sItem->mDefaultDecimalPlace = sDefaultDecimalPlace;
+    sItem->mDecimalPlace        = sDecimalPlace;
     sItem->mRoundOff            = sRoundOff;
 
     mListCtrl.Invalidate(XPR_FALSE);

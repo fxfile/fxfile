@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -108,8 +108,8 @@ public:
     xpr_bool_t   setClipboardCopy(xpr_uint_t aGroupId);
     xpr_bool_t   setClipboardCut(xpr_uint_t aGroupId);
 
-    xpr_bool_t   loadFromFile(const xpr_tchar_t *aPath);
-    xpr_bool_t   saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t   load(const xpr_tchar_t *aPath);
+    xpr_bool_t   save(const xpr_tchar_t *aPath) const;
 
 protected:
     void addItem(Group *aGroup, const xpr_tchar_t *aPath);

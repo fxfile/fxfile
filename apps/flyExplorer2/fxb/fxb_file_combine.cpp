@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_file_combine.h"
 
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 #include "fxb_crc_checksum.h"
 
 #ifdef _DEBUG
@@ -22,6 +22,10 @@ static char THIS_FILE[] = __FILE__;
 namespace fxb
 {
 static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+
+static const xpr_tchar_t kFileNameKey[] = XPR_STRING_LITERAL("filename");
+static const xpr_tchar_t kSizeKey    [] = XPR_STRING_LITERAL("size");
+static const xpr_tchar_t kCrc32Key   [] = XPR_STRING_LITERAL("crc32");
 
 FileCombine::FileCombine(void)
     : mHwnd(XPR_NULL), mMsg(0)
@@ -160,12 +164,12 @@ unsigned FileCombine::OnEntryProc(void)
             // crc checking
             if (IsStop() == XPR_FALSE && IsExistFile(sCrcFile.c_str()) == XPR_TRUE)
             {
-                IniFile sIniFile(sCrcFile.c_str());
+                IniFileEx sIniFile(sCrcFile.c_str());
                 sIniFile.readFile();
 
-                const xpr_tchar_t *sTargetFileName = sIniFile.getValueS(XPR_STRING_LITERAL(""), XPR_STRING_LITERAL("filename"), XPR_NULL);
-                const xpr_tchar_t *sFileSize       = sIniFile.getValueS(XPR_STRING_LITERAL(""), XPR_STRING_LITERAL("size"),     XPR_NULL);
-                const xpr_tchar_t *sCrcCode        = sIniFile.getValueS(XPR_STRING_LITERAL(""), XPR_STRING_LITERAL("crc32"),    XPR_NULL);
+                const xpr_tchar_t *sTargetFileName = sIniFile.getValueS(XPR_STRING_LITERAL(""), kFileNameKey, XPR_NULL);
+                const xpr_tchar_t *sFileSize       = sIniFile.getValueS(XPR_STRING_LITERAL(""), kSizeKey,     XPR_NULL);
+                const xpr_tchar_t *sCrcCode        = sIniFile.getValueS(XPR_STRING_LITERAL(""), kCrc32Key,    XPR_NULL);
 
                 xpr_bool_t sCorrectCrcCode = XPR_FALSE;
 

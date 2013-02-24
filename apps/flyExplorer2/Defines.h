@@ -11,62 +11,64 @@
 #define __FX_DEFINES_H__
 #pragma once
 
-#define MIN_HISTORY             10
-#define DEF_HISTORY             100
-#define MAX_HISTORY             1000
-#define MIN_HISTORY_MENU        5
-#define DEF_HISTORY_MENU        10
-#define MAX_HISTORY_MENU        30
+#define MIN_HISTORY               (10)
+#define DEF_HISTORY               (100)
+#define MAX_HISTORY               (1000)
+#define MIN_HISTORY_MENU          (5)
+#define DEF_HISTORY_MENU          (10)
+#define MAX_HISTORY_MENU          (30)
 
-#define MIN_BACKWARD            10
-#define DEF_BACKWARD            100
-#define MAX_BACKWARD            1000
-#define MIN_BACKWARD_MENU       5
-#define DEF_BACKWARD_MENU       10
-#define MAX_BACKWARD_MENU       30
+#define MIN_BACKWARD              (10)
+#define DEF_BACKWARD              (100)
+#define MAX_BACKWARD              (1000)
+#define MIN_BACKWARD_MENU         (5)
+#define DEF_BACKWARD_MENU         (10)
+#define MAX_BACKWARD_MENU         (30)
 
-#define MIN_DIST_DRAG           8
-#define DEF_DIST_DRAG           8
-#define MAX_DIST_DRAG           100
+#define DEF_RECENT_FILE_LIST_MENU (10)
 
-#define MIN_EXPAND_FOLDER_MSEC  500
-#define DEF_EXPAND_FOLDER_MSEC  1000
-#define MAX_EXPAND_FOLDER_MSEC  10000
+#define MIN_DIST_DRAG             (8)
+#define DEF_DIST_DRAG             (8)
+#define MAX_DIST_DRAG             (100)
 
-#define MIN_DRAG_SCROLL_MSEC    100
-#define DEF_DRAG_SCROLL_MSEC    200
-#define MAX_DRAG_SCROLL_MSEC    5000
+#define MIN_EXPAND_FOLDER_MSEC    (500)
+#define DEF_EXPAND_FOLDER_MSEC    (1000)
+#define MAX_EXPAND_FOLDER_MSEC    (10000)
 
-#define MIN_FLD_SEL_DELAY_MSEC  0
-#define DEF_FLD_SEL_DELAY_MSEC  700
-#define MAX_FLD_SEL_DELAY_MSEC  5000
+#define MIN_DRAG_SCROLL_MSEC      (100)
+#define DEF_DRAG_SCROLL_MSEC      (200)
+#define MAX_DRAG_SCROLL_MSEC      (5000)
 
-#define MAX_WORKING_FOLDER      5
+#define MIN_FLD_SEL_DELAY_MSEC    (0)
+#define DEF_FLD_SEL_DELAY_MSEC    (700)
+#define MAX_FLD_SEL_DELAY_MSEC    (5000)
 
-#define MAX_FONT_TEXT           0xff
+#define MAX_WORKING_FOLDER        (5)
 
-#define MAX_CUSTOM_ICON         2
+#define MAX_FONT_TEXT             (0xff)
 
-#define MIN_THUMB_SIZE          50
-#define DEF_THUMB_SIZE          100
-#define MAX_THUMB_SIZE          300
+#define MAX_CUSTOM_ICON           (2)
 
-#define DEF_FOLDER_PANE_SIZE    200
+#define MIN_THUMB_SIZE            (50)
+#define DEF_THUMB_SIZE            (100)
+#define MAX_THUMB_SIZE            (300)
 
-#define MIN_FOLDER_TREE_HEIGHT  10
-#define MAX_FOLDER_TREE_HEIGHT  50
+#define DEF_FOLDER_PANE_SIZE      (200)
 
-#define MAX_CLIP_SEPARATOR      30
+#define MIN_FOLDER_TREE_HEIGHT    (10)
+#define MAX_FOLDER_TREE_HEIGHT    (50)
 
-#define MAX_ACCEL               200
+#define MAX_CLIP_SEPARATOR        (30)
 
-#define MAX_VIEW_SPLIT_ROW      2
-#define MAX_VIEW_SPLIT_COLUMN   3
-#define MAX_VIEW_SPLIT          (MAX_VIEW_SPLIT_ROW * MAX_VIEW_SPLIT_COLUMN)
-#define DEF_VIEW_SPLIT_ROW      1
-#define DEF_VIEW_SPLIT_COLUMN   1
-#define MIN_PANE_SIZE           50
-#define SPLITTER_SIZE           2
+#define MAX_ACCEL                 (200)
+
+#define MAX_VIEW_SPLIT_ROW        (2)
+#define MAX_VIEW_SPLIT_COLUMN     (3)
+#define MAX_VIEW_SPLIT            (MAX_VIEW_SPLIT_ROW * MAX_VIEW_SPLIT_COLUMN)
+#define DEF_VIEW_SPLIT_ROW        (1)
+#define DEF_VIEW_SPLIT_COLUMN     (1)
+#define MIN_PANE_SIZE             (50)
+#define SPLITTER_SIZE             (2)
 
 enum
 {

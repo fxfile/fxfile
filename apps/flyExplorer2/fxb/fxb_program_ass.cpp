@@ -11,7 +11,7 @@
 #include "fxb_program_ass.h"
 
 #include "fxb_filter.h"
-#include "fxb_ini_file.h"
+#include "fxb_ini_file_ex.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -21,6 +21,14 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxb
 {
+static const xpr_tchar_t kProgramAssSection[] = XPR_STRING_LITERAL("program_ass");
+static const xpr_tchar_t kNameKey          [] = XPR_STRING_LITERAL("program_ass.item%d.name");
+static const xpr_tchar_t kTypeKey          [] = XPR_STRING_LITERAL("program_ass.item%d.type");
+static const xpr_tchar_t kMethodKey        [] = XPR_STRING_LITERAL("program_ass.item%d.method");
+static const xpr_tchar_t kExtensionKey     [] = XPR_STRING_LITERAL("program_ass.item%d.extension");
+static const xpr_tchar_t kFilterKey        [] = XPR_STRING_LITERAL("program_ass.item%d.filter");
+static const xpr_tchar_t kProgramKey       [] = XPR_STRING_LITERAL("program_ass.item%d.program");
+
 ProgramAssMgr::ProgramAssMgr(void)
 {
 }
@@ -239,44 +247,50 @@ void ProgramAss::initDefault(void)
     addItem(sProgramAssItem);
 }
 
-static const xpr_tchar_t _fx_Type[]       = XPR_STRING_LITERAL("Type");
-static const xpr_tchar_t _fx_Method[]     = XPR_STRING_LITERAL("Method");
-static const xpr_tchar_t _fx_Extension[]  = XPR_STRING_LITERAL("Extension");
-static const xpr_tchar_t _fx_FilterName[] = XPR_STRING_LITERAL("Filter Name");
-static const xpr_tchar_t _fx_Program[]    = XPR_STRING_LITERAL("Program");
-
-xpr_bool_t ProgramAss::loadFromFile(const xpr_tchar_t *aPath)
+xpr_bool_t ProgramAss::load(fxb::IniFileEx &aIniFile)
 {
-    IniFile sIniFile(aPath);
-    if (sIniFile.readFile() == XPR_FALSE)
+    xpr_size_t         i;
+    xpr_tchar_t        sKey[0xff];
+    const xpr_tchar_t *sValue;
+    IniFile::Section  *sSection;
+    ProgramAssItem    *sProgramAssItem;
+
+    sSection = aIniFile.findSection(kProgramAssSection);
+    if (XPR_IS_NULL(sSection))
         return XPR_FALSE;
 
-    xpr_size_t sCount = sIniFile.getKeyCount();
-    if (sCount <= 0)
-        return XPR_FALSE;
-
-    sCount = min(sCount, MAX_PROGRAM_ASS);
-
-    xpr_size_t i;
-    const xpr_tchar_t *sKey;
-    ProgramAssItem *sProgramAssItem;
-
-    for (i = 0; i < sCount; ++i)
+    for (i = 0; i < MAX_PROGRAM_ASS; ++i)
     {
+        _stprintf(sKey, kNameKey, i + 1);
+
+        sValue = aIniFile.getValueS(sSection, sKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+            break;
+
         sProgramAssItem = new ProgramAssItem;
+        XPR_ASSERT(sProgramAssItem != XPR_NULL);
 
-        sProgramAssItem->mName = sIniFile.getKeyName(i);
-        sKey = sProgramAssItem->mName.c_str();
+        sProgramAssItem->mName = sValue;
 
-        sProgramAssItem->mType    = sIniFile.getValueU(sKey, _fx_Type, ProgramAssTypeNone);
-        sProgramAssItem->mMethod  = sIniFile.getValueU(sKey, _fx_Method, ProgramAssMethodExt);
+        _stprintf(sKey, kTypeKey, i + 1);
+        sProgramAssItem->mType = aIniFile.getValueI(sSection, sKey, ProgramAssTypeNone);
+
+        _stprintf(sKey, kMethodKey, i + 1);
+        sProgramAssItem->mMethod = aIniFile.getValueI(sSection, sKey, ProgramAssMethodExt);
 
         if (sProgramAssItem->mMethod == ProgramAssMethodExt)
-            sProgramAssItem->mExts = sIniFile.getValueS(sKey, _fx_Extension, XPR_STRING_LITERAL(""));
+        {
+            _stprintf(sKey, kExtensionKey, i + 1);
+            sProgramAssItem->mExts = aIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
+        }
         else
-            sProgramAssItem->mExts = sIniFile.getValueS(sKey, _fx_FilterName, XPR_STRING_LITERAL(""));
+        {
+            _stprintf(sKey, kFilterKey, i + 1);
+            sProgramAssItem->mExts = aIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
+        }
 
-        sProgramAssItem->mPath = sIniFile.getValueS(sKey, _fx_Program, XPR_STRING_LITERAL(""));
+        _stprintf(sKey, kProgramKey, i + 1);
+        sProgramAssItem->mPath = aIniFile.getValueS(sSection, sKey, XPR_STRING_LITERAL(""));
 
         addItem(sProgramAssItem);
     }
@@ -284,38 +298,45 @@ xpr_bool_t ProgramAss::loadFromFile(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t ProgramAss::saveToFile(const xpr_tchar_t *aPath)
+void ProgramAss::save(fxb::IniFileEx &aIniFile) const
 {
-    IniFile sIniFile(aPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer File Association File"));
+    xpr_sint_t        i;
+    xpr_tchar_t       sKey[0xff];
+    IniFile::Section *sSection;
+    ProgramAssItem   *sProgramAssItem;
+    ProgramAssDeque::const_iterator sIterator;
 
-    const xpr_tchar_t *sKey;
-    ProgramAssItem *sProgramAssItem;
-    ProgramAssDeque::iterator sIterator;
+    sSection = aIniFile.addSection(kProgramAssSection);
+    XPR_ASSERT(sSection != XPR_NULL);
 
     sIterator = mProgramAssDeque.begin();
-    for (; sIterator != mProgramAssDeque.end(); ++sIterator)
+    for (i = 0; sIterator != mProgramAssDeque.end(); ++sIterator, ++i)
     {
         sProgramAssItem = *sIterator;
-        if (XPR_IS_NULL(sProgramAssItem))
-            continue;
+        XPR_ASSERT(sProgramAssItem != XPR_NULL);
 
-        sKey = sProgramAssItem->mName.c_str();
-        sIniFile.addKeyName(sKey);
+        _stprintf(sKey, kNameKey, i + 1);
+        aIniFile.setValueS(sSection, sKey, sProgramAssItem->mName);
 
-        sIniFile.setValueU(sKey, _fx_Type,   sProgramAssItem->mType);
-        sIniFile.setValueU(sKey, _fx_Method, sProgramAssItem->mMethod);
+        _stprintf(sKey, kTypeKey, i + 1);
+        aIniFile.setValueI(sSection, sKey, sProgramAssItem->mType);
+
+        _stprintf(sKey, kMethodKey, i + 1);
+        aIniFile.setValueI(sSection, sKey, sProgramAssItem->mMethod);
 
         if (sProgramAssItem->mMethod == ProgramAssMethodExt)
-            sIniFile.setValueS(sKey, _fx_Extension, sProgramAssItem->mExts.c_str());
+        {
+            _stprintf(sKey, kExtensionKey, i + 1);
+            aIniFile.setValueS(sSection, sKey, sProgramAssItem->mExts);
+        }
         else
-            sIniFile.setValueS(sKey, _fx_FilterName, sProgramAssItem->mFilterName.c_str());
+        {
+            _stprintf(sKey, kFilterKey, i + 1);
+            aIniFile.setValueS(sSection, sKey, sProgramAssItem->mFilterName);
+        }
 
-        sIniFile.setValueS(sKey, _fx_Program, sProgramAssItem->mPath.c_str());
+        _stprintf(sKey, kProgramKey, i + 1);
+        aIniFile.setValueS(sSection, sKey, sProgramAssItem->mPath);
     }
-
-    sIniFile.writeFile(xpr::CharSetUtf16);
-
-    return XPR_TRUE;
 }
 } // namespace fxb

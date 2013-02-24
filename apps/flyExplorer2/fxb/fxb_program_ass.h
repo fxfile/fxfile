@@ -18,6 +18,8 @@ namespace fxb
 #define MAX_PROGRAM_ASS_NAME 40
 #define MAX_PROGRAM_ASS_EXTS 260
 
+class IniFileEx;
+
 enum
 {
     ProgramAssTypeNone   = 0x00000000,
@@ -81,8 +83,8 @@ public:
     xpr_bool_t getItemFromPath(const xpr_tchar_t *aPath, xpr_uint_t aType, ProgramAssDeque &aProgramAssDeque);
 
 public:
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath);
-    xpr_bool_t saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t load(fxb::IniFileEx &aIniFile);
+    void save(fxb::IniFileEx &aIniFile) const;
 
 public:
     void initDefault(void);

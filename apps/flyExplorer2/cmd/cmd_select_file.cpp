@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -86,9 +86,9 @@ static void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
                 if (sLvItemData->mShellAttributes & SFGAO_FILESYSTEM)
                 {
                     fxb::GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
-                    xpr_tchar_t *lpszSplit = _tcsrchr(sPath, XPR_STRING_LITERAL('\\'));
-                    if (lpszSplit) _tcscpy(sName, lpszSplit+1);
-                    else           _tcscpy(sName, sPath);
+                    xpr_tchar_t *sSplit = _tcsrchr(sPath, XPR_STRING_LITERAL('\\'));
+                    if (XPR_IS_NOT_NULL(sSplit)) _tcscpy(sName, sSplit + 1);
+                    else                         _tcscpy(sName, sPath);
                 }
                 else
                 {

@@ -221,6 +221,65 @@ void ExplorerView::setViewIndex(xpr_sint_t aViewIndex)
     }
 }
 
+XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplorerCtrl)
+{
+    LPITEMIDLIST sFullPidl;
+    Option::Main::HistoryList::iterator sHistoryIterator;
+
+    fxb::HistoryDeque *sBackwardDeque = new fxb::HistoryDeque;
+    fxb::HistoryDeque *sForwardDeque  = new fxb::HistoryDeque;
+    fxb::HistoryDeque *sHistoryDeque  = new fxb::HistoryDeque;
+
+    if (XPR_IS_NULL(sBackwardDeque) ||
+        XPR_IS_NULL(sForwardDeque)  ||
+        XPR_IS_NULL(sHistoryDeque))
+    {
+        XPR_SAFE_DELETE(sBackwardDeque);
+        XPR_SAFE_DELETE(sForwardDeque);
+        XPR_SAFE_DELETE(sHistoryDeque);
+        return;
+    }
+
+    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mBackwardList)
+    {
+        const std::tstring &sHistoryPath = *sHistoryIterator;
+
+        sFullPidl = fxb::Path2Pidl(sHistoryPath);
+        if (XPR_IS_NOT_NULL(sFullPidl))
+        {
+            sBackwardDeque->push_back(sFullPidl);
+        }
+    }
+
+    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mForwardList)
+    {
+        const std::tstring &sHistoryPath = *sHistoryIterator;
+
+        sFullPidl = fxb::Path2Pidl(sHistoryPath);
+        if (XPR_IS_NOT_NULL(sFullPidl))
+        {
+            sForwardDeque->push_back(sFullPidl);
+        }
+    }
+
+    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mHistoryList)
+    {
+        const std::tstring &sHistoryPath = *sHistoryIterator;
+
+        sFullPidl = fxb::Path2Pidl(sHistoryPath);
+        if (XPR_IS_NOT_NULL(sFullPidl))
+        {
+            sHistoryDeque->push_back(sFullPidl);
+        }
+    }
+
+    aExplorerCtrl.loadHistory(sBackwardDeque, sForwardDeque, sHistoryDeque);
+
+    XPR_SAFE_DELETE(sBackwardDeque);
+    XPR_SAFE_DELETE(sForwardDeque);
+    XPR_SAFE_DELETE(sHistoryDeque);
+}
+
 xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
     if (super::OnCreate(aCreateStruct) == -1)
@@ -234,25 +293,37 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (createSplitter() == XPR_FALSE)
         return -1;
 
+    xpr_bool_t sLastNewTab = XPR_FALSE;
+
+    // load last tabs
     switch (gOpt->mConfig.mExplorerInitFolderType[mViewIndex])
     {
+    case INIT_TYPE_LAST_FOLDER:
     case INIT_TYPE_LAST_TAB:
         {
-            // load last tabs
-            TabPathDeque::iterator sIterator = gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.begin();
-            for (; sIterator != gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.end(); ++sIterator)
+            xpr_sint_t         sTab;
+            Option::Main::Tab *sTabOption;
+            ExplorerCtrl      *sExplorerCtrl;
+            Option::Main::TabDeque::iterator sIterator;
+
+            XPR_STL_FOR_EACH(sIterator, gOpt->mMain.mView[mViewIndex].mTabDeque)
             {
-                const std::tstring &sFullPath = *sIterator;
+                sTabOption = *sIterator;
+                XPR_ASSERT(sTabOption != XPR_NULL);
 
-                newTab(sFullPath);
+                // new tab
+                sTab = newTab(sTabOption->mPath);
+
+                sExplorerCtrl = getExplorerCtrl(sTab);
+                if (XPR_IS_NOT_NULL(sExplorerCtrl))
+                {
+                    // load history
+                    loadHistory(*sTabOption, *sExplorerCtrl);
+                }
             }
-            break;
-        }
 
-    case INIT_TYPE_LAST_FOLDER:
-        {
-            // load last folder
-            newTab(gOpt->mMain.mLastFolder[mViewIndex]);
+            sLastNewTab = XPR_TRUE;
+
             break;
         }
     }
@@ -260,10 +331,30 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (mTabCtrl->getTabCount() == 0)
     {
         newTab();
+
+        sLastNewTab = XPR_FALSE;
     }
 
-    if (mTabCtrl->setCurTab(gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab) == XPR_FALSE)
+    if (mTabCtrl->setCurTab(gOpt->mMain.mView[mViewIndex].mCurTab) == XPR_FALSE)
+    {
         mTabCtrl->setCurTab(0);
+    }
+
+    if (XPR_IS_FALSE(sLastNewTab))
+    {
+        ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+        if (XPR_IS_NOT_NULL(sExplorerCtrl))
+        {
+            Option::Main::TabDeque::iterator sIterator = gOpt->mMain.mView[mViewIndex].mTabDeque.begin();
+            if (sIterator != gOpt->mMain.mView[mViewIndex].mTabDeque.end())
+            {
+                Option::Main::Tab *sTabOption = *sIterator;
+                XPR_ASSERT(sTabOption != XPR_NULL);
+
+                loadHistory(*sTabOption, *sExplorerCtrl);
+            }
+        }
+    }
 
     // activate bar
     visibleActivateBar(gOpt->mConfig.mShowActivateBar, XPR_TRUE);
@@ -330,7 +421,7 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         }
     }
 
-    // [2] command parameter interpretation
+    // [2] folder by command line arguments
     if (XPR_IS_NULL(sFullPidl))
     {
         sInitFolderType = aFlags & InitFolderCmdParam;
@@ -390,7 +481,7 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         }
     }
 
-    // [3] init folder
+    // [3] init folder of configuration option
     if (XPR_IS_NULL(sFullPidl))
     {
         sInitFolderType = aFlags & InitFolderCfgInit;
@@ -407,48 +498,13 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         }
     }
 
-    // [4] last save folder
-    if (XPR_IS_NULL(sFullPidl))
-    {
-        sInitFolderType = aFlags & InitFolderLastSaved;
-        if (sInitFolderType != 0)
-        {
-            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER)
-            {
-                const xpr_tchar_t *sLastFolder = gOpt->mMain.mLastFolder[mViewIndex];
-                if (fxb::IsEmptyString(sLastFolder) == XPR_FALSE)
-                {
-                    if ((XPR_IS_FALSE(gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex])) ||
-                        (XPR_IS_TRUE (gOpt->mConfig.mExplorerNoNetLastFolder[mViewIndex]) && fxb::IsNetItem(sLastFolder) == XPR_FALSE))
-                    {
-                        sFullPidl = fxb::Path2Pidl(sLastFolder);
-                    }
-                }
-            }
-        }
-    }
-
-    // [5] default folder : My Documents
+    // [4] default folder of explorer control
     if (XPR_IS_NULL(sFullPidl))
     {
         sInitFolderType = aFlags & InitFolderDefault;
         if (sInitFolderType != 0)
         {
-            LPSHELLFOLDER sShellFolder = XPR_NULL;
-            HRESULT sHResult = ::SHGetDesktopFolder(&sShellFolder);
-
-            if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sShellFolder))
-            {
-                sShellFolder->ParseDisplayName(
-                    XPR_NULL,
-                    XPR_NULL,
-                    XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"),
-                    XPR_NULL,
-                    &sFullPidl,
-                    XPR_NULL);
-            }
-
-            COM_RELEASE(sShellFolder);
+            sFullPidl = ExplorerCtrl::getDefInitFolder();
         }
     }
 
@@ -469,8 +525,6 @@ void ExplorerView::OnInitialUpdate(void)
 
 void ExplorerView::OnDestroy(void)
 {
-    saveOption();
-
     DESTROY_DELETE(mTabCtrl);
     DESTROY_DELETE(mFolderPane);
     DESTROY_DELETE(mExplorerPane);
@@ -486,9 +540,10 @@ void ExplorerView::OnDestroy(void)
 
 void ExplorerView::setChangedOption(Option &aOption)
 {
-    xpr_sint_t i, sTabCount;
-    TabPane *sTabPane;
-    std::set<TabPane *> mTabPaneSet;
+    xpr_sint_t           i;
+    xpr_sint_t           sTabCount;
+    TabPane             *sTabPane;
+    std::set<TabPane *>  mTabPaneSet;
 
     // set activate bar options
     visibleActivateBar(gOpt->mConfig.mShowActivateBar, XPR_FALSE);
@@ -527,45 +582,154 @@ void ExplorerView::setChangedOption(Option &aOption)
     recalcLayout();
 }
 
-void ExplorerView::saveOption(void)
+XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExplorerCtrl)
 {
-    ExplorerPane *sExplorerPane = getExplorerPane();
-    if (XPR_IS_NOT_NULL(sExplorerPane))
+    xpr_sint_t sViewIndex = aExplorerCtrl.getViewIndex();
+
+    // save tab path
+    LPTVITEMDATA sTvItemData = aExplorerCtrl.getFolderData();
+    if (XPR_IS_NOT_NULL(sTvItemData))
     {
-        sExplorerPane->saveOption();
+        xpr_bool_t sSaveFolder = XPR_TRUE;
+
+        if (gOpt->mConfig.mExplorerNoNetLastFolder[sViewIndex] == XPR_TRUE)
+        {
+            if (fxb::IsNetItem(sTvItemData->mFullPidl) == XPR_TRUE)
+                sSaveFolder = XPR_FALSE;
+        }
+
+        if (XPR_IS_TRUE(sSaveFolder))
+        {
+            fxb::Pidl2Path(sTvItemData->mFullPidl, aTab.mPath);
+        }
     }
 
-    if (XPR_IS_NOT_NULL(mTabCtrl))
+    // save history
+    if (XPR_IS_TRUE(gOpt->mConfig.mSaveHistory))
     {
-        gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.clear();
-        gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab = 0;
+        const fxb::HistoryDeque *sBackwardDeque = aExplorerCtrl.getBackwardDeque();
+        const fxb::HistoryDeque *sForwardDeque  = aExplorerCtrl.getForwardDeque();
+        const fxb::HistoryDeque *sHistoryDeque  = aExplorerCtrl.getHistoryDeque();
 
-        if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
+        LPITEMIDLIST sFullPidl;
+        std::tstring sHistoryPath;
+        fxb::HistoryDeque::const_iterator sIterator;
+
+        if (XPR_IS_NOT_NULL(sBackwardDeque))
         {
-            gOpt->mMain.mViewSplitTab[mViewIndex].mCurTab = mTabCtrl->getCurTab();
-
-            xpr_size_t i, sTabCount;
-            ExplorerCtrl *sExplorerCtrl;
-
-            sTabCount = mTabCtrl->getTabCount();
-            for (i = 0; i < sTabCount; ++i)
+            XPR_STL_FOR_EACH(sIterator, *sBackwardDeque)
             {
-                sExplorerCtrl = getExplorerCtrl((xpr_sint_t)i);
-                if (XPR_IS_NOT_NULL(sExplorerCtrl))
-                {
-                    LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
-                    if (XPR_IS_NOT_NULL(sTvItemData))
-                    {
-                        std::tstring sTabPath;
-                        fxb::Pidl2Path(sTvItemData->mFullPidl, sTabPath);
+                sFullPidl = *sIterator;
+                XPR_ASSERT(sFullPidl != XPR_NULL);
 
-                        gOpt->mMain.mViewSplitTab[mViewIndex].mTabPathDeque.push_back(sTabPath);
+                if (fxb::Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
+                {
+                    if (sHistoryPath.empty() == false)
+                    {
+                        aTab.mBackwardList.push_back(sHistoryPath);
+                    }
+                }
+            }
+        }
+
+        if (XPR_IS_NOT_NULL(sForwardDeque))
+        {
+            XPR_STL_FOR_EACH(sIterator, *sForwardDeque)
+            {
+                sFullPidl = *sIterator;
+                XPR_ASSERT(sFullPidl != XPR_NULL);
+
+                if (fxb::Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
+                {
+                    if (sHistoryPath.empty() == false)
+                    {
+                        aTab.mForwardList.push_back(sHistoryPath);
+                    }
+                }
+            }
+        }
+
+        if (XPR_IS_NOT_NULL(sHistoryDeque))
+        {
+            XPR_STL_FOR_EACH(sIterator, *sHistoryDeque)
+            {
+                sFullPidl = *sIterator;
+                XPR_ASSERT(sFullPidl != XPR_NULL);
+
+                if (fxb::Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
+                {
+                    if (sHistoryPath.empty() == false)
+                    {
+                        aTab.mHistoryList.push_back(sHistoryPath);
                     }
                 }
             }
         }
     }
+}
 
+void ExplorerView::saveOption(void)
+{
+    xpr_size_t         i;
+    xpr_size_t         sTabCount;
+    Option::Main::Tab *sTabOption;
+    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
+    ExplorerPane *sExplorerPane = getExplorerPane();
+
+    // save option in explorer pane
+    if (XPR_IS_NOT_NULL(sExplorerPane))
+    {
+        sExplorerPane->saveOption();
+    }
+
+    // save last folder or last tab, and history
+    gOpt->mMain.mView[mViewIndex].clear();
+
+    gOpt->mMain.mView[mViewIndex].mCurTab = mTabCtrl->getCurTab();
+
+    if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
+    {
+        sTabCount = getTabCount();
+        for (i = 0; i < sTabCount; ++i)
+        {
+            sExplorerCtrl = getExplorerCtrl((xpr_sint_t)i);
+            if (XPR_IS_NOT_NULL(sExplorerCtrl))
+            {
+                sTabOption = new Option::Main::Tab;
+                if (XPR_IS_NULL(sTabOption))
+                    break;
+
+                gOpt->mMain.mView[mViewIndex].mTabDeque.push_back(sTabOption);
+
+                saveTabOption(*sTabOption, *sExplorerCtrl);
+            }
+        }
+    }
+    else if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER ||
+             XPR_IS_TRUE(gOpt->mConfig.mSaveHistory))
+    {
+        if (XPR_IS_NOT_NULL(sExplorerCtrl))
+        {
+            sTabOption = new Option::Main::Tab;
+            if (XPR_IS_NOT_NULL(sTabOption))
+            {
+                gOpt->mMain.mView[mViewIndex].mTabDeque.push_back(sTabOption);
+
+                saveTabOption(*sTabOption, *sExplorerCtrl);
+            }
+        }
+    }
+
+    // save view style
+    if (gOpt->mConfig.mExplorerSaveViewStyle == XPR_TRUE)
+    {
+        if (XPR_IS_NOT_NULL(sExplorerCtrl))
+        {
+            gOpt->mMain.mViewStyle[mViewIndex] = sExplorerCtrl->getViewStyle();
+        }
+    }
+
+    // save visible state of folder pane
     if (XPR_IS_FALSE(gOpt->mMain.mSingleFolderPaneMode))
     {
         gOpt->mMain.mShowEachFolderPane[mViewIndex] = XPR_IS_NOT_NULL(mFolderPane) ? XPR_TRUE : XPR_FALSE;
@@ -1046,7 +1210,6 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
         xpr_uint_t sFlags, sInitFolderType;
 
         sFlags = InitFolderAll;
-        sFlags &= ~InitFolderLastSaved;
         sInitFolderType = InitFolderNone;
 
         if (XPR_IS_FALSE(gOpt->mConfig.mViewSplitReopenLastFolder))
@@ -1090,20 +1253,6 @@ xpr_sint_t ExplorerView::newTab(LPITEMIDLIST aInitFolder)
             sExplorerCtrl->unselectAll();
             sExplorerCtrl->selectItem(sFind);
         }
-    }
-
-    // set view style
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_NONE && XPR_IS_TRUE(gOpt->mConfig.mExplorerSaveViewStyle))
-    {
-        if (gOpt->mMain.mViewStyle[mViewIndex] != LVS_REPORT)
-            sExplorerCtrl->setViewStyle(gOpt->mMain.mViewStyle[mViewIndex], XPR_TRUE);
-    }
-
-    // load history
-    if (XPR_IS_TRUE(gOpt->mConfig.mSaveHistory))
-    {
-        // TODO each tab data
-        sExplorerCtrl->loadHistory();
     }
 
     return (xpr_sint_t)sInsertedTab;

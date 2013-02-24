@@ -36,6 +36,7 @@ public:
     virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending) = 0;
     virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth) = 0;
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl) = 0;
+    virtual void onRunFile(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl) = 0;
 };
 
 #endif // __FX_EXPLORER_CTRL_OBSERVER_H__

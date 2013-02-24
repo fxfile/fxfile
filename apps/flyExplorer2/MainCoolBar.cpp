@@ -431,7 +431,7 @@ void MainCoolBar::loadStateFile(void)
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         CfgPath::instance().getLoadPath(CfgPath::TypeToolBar, sPath, XPR_MAX_PATH);
 
-        if (mMainToolBar.loadFromFile(sPath) == XPR_FALSE)
+        if (mMainToolBar.load(sPath) == XPR_FALSE)
             mMainToolBar.SetDefaultButtons();
     }
 }
@@ -451,7 +451,7 @@ void MainCoolBar::saveStateFile(void)
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         CfgPath::instance().getSavePath(CfgPath::TypeToolBar, sPath, XPR_MAX_PATH);
 
-        mMainToolBar.saveToFile(sPath);
+        mMainToolBar.save(sPath);
     }
 }
 

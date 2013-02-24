@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,7 +27,7 @@ public:
     virtual ~SearchLocDlg(void);
 
 public:
-    fxb::SearchUserLocDeque *getSearchLoc(xpr_bool_t aNull = XPR_FALSE) const;
+    fxb::SearchUserLocDeque *getSearchLoc(xpr_bool_t aNull = XPR_FALSE);
     void setSearchLoc(fxb::SearchUserLocDeque *aSearchLocDeque);
 
 protected:

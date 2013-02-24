@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -75,8 +75,8 @@ void ChecksumCreateCommand::execute(CommandContext &aContext)
                 _stprintf(sFileName, XPR_STRING_LITERAL("%c.sfv"), sPath[0]);
             else
             {
-                xpr_tchar_t *lpszSplit = _tcsrchr(sPath, XPR_STRING_LITERAL('\\'));
-                _stprintf(sFileName, XPR_STRING_LITERAL("%s.sfv"), lpszSplit);
+                xpr_tchar_t *sSplit = _tcsrchr(sPath, XPR_STRING_LITERAL('\\'));
+                _stprintf(sFileName, XPR_STRING_LITERAL("%s.sfv"), sSplit);
             }
 
             _tcscat(sPath, sFileName);

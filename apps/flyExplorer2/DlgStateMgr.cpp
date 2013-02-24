@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "DlgStateMgr.h"
 
-#include "fxb/fxb_ini_file.h"
+#include "fxb/fxb_ini_file_ex.h"
 
 #include "DlgState.h"
 #include "CfgPath.h"
@@ -41,29 +41,33 @@ xpr_bool_t DlgStateMgr::load(void)
 {
     clear();
 
-    fxb::IniFile sIniFile(mPath.c_str());
+    fxb::IniFileEx sIniFile(mPath.c_str());
 
     if (sIniFile.readFile() == XPR_FALSE)
         return XPR_FALSE;
 
-    xpr_size_t i, j;
-    xpr_size_t sKeyCount;
-    xpr_size_t sEntryCount;
-    const xpr_tchar_t *sKeyName;
-    const xpr_tchar_t *sEntryName;
-    const xpr_tchar_t *sValue;
-    DlgState *sDlgState;
-    DlgState::ValueMap sValueMap;
-    DlgStateMap::iterator sIterator;
+    xpr_size_t                     i, j;
+    const xpr_tchar_t             *sSectionName;
+    const xpr_tchar_t             *sKeyName;
+    const xpr_tchar_t             *sValue;
+    fxb::IniFile::Section         *sSection;
+    fxb::IniFile::Key             *sKey;
+    fxb::IniFile::SectionIterator  sSectionIterator;
+    fxb::IniFile::KeyIterator      sKeyIterator;
+    DlgState                      *sDlgState;
+    DlgState::ValueMap             sValueMap;
+    DlgStateMap::iterator          sIterator;
 
-    sKeyCount = sIniFile.getKeyCount();
-    for (i = 0; i < sKeyCount; ++i)
+    sSectionIterator = sIniFile.beginSection();
+    for (i = 0; sSectionIterator != sIniFile.endSection(); ++i, ++sSectionIterator)
     {
-        sKeyName = sIniFile.getKeyName(i);
-        if (XPR_IS_NULL(sKeyName))
-            continue;
+        sSection = *sSectionIterator;
+        XPR_ASSERT(sSection != XPR_NULL);
 
-        sIterator = mDlgStateMap.find(sKeyName);
+        sSectionName = sIniFile.getSectionName(sSection);
+        XPR_ASSERT(sSectionName != XPR_NULL);
+
+        sIterator = mDlgStateMap.find(sSectionName);
         if (sIterator != mDlgStateMap.end())
         {
             sDlgState = sIterator->second;
@@ -72,29 +76,31 @@ xpr_bool_t DlgStateMgr::load(void)
             mDlgStateMap.erase(sIterator);
         }
 
-        sDlgState = new DlgState(sKeyName);
+        sDlgState = new DlgState(sSectionName);
         if (XPR_IS_NULL(sDlgState))
             continue;
 
         sValueMap.clear();
 
-        sEntryCount = sIniFile.getEntryCount(i);
-        for (j = 0; j < sEntryCount; ++j)
+        sKeyIterator = sIniFile.beginKey(sSection);
+        for (j = 0; sKeyIterator != sIniFile.endKey(sSection); ++j, ++sKeyIterator)
         {
-            sEntryName = sIniFile.getEntryName(i, j);
-            if (XPR_IS_NULL(sEntryName))
-                continue;
+            sKey = *sKeyIterator;
+            XPR_ASSERT(sKey != XPR_NULL);
 
-            sValue = sIniFile.getValueS(sKeyName, sEntryName);
+            sKeyName = sIniFile.getKeyName(sKey);
+            XPR_ASSERT(sKeyName != XPR_NULL);
+
+            sValue = sIniFile.getValueS(sSection, sKeyName, XPR_NULL);
             if (XPR_IS_NOT_NULL(sValue))
             {
-                sValueMap[sEntryName] = sValue;
+                sValueMap[sKeyName] = sValue;
             }
         }
 
         sDlgState->setValueMap(sValueMap);
 
-        mDlgStateMap[sKeyName] = sDlgState;
+        mDlgStateMap[sSectionName] = sDlgState;
     }
 
     return XPR_TRUE;
@@ -105,9 +111,10 @@ void DlgStateMgr::save(void) const
     xpr_tchar_t sPath[XPR_MAX_PATH] = {0};
     CfgPath::instance().getSavePath(CfgPath::TypeDlgState, sPath, XPR_MAX_PATH);
 
-    fxb::IniFile sIniFile(sPath);
+    fxb::IniFileEx sIniFile(sPath);
 
-    const DlgState *sDlgState;
+    fxb::IniFile::Section *sSection;
+    const DlgState        *sDlgState;
     DlgStateMap::const_iterator sIterator;
     DlgState::ValueMap::const_iterator sValueIterator;
 
@@ -118,16 +125,19 @@ void DlgStateMgr::save(void) const
         if (XPR_IS_NULL(sDlgState))
             continue;
 
-        const std::tstring &sKey = sDlgState->getSection();
+        const std::tstring &sSectionName = sDlgState->getSection();
         const DlgState::ValueMap &sValueMap = sDlgState->getValueMap();
+
+        sSection = sIniFile.addSection(sSectionName.c_str());
+        XPR_ASSERT(sSection != XPR_NULL);
 
         sValueIterator = sValueMap.begin();
         for (; sValueIterator != sValueMap.end(); ++sValueIterator)
         {
-            const std::tstring &sEntry = sValueIterator->first;
+            const std::tstring &sKey   = sValueIterator->first;
             const std::tstring &sValue = sValueIterator->second;
 
-            sIniFile.setValueS(sKey.c_str(), sEntry.c_str(), sValue.c_str());
+            sIniFile.setValueS(sSection, sKey.c_str(), sValue);
         }
     }
 

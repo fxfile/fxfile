@@ -431,31 +431,16 @@ CImageList *ExplorerCtrl::getImageList(xpr_bool_t aLarge) const
     return XPR_IS_TRUE(aLarge) ? mLargeImgList : mSmallImgList;
 }
 
-void ExplorerCtrl::loadHistory(void)
+void ExplorerCtrl::loadHistory(fxb::HistoryDeque *aBackwardDeque, fxb::HistoryDeque *aForwardDeque, fxb::HistoryDeque *aHistoryDeque)
 {
-    xpr_tchar_t sIndex[0xff];
-    _stprintf(sIndex, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
-
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndex);
-
-    mHistory->loadFromFile(sPath);
-}
-
-void ExplorerCtrl::saveHistory(void) const
-{
-    xpr_tchar_t sIndexText[0xff];
-    _stprintf(sIndexText, XPR_STRING_LITERAL("%d"), mViewIndex + 1);
-
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeHistory, sPath, XPR_MAX_PATH, sIndexText);
-
-    mHistory->saveToFile(sPath);
+    mHistory->setBackwardDeque(aBackwardDeque);
+    mHistory->setForwardDeque(aForwardDeque);
+    mHistory->setHistoryDeque(aHistoryDeque);
 }
 
 void ExplorerCtrl::saveOption(void)
 {
-    // Save Column Data
+    // save column data
     saveColumn();
 }
 
@@ -473,8 +458,8 @@ void ExplorerCtrl::OnDestroy(void)
     fxb::AdvFileChangeWatcher::instance().unregisterWatch(mAdvWatchId);
     mAdvWatchId = fxb::AdvFileChangeWatcher::InvalidAdvWatchId;
 
-    // Save Option
-    saveOption();
+    // save column
+    saveColumn();
     deleteAllColumns();
 
     // Delete All Items
@@ -2138,7 +2123,7 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
         aFolderViewSet->mViewStyle   = sDefaultViewStyle;//getViewStyle();
         aFolderViewSet->mColumnCount = sColumnCount;
         aFolderViewSet->mColumnItem  = new ColumnItem[sColumnCount];
-        aFolderViewSet->mAllSubApply = 0;
+        aFolderViewSet->mAllSubApply = XPR_FALSE;
 
         aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
         aFolderViewSet->mColumnSortInfo.mPropertyId = mOption.mDefaultSort;
@@ -2572,6 +2557,29 @@ ExplorerCtrl::FolderType ExplorerCtrl::getFolderType(void) const
 xpr_bool_t ExplorerCtrl::isFolderType(FolderType aFolderType) const
 {
     return (mFolderType == aFolderType);
+}
+
+LPITEMIDLIST ExplorerCtrl::getDefInitFolder(void)
+{
+    HRESULT       sHResult;
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    LPITEMIDLIST  sFullPidl    = XPR_NULL;
+
+    sHResult = ::SHGetDesktopFolder(&sShellFolder);
+    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sShellFolder))
+    {
+        sShellFolder->ParseDisplayName(
+            XPR_NULL,
+            XPR_NULL,
+            XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}"),
+            XPR_NULL,
+            &sFullPidl,
+            XPR_NULL);
+    }
+
+    COM_RELEASE(sShellFolder);
+
+    return sFullPidl;
 }
 
 void ExplorerCtrl::applyOption(Option &aNewOption)
@@ -3618,10 +3626,10 @@ void ExplorerCtrl::executeFile(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, x
     {
         if (fxb::IsFileSystem(sFullPidl) == XPR_TRUE)
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-            fxb::GetName(sFullPidl, SHGDN_FORPARSING, sPath);
-
-            AfxGetApp()->AddToRecentFileList(sPath);
+            if (XPR_IS_NOT_NULL(mObserver))
+            {
+                mObserver->onRunFile(*this, sFullPidl);
+            }
         }
     }
 
@@ -5443,13 +5451,13 @@ LRESULT ExplorerCtrl::OnPasteSelItem(WPARAM wParam, LPARAM lParam)
     const xpr_size_t sLen = _tcslen(sTarget);
     std::tstring sPath;
     xpr_tchar_t *sSplit;
-    const xpr_tchar_t *lpcszParsing = sSource;
+    const xpr_tchar_t *sParsing = sSource;
 
     SetRedraw(XPR_FALSE);
 
-    while (*(lpcszParsing) != XPR_STRING_LITERAL('\0'))
+    while (*(sParsing) != XPR_STRING_LITERAL('\0'))
     {
-        sSplit = (xpr_tchar_t *)_tcsrchr(lpcszParsing, XPR_STRING_LITERAL('\\'));
+        sSplit = (xpr_tchar_t *)_tcsrchr(sParsing, XPR_STRING_LITERAL('\\'));
         if (XPR_IS_NOT_NULL(sSplit))
         {
             sPath  = sTarget;
@@ -5470,7 +5478,7 @@ LRESULT ExplorerCtrl::OnPasteSelItem(WPARAM wParam, LPARAM lParam)
             sIndex = findItemPath(sPath.c_str());
             if (sIndex >= 0)
             {
-                if (lpcszParsing == sSource)
+                if (sParsing == sSource)
                 {
                     unselectAll();
 
@@ -5482,7 +5490,7 @@ LRESULT ExplorerCtrl::OnPasteSelItem(WPARAM wParam, LPARAM lParam)
             }
         }
 
-        lpcszParsing += _tcslen(lpcszParsing) + 1;
+        sParsing += _tcslen(sParsing) + 1;
     }
 
     // [2007/11/25] bug patched
@@ -5699,12 +5707,12 @@ inline void ExplorerCtrl::selectItem(xpr_sint_t aIndex)
     SetItemState(aIndex, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
 }
 
-void ExplorerCtrl::setInsSelPath(const xpr_tchar_t *lpcszInsSelPath, xpr_bool_t bUnsellAll, xpr_bool_t bEdit)
+void ExplorerCtrl::setInsSelPath(const xpr_tchar_t *aInsSelPath, xpr_bool_t bUnsellAll, xpr_bool_t bEdit)
 {
-    if (!lpcszInsSelPath)
+    if (XPR_IS_NULL(aInsSelPath))
         return;
 
-    mInsSel     = lpcszInsSelPath;
+    mInsSel       = aInsSelPath;
     mInsUnsellAll = bUnsellAll;
     mInsSelEdit   = bEdit;
 }
@@ -6913,28 +6921,25 @@ void ExplorerCtrl::setMaxHistory(xpr_size_t aHistoryCount)
         mHistory->setMaxHistory(aHistoryCount);
 }
 
-fxb::HistoryDeque* ExplorerCtrl::getBackwardList(void) const
+const fxb::HistoryDeque *ExplorerCtrl::getBackwardDeque(void) const
 {
-    if (XPR_IS_NULL(mHistory))
-        return XPR_NULL;
+    XPR_ASSERT(mHistory);
 
-    return mHistory->getBackwardList();
+    return mHistory->getBackwardDeque();
 }
 
-fxb::HistoryDeque* ExplorerCtrl::getForwardList(void) const
+const fxb::HistoryDeque *ExplorerCtrl::getForwardDeque(void) const
 {
-    if (XPR_IS_NULL(mHistory))
-        return XPR_NULL;
+    XPR_ASSERT(mHistory);
 
-    return mHistory->getForwardList();
+    return mHistory->getForwardDeque();
 }
 
-fxb::HistoryDeque* ExplorerCtrl::getHistoryList(void) const
+const fxb::HistoryDeque *ExplorerCtrl::getHistoryDeque(void) const
 {
-    if (XPR_IS_NULL(mHistory))
-        return XPR_NULL;
+    XPR_ASSERT(mHistory);
 
-    return mHistory->getHistoryList();
+    return mHistory->getHistoryDeque();
 }
 
 xpr_sint_t ExplorerCtrl::findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStart) const

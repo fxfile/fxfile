@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "ViewSet.h"
 
-#include "fxb/fxb_ini_file.h"
+#include "fxb/fxb_ini_file_ex.h"
 #include "fxb/fxb_md5.h"
 #include "CfgPath.h"
 
@@ -20,20 +20,20 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static const xpr_tchar_t kViewSetKey[]          = XPR_STRING_LITERAL("ViewSet");
-static const xpr_tchar_t kVersionEntry[]        = XPR_STRING_LITERAL("Version");
-static const xpr_tchar_t kKeyEntry[]            = XPR_STRING_LITERAL("Key");
-static const xpr_tchar_t kAllSubApplyEntry[]    = XPR_STRING_LITERAL("All Sub Apply");
-static const xpr_tchar_t kStyleEntry[]          = XPR_STRING_LITERAL("Style");
-static const xpr_tchar_t kSortIdEntry[]         = XPR_STRING_LITERAL("SortId");
-static const xpr_tchar_t kSortFormatIdEntry[]   = XPR_STRING_LITERAL("Sort Format Id");
-static const xpr_tchar_t kSortPropertyIdEntry[] = XPR_STRING_LITERAL("Sort Property Id");
-static const xpr_tchar_t kSortAscendingEntry[]  = XPR_STRING_LITERAL("Ascending");
-static const xpr_tchar_t kColumnEntry[]         = XPR_STRING_LITERAL("Column");
-static const xpr_tchar_t kColumnCountEntry[]    = XPR_STRING_LITERAL("Column Count");
-static const xpr_tchar_t kWidthEntry[]          = XPR_STRING_LITERAL("Width");
-static const xpr_tchar_t kFormatIdEntry[]       = XPR_STRING_LITERAL("Format Id");
-static const xpr_tchar_t kPropertyIdEntry[]     = XPR_STRING_LITERAL("Property Id");
+static const xpr_tchar_t kViewSetSection   [] = XPR_STRING_LITERAL("view_set");
+static const xpr_tchar_t kVersionKey       [] = XPR_STRING_LITERAL("view_set.version");
+static const xpr_tchar_t kKeyKey           [] = XPR_STRING_LITERAL("view_set.key");
+static const xpr_tchar_t kAllSubApplyKey   [] = XPR_STRING_LITERAL("view_set.all_sub_aplly");
+static const xpr_tchar_t kStyleKey         [] = XPR_STRING_LITERAL("view_set.style");
+static const xpr_tchar_t kSortIdKey        [] = XPR_STRING_LITERAL("view_set.sort_id");
+static const xpr_tchar_t kSortFormatIdKey  [] = XPR_STRING_LITERAL("view_set.sort_format_id");
+static const xpr_tchar_t kSortPropertyIdKey[] = XPR_STRING_LITERAL("view_set.sort_property_id");
+static const xpr_tchar_t kSortAscendingKey [] = XPR_STRING_LITERAL("view_set.sort_ascending");
+static const xpr_tchar_t kColumnKey        [] = XPR_STRING_LITERAL("view_set.column");
+static const xpr_tchar_t kColumnCountKey   [] = XPR_STRING_LITERAL("view_set.column_count");
+static const xpr_tchar_t kWidthKey         [] = XPR_STRING_LITERAL("view_set.width");
+static const xpr_tchar_t kFormatIdKey      [] = XPR_STRING_LITERAL("view_set.format_id");
+static const xpr_tchar_t kPropertyIdKey    [] = XPR_STRING_LITERAL("view_set.property_id");
 
 ViewSet::ViewSet(void)
     : mInstPath(XPR_TRUE)
@@ -54,34 +54,34 @@ void ViewSet::readIndex(void)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getLoadPath(CfgPath::TypeViewSet, sPath, XPR_MAX_PATH, XPR_STRING_LITERAL("index"));
 
-    fxb::IniFile sIniFile(sPath);
+    fxb::IniFileEx sIniFile(sPath);
     if (sIniFile.readFile() == XPR_FALSE)
         return;
 
-    xpr_size_t i;
-    xpr_size_t sKeyCount;
-    const xpr_tchar_t *sKey;
+    const xpr_tchar_t     *sSectionName;
+    const xpr_tchar_t     *sHash;
+    xpr_bool_t             sAllSubApply;
+    fxb::IniFile::Section *sSection;
+    fxb::IniFile::SectionIterator sSectionIterator;
 
-    const xpr_tchar_t *sHash;
-    xpr_bool_t sAllSubApply;
-
-    sKeyCount = sIniFile.getKeyCount();
-    for (i = 0; i < sKeyCount; ++i)
+    sSectionIterator = sIniFile.beginSection();
+    for (; sSectionIterator != sIniFile.endSection(); ++sSectionIterator)
     {
-        sKey = sIniFile.getKeyName(i);
-        if (XPR_IS_NULL(sKey))
-            continue;
+        sSection = *sSectionIterator;
+        XPR_ASSERT(sSection != XPR_NULL);
 
-        sHash        = sIniFile.getValueS(sKey, kKeyEntry);
-        sAllSubApply = sIniFile.getValueI(sKey, kAllSubApplyEntry);
+        sSectionName = sIniFile.getSectionName(sSection);
+
+        sHash        = sIniFile.getValueS(sSection, kKeyKey,         XPR_NULL);
+        sAllSubApply = sIniFile.getValueB(sSection, kAllSubApplyKey, XPR_FALSE);
 
         if (XPR_IS_NULL(sHash))
             continue;
 
-        mKeyMap[sKey] = sHash;
+        mKeyMap[sSectionName] = sHash;
 
         if (XPR_IS_TRUE(sAllSubApply))
-            mSubSet.insert(sKey);
+            mSubSet.insert(sSectionName);
     }
 }
 
@@ -91,13 +91,14 @@ void ViewSet::saveIndex(void)
     CfgPath::instance().getSaveDir(CfgPath::TypeViewSet, sPath, XPR_MAX_PATH);
     _tcscat(sPath, XPR_STRING_LITERAL("\\index.ini"));
 
-    fxb::IniFile sIniFile(sPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer ViewSet Index File"));
+    fxb::IniFileEx sIniFile(sPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer view set index file"));
 
-    KeyMap::iterator sIterator;
-    SubSet::iterator sSubIterator;
-    const xpr_tchar_t *sSubPath;
-    const xpr_tchar_t *sHash;
+    KeyMap::iterator       sIterator;
+    SubSet::iterator       sSubIterator;
+    const xpr_tchar_t     *sSubPath;
+    const xpr_tchar_t     *sHash;
+    fxb::IniFile::Section *sSection;
 
     sIterator = mKeyMap.begin();
     for (; sIterator != mKeyMap.end(); ++sIterator)
@@ -105,13 +106,16 @@ void ViewSet::saveIndex(void)
         sSubPath = sIterator->first.c_str();
         sHash    = sIterator->second.c_str();
 
-        sIniFile.setValueS(sSubPath, kKeyEntry, sHash);
+        sSection = sIniFile.addSection(sSubPath);
+        XPR_ASSERT(sSection != XPR_NULL);
+
+        sIniFile.setValueS(sSection, kKeyKey, sHash);
 
         sSubIterator = mSubSet.find(sSubPath);
         if (sSubIterator == mSubSet.end())
             continue;
 
-        sIniFile.setValueI(sSubPath, kAllSubApplyEntry, XPR_TRUE);
+        sIniFile.setValueI(sSection, kAllSubApplyKey, XPR_TRUE);
     }
 
     sIniFile.writeFile(xpr::CharSetUtf16);
@@ -171,117 +175,70 @@ xpr_bool_t ViewSet::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             _stprintf(sIniPath, XPR_STRING_LITERAL("%s\\viewset.ini"), sPath);
         }
 
-        fxb::IniFile sIniFile(sIniPath);
+        fxb::IniFileEx sIniFile(sIniPath);
         if (sIniFile.readFile() == XPR_FALSE)
             return XPR_FALSE;
 
-        xpr_sint_t sVersion = sIniFile.getValueI(kViewSetKey, kVersionEntry, 0);
-        if (sVersion == 0)
+        fxb::IniFile::Section *sSection = sIniFile.findSection(kViewSetSection);
+        XPR_ASSERT(sSection != XPR_NULL);
+
+        xpr_sint_t         i;
+        xpr_tchar_t        sSectionName[0xff];
+        const xpr_tchar_t *sValue;
+        xpr_tchar_t        sValueW[0xff];
+        xpr_size_t         sInputBytes;
+        xpr_size_t         sOutputBytes;
+        HRESULT            sHResult;
+
+        aFolderViewSet->mViewStyle   = sIniFile.getValueI(sSection, kStyleKey, 1);
+        aFolderViewSet->mAllSubApply = sAllSubApply;
+        aFolderViewSet->mColumnCount = sIniFile.getValueI(sSection, kColumnCountKey, 0);
+        aFolderViewSet->mColumnItem  = new ColumnItem[aFolderViewSet->mColumnCount];
+
+        sValue = sIniFile.getValueS(sSection, kSortFormatIdKey, XPR_STRING_LITERAL(""));
+
+        sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
+        sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
+        XPR_TCS_TO_UTF16(sValue, &sInputBytes, sValueW, &sOutputBytes);
+        sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+
+        sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnSortInfo.mFormatId);
+        if (FAILED(sHResult))
+            aFolderViewSet->mColumnSortInfo.mFormatId = GUID_NULL;
+
+        aFolderViewSet->mColumnSortInfo.mPropertyId = sIniFile.getValueI(sSection, kSortPropertyIdKey,    0);
+        aFolderViewSet->mColumnSortInfo.mAscending  = sIniFile.getValueI(sSection, kSortAscendingKey, 1);
+
+        for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
         {
-            xpr_sint_t i;
-            xpr_sint_t sWidth;
-            xpr_sint_t sPropertyId;
-            xpr_tchar_t sEntry[0xff];
-            const xpr_tchar_t *sValue;
-
-            aFolderViewSet->mViewStyle   = sIniFile.getValueI(kViewSetKey, kStyleEntry, 1);
-            aFolderViewSet->mAllSubApply = sAllSubApply;
-            aFolderViewSet->mColumnCount = MAX_COLUMN;
-            aFolderViewSet->mColumnItem  = new ColumnItem[aFolderViewSet->mColumnCount];
-
-            aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
-            aFolderViewSet->mColumnSortInfo.mPropertyId = sIniFile.getValueI(kViewSetKey, kSortIdEntry,        0);
-            aFolderViewSet->mColumnSortInfo.mAscending  = sIniFile.getValueI(kViewSetKey, kSortAscendingEntry, 1);
-
-            for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
-            {
-                aFolderViewSet->mColumnItem[i].mFormatId   = GUID_NULL;
-                aFolderViewSet->mColumnItem[i].mPropertyId = -1;
-                aFolderViewSet->mColumnItem[i].mWidth      = -1;
-            }
-
-            xpr_sint_t sIndex = 0;
-            for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
-            {
-                _stprintf(sEntry, XPR_STRING_LITERAL("%s%02d"), kColumnEntry, i+1);
-
-                sValue = sIniFile.getValueS(kViewSetKey, sEntry);
-                if (XPR_IS_NULL(sValue))
-                    continue;
-
-                sWidth      = -1;
-                sPropertyId = -1;
-
-                _stscanf(sValue, XPR_STRING_LITERAL("%d|%d"), &sWidth, &sPropertyId);
-
-                if (sPropertyId < MIN_COLUMN_ID || sPropertyId > MAX_COLUMN_ID)
-                    continue;
-
-                if (sWidth <= 0 || sWidth > MAX_COLUMN_SIZE)
-                    sWidth = DEF_COLUMN_SIZE;
-
-                aFolderViewSet->mColumnItem[sIndex].mWidth      = sWidth;
-                aFolderViewSet->mColumnItem[sIndex].mPropertyId = sPropertyId;
-                sIndex++;
-            }
+            aFolderViewSet->mColumnItem[i].mFormatId   = GUID_NULL;
+            aFolderViewSet->mColumnItem[i].mPropertyId = -1;
+            aFolderViewSet->mColumnItem[i].mWidth      = -1;
         }
-        else if (sVersion == 1)
+
+        for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
         {
-            xpr_sint_t i;
-            xpr_tchar_t sKey[0xff];
-            const xpr_tchar_t *sValue;
-            xpr_tchar_t sValueW[0xff];
-            xpr_size_t sInputBytes;
-            xpr_size_t sOutputBytes;
-            HRESULT sHResult;
+            _stprintf(sSectionName, XPR_STRING_LITERAL("%s%d"), kColumnKey, i+1);
 
-            aFolderViewSet->mViewStyle   = sIniFile.getValueI(kViewSetKey, kStyleEntry, 1);
-            aFolderViewSet->mAllSubApply = sAllSubApply;
-            aFolderViewSet->mColumnCount = sIniFile.getValueI(kViewSetKey, kColumnCountEntry);
-            aFolderViewSet->mColumnItem  = new ColumnItem[aFolderViewSet->mColumnCount];
+            sSection = sIniFile.findSection(sSectionName);
+            XPR_ASSERT(sSection != XPR_NULL);
 
-            sValue = sIniFile.getValueS(kViewSetKey, kSortFormatIdEntry, XPR_STRING_LITERAL(""));
+            sValue = sIniFile.getValueS(sSection, kFormatIdKey, XPR_STRING_LITERAL(""));
 
             sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
             sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
             XPR_TCS_TO_UTF16(sValue, &sInputBytes, sValueW, &sOutputBytes);
             sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
-            sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnSortInfo.mFormatId);
+            sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnItem[i].mFormatId);
             if (FAILED(sHResult))
-                aFolderViewSet->mColumnSortInfo.mFormatId = GUID_NULL;
+                aFolderViewSet->mColumnItem[i].mFormatId = GUID_NULL;
 
-            aFolderViewSet->mColumnSortInfo.mPropertyId = sIniFile.getValueI(kViewSetKey, kSortPropertyIdEntry,    0);
-            aFolderViewSet->mColumnSortInfo.mAscending  = sIniFile.getValueI(kViewSetKey, kSortAscendingEntry, 1);
+            aFolderViewSet->mColumnItem[i].mPropertyId = sIniFile.getValueI(sSection, kPropertyIdKey, -1);
+            aFolderViewSet->mColumnItem[i].mWidth      = sIniFile.getValueI(sSection, kWidthKey,      -1);
 
-            for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
-            {
-                aFolderViewSet->mColumnItem[i].mFormatId   = GUID_NULL;
-                aFolderViewSet->mColumnItem[i].mPropertyId = -1;
-                aFolderViewSet->mColumnItem[i].mWidth      = -1;
-            }
-
-            for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
-            {
-                _stprintf(sKey, XPR_STRING_LITERAL("%s%d"), kColumnEntry, i+1);
-
-                sValue = sIniFile.getValueS(sKey, kFormatIdEntry, XPR_STRING_LITERAL(""));
-
-                sInputBytes = _tcslen(sValue) * sizeof(xpr_tchar_t);
-                sOutputBytes = 0xfe * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sValue, &sInputBytes, sValueW, &sOutputBytes);
-                sValueW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
-
-                sHResult = ::IIDFromString((LPOLESTR)sValueW, &aFolderViewSet->mColumnItem[i].mFormatId);
-                if (FAILED(sHResult))
-                    aFolderViewSet->mColumnItem[i].mFormatId = GUID_NULL;
-
-                aFolderViewSet->mColumnItem[i].mPropertyId = sIniFile.getValueI(sKey, kPropertyIdEntry, -1);
-                aFolderViewSet->mColumnItem[i].mWidth      = sIniFile.getValueI(sKey, kWidthEntry,      -1);
-
-                if (aFolderViewSet->mColumnItem[i].mWidth <= 0 || aFolderViewSet->mColumnItem[i].mWidth > MAX_COLUMN_SIZE)
-                    aFolderViewSet->mColumnItem[i].mWidth = DEF_COLUMN_SIZE;
-            }
+            if (aFolderViewSet->mColumnItem[i].mWidth <= 0 || aFolderViewSet->mColumnItem[i].mWidth > MAX_COLUMN_SIZE)
+                aFolderViewSet->mColumnItem[i].mWidth = DEF_COLUMN_SIZE;
         }
     }
 
@@ -376,15 +333,19 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             _stprintf(sIniPath, XPR_STRING_LITERAL("%s\\viewset.ini"), sPath);
         }
 
-        fxb::IniFile sIniFile(sIniPath);
-        sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer ViewSet File"));
+        fxb::IniFileEx sIniFile(sIniPath);
+        sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer view set file"));
 
-        xpr_sint_t i;
-        xpr_tchar_t sKey[0xff];
-        xpr_tchar_t sValue[0xff];
-        xpr_size_t sInputBytes;
-        xpr_size_t sOutputBytes;
-        OLECHAR *sFormatIdValue;
+        xpr_sint_t             i;
+        xpr_tchar_t            sSectionName[0xff];
+        xpr_tchar_t            sValue[0xff];
+        xpr_size_t             sInputBytes;
+        xpr_size_t             sOutputBytes;
+        OLECHAR               *sFormatIdValue;
+        fxb::IniFile::Section *sSection;
+
+        sSection = sIniFile.addSection(kViewSetSection);
+        XPR_ASSERT(sSection != XPR_NULL);
 
         sFormatIdValue = XPR_NULL;
         ::StringFromIID(aFolderViewSet->mColumnSortInfo.mFormatId, &sFormatIdValue);
@@ -394,21 +355,24 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
         XPR_TCS_TO_UTF16(sFormatIdValue, &sInputBytes, sValue, &sOutputBytes);
         sValue[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
-        sIniFile.setValueI(kViewSetKey, kVersionEntry,        1);
-        sIniFile.setValueI(kViewSetKey, kStyleEntry,          aFolderViewSet->mViewStyle);
-        sIniFile.setValueS(kViewSetKey, kSortFormatIdEntry,   sValue);
-        sIniFile.setValueI(kViewSetKey, kSortPropertyIdEntry, aFolderViewSet->mColumnSortInfo.mPropertyId);
-        sIniFile.setValueI(kViewSetKey, kSortAscendingEntry,  aFolderViewSet->mColumnSortInfo.mAscending);
-        sIniFile.setValueI(kViewSetKey, kColumnCountEntry,    aFolderViewSet->mColumnCount);
+        sIniFile.setValueI(sSection, kVersionKey,        1);
+        sIniFile.setValueI(sSection, kStyleKey,          aFolderViewSet->mViewStyle);
+        sIniFile.setValueS(sSection, kSortFormatIdKey,   sValue);
+        sIniFile.setValueI(sSection, kSortPropertyIdKey, aFolderViewSet->mColumnSortInfo.mPropertyId);
+        sIniFile.setValueI(sSection, kSortAscendingKey,  aFolderViewSet->mColumnSortInfo.mAscending);
+        sIniFile.setValueI(sSection, kColumnCountKey,    aFolderViewSet->mColumnCount);
 
-        ::CoTaskMemFree(sFormatIdValue);
+        COM_FREE(sFormatIdValue);
 
         for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
         {
             if (aFolderViewSet->mColumnItem[i].mPropertyId == -1 || aFolderViewSet->mColumnItem[i].mWidth == -1)
                 continue;
 
-            _stprintf(sKey, XPR_STRING_LITERAL("%s%d"), kColumnEntry, i+1);
+            _stprintf(sSectionName, XPR_STRING_LITERAL("%s%d"), kColumnKey, i+1);
+
+            sSection = sIniFile.addSection(sSectionName);
+            XPR_ASSERT(sSection != XPR_NULL);
 
             sFormatIdValue = XPR_NULL;
             ::StringFromIID(aFolderViewSet->mColumnItem[i].mFormatId, &sFormatIdValue);
@@ -418,11 +382,11 @@ xpr_bool_t ViewSet::setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderV
             XPR_TCS_TO_UTF16(sFormatIdValue, &sInputBytes, sValue, &sOutputBytes);
             sValue[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 
-            sIniFile.setValueS(sKey, kFormatIdEntry,   sValue);
-            sIniFile.setValueI(sKey, kPropertyIdEntry, aFolderViewSet->mColumnItem[i].mPropertyId);
-            sIniFile.setValueI(sKey, kWidthEntry,      aFolderViewSet->mColumnItem[i].mWidth);
+            sIniFile.setValueS(sSection, kFormatIdKey,   sValue);
+            sIniFile.setValueI(sSection, kPropertyIdKey, aFolderViewSet->mColumnItem[i].mPropertyId);
+            sIniFile.setValueI(sSection, kWidthKey,      aFolderViewSet->mColumnItem[i].mWidth);
 
-            ::CoTaskMemFree(sFormatIdValue);
+            COM_FREE(sFormatIdValue);
         }
 
         sIniFile.writeFile(xpr::CharSetUtf16);

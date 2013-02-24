@@ -13,6 +13,7 @@
 #include "../resource.h"
 #include "../OptionMgr.h"
 
+#include "CfgPath.h"
 #include "CfgGeneralDlg.h"
 #include "CfgGeneralStartupDlg.h"
 #include "CfgAppearanceDlg.h"
@@ -396,13 +397,17 @@ void CfgMgrDlg::OnDefault(void)
     if (sMsgId != IDYES)
         return;
 
+    CfgPath &sCfgPath = CfgPath::instance();
     OptionMgr &sOptionMgr = OptionMgr::instance();
+
+    // save configuration path to save configuration files
+    sCfgPath.save();
 
     // initialize default option and save one
     sOptionMgr.initDefault();
 
     // save default option
-    sOptionMgr.save(XPR_TRUE);
+    sOptionMgr.saveConfigOption();
 
     // notify default option
     gOpt->notifyConfig();
@@ -455,13 +460,17 @@ void CfgMgrDlg::OnApply(void)
         }
     }
 
+    CfgPath &sCfgPath = CfgPath::instance();
     OptionMgr &sOptionMgr = OptionMgr::instance();
+
+    // save configuration path to save configuration files
+    sCfgPath.save();
 
     // set new option
     gOpt->setConfig(mNewConfig);
 
     // save new option
-    sOptionMgr.save(XPR_TRUE);
+    sOptionMgr.saveConfigOption();
 
     // notify new option
     gOpt->notifyConfig();

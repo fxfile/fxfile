@@ -1414,7 +1414,7 @@
 			<String ID="popup.cfg.body.appearance.layout.group.info_bar_style">스타일(&amp;T)</String>
 			<String ID="popup.cfg.body.appearance.layout.radio.info_bar_standard_style">표준 스타일(&amp;S)</String>
 			<String ID="popup.cfg.body.appearance.layout.radio.info_bar_basic_style">기본 스타일(&amp;B)</String>
-			<String ID="popup.cfg.body.appearance.layout.check.info_bar_no_display_selected_file_info">선택된 파일 세부 정보 표시 안함(&amp;O)</String>
+			<String ID="popup.cfg.body.appearance.layout.check.info_bar_no_display_detailed_info">자세한 정보 표시 안함(&amp;O)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.info_bar_show_bookmark">북마크 표시(&amp;M)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.info_bar_show_arhs_attribute_style">속성 ARHS 스타일 표시(&amp;A)</String>
 			<String ID="popup.cfg.body.appearance.layout.check.show_status_bar">상태 표시줄 표시(&amp;I)</String>
@@ -1671,35 +1671,13 @@
 			<String ID="popup.cfg.body.advanced.cfg_path.radio.program">프로그램과 같은 경로(&amp;D)</String>
 			<String ID="popup.cfg.body.advanced.cfg_path.radio.appdata">%AppData% 폴더(기본값)(&amp;A)</String>
 			<String ID="popup.cfg.body.advanced.cfg_path.radio.custom">사용자 정의 폴더(&amp;C)</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.radio.each_custom">각 항목별 사용자 정의 폴더(&amp;T)</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.list.column.item">설정 항목</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.list.column.filename">파일명</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.list.column.path">경로</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.button.set_path">경로 지정(&amp;E)</String>
 			<String ID="popup.cfg.body.advanced.cfg_path.folder_browse.title">폴더를 선택하여 주십시오.</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.main">메인 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.config">환경 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.bookmark">북마크</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.file_scrap">파일 수집</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.program_ass">파일 연동</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.filter">필터링</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.search_dir">검색 위치</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.size_format">용량 표시 형식</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.view_set">보기 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.dialog">대화 상자</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.accel">단축키 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.coolbar">도구 모음 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.toolbar">툴바 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.bar_state">바 설정</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.thumbnail">썸네일 캐쉬</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.recent">최근 실행 목록</String>
-			<String ID="popup.cfg.body.advanced.cfg_path.type.history">히스토리</String>
 
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.enable">전역 단축키 실행(&amp;E)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.label.hotkey">단축키 변경(&amp;M):</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.label.window_key">Window키 + </String>
-			<String ID="popup.cfg.body.advanced.global_hotkey.label.cf">(참고: 윈도우 탐색기의 실행 기본 전역 단축키는 Window키 + E 입니다.)</String>
-			<String ID="popup.cfg.body.advanced.global_hotkey.check.windows_boot">윈도우즈 시작시 자동 실행(&amp;W)</String>
+			<String ID="popup.cfg.body.advanced.global_hotkey.label.ref">(참고: 윈도우 탐색기의 실행 기본 전역 단축키는 Window키 + E 입니다.)</String>
+			<String ID="popup.cfg.body.advanced.global_hotkey.check.windows_startup">윈도우즈 시작시 자동 실행(&amp;W)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.show_tray">시스템 트레이 표시(&amp;T)</String>
 
 			<!-- popup: select folder -->
@@ -1722,9 +1700,9 @@
 			<String ID="popup.size_format.label.unit">단위 조건(&amp;S):</String>
 			<String ID="popup.size_format.label.more">이상</String>
 			<String ID="popup.size_format.label.display">표시(&amp;P):</String>
-			<String ID="popup.size_format.label.decimal_digits">소수점 자리(&amp;Z):</String>
-			<String ID="popup.size_format.default_decimal_digits">기본 소수점 자리(&amp;D)</String>
-			<String ID="popup.size_format.custom_decimal_digits">사용자 정의 소수점 자리(&amp;C)</String>
+			<String ID="popup.size_format.label.decimal_place">소수점 자리(&amp;Z):</String>
+			<String ID="popup.size_format.default_decimal_place">기본 소수점 자리(&amp;D)</String>
+			<String ID="popup.size_format.custom_decimal_place">사용자 정의 소수점 자리(&amp;C)</String>
 			<String ID="popup.size_format.round_off">반올림(&amp;R)</String>
 			<String ID="popup.size_format.msg.excess_max_count">용량 크기의 설정 제한 개수는 %1%개 입니다.</String>
 			<String ID="popup.size_format.msg.select_unit">표시할 용량의 단위를 선택하여 주십시오.</String>

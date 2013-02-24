@@ -1383,6 +1383,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fxb\fxb_ini_file_ex.h"
+				>
+			</File>
+			<File
 				RelativePath=".\fxb\fxb_item_id_list.cpp"
 				>
 			</File>
@@ -1472,6 +1476,14 @@
 			</File>
 			<File
 				RelativePath=".\fxb\fxb_program_ass.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fxb\fxb_recent_file_list.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\fxb\fxb_recent_file_list.h"
 				>
 			</File>
 			<File
@@ -2048,14 +2060,6 @@
 			</File>
 			<File
 				RelativePath=".\PreviewViewEx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RecentFileListEx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RecentFileListEx.h"
 				>
 			</File>
 			<File

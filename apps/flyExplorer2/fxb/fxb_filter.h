@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -17,6 +17,8 @@ namespace fxb
 
 #define MAX_FILTER_NAME 56
 #define MAX_FILTER_EXTS 260
+
+class IniFileEx;
 
 class FilterItem
 {
@@ -71,8 +73,8 @@ public:
     xpr_bool_t initDefault(void);
     void clear(void);
 
-    xpr_bool_t loadFromFile(const xpr_tchar_t *aPath);
-    xpr_bool_t saveToFile(const xpr_tchar_t *aPath);
+    xpr_bool_t load(fxb::IniFileEx &aIniFile);
+    void save(fxb::IniFileEx &aIniFile) const;
 
     static void setString(
         const xpr_tchar_t *aFolderString,

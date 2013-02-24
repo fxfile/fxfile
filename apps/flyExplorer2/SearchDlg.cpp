@@ -13,7 +13,7 @@
 #include <math.h>                    // for animation
 
 #include "fxb/fxb_fnmatch.h"        // for pattern matching
-#include "fxb/fxb_ini_file.h"
+#include "fxb/fxb_ini_file_ex.h"
 #include "fxb/fxb_search_file.h"
 
 #include "SearchDlgObserver.h"
@@ -69,6 +69,11 @@ enum
 
 static const xpr_size_t kPaneWidth[] = { 150, 150 };
 static const CPoint     kAnimationOffset = CPoint(0, 40);
+
+static const xpr_tchar_t kDirCountKey [] = XPR_STRING_LITERAL("search_dir.dir_count");
+static const xpr_tchar_t kDirKey      [] = XPR_STRING_LITERAL("search_dir.dir%d");
+static const xpr_tchar_t kIncludeKey  [] = XPR_STRING_LITERAL("search_dir.dir%d_include");
+static const xpr_tchar_t kSubFolderKey[] = XPR_STRING_LITERAL("search_dir.dir%d_sub_folder");
 
 SearchDlg::SearchDlg(void)
     : super(IDD_SEARCH, XPR_NULL)
@@ -566,40 +571,36 @@ void SearchDlg::loadUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getLoadPath(CfgPath::TypeSearchDir, sPath, XPR_MAX_PATH);
 
-    fxb::IniFile sIniFile(sPath);
+    fxb::IniFileEx sIniFile(sPath);
     if (sIniFile.readFile() == XPR_FALSE)
         return;
 
-    xpr_size_t i, j;
-    xpr_size_t sKeyCount;
-    xpr_size_t sEntryCount;
-    xpr_tchar_t sEntry[XPR_MAX_PATH + 1];
-    fxb::SearchUserLoc *sUserLoc;
+    xpr_sint_t              i;
+    xpr_sint_t              sDirCount;
+    xpr_tchar_t             sKey[XPR_MAX_PATH + 1];
+    fxb::SearchUserLoc     *sUserLoc;
     fxb::SearchUserLocItem *sUserLocItem;
-    const xpr_tchar_t *sKey;
-    const xpr_tchar_t *sDir;
+    const xpr_tchar_t      *sDir;
+    fxb::IniFile::Section  *sSection;
+    fxb::IniFile::SectionIterator sSectionIterator;
 
-    sKeyCount = sIniFile.getKeyCount();
-    for (i = 0; i < sKeyCount; ++i)
+    sSectionIterator = sIniFile.beginSection();
+    for (; sSectionIterator != sIniFile.endSection(); ++sSectionIterator)
     {
-        sKey = sIniFile.getKeyName(i);
-        if (sKey == XPR_NULL)
-            continue;
+        sSection = *sSectionIterator;
+        XPR_ASSERT(sSection != XPR_NULL);
 
         sUserLoc = new fxb::SearchUserLoc;
-        if (sUserLoc == XPR_NULL)
-            continue;
+        sUserLoc->mName = sIniFile.getSectionName(sSection);
 
-        sUserLoc->mName = sKey;
+        sDirCount = sIniFile.getValueI(sSection, kDirCountKey, 0);
+        sDirCount = min(sDirCount, MAX_SEARCH_LOC);
 
-        sEntryCount = sIniFile.getEntryCount(sKey);
-        sEntryCount = min(sEntryCount, MAX_SEARCH_LOC);
-        for (j = 0; j < sEntryCount; ++j)
+        for (i = 0; i < sDirCount; ++i)
         {
-            // directory
-            _stprintf(sEntry, XPR_STRING_LITERAL("Dir%d"), j+1);
+            _stprintf(sKey, kDirKey, i + 1);
 
-            sDir = sIniFile.getValueS(sKey, sEntry);
+            sDir = sIniFile.getValueS(sSection, sKey, XPR_NULL);
             if (sDir == XPR_NULL)
                 continue;
 
@@ -609,13 +610,13 @@ void SearchDlg::loadUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
             if (sUserLocItem->mPath.length() == 2)
                 sUserLocItem->mPath += XPR_STRING_LITERAL("\\");
 
-            // exclude
-            _stprintf(sEntry, XPR_STRING_LITERAL("Include%d"), j+1);
-            sUserLocItem->mInclude = sIniFile.getValueB(sKey, sEntry, XPR_TRUE);
+            // include
+            _stprintf(sKey, kIncludeKey, i + 1);
+            sUserLocItem->mInclude = sIniFile.getValueB(sSection, sKey, XPR_TRUE);
 
             // sub folder
-            _stprintf(sEntry, XPR_STRING_LITERAL("SubFolder%d"), j+1);
-            sUserLocItem->mSubFolder = sIniFile.getValueB(sKey, sEntry, XPR_FALSE);
+            _stprintf(sKey, kSubFolderKey, i + 1);
+            sUserLocItem->mSubFolder = sIniFile.getValueB(sSection, sKey, XPR_FALSE);
 
             sUserLoc->mUserLocDeque.push_back(sUserLocItem);
         }
@@ -632,51 +633,52 @@ void SearchDlg::saveUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     CfgPath::instance().getSavePath(CfgPath::TypeSearchDir, sPath, XPR_MAX_PATH);
 
-    fxb::IniFile sIniFile(sPath);
-    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer Search Directory File"));
+    fxb::IniFileEx sIniFile(sPath);
+    sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer search directory file"));
 
-    xpr_sint_t i, j;
-    const xpr_tchar_t *sKey;
-    xpr_tchar_t sEntry[XPR_MAX_PATH + 1];
-    fxb::SearchUserLoc *sUserLoc;
+    xpr_sint_t              i;
+    xpr_tchar_t             sKey[XPR_MAX_PATH + 1];
+    fxb::IniFile::Section  *sSection;
+    fxb::SearchUserLoc     *sUserLoc;
     fxb::SearchUserLocItem *sUserLocItem;
     fxb::SearchUserLocDeque::iterator sIterator;
     fxb::UserLocDeque::iterator sLocIterator;
 
     sIterator = aUserLocDeque->begin();
-    for (i = 0; sIterator != aUserLocDeque->end(); ++sIterator)
+    for (; sIterator != aUserLocDeque->end(); ++sIterator)
     {
         sUserLoc = *sIterator;
-        if (sUserLoc == XPR_NULL)
-            continue;
+        XPR_ASSERT(sUserLoc != XPR_NULL);
 
-        sKey = sUserLoc->mName.c_str();
+        sSection = sIniFile.addSection(sUserLoc->mName.c_str());
+        XPR_ASSERT(sSection != XPR_NULL);
+
+        sIniFile.setValueI(sSection, kDirCountKey, (xpr_sint_t)sUserLoc->mUserLocDeque.size());
 
         sLocIterator = sUserLoc->mUserLocDeque.begin();
-        for (j = 0; sLocIterator != sUserLoc->mUserLocDeque.end(); ++sLocIterator, ++j)
+        for (i = 0; sLocIterator != sUserLoc->mUserLocDeque.end(); ++sLocIterator, ++i)
         {
             sUserLocItem = *sLocIterator;
+            XPR_ASSERT(sUserLocItem != XPR_NULL);
 
             // directory
-            _stprintf(sEntry, XPR_STRING_LITERAL("Dir%d"), j+1);
-            sIniFile.setValueS(sKey, sEntry, sUserLocItem->mPath.c_str());
+            _stprintf(sKey, kDirKey, i + 1);
+            sIniFile.setValueS(sSection, sKey, sUserLocItem->mPath);
 
-            // exclude
+            // include
             if (sUserLocItem->mInclude == XPR_FALSE)
             {
-                _stprintf(sEntry, XPR_STRING_LITERAL("Include%d"), j+1);
-                sIniFile.setValueB(sKey, sEntry, sUserLocItem->mInclude);
+                _stprintf(sKey, kIncludeKey, i + 1);
+                sIniFile.setValueB(sSection, sKey, sUserLocItem->mInclude);
             }
 
             // sub folder
             if (sUserLocItem->mSubFolder == XPR_TRUE)
             {
-                _stprintf(sEntry, XPR_STRING_LITERAL("SubFolder%d"), j+1);
-                sIniFile.setValueB(sKey, sEntry, sUserLocItem->mSubFolder);
+                _stprintf(sKey, kSubFolderKey, i + 1);
+                sIniFile.setValueB(sSection, sKey, sUserLocItem->mSubFolder);
             }
         }
-
-        i++;
     }
 
     sIniFile.writeFile(xpr::CharSetUtf16);

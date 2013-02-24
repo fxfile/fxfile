@@ -144,8 +144,12 @@ public:
     void               getCurFullPath(std::tstring &aCurFullPath) const;
     LPITEMIDLIST       getFolderGroup(void) const;
 
-    void loadHistory(void);
-    void saveHistory(void) const;
+    static LPITEMIDLIST getDefInitFolder(void);
+
+    void loadHistory(fxb::HistoryDeque *aBackwardDeque,
+                     fxb::HistoryDeque *aForwardDeque,
+                     fxb::HistoryDeque *aHistoryDeque);
+
     void saveOption(void);
 
     // file processing
@@ -194,13 +198,13 @@ public:
     xpr_bool_t hasSelShellAttributes(xpr_uint_t aShellAttributes) const;
 
     // item selection
-    void       selectAll(void);
-    void       unselectAll(void);
-    void       selectNextItemWithFocus(void);
-    void       selectItem(xpr_sint_t aIndex);
-    xpr_bool_t getSelItemPath(xpr_tchar_t **aPaths, xpr_sint_t &aCount, xpr_ulong_t aShellAttributes = 0) const;
-    void       getSelItemData(LPSHELLFOLDER *aShellFolder, LPITEMIDLIST **aPidls, xpr_sint_t &aCount, xpr_ulong_t aShellAttributes = 0) const;
-    xpr_size_t getRealSelCount(xpr_bool_t aCalculate = XPR_FALSE, xpr_size_t *aRealSelFolderCount = XPR_NULL, xpr_size_t *aRealSelFileCount = XPR_NULL);
+    void         selectAll(void);
+    void         unselectAll(void);
+    void         selectNextItemWithFocus(void);
+    void         selectItem(xpr_sint_t aIndex);
+    xpr_bool_t   getSelItemPath(xpr_tchar_t **aPaths, xpr_sint_t &aCount, xpr_ulong_t aShellAttributes = 0) const;
+    void         getSelItemData(LPSHELLFOLDER *aShellFolder, LPITEMIDLIST **aPidls, xpr_sint_t &aCount, xpr_ulong_t aShellAttributes = 0) const;
+    xpr_size_t   getRealSelCount(xpr_bool_t aCalculate = XPR_FALSE, xpr_size_t *aRealSelFolderCount = XPR_NULL, xpr_size_t *aRealSelFileCount = XPR_NULL);
     xpr_uint64_t getSelFileSize(void) const;
     xpr_uint64_t getTotalFileSize(xpr_sint_t *aTotalCount = XPR_NULL, xpr_sint_t *aFileCount = XPR_NULL, xpr_sint_t *aFolderCount = XPR_NULL) const;
     void         setInsSelPath(const xpr_tchar_t *aInsSelPath, xpr_bool_t aUnselectAll = XPR_TRUE, xpr_bool_t aEdit = XPR_FALSE);
@@ -229,28 +233,30 @@ public:
     ColumnSortInfo *getSortInfo(void) const;
     ColumnSortData *getSortData(void) const;
 
+    // parent
+    xpr_bool_t goUp(void);
+    xpr_bool_t goUp(xpr_uint_t aUp);
+    xpr_uint_t getUpCount(void);
+
     // history
-    xpr_bool_t         goUp(void);
-    xpr_bool_t         goUp(xpr_uint_t aUp);
-    xpr_uint_t         getUpCount(void);
-    void               goBackward(void);
-    void               goBackward(xpr_size_t aBack);
-    xpr_size_t         getBackwardCount(void);
-    void               clearBackward(void);
-    void               goForward(void);
-    void               goForward(xpr_size_t aForward);
-    xpr_size_t         getForwardCount(void);
-    void               clearForward(void);
-    void               goHistory(void);
-    void               goHistory(xpr_size_t aHistory);
-    xpr_size_t         getHistoryCount(void);
-    void               clearHistory(void);
-    void               clearAllHistory(void);
-    void               setMaxBackward(xpr_size_t aBackwardCount);
-    void               setMaxHistory(xpr_size_t aHistoryCount);
-    fxb::HistoryDeque *getBackwardList(void) const;
-    fxb::HistoryDeque *getForwardList(void) const;
-    fxb::HistoryDeque *getHistoryList(void) const;
+    void       goBackward(void);
+    void       goBackward(xpr_size_t aBack);
+    xpr_size_t getBackwardCount(void);
+    void       clearBackward(void);
+    void       goForward(void);
+    void       goForward(xpr_size_t aForward);
+    xpr_size_t getForwardCount(void);
+    void       clearForward(void);
+    void       goHistory(void);
+    void       goHistory(xpr_size_t aHistory);
+    xpr_size_t getHistoryCount(void);
+    void       clearHistory(void);
+    void       clearAllHistory(void);
+    void       setMaxBackward(xpr_size_t aBackwardCount);
+    void       setMaxHistory(xpr_size_t aHistoryCount);
+    const fxb::HistoryDeque *getBackwardDeque(void) const;
+    const fxb::HistoryDeque *getForwardDeque(void) const;
+    const fxb::HistoryDeque *getHistoryDeque(void) const;
 
     // view style
     DWORD getViewStyle(void) const;

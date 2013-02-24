@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -29,8 +29,8 @@ public:
     virtual ~FileSplitDlg(void);
 
 public:
-    void setPath(const xpr_tchar_t *lpcszPath);
-    void setDestDir(const xpr_tchar_t *lpcszDestDir);
+    void setPath(const xpr_tchar_t *aPath);
+    void setDestDir(const xpr_tchar_t *aDestDir);
 
 protected:
     void enableWindow(xpr_bool_t aEnable);
