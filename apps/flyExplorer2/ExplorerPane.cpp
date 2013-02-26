@@ -1454,7 +1454,7 @@ void ExplorerPane::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *a
 
 void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1477,7 +1477,7 @@ void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle
 
 void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1500,7 +1500,7 @@ void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 
 void ExplorerPane::onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();

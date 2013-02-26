@@ -247,7 +247,7 @@ void MainFrame::init(void)
 
     fxb::SysImgListMgr::instance().getSystemImgList();
 
-    // Load File Scrap
+    // load file scrap
     if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
@@ -256,6 +256,11 @@ void MainFrame::init(void)
         fxb::FileScrap::instance().load(sPath);
     }
 
+    // load view set
+    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+    sViewSetMgr.load();
+
+    // set option
     setOption(*gOpt);
 
     fxb::ClipFormat::instance().registerClipFormat();
@@ -561,12 +566,16 @@ void MainFrame::saveOption(void)
         sFileScrap.save(sPath);
     }
 
+    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+
     // verify view set
     if (XPR_IS_TRUE(gOpt->mConfig.mExplorerExitVerifyViewSet))
     {
-        ViewSet sViewSet;
-        sViewSet.verify();
+        sViewSetMgr.verify();
     }
+
+    // save view set
+    sViewSetMgr.save();
 
     // save dialog states
     DlgStateMgr &sDlgStateMgr = DlgStateMgr::instance();

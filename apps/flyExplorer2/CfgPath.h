@@ -66,7 +66,6 @@ protected:
     xpr_bool_t getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
     static const xpr_tchar_t *getFileName(xpr_sint_t aType);
-    static const xpr_tchar_t *getDefSubDir(xpr_sint_t aType);
 
     void clear(void);
 
