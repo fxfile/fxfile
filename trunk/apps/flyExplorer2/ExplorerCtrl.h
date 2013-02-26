@@ -446,6 +446,7 @@ protected:
     std::tstring mSubFolder;
     xpr_bool_t   mSorted;
     xpr_bool_t   mUpdated;
+    xpr_bool_t   mVisible;
 
     // history
     xpr_bool_t    mGo;
