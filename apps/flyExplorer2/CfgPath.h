@@ -47,7 +47,7 @@ public:
     xpr_bool_t save(void) const;
 
     const xpr_tchar_t *getRootDir(void) const;
-    void setRootDir(const xpr_tchar_t *aDir);
+    void setRootDir(const xpr_tchar_t *aRootDir);
 
     xpr_bool_t setBackup(xpr_bool_t aOldBackup);
     xpr_bool_t checkChangedCfgPath(void);
@@ -71,7 +71,7 @@ protected:
 
 protected:
     typedef std::map<xpr_sint_t, std::tstring> CfgPathMap;
-    std::tstring mDir;
+    std::tstring mRootDir;
     CfgPathMap   mBakOldCfgPathMap;
     CfgPathMap   mBakNewCfgPathMap;
 };
