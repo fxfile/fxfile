@@ -18,7 +18,11 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define CFG_PATH_FILENAME XPR_STRING_LITERAL("path.conf")
+#define CFG_PATH_FILENAME                    XPR_STRING_LITERAL("path.conf")
+
+static const xpr_tchar_t kPathConfPath  [] = XPR_STRING_LITERAL("%AppData%\\flyExplorer2\\")CFG_PATH_FILENAME;
+static const xpr_tchar_t kDefRootDir    [] = XPR_STRING_LITERAL("%AppData%\\flyExplorer2");
+static const xpr_tchar_t kConfDir       [] = XPR_STRING_LITERAL("conf");
 
 static const xpr_tchar_t kCfgPathSection[] = XPR_STRING_LITERAL("path");
 static const xpr_tchar_t kPathKey[]        = XPR_STRING_LITERAL("path");
@@ -41,13 +45,13 @@ void CfgPath::clear(void)
 
 const xpr_tchar_t *CfgPath::getRootDir(void) const
 {
-    return mDir.c_str();
+    return mRootDir.c_str();
 }
 
-void CfgPath::setRootDir(const xpr_tchar_t *aDir)
+void CfgPath::setRootDir(const xpr_tchar_t *aRootDir)
 {
-    if (XPR_IS_NOT_NULL(aDir))
-        mDir = aDir;
+    if (XPR_IS_NOT_NULL(aRootDir))
+        mRootDir = aRootDir;
 }
 
 xpr_bool_t CfgPath::getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const
@@ -63,9 +67,13 @@ xpr_bool_t CfgPath::getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxL
     std::tstring sDir;
     fxb::GetEnvRealPath(sRootDir, sDir);
 
-    xpr_size_t sLen = sDir.length();
-    if (sDir[sLen - 1] == XPR_STRING_LITERAL('\\'))
-        sDir.erase(sLen - 1);
+    if (sDir.empty() == true)
+        return XPR_FALSE;
+
+    if (*sDir.rbegin() != XPR_STRING_LITERAL('\\'))
+       sDir += XPR_STRING_LITERAL('\\');
+
+    sDir += kConfDir;
 
     if (sDir.length() > aMaxLen)
         return XPR_FALSE;
@@ -280,20 +288,19 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
 
 const xpr_tchar_t *CfgPath::getDefRootDir(void)
 {
-    return XPR_STRING_LITERAL("%AppData%\\flyExplorer2");
+    return kDefRootDir;
 }
 
 xpr_bool_t CfgPath::load(void)
 {
     clear();
 
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    fxb::GetEnvPath(XPR_STRING_LITERAL("%AppData%"), sPath);
-    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer2\\")CFG_PATH_FILENAME);
+    std::tstring sPath;
+    fxb::GetEnvRealPath(kPathConfPath, sPath);
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    fxb::IniFileEx sIniFile(sPath);
+    fxb::IniFileEx sIniFile(sPath.c_str());
     if (sIniFile.readFile() == XPR_TRUE)
     {
         const xpr_tchar_t     *sValue;
@@ -328,11 +335,10 @@ xpr_bool_t CfgPath::load(void)
 
 xpr_bool_t CfgPath::save(void) const
 {
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    fxb::GetEnvPath(XPR_STRING_LITERAL("%AppData%"), sPath);
-    _tcscat(sPath, XPR_STRING_LITERAL("\\flyExplorer2\\")CFG_PATH_FILENAME);
+    std::tstring sPath;
+    fxb::GetEnvRealPath(kPathConfPath, sPath);
 
-    fxb::IniFileEx sIniFile(sPath);
+    fxb::IniFileEx sIniFile(sPath.c_str());
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer configuration path file"));
 
     fxb::IniFile::Section *sSection;
@@ -341,7 +347,7 @@ xpr_bool_t CfgPath::save(void) const
     sSection = sIniFile.addSection(kCfgPathSection);
     XPR_ASSERT(sSection != XPR_NULL);
 
-    sIniFile.setValueS(sSection, kPathKey, mDir.c_str());
+    sIniFile.setValueS(sSection, kPathKey, mRootDir.c_str());
 
     sIniFile.writeFile(xpr::CharSetUtf16);
 
