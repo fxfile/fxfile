@@ -67,13 +67,6 @@ xpr_bool_t CfgPath::getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxL
     if (sDir[sLen - 1] == XPR_STRING_LITERAL('\\'))
         sDir.erase(sLen - 1);
 
-    const xpr_tchar_t *sSubDir = CfgPath::getDefSubDir(aType);
-    if (XPR_IS_NOT_NULL(sSubDir))
-    {
-        sDir += XPR_STRING_LITERAL('\\');
-        sDir += sSubDir;
-    }
-
     if (sDir.length() > aMaxLen)
         return XPR_FALSE;
 
@@ -274,7 +267,7 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
     case TypeBookmark:   return XPR_STRING_LITERAL("bookmark.conf");
     case TypeFileScrap:  return XPR_STRING_LITERAL("file_scrap.conf");
     case TypeSearchDir:  return XPR_STRING_LITERAL("search_dir.conf");
-    case TypeViewSet:    return XPR_STRING_LITERAL("*.ini");
+    case TypeViewSet:    return XPR_STRING_LITERAL("view_set.conf");
     case TypeDlgState:   return XPR_STRING_LITERAL("dlg_state.conf");
     case TypeAccel:      return XPR_STRING_LITERAL("accel.dat");
     case TypeCoolBar:    return XPR_STRING_LITERAL("coolbar.dat");
@@ -288,16 +281,6 @@ const xpr_tchar_t *CfgPath::getFileName(xpr_sint_t aType)
 const xpr_tchar_t *CfgPath::getDefRootDir(void)
 {
     return XPR_STRING_LITERAL("%AppData%\\flyExplorer2");
-}
-
-const xpr_tchar_t *CfgPath::getDefSubDir(xpr_sint_t aType)
-{
-    switch (aType)
-    {
-    case TypeViewSet: return XPR_STRING_LITERAL("Settings\\ViewSet");
-    }
-
-    return XPR_NULL;
 }
 
 xpr_bool_t CfgPath::load(void)

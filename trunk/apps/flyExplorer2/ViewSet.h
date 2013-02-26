@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,12 +11,17 @@
 #define __FX_VIEW_SET_H__
 #pragma once
 
-#define MAX_COLUMN          5
-#define DEF_COLUMN_SIZE     200  // pixel
-#define MAX_COLUMN_SIZE     1000 // pixel
+namespace fxb
+{
+    class IniFileEx;
+}
 
-#define MIN_COLUMN_ID       0
-#define MAX_COLUMN_ID       5
+#define MAX_COLUMN          (5)
+#define DEF_COLUMN_SIZE     (200)  // pixel
+#define MAX_COLUMN_SIZE     (1000) // pixel
+
+#define MIN_COLUMN_ID       (0)
+#define MAX_COLUMN_ID       (5)
 
 typedef struct ColumnId
 {
@@ -85,68 +90,66 @@ typedef struct ColumnItemData : public ColumnInfo
 
 typedef std::list<ColumnItemData *> ColumnDataList;
 
+class ViewSetMgr;
+
 class FolderViewSet
 {
-public:
-    FolderViewSet(void)
-        : mViewStyle(LVS_REPORT)
-        , mAllSubApply(XPR_FALSE)
-        , mColumnCount(0)
-        , mColumnItem(XPR_NULL)
-    {
-        mColumnSortInfo.mFormatId   = GUID_NULL;
-        mColumnSortInfo.mPropertyId = 0;
-        mColumnSortInfo.mAscending  = XPR_TRUE;
-    }
-
-    ~FolderViewSet(void)
-    {
-        XPR_SAFE_DELETE_ARRAY(mColumnItem);
-    }
+    friend class ViewSetMgr;
 
 public:
-    DWORD           mViewStyle;
+    FolderViewSet(void);
+    ~FolderViewSet(void);
+
+protected:
+    void clone(FolderViewSet &aFolderViewSet) const;
+    void getHashValue(xpr_tchar_t *aHashValue) const;
+
+public:
+    xpr_uint_t      mViewStyle;
     ColumnSortInfo  mColumnSortInfo;
     xpr_bool_t      mAllSubApply;
     xpr_sint_t      mColumnCount;
     ColumnItem     *mColumnItem;
 };
 
-class ViewSet
+class ViewSetMgr : public xpr::Singleton<ViewSetMgr>
 {
+    friend class xpr::Singleton<ViewSetMgr>;
+
 public:
-    ViewSet(void);
-    virtual ~ViewSet(void);
+    ViewSetMgr(void);
+    virtual ~ViewSetMgr(void);
+
+public:
+    void load(void);
+    xpr_bool_t save(void) const;
 
 public:
     xpr_bool_t getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderViewSet);
-    xpr_bool_t setViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFolderViewSet);
+    xpr_bool_t setViewSet(const xpr_tchar_t *aPath, const FolderViewSet *aFolderViewSet);
 
-    void setCfgViewSet(xpr_bool_t aInstPath = XPR_TRUE);
+    void setSaveLocation(xpr_bool_t aInstalledPath = XPR_TRUE);
 
     void verify(void);
     void clear(void);
 
 protected:
-    void readIndex(void);
-    void saveIndex(void);
+    void loadIndex(fxb::IniFileEx &aIniFile);
+    void saveIndex(fxb::IniFileEx &aIniFile) const;
+
+    xpr_bool_t loadViewSet(fxb::IniFileEx &aIniFile, const xpr_tchar_t *aSection, FolderViewSet &aFolderViewSet);
+    void       saveViewSet(fxb::IniFileEx &aIniFile, const xpr_tchar_t *aSection, const FolderViewSet &aFolderViewSet) const;
 
 protected:
-    typedef std::set<std::tstring> SubSet;               // path
-    typedef std::map<std::tstring, std::tstring> KeyMap; // path, md5 hash
+    typedef std::tr1::unordered_set<std::tstring> SubSet;                   // key = path
+    typedef std::tr1::unordered_map<std::tstring, std::tstring> IndexMap;   // key = path
+    typedef std::tr1::unordered_map<std::tstring, FolderViewSet *> HashMap; // key = hash
 
-    SubSet mSubSet;
-    KeyMap mKeyMap;
+    SubSet   mSubSet;
+    IndexMap mIndexMap;
+    HashMap  mHashMap;
 
-    xpr_bool_t mInstPath;                                // installed path
-};
-
-class ViewSetMgr : public ViewSet, public xpr::Singleton<ViewSetMgr>
-{
-    friend class xpr::Singleton<ViewSetMgr>;
-
-protected: ViewSetMgr(void);
-public:   ~ViewSetMgr(void);
+    xpr_bool_t mInstalledPath;                           // installed path
 };
 
 #endif // __FX_VIEW_SET_H__

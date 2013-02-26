@@ -103,7 +103,7 @@ void CfgAppearanceViewSetDlg::onApply(Option::Config &aConfig)
     if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_NONE))->GetCheck())
         aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_NONE;
     else if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT))->GetCheck())
-        aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_SAME_BETWEEN_SPLIT;
+        aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_ALL_OF_SAME;
     else if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_EACH_FOLDER))->GetCheck())
         aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_EACH_FOLDER;
 
@@ -118,8 +118,8 @@ void CfgAppearanceViewSetDlg::onApply(Option::Config &aConfig)
 
 void CfgAppearanceViewSetDlg::OnClean(void)
 {
-    ViewSet sViewSet;
-    sViewSet.verify();
+    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+    sViewSetMgr.verify();
 
     const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_clean"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
@@ -134,8 +134,8 @@ void CfgAppearanceViewSetDlg::OnInit(void)
     if (sMsgId != IDYES)
         return;
 
-    ViewSet sViewSet;
-    sViewSet.clear();
+    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+    sViewSetMgr.clear();
 
     sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_initialize"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);

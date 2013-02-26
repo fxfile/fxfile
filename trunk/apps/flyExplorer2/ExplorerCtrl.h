@@ -418,9 +418,9 @@ protected:
     void           releaseColumn(xpr_bool_t aDeleteColumn = XPR_TRUE);
     void           saveColumn(void);
     void           deleteAllColumns(void);
-    xpr_bool_t     getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const;
-    xpr_bool_t     setRegColumnInfo(FolderViewSet *aFolderViewSet);
-    void           getRegColumnEntry(xpr_tchar_t *aEntry) const;
+    xpr_bool_t     getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const;
+    xpr_bool_t     setViewSet(const FolderViewSet *aFolderViewSet);
+    void           getViewSetKey(xpr_tchar_t *aEntry) const;
     DefColumnInfo *getDefColumnInfo(xpr_sint_t *aDefColumnCount = XPR_NULL) const;
 
 protected:

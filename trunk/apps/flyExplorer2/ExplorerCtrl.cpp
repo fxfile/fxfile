@@ -115,6 +115,11 @@ enum
     WM_ADV_FILE_CHANGE_NOTIFY    = WM_USER + 1502,
 };
 
+static const xpr_tchar_t kViewSetComputerFolder[] = XPR_STRING_LITERAL("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}");
+static const xpr_tchar_t kViewSetVirtualFolder [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0001-000000000000}");
+static const xpr_tchar_t kViewSetDefault       [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-0000%08x}");
+static const xpr_tchar_t kViewSetAllOfSame     [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-000000000000}");
+
 //
 // folder type
 //
@@ -462,12 +467,12 @@ void ExplorerCtrl::OnDestroy(void)
     saveColumn();
     deleteAllColumns();
 
-    // Delete All Items
+    // delete all items
     DeleteAllItems();
 
     mDropTarget.Revoke();
 
-    // Exit Icon Thread
+    // stop icon thread
     if (XPR_IS_NOT_NULL(mShellIcon))
     {
         mShellIcon->Stop();
@@ -484,7 +489,7 @@ void ExplorerCtrl::OnDestroy(void)
         XPR_SAFE_DELETE(mCustomFont);
     }
 
-    // Exit Thumbnail Thread
+    // stop thumbnail thread
     if (mRefCount <= 1)
     {
         fxb::Thumbnail &sThumbnail = fxb::Thumbnail::instance();
@@ -2014,47 +2019,34 @@ xpr_bool_t ExplorerCtrl::isUseColumn(ColumnId *aColumnId) const
     return XPR_FALSE;
 }
 
-//----------------------------------------------------------------------
-//  Registry Column Data
-//
-//  +--------------------+-------+
-//  | View Style         |     4 |
-//  | Sort Data          |     4 |
-//  | Column 0           |     4 |
-//  | Column 1           |     4 |
-//  | Column 2           |     4 |
-//  | Column 3           |     4 |
-//  | Column 4           |     4 |
-//  +--------------------+-------+
-//  | Total              |    28 |
-//  +--------------------+-------+
-//
-//----------------------------------------------------------------------
-
-static const xpr_tchar_t COL_REG_ENTRY_DEF_COMPUTER[] = XPR_STRING_LITERAL("Default_MyComputer");
-static const xpr_tchar_t COL_REG_ENTRY_DEF_VIRTUAL[]  = XPR_STRING_LITERAL("Default_Etc");
-static const xpr_tchar_t COL_REG_ENTRY_DEF[]          = XPR_STRING_LITERAL("Default");
-
-void ExplorerCtrl::getRegColumnEntry(xpr_tchar_t *aEntry) const
+void ExplorerCtrl::getViewSetKey(xpr_tchar_t *aKey) const
 {
     if (mOption.mSaveViewSet == SAVE_VIEW_SET_EACH_FOLDER)
     {
-        fxb::GetName(mTvItemData->mShellFolder, mTvItemData->mPidl, SHGDN_FORPARSING, aEntry);
+        fxb::GetName(mTvItemData->mShellFolder, mTvItemData->mPidl, SHGDN_FORPARSING, aKey);
         return;
+    }
+
+    FolderType sFolderType = mFolderType;
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
+    {
+        sFolderType = FOLDER_DEFAULT;
     }
 
     switch (mFolderType)
     {
-    case FOLDER_COMPUTER: _tcscpy(aEntry, COL_REG_ENTRY_DEF_COMPUTER); break;
-    case FOLDER_VIRTUAL:  _tcscpy(aEntry, COL_REG_ENTRY_DEF_VIRTUAL);  break;
+    case FOLDER_COMPUTER: _tcscpy(aKey, kViewSetComputerFolder); break;
+    case FOLDER_VIRTUAL:  _tcscpy(aKey, kViewSetVirtualFolder);  break;
 
     default:
-    case FOLDER_DEFAULT:  _tcscpy(aEntry, COL_REG_ENTRY_DEF);          break;
-    }
-
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
-    {
-        _stprintf(aEntry + _tcslen(aEntry), XPR_STRING_LITERAL(" #%d"), mViewIndex);
+    case FOLDER_DEFAULT:
+        {
+            if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
+                _stprintf(aKey, kViewSetDefault, mViewIndex + 1);
+            else
+                _tcscpy(aKey, kViewSetAllOfSame);
+            break;
+        }
     }
 }
 
@@ -2066,7 +2058,7 @@ ExplorerCtrl::DefColumnInfo *ExplorerCtrl::getDefColumnInfo(xpr_sint_t *aDefColu
     return mDefColumnInfo;
 }
 
-xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const
+xpr_bool_t ExplorerCtrl::getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const
 {
     // Default Column Info
     aDefColumnCount = 0;
@@ -2091,12 +2083,12 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
 
     // Get Registry Column Info
     xpr_sint_t i;
-    xpr_tchar_t sEntry[XPR_MAX_PATH * 2 + 1] = {0};
-    getRegColumnEntry(sEntry);
+    xpr_tchar_t sKey[XPR_MAX_PATH * 2 + 1] = {0};
+    getViewSetKey(sKey);
 
     xpr_bool_t sLoaded = XPR_FALSE;
     if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
-        sLoaded = ViewSetMgr::instance().getViewSet(sEntry, aFolderViewSet);
+        sLoaded = ViewSetMgr::instance().getViewSet(sKey, aFolderViewSet);
 
     // Fill in the Result Column Info
     if (XPR_IS_FALSE(sLoaded))
@@ -2172,18 +2164,19 @@ xpr_bool_t ExplorerCtrl::getRegColumnInfo(FolderViewSet *aFolderViewSet, xpr_sin
     return sLoaded;
 }
 
-xpr_bool_t ExplorerCtrl::setRegColumnInfo(FolderViewSet *aFolderViewSet)
+xpr_bool_t ExplorerCtrl::setViewSet(const FolderViewSet *aFolderViewSet)
 {
     if (mOption.mSaveViewSet == SAVE_VIEW_SET_NONE)
         return XPR_TRUE;
 
-    xpr_tchar_t sEntry[XPR_MAX_PATH * 2 + 1] = {0};
-    getRegColumnEntry(sEntry);
+    xpr_tchar_t sKey[XPR_MAX_PATH * 2 + 1] = {0};
+    getViewSetKey(sKey);
 
     if (mOption.mAutoColumnWidth == XPR_TRUE)
         aFolderViewSet->mColumnItem[0].mWidth = 0;
 
-    return ViewSetMgr::instance().setViewSet(sEntry, aFolderViewSet);
+    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+    return sViewSetMgr.setViewSet(sKey, aFolderViewSet);
 }
 
 void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
@@ -2214,7 +2207,7 @@ void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
     }
 
     FolderViewSet sFolderViewSet;
-    getRegColumnInfo(&sFolderViewSet, mDefColumnCount, &mDefColumnInfo);
+    getViewSet(&sFolderViewSet, mDefColumnCount, &mDefColumnInfo);
 
     if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
         setViewStyle(sFolderViewSet.mViewStyle, XPR_FALSE, XPR_FALSE);
@@ -2326,7 +2319,7 @@ void ExplorerCtrl::saveColumn(void)
             sFolderViewSet.mColumnItem[i].mPropertyId = sColumnId->mPropertyId;
         }
 
-        setRegColumnInfo(&sFolderViewSet);
+        setViewSet(&sFolderViewSet);
     }
 }
 
@@ -8585,7 +8578,7 @@ xpr_bool_t ExplorerCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *aResult
     NMHDR *sNmHdr = (NMHDR *)lParam;
 
     // header control's id is 0.
-    if (XPR_IS_NULL(sNmHdr) && sNmHdr->idFrom == 0)
+    if (XPR_IS_NOT_NULL(sNmHdr) && sNmHdr->idFrom == 0)
     {
         switch (sNmHdr->code)
         {
@@ -8612,7 +8605,7 @@ void ExplorerCtrl::OnHdnItemChanged(NMHDR *aNmHdr)
 
     NMHEADER *sNmHeader = (NMHEADER *)aNmHdr;
 
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_SAME_BETWEEN_SPLIT)
+    if (mOption.mSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         if (XPR_TEST_BITS(sNmHeader->pitem->mask, HDI_WIDTH))
         {
