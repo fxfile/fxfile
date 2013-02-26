@@ -428,7 +428,7 @@ xpr_bool_t BookmarkMgr::load(const xpr_tchar_t *aPath)
     {
         _stprintf(sKey, kNameKey, i + 1);
 
-        sValue = sIniFile.getValueS(sSection, kNameKey, XPR_NULL);
+        sValue = sIniFile.getValueS(sSection, sKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
             break;
 
