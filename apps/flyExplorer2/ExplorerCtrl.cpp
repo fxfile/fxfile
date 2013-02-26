@@ -181,6 +181,7 @@ ExplorerCtrl::ExplorerCtrl(void)
     mSignature          = 0;
     mSorted             = XPR_FALSE;
     mUpdated            = XPR_FALSE;
+    mVisible            = XPR_FALSE;
 
     // Drag & Drop
     mDropIndex          = -1;
@@ -2875,7 +2876,9 @@ void ExplorerCtrl::PreFillItem(EnumData *aEnumData)
     if (gFrame->mPicViewer != XPR_NULL && gFrame->mPicViewer->isDocking() == XPR_TRUE)
         gFrame->mPicViewer->ShowWindow(SW_HIDE);
 
+    mVisible = IsWindowVisible();
     ShowWindow(SW_HIDE);
+
     SetRedraw(XPR_FALSE);
 
     DeleteAllItems();
@@ -3024,7 +3027,9 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     EnsureVisible(0, XPR_FALSE);
 
     SetRedraw();
-    ShowWindow(SW_SHOW);
+
+    if (XPR_IS_TRUE(mVisible))
+        ShowWindow(SW_SHOW);
 
     //-------------------------------------------------------------------------
 
