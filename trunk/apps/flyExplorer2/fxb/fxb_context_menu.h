@@ -51,8 +51,8 @@ public:
 public:
     xpr_bool_t init(LPSHELLFOLDER aShellFolder, LPITEMIDLIST *aPidls, xpr_uint_t aCount);
     xpr_bool_t init(LPSHELLFOLDER aShellFolder);
-    xpr_bool_t getMenu(CMenu *aMenu, xpr_uint_t aIdFirst = CMID_DEF_ID_FIRST, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
-    xpr_uint_t getIdFirst(void);
+    xpr_bool_t getMenu(CMenu *aMenu, xpr_uint_t aFirstId = CMID_DEF_ID_FIRST, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
+    xpr_uint_t getFirstId(void);
     xpr_uint_t trackPopupMenu(xpr_uint_t aFlags, LPPOINT aPoint, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
     xpr_bool_t invokeCommand(xpr_uint_t aId);
     xpr_bool_t invokeCommand(const xpr_tchar_t *aVerb);
@@ -79,7 +79,7 @@ protected:
     LPCONTEXTMENU  mContextMenu;
     LPCONTEXTMENU2 mContextMenu2;
     LPSUBCLASSDATA mSubclassData;
-    xpr_uint_t     mIdFirst;
+    xpr_uint_t     mFirstId;
 
     static xpr_bool_t mShowFileScrapMenu;
     static xpr_bool_t mAnimationMenu;

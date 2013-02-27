@@ -3895,7 +3895,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuShell(CWnd *aWnd, CPoint aPoint, CRect aWi
             xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &aPoint);
             if (sId != -1)
             {
-                sId -= sContextMenu.getIdFirst();
+                sId -= sContextMenu.getFirstId();
 
                 if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
                     sContextMenu.invokeCommand(sId);
@@ -3941,7 +3941,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuParent(CWnd *aWnd, CPoint aPoint, CRect aW
                 xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &aPoint, CMF_EXPLORE);
                 if (sId != -1)
                 {
-                    sId -= sContextMenu.getIdFirst();
+                    sId -= sContextMenu.getFirstId();
 
                     xpr_tchar_t sVerb[0xff] = {0};
                     sContextMenu.getCommandVerb(sId, sVerb, 0xfe);
@@ -4001,7 +4001,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuDrive(CWnd *aWnd, CPoint aPoint, CRect aWi
                 xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &aPoint, CMF_EXPLORE);
                 if (sId != -1)
                 {
-                    sId -= sContextMenu.getIdFirst();
+                    sId -= sContextMenu.getFirstId();
 
                     xpr_tchar_t sVerb[0xff] = {0};
                     sContextMenu.getCommandVerb(sId, sVerb, 0xfe);

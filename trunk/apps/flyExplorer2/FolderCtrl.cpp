@@ -396,8 +396,12 @@ void FolderCtrl::trackContextMenu(xpr_bool_t aRightClick)
             xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &sPoint);
             if (sId != -1)
             {
-                if (invokeCommandSelf(&sContextMenu, sId - sContextMenu.getIdFirst(), sTreeItem) == XPR_FALSE)
-                    sContextMenu.invokeCommand(sId - sContextMenu.getIdFirst());
+                xpr_uint_t sCmdId = sId - sContextMenu.getFirstId();
+
+                if (invokeCommandSelf(&sContextMenu, sCmdId, sTreeItem) == XPR_FALSE)
+                {
+                    sContextMenu.invokeCommand(sCmdId);
+                }
             }
         }
 
