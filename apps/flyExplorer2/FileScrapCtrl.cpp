@@ -839,14 +839,14 @@ void FileScrapCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             fxb::ContextMenu sContextMenu(GetSafeHwnd());
             if (sContextMenu.init(sShellFolder, sPidls, sCount) == XPR_TRUE && sContextMenu.getMenu(&sMenu) == XPR_TRUE)
             {
-                ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getIdFirst() + CMID_OPEN_PARENT_FOLDER, theApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
+                ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getFirstId() + CMID_OPEN_PARENT_FOLDER, theApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
                 ::InsertMenu(sMenu.m_hMenu, 1, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
                 //::SetMenuDefaultItem(sMenu.m_hMenu, 0, XPR_TRUE);
 
                 xpr_uint_t sId = ::TrackPopupMenuEx(sMenu.m_hMenu, sFlags, aPoint.x, aPoint.y, m_hWnd, XPR_NULL);
                 if (sId != -1)
                 {
-                    sId -= sContextMenu.getIdFirst();
+                    sId -= sContextMenu.getFirstId();
 
                     if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
                         sContextMenu.invokeCommand(sId);

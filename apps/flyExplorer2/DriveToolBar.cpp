@@ -438,7 +438,7 @@ void DriveToolBar::OnContextMenu(CWnd* pWnd, CPoint pt)
                     xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &pt, CMF_EXPLORE);
                     if (sId != -1)
                     {
-                        sId -= sContextMenu.getIdFirst();
+                        sId -= sContextMenu.getFirstId();
 
                         xpr_tchar_t sVerb[0xff] = {0};
                         sContextMenu.getCommandVerb(sId, sVerb, 0xfe);
