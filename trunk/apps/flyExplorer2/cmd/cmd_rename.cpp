@@ -213,7 +213,7 @@ static void doRename(FolderCtrl &aFolderCtrl, HTREEITEM aTreeItem = XPR_NULL)
     if (XPR_IS_NULL(sTvItemData))
         return;
 
-    if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_CANRENAME))
+    if (XPR_TEST_NONE_BITS(sTvItemData->mShellAttributes, SFGAO_CANRENAME))
         return;
 
     xpr_bool_t sRenamed = XPR_FALSE;

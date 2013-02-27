@@ -355,7 +355,7 @@ void FolderCtrl::OnRclick(NMHDR *aNmHdr, LRESULT *aResult)
 {
     trackContextMenu(XPR_TRUE);
 
-    *aResult = 0;
+    *aResult = 1; // nonzero to prevent the default processing
 }
 
 void FolderCtrl::trackContextMenu(xpr_bool_t aRightClick)
