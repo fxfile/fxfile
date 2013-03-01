@@ -1232,10 +1232,10 @@ void WideString::shrink_to_fit(void)
     {
         xpr_size_t sNewCapacity;
         xpr_size_t sLength = mLength;
-        xpr_wchar_t *sNewString = alloc(mLength + 1, sNewCapacity);
+        xpr_wchar_t *sNewString = alloc(sLength + 1, sNewCapacity);
 
-        wcsncpy(sNewString, mString, mLength);
-        sNewString[mLength] = 0;
+        wcsncpy(sNewString, mString, sLength);
+        sNewString[sLength] = 0;
 
         reset();
 
