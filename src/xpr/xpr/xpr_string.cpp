@@ -1232,10 +1232,10 @@ void String::shrink_to_fit(void)
     {
         xpr_size_t sNewCapacity;
         xpr_size_t sLength = mLength;
-        xpr_char_t *sNewString = alloc(mLength + 1, sNewCapacity);
+        xpr_char_t *sNewString = alloc(sLength + 1, sNewCapacity);
 
-        strncpy(sNewString, mString, mLength);
-        sNewString[mLength] = 0;
+        strncpy(sNewString, mString, sLength);
+        sNewString[sLength] = 0;
 
         reset();
 
