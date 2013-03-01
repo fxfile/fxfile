@@ -145,6 +145,10 @@ public:
     void     format(const xpr_wchar_t *aFormat, ...);
     void     append_format(const xpr_wchar_t *aFormat, ...);
 
+    void     update(void);
+
+    void     shrink_to_fit(void);
+
 public:
     // operations
     const xpr_wchar_t *c_str(void) const;
@@ -200,7 +204,8 @@ public:
     xpr_sint_t compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2) const;
 
 protected:
-    xpr_wchar_t *alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity) const;
+    xpr_wchar_t *alloc(const xpr_size_t &aMinCapacity, xpr_size_t &aCapacity) const;
+    xpr_size_t get_capacity(const xpr_size_t &aMinCapacity) const;
     void reset(void);
 
 protected:
