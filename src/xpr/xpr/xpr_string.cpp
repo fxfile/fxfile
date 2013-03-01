@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -232,15 +232,20 @@ void String::resize(xpr_size_t aNumber, xpr_char_t aChar)
     }
 }
 
-xpr_char_t *String::alloc(const xpr_size_t &sMinCapacity, xpr_size_t &sCapacity) const
+xpr_size_t String::get_capacity(const xpr_size_t &aMinCapacity) const
 {
-    xpr_size_t sNewCapacity = sMinCapacity | kAllocSizeMask;
+    return aMinCapacity | kAllocSizeMask;
+}
+
+xpr_char_t *String::alloc(const xpr_size_t &aMinCapacity, xpr_size_t &aCapacity) const
+{
+    xpr_size_t sNewCapacity = get_capacity(aMinCapacity);
 
     xpr_char_t *sNewString = new xpr_char_t[sNewCapacity];
     if (XPR_IS_NULL(sNewString))
         return XPR_NULL;
 
-    sCapacity = sNewCapacity;
+    aCapacity = sNewCapacity;
 
     return sNewString;
 }
@@ -1212,6 +1217,32 @@ void String::append_format(const xpr_char_t *aFormat, ...)
     }
 
     va_end(sArgs);
+}
+
+void String::update(void)
+{
+    mLength = strnlen(mString, mCapacity - 1);
+}
+
+void String::shrink_to_fit(void)
+{
+    xpr_size_t sFitCapacity = get_capacity(mLength + 1);
+
+    if (mCapacity > sFitCapacity)
+    {
+        xpr_size_t sNewCapacity;
+        xpr_size_t sLength = mLength;
+        xpr_char_t *sNewString = alloc(mLength + 1, sNewCapacity);
+
+        strncpy(sNewString, mString, mLength);
+        sNewString[mLength] = 0;
+
+        reset();
+
+        mString = sNewString;
+        mLength = sLength;
+        mCapacity = sNewCapacity;
+    }
 }
 
 const xpr_char_t *String::c_str(void) const
