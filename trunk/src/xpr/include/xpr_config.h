@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -136,6 +136,11 @@ namespace xpr
 #error Please, support for your compiler. <xpr_config.h>
     #endif
 #endif
+
+#define XPR_CFG_STL 1
+#if defined(XPR_CFG_STL)
+#define XPR_CFG_STL_TR1 1
+#endif // XPR_CFG_STL
 
 //
 // Endian
