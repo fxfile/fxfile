@@ -62,7 +62,7 @@ xpr_bool_t ParamExecDlg::OnInitDialog(void)
         mComboBox.SetCurSel(0);
 
     SetDlgItemText(IDC_PARAM_EXEC_PATH, mPath);
-    ((CEdit *)GetDlgItem(IDC_PARAM_EXEC_PATH))->LimitText(XPR_MAX_PARAM);
+    ((CEdit *)GetDlgItem(IDC_PARAM_EXEC_PATH))->LimitText(XPR_MAX_ARG);
 
     SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.title")));
     SetDlgItemText(IDC_PARAM_EXEC_LABEL_PATH,      theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.path")));
@@ -76,8 +76,8 @@ xpr_bool_t ParamExecDlg::OnInitDialog(void)
 
 void ParamExecDlg::OnOK(void)
 {
-    xpr_tchar_t sParameter[XPR_MAX_PARAM + 1] = {0};
-    mComboBox.GetWindowText(sParameter, XPR_MAX_PARAM);
+    xpr_tchar_t sParameter[XPR_MAX_ARG + 1] = {0};
+    mComboBox.GetWindowText(sParameter, XPR_MAX_ARG);
 
     mParameter = sParameter;
 
