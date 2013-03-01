@@ -24,7 +24,7 @@ public:
     const xpr_tchar_t *getParameter(void);
 
 protected:
-    xpr_tchar_t  mPath[XPR_MAX_PARAM + 1];
+    xpr_tchar_t  mPath[XPR_MAX_ARG + 1];
     std::tstring mParameter;
 
 protected:

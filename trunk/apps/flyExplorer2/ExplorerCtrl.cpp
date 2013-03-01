@@ -3562,7 +3562,7 @@ void ExplorerCtrl::executeLinkFile(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPid
 
 void ExplorerCtrl::executeFile(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_ulong_t aShellAttributes, xpr_tchar_t *aStartLocation, xpr_bool_t aIsParameter)
 {
-    xpr_tchar_t sParameter[XPR_MAX_PARAM + 1] = {0};
+    xpr_tchar_t sParameter[XPR_MAX_ARG + 1] = {0};
 
     if (XPR_IS_TRUE(aIsParameter) && fxb::IsVirtualItem(aShellFolder, aPidl) == XPR_FALSE)
     {
@@ -3574,7 +3574,7 @@ void ExplorerCtrl::executeFile(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, x
             {
                 if (XPR_IS_NOT_NULL(mObserver))
                 {
-                    if (mObserver->onGetExecParam(*this, sPath, sParameter, XPR_MAX_PARAM + 1) == XPR_FALSE)
+                    if (mObserver->onGetExecParam(*this, sPath, sParameter, XPR_MAX_ARG + 1) == XPR_FALSE)
                         return;
                 }
             }
