@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -11,6 +11,10 @@
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
 #include "xpr_string_iterator.h"
+
+#if defined(XPR_CFG_STL_TR1)
+#include <functional>
+#endif // XPR_CFG_STL_TR1
 
 namespace xpr
 {
@@ -322,5 +326,38 @@ XPR_INLINE bool operator>= (const String &aString1, const xpr_char_t *aString2)
     return (aString1.compare(aString2) >= 0) ? true : false;
 }
 } // namespace xpr
+
+#if defined(XPR_CFG_STL_TR1)
+namespace std
+{
+namespace tr1
+{
+    template <>
+    struct hash<xpr::String> : public unary_function<xpr::String, xpr_size_t>
+    {
+        xpr_size_t operator()(const xpr::String &aValue) const
+        {
+            // hash _Keyval to size_t value by pseudorandomizing transform
+            xpr_size_t sHashValue = 2166136261U;
+            xpr_size_t sFirst     = 0;
+            xpr_size_t sLast      = aValue.size();
+            xpr_size_t sStride    = 1 + sLast / 10;
+
+            if (sStride < sLast)
+            {
+                sLast -= sStride;
+            }
+
+            for (; sFirst < sLast; sFirst += sStride)
+            {
+                sHashValue = 16777619U * sHashValue ^ (xpr_size_t)aValue[sFirst];
+            }
+
+            return sHashValue;
+        }
+    };
+} // namespace tr1
+} // namespace std
+#endif // XPR_CFG_STL_TR1
 
 #endif // __XPR_STRING_H__
