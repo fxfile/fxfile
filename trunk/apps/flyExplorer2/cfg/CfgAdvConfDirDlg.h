@@ -7,29 +7,25 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_CFG_ADV_PATH_DLG_H__
-#define __FX_CFG_ADV_PATH_DLG_H__
+#ifndef __FX_CFG_ADV_CONF_DIR_DLG_H__
+#define __FX_CFG_ADV_CONF_DIR_DLG_H__
 #pragma once
 
 #include "CfgDlg.h"
 
-class CfgAdvPathDlg : public CfgDlg
+class CfgAdvConfDirDlg : public CfgDlg
 {
     typedef CfgDlg super;
 
 public:
-    CfgAdvPathDlg(void);
+    CfgAdvConfDirDlg(void);
 
 public:
     virtual void onInit(Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
 
 protected:
-    typedef struct Item
-    {
-        xpr_sint_t   mType;
-        std::tstring mPath;
-    } Item;
+    void loadConfDir(const xpr_tchar_t *aConfDir);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -40,7 +36,7 @@ protected:
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnSetPath(void);
     afx_msg void OnCustomPathBrowse(void);
-    afx_msg void OnCfgPath(void);
+    afx_msg void OnConfDir(void);
 };
 
-#endif // __FX_CFG_ADV_PATH_DLG_H__
+#endif // __FX_CFG_ADV_CONF_DIR_DLG_H__

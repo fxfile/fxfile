@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -17,9 +17,10 @@ namespace fxb
 {
 #define CSIDL_NONE          0xffffffff
 #define CSIDL_FLYEXPLORER   0x80000000
+#define CSIDL_FXFILE        0x80000008
 #define CSIDL_FXDRIVE       0x80000001
 #define CSIDL_WINDRIVE      0x80000002
-#define CSIDL_LIBRARIES     0x80000003
+#define CSIDL_LIBRARIES     0x80000004
 
 class EnvPath : public xpr::Singleton<EnvPath>
 {

@@ -23,7 +23,7 @@
 #include "SearchResultCtrl.h"
 #include "DlgStateMgr.h"
 #include "DlgState.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 
 #include "cmd/SearchLocDlg.h"
 
@@ -569,7 +569,7 @@ void SearchDlg::loadUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
         return;
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeSearchDir, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeSearchDir, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     if (sIniFile.readFile() == XPR_FALSE)
@@ -631,7 +631,7 @@ void SearchDlg::saveUserLoc(fxb::SearchUserLocDeque *aUserLocDeque)
         return;
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeSearchDir, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeSearchDir, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer search directory file"));

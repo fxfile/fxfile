@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "fxb_thumb_img_list.h"
 
-#include "../CfgPath.h"
+#include "../ConfDir.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -182,8 +182,8 @@ void ThumbImgList::save(void)
     {
         xpr_tchar_t sDataPath[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sIndexPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getSavePath(CfgPath::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
-        CfgPath::instance().getSavePath(CfgPath::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
+        ConfDir::instance().getSavePath(ConfDir::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
+        ConfDir::instance().getSavePath(ConfDir::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
 
         // Save Data
         {
@@ -238,8 +238,8 @@ xpr_bool_t ThumbImgList::load(void)
 {
     xpr_tchar_t sDataPath[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sIndexPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
-    CfgPath::instance().getLoadPath(CfgPath::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
+    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
+    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
 
     if (IsExistFile(sDataPath) == XPR_FALSE || IsExistFile(sIndexPath) == XPR_FALSE)
         return XPR_FALSE;

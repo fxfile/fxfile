@@ -40,7 +40,7 @@
 #include "ExplorerCtrlObserver.h"
 #include "MainFrame.h"
 #include "PicViewer.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

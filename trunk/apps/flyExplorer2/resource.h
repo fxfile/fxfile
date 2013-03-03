@@ -178,7 +178,7 @@
 #define IDD_SIZE_UNIT                   417
 #define IDD_SIZE_FORMAT                 417
 #define IDR_FILE_EDIT                   417
-#define IDD_CFG_ADV_PATH                418
+#define IDD_CFG_ADV_CONF_DIR            418
 #define IDD_SEL_FOLDER                  419
 #define IDI_PENDING                     420
 #define IDD_BATCH_CREATE_FMT            422
@@ -187,7 +187,6 @@
 #define IDD_BATCH_CREATE_TEXT           423
 #define IDR_TAB                         423
 #define IDD_CFG_ADV_HOTKEY              424
-#define IDD_CFG_ADV_PATH1               424
 #define IDD_CFG_FUNC_HISTORY            425
 #define IDD_CFG_APPEARANCE_HISTORY      425
 #define IDD_CFG_FUNC_FILEOP             426
@@ -285,7 +284,7 @@
 #define IDC_FILE_LIST_WITH_EXT          1032
 #define IDC_PIC_CONV_OPTION_CHECK_PROGRESSIVE 1032
 #define IDC_BATCH_RENAME_REPLACE_REPEAT_SPIN 1032
-#define IDC_CFG_CFG_PATH_CUSTOM         1032
+#define IDC_CFG_CONF_DIR_CUSTOM         1032
 #define IDC_CFG_GENERAL_ADDRESS_BAR_FULL_PATH 1032
 #define IDC_FILE_LIST_WITH_INFO         1033
 #define IDC_PIC_CONV_OPTION_CHECK_LOSSLESS 1033
@@ -298,7 +297,7 @@
 #define IDC_BATCH_RENAME_FORMAT_MENU    1034
 #define IDC_SEARCH_START                1034
 #define IDC_CFG_ADV_DEFAULT             1034
-#define IDC_CFG_CFG_PATH_PROGRAM        1034
+#define IDC_CFG_CONF_DIR_PROGRAM        1034
 #define IDC_CFG_THUMBNAIL_CACHE_CLEAN   1034
 #define IDC_FILTER_SET_APPLY_COLOR_CODE 1034
 #define IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM 1034
@@ -1022,11 +1021,11 @@
 #define IDC_SET_PATH                    1488
 #define IDC_CFGPATH_APPDATA             1489
 #define IDC_ALL_INIT                    1489
-#define IDC_CFG_CFG_PATH_APPDATA        1489
+#define IDC_CFG_CONF_DIR_APPDATA        1489
 #define IDC_CFGPATH_CUSTOM_PATH         1490
-#define IDC_CFG_CFG_PATH_CUSTOM_PATH    1490
+#define IDC_CFG_CONF_DIR_CUSTOM_PATH    1490
 #define IDC_CFGPATH_CUSTOM_PATH_BROWSE  1491
-#define IDC_CFG_CFG_PATH_CUSTOM_PATH_BROWSE 1491
+#define IDC_CFG_CONF_DIR_CUSTOM_PATH_BROWSE 1491
 #define IDC_CUSTOM_TEXT_COLOR           1495
 #define IDC_CUSTOM_FOLDER_HILIGHT_COLOR 1496
 #define IDC_INIT                        1497

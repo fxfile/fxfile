@@ -7,18 +7,18 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_CFG_PATH_H__
-#define __FX_CFG_PATH_H__
+#ifndef __FX_CONF_DIR_H__
+#define __FX_CONF_DIR_H__
 #pragma once
 
 #include "xpr_pattern.h"
 
-class CfgPath : public xpr::Singleton<CfgPath>
+class ConfDir : public xpr::Singleton<ConfDir>
 {
-    friend class xpr::Singleton<CfgPath>;
+    friend class xpr::Singleton<ConfDir>;
 
-protected: CfgPath(void);
-public:   ~CfgPath(void);
+protected: ConfDir(void);
+public:   ~ConfDir(void);
 
 public:
     enum
@@ -46,34 +46,36 @@ public:
     xpr_bool_t load(void);
     xpr_bool_t save(void) const;
 
-    const xpr_tchar_t *getRootDir(void) const;
-    void setRootDir(const xpr_tchar_t *aRootDir);
+    const xpr_tchar_t *getConfDir(void) const;
+    void setConfDir(const xpr_tchar_t *aConfDir);
 
-    xpr_bool_t setBackup(xpr_bool_t aOldBackup);
-    xpr_bool_t checkChangedCfgPath(void);
-    void moveToNewCfgPath(void);
+    void setBackup(void);
+    const xpr_tchar_t *getOldConfDir(void) const;
+    xpr_bool_t checkChangedConfDir(void);
+    xpr_bool_t moveToNewConfDir(void);
 
 public:
     xpr_bool_t getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
     xpr_bool_t getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
-    xpr_bool_t getLoadDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
-    xpr_bool_t getSaveDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+    xpr_bool_t getLoadDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+    xpr_bool_t getSaveDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
-    static const xpr_tchar_t *getDefRootDir(void);
+    static const xpr_tchar_t *getDefConfDir(void);
+    static const xpr_tchar_t *getProgramConfDir(void);
 
 protected:
     xpr_bool_t getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
-    xpr_bool_t getDir(xpr_sint_t aType, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+    xpr_bool_t getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
+    xpr_bool_t getDir(const xpr_tchar_t *aConfDir, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
     static const xpr_tchar_t *getFileName(xpr_sint_t aType);
 
     void clear(void);
 
 protected:
-    typedef std::map<xpr_sint_t, std::tstring> CfgPathMap;
-    std::tstring mRootDir;
-    CfgPathMap   mBakOldCfgPathMap;
-    CfgPathMap   mBakNewCfgPathMap;
+    std::tstring mConfDir;
+    std::tstring mOldConfDir;
 };
 
-#endif // __FX_CFG_PATH_H__
+#endif // __FX_CONF_DIR_H__

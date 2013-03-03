@@ -15,7 +15,7 @@
 
 #include "../Option.h"
 #include "../resource.h"
-#include "../CfgPath.h"
+#include "../ConfDir.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -559,7 +559,7 @@ xpr_bool_t BookmarkMgr::save(const xpr_tchar_t *aPath) const
 xpr_bool_t BookmarkMgr::load(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeBookmark, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeBookmark, sPath, XPR_MAX_PATH);
 
     xpr_bool_t sResult = BookmarkMgr::instance().load(sPath);
     if (sResult == XPR_FALSE)
@@ -571,7 +571,7 @@ xpr_bool_t BookmarkMgr::load(void)
 xpr_bool_t BookmarkMgr::save(void) const
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeBookmark, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeBookmark, sPath, XPR_MAX_PATH);
 
     BookmarkMgr::instance().save(sPath);
 

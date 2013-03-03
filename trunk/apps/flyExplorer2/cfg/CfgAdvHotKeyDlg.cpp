@@ -13,7 +13,6 @@
 #include "../resource.h"
 #include "../Option.h"
 #include "../DlgStateMgr.h"
-#include "../CfgPath.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

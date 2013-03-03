@@ -13,7 +13,7 @@
 #include "fxb/fxb_ini_file_ex.h"
 
 #include "DlgState.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -109,7 +109,7 @@ xpr_bool_t DlgStateMgr::load(void)
 void DlgStateMgr::save(void) const
 {
     xpr_tchar_t sPath[XPR_MAX_PATH] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeDlgState, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeDlgState, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
 
@@ -152,7 +152,7 @@ DlgState *DlgStateMgr::getDlgState(const xpr_tchar_t *aSection, xpr_bool_t aCrea
     if (XPR_IS_FALSE(mLoaded))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH] = {0};
-        CfgPath::instance().getLoadPath(CfgPath::TypeDlgState, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getLoadPath(ConfDir::TypeDlgState, sPath, XPR_MAX_PATH);
 
         setPath(sPath);
 

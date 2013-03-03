@@ -24,7 +24,7 @@
 #include "ExplorerView.h"
 #include "Option.h"
 #include "OptionMgr.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 #include "AppVer.h"
 #include "command_string_table.h"
 #include "ShellRegistry.h"
@@ -158,9 +158,9 @@ xpr_bool_t ExplorerApp::InitInstance(void)
     SetRegistryKey(XPR_STRING_LITERAL("flyExplorer"));
 #endif
 
-    // load configuration path
-    CfgPath &sCfgPath = CfgPath::instance();
-    sCfgPath.load();
+    // load configuration directory
+    ConfDir &sConfDir = ConfDir::instance();
+    sConfDir.load();
 
     // load options from file or load default option if configuration file does not exist
     OptionMgr &sOptionMgr = OptionMgr::instance();

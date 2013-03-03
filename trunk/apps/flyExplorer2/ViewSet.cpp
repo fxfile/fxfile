@@ -12,7 +12,7 @@
 
 #include "fxb/fxb_ini_file_ex.h"
 #include "fxb/fxb_md5.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -126,7 +126,7 @@ void ViewSetMgr::clear(void)
 void ViewSetMgr::load(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeViewSet, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeViewSet, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     if (sIniFile.readFile() == XPR_FALSE)
@@ -171,7 +171,7 @@ void ViewSetMgr::load(void)
 xpr_bool_t ViewSetMgr::save(void) const
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeViewSet, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeViewSet, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
 
