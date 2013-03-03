@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -20,6 +20,7 @@
 #include "xpr_time.h"
 #include "xpr_memory.h"
 #include "xpr_system.h"
+#include "xpr_env.h"
 #include "xpr_file_sys.h"
 #include "xpr_file_io.h"
 #include "xpr_text_file_io.h"
