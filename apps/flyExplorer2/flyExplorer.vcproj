@@ -531,6 +531,14 @@
 			Name="[4] Configurations"
 			>
 			<File
+				RelativePath=".\cfg\CfgAdvConfDirDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cfg\CfgAdvConfDirDlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cfg\CfgAdvDlg.cpp"
 				>
 			</File>
@@ -544,14 +552,6 @@
 			</File>
 			<File
 				RelativePath=".\cfg\CfgAdvHotKeyDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgAdvPathDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\cfg\CfgAdvPathDlg.h"
 				>
 			</File>
 			<File
@@ -1771,19 +1771,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CfgPath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CfgPath.h"
-				>
-			</File>
-			<File
 				RelativePath=".\command_string_table.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\command_string_table.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ConfDir.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ConfDir.h"
 				>
 			</File>
 			<File

@@ -13,7 +13,7 @@
 #include "Option.h"
 #include "MainFrame.h"
 #include "ExplorerView.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 #include "CtrlId.h"
 
 #ifdef _DEBUG
@@ -412,7 +412,7 @@ void MainCoolBar::loadStateFile(void)
     // CSizableReBar
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getLoadPath(CfgPath::TypeCoolBar, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getLoadPath(ConfDir::TypeCoolBar, sPath, XPR_MAX_PATH);
 
         loadStateFile(sPath);
     }
@@ -429,7 +429,7 @@ void MainCoolBar::loadStateFile(void)
     // toolbar
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getLoadPath(CfgPath::TypeToolBar, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getLoadPath(ConfDir::TypeToolBar, sPath, XPR_MAX_PATH);
 
         if (mMainToolBar.load(sPath) == XPR_FALSE)
             mMainToolBar.SetDefaultButtons();
@@ -441,7 +441,7 @@ void MainCoolBar::saveStateFile(void)
     // CSizableReBar
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getSavePath(CfgPath::TypeCoolBar, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getSavePath(ConfDir::TypeCoolBar, sPath, XPR_MAX_PATH);
 
         saveStateFile(sPath);
     }
@@ -449,7 +449,7 @@ void MainCoolBar::saveStateFile(void)
     // toolbar
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getSavePath(CfgPath::TypeToolBar, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getSavePath(ConfDir::TypeToolBar, sPath, XPR_MAX_PATH);
 
         mMainToolBar.save(sPath);
     }

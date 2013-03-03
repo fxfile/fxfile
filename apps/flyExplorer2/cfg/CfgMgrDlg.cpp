@@ -13,7 +13,7 @@
 #include "../resource.h"
 #include "../OptionMgr.h"
 
-#include "CfgPath.h"
+#include "ConfDir.h"
 #include "CfgGeneralDlg.h"
 #include "CfgGeneralStartupDlg.h"
 #include "CfgAppearanceDlg.h"
@@ -37,7 +37,7 @@
 #include "CfgFuncFileScrapDlg.h"
 #include "CfgFuncFileOpDlg.h"
 #include "CfgAdvDlg.h"
-#include "CfgAdvPathDlg.h"
+#include "CfgAdvConfDirDlg.h"
 #include "CfgAdvHotKeyDlg.h"
 
 #ifdef _DEBUG
@@ -117,7 +117,7 @@ xpr_bool_t CfgMgrDlg::OnInitDialog(void)
     /*    */ addCfgItem(16, sIndex, new CfgFuncFileScrapDlg,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_scrap")));
     /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_operation")));
     sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
-    /*    */ addCfgItem(23, sIndex, new CfgAdvPathDlg,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.cfg_path")));
+    /*    */ addCfgItem(23, sIndex, new CfgAdvConfDirDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.conf_dir")));
     /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
 
     if (!XPR_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))
@@ -397,11 +397,11 @@ void CfgMgrDlg::OnDefault(void)
     if (sMsgId != IDYES)
         return;
 
-    CfgPath &sCfgPath = CfgPath::instance();
+    ConfDir &sConfDir = ConfDir::instance();
     OptionMgr &sOptionMgr = OptionMgr::instance();
 
     // save configuration path to save configuration files
-    sCfgPath.save();
+    sConfDir.save();
 
     // initialize default option and save one
     sOptionMgr.initDefault();
@@ -460,11 +460,11 @@ void CfgMgrDlg::OnApply(void)
         }
     }
 
-    CfgPath &sCfgPath = CfgPath::instance();
+    ConfDir &sConfDir = ConfDir::instance();
     OptionMgr &sOptionMgr = OptionMgr::instance();
 
     // save configuration path to save configuration files
-    sCfgPath.save();
+    sConfDir.save();
 
     // set new option
     gOpt->setConfig(mNewConfig);

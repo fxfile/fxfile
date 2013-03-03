@@ -17,7 +17,6 @@
 #include "fxb/fxb_history.h"
 
 #include "AppVer.h"
-#include "CfgPath.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

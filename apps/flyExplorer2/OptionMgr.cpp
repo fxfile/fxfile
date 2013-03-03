@@ -28,7 +28,7 @@
 #include "ActivateBar.h"
 #include "AddressBar.h"
 #include "PicViewer.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -105,7 +105,7 @@ xpr_bool_t OptionMgr::save(void)
 xpr_bool_t OptionMgr::loadMainOption(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeMain, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeMain, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     xpr_bool_t sResult = sIniFile.readFile();
@@ -122,7 +122,7 @@ xpr_bool_t OptionMgr::loadMainOption(void)
 xpr_bool_t OptionMgr::loadConfigOption(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeConfig, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeConfig, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     xpr_bool_t sResult = sIniFile.readFile();
@@ -145,7 +145,7 @@ xpr_bool_t OptionMgr::loadConfigOption(void)
 xpr_bool_t OptionMgr::saveMainOption(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeMain, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeMain, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer main option file"));
@@ -162,7 +162,7 @@ xpr_bool_t OptionMgr::saveMainOption(void)
 xpr_bool_t OptionMgr::saveConfigOption(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeConfig, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeConfig, sPath, XPR_MAX_PATH);
 
     fxb::IniFileEx sIniFile(sPath);
     sIniFile.setComment(XPR_STRING_LITERAL("flyExplorer configuration option file"));

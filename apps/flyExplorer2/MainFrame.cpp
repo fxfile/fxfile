@@ -46,7 +46,7 @@
 #include "SearchDlg.h"
 #include "WaitDlg.h"
 #include "OptionMgr.h"
-#include "CfgPath.h"
+#include "ConfDir.h"
 #include "PreviewViewEx.h"
 #include "CtrlId.h"
 #include "DlgStateMgr.h"
@@ -251,7 +251,7 @@ void MainFrame::init(void)
     if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getLoadPath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getLoadPath(ConfDir::TypeFileScrap, sPath, XPR_MAX_PATH);
 
         fxb::FileScrap::instance().load(sPath);
     }
@@ -560,7 +560,7 @@ void MainFrame::saveOption(void)
     if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        CfgPath::instance().getSavePath(CfgPath::TypeFileScrap, sPath, XPR_MAX_PATH);
+        ConfDir::instance().getSavePath(ConfDir::TypeFileScrap, sPath, XPR_MAX_PATH);
 
         fxb::FileScrap &sFileScrap = fxb::FileScrap::instance();
         sFileScrap.save(sPath);
@@ -4059,7 +4059,7 @@ void MainFrame::setAccelerator(ACCEL *aAccel, xpr_sint_t aCount)
 void MainFrame::loadAccelTable(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getLoadPath(CfgPath::TypeAccel, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeAccel, sPath, XPR_MAX_PATH);
 
     if (fxb::IsExistFile(sPath) == XPR_FALSE)
     {
@@ -4113,7 +4113,7 @@ void MainFrame::loadAccelTable(void)
 void MainFrame::saveAccelTable(void)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    CfgPath::instance().getSavePath(CfgPath::TypeAccel, sPath, XPR_MAX_PATH);
+    ConfDir::instance().getSavePath(ConfDir::TypeAccel, sPath, XPR_MAX_PATH);
 
     ACCEL sAccel[MAX_ACCEL];
     xpr_sint_t sCount;

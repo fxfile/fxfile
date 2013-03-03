@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -21,6 +21,7 @@ namespace fxb
 EnvPath::EnvPath(void)
 {
     addSpec(XPR_STRING_LITERAL("flyExplorer"),              CSIDL_FLYEXPLORER);
+    addSpec(XPR_STRING_LITERAL("fxFile"),                   CSIDL_FXFILE);
     addSpec(XPR_STRING_LITERAL("fxDrive"),                  CSIDL_FXDRIVE);
     addSpec(XPR_STRING_LITERAL("WinDrive"),                 CSIDL_WINDRIVE);
     addSpec(XPR_STRING_LITERAL("Desktop"),                  CSIDL_DESKTOP);
@@ -112,6 +113,7 @@ LPITEMIDLIST EnvPath::getPidl(const std::tstring &aSpec, xpr_uint_t *aCSIDL)
     switch (sIterator->second)
     {
     case CSIDL_FLYEXPLORER:
+    case CSIDL_FXFILE:
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             GetModuleDir(sPath, XPR_MAX_PATH);
@@ -223,6 +225,7 @@ xpr_bool_t EnvPath::getPath(const std::tstring &aSpec, std::tstring &aPath, xpr_
     switch (sIterator->second)
     {
     case CSIDL_FLYEXPLORER:
+    case CSIDL_FXFILE:
         {
             GetModuleDir(aPath);
             break;
