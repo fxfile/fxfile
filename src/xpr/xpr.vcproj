@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\xpr\xpr_env.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\xpr\xpr_file_io_win.cpp"
 				>
 			</File>
@@ -336,6 +340,10 @@
 			</File>
 			<File
 				RelativePath=".\include\xpr_endian.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\xpr_env.h"
 				>
 			</File>
 			<File
