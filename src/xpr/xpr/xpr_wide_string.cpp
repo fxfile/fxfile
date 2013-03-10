@@ -1145,14 +1145,23 @@ void WideString::format(const xpr_wchar_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscwprintf(aFormat, sArgs);
+    format(aFormat, sArgs);
+
+    va_end(sArgs);
+}
+
+void WideString::format(const xpr_wchar_t *aFormat, va_list aArgs)
+{
+    xpr_sint_t sLength = _vscwprintf(aFormat, aArgs);
     if (sLength <= 0)
         return;
 
     if (mCapacity > (xpr_size_t)sLength)
     {
-        vswprintf(mString, aFormat, sArgs);
+        vswprintf(mString, aFormat, aArgs);
         mString[sLength] = 0;
+
+        mLength = sLength;
     }
     else
     {
@@ -1165,7 +1174,7 @@ void WideString::format(const xpr_wchar_t *aFormat, ...)
             return;
         }
 
-        vswprintf(sNewString, aFormat, sArgs);
+        vswprintf(sNewString, aFormat, aArgs);
         sNewString[sLength] = 0;
 
         reset();
@@ -1174,8 +1183,6 @@ void WideString::format(const xpr_wchar_t *aFormat, ...)
         mLength = sLength;
         mCapacity = sNewCapacity;
     }
-
-    va_end(sArgs);
 }
 
 void WideString::append_format(const xpr_wchar_t *aFormat, ...)
@@ -1183,7 +1190,14 @@ void WideString::append_format(const xpr_wchar_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscwprintf(aFormat, sArgs);
+    append_format(aFormat, sArgs);
+
+    va_end(sArgs);
+}
+
+void WideString::append_format(const xpr_wchar_t *aFormat, va_list aArgs)
+{
+    xpr_sint_t sLength = _vscwprintf(aFormat, aArgs);
     if (sLength <= 0)
         return;
 
@@ -1191,8 +1205,10 @@ void WideString::append_format(const xpr_wchar_t *aFormat, ...)
 
     if (mCapacity > sNewLength)
     {
-        vswprintf(mString + mLength, aFormat, sArgs);
+        vswprintf(mString + mLength, aFormat, aArgs);
         mString[sNewLength] = 0;
+
+        mLength = sNewLength;
     }
     else
     {
@@ -1206,7 +1222,7 @@ void WideString::append_format(const xpr_wchar_t *aFormat, ...)
         }
 
         wcsncpy(sNewString, mString, mLength);
-        vswprintf(sNewString + mLength, aFormat, sArgs);
+        vswprintf(sNewString + mLength, aFormat, aArgs);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -1215,8 +1231,6 @@ void WideString::append_format(const xpr_wchar_t *aFormat, ...)
         mLength = sNewLength;
         mCapacity = sNewCapacity;
     }
-
-    va_end(sArgs);
 }
 
 void WideString::update(void)
@@ -1303,14 +1317,14 @@ xpr_size_t WideString::find(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_siz
             {
                 if ((sChar = *sString++) == '\0')
                 {
-                    return XPR_NULL;
+                    return npos;
                 }
 
             } while (sChar != sSubStrChar);
 
             if (sLength > aLength)
             {
-                return XPR_NULL;
+                return npos;
             }
 
         } while (wcsncmp(sString, sSearch, sLength) != 0);

@@ -1145,14 +1145,23 @@ void String::format(const xpr_char_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscprintf(aFormat, sArgs);
+    format(aFormat, sArgs);
+
+    va_end(sArgs);
+}
+
+void String::format(const xpr_char_t *aFormat, va_list aArgs)
+{
+    xpr_sint_t sLength = _vscprintf(aFormat, aArgs);
     if (sLength <= 0)
         return;
 
     if (mCapacity > (xpr_size_t)sLength)
     {
-        vsprintf(mString, aFormat, sArgs);
+        vsprintf(mString, aFormat, aArgs);
         mString[sLength] = 0;
+
+        mLength = sLength;
     }
     else
     {
@@ -1165,7 +1174,7 @@ void String::format(const xpr_char_t *aFormat, ...)
             return;
         }
 
-        vsprintf(sNewString, aFormat, sArgs);
+        vsprintf(sNewString, aFormat, aArgs);
         sNewString[sLength] = 0;
 
         reset();
@@ -1174,8 +1183,6 @@ void String::format(const xpr_char_t *aFormat, ...)
         mLength = sLength;
         mCapacity = sNewCapacity;
     }
-
-    va_end(sArgs);
 }
 
 void String::append_format(const xpr_char_t *aFormat, ...)
@@ -1183,7 +1190,14 @@ void String::append_format(const xpr_char_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    xpr_sint_t sLength = _vscprintf(aFormat, sArgs);
+    append_format(aFormat, sArgs);
+
+    va_end(sArgs);
+}
+
+void String::append_format(const xpr_char_t *aFormat, va_list aArgs)
+{
+    xpr_sint_t sLength = _vscprintf(aFormat, aArgs);
     if (sLength <= 0)
         return;
 
@@ -1191,8 +1205,10 @@ void String::append_format(const xpr_char_t *aFormat, ...)
 
     if (mCapacity > sNewLength)
     {
-        vsprintf(mString + mLength, aFormat, sArgs);
+        vsprintf(mString + mLength, aFormat, aArgs);
         mString[sNewLength] = 0;
+
+        mLength = sNewLength;
     }
     else
     {
@@ -1206,7 +1222,7 @@ void String::append_format(const xpr_char_t *aFormat, ...)
         }
 
         strncpy(sNewString, mString, mLength);
-        vsprintf(sNewString + mLength, aFormat, sArgs);
+        vsprintf(sNewString + mLength, aFormat, aArgs);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -1215,8 +1231,6 @@ void String::append_format(const xpr_char_t *aFormat, ...)
         mLength = sNewLength;
         mCapacity = sNewCapacity;
     }
-
-    va_end(sArgs);
 }
 
 void String::update(void)
@@ -1303,14 +1317,14 @@ xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t a
             {
                 if ((sChar = *sString++) == '\0')
                 {
-                    return XPR_NULL;
+                    return npos;
                 }
 
             } while (sChar != sSubStrChar);
 
             if (sLength > aLength)
             {
-                return XPR_NULL;
+                return npos;
             }
 
         } while (strncmp(sString, sSearch, sLength) != 0);
