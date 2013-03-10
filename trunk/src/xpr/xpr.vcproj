@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\xpr\xpr_detail_cross_string.h"
+				>
+			</File>
+			<File
 				RelativePath=".\xpr\xpr_dllmain_win.cpp"
 				>
 			</File>
@@ -210,6 +214,10 @@
 			</File>
 			<File
 				RelativePath=".\xpr\xpr_file_io_win.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\xpr\xpr_file_sys_win.cpp"
 				>
 			</File>
 			<File

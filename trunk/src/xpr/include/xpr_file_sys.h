@@ -9,6 +9,8 @@
 #pragma once
 
 #include "xpr_config.h"
+#include "xpr_types.h"
+#include "xpr_dlsym.h"
 
 namespace xpr
 {
@@ -37,6 +39,46 @@ namespace xpr
 #else // not XPR_CFG_OS_WINDOWS, not XPR_CFG_OS_POSIX
 #error Please, support for your OS. <xpr_file_sys.h>
 #endif
+
+class XPR_DL_API FileSys
+{
+public:
+    static xpr_bool_t  exist(const xpr_char_t *aFilePath);
+    static xpr_bool_t  exist(const xpr_wchar_t *aFilePath);
+
+    static xpr_rcode_t mkdir(const xpr_char_t  *aDir);
+    static xpr_rcode_t mkdir(const xpr_wchar_t *aDir);
+
+    static xpr_rcode_t mkdir_recursive(const xpr_char_t  *aDir);
+    static xpr_rcode_t mkdir_recursive(const xpr_wchar_t *aDir);
+
+    static xpr_rcode_t rmdir(const xpr_char_t  *aDir);
+    static xpr_rcode_t rmdir(const xpr_wchar_t *aDir);
+
+    static xpr_rcode_t remove(const xpr_char_t  *aFilePath);
+    static xpr_rcode_t remove(const xpr_wchar_t *aFilePath);
+
+    static xpr_rcode_t rename(const xpr_char_t  *aOldFilePath, const xpr_char_t  *aNewFilePath);
+    static xpr_rcode_t rename(const xpr_wchar_t *aOldFilePath, const xpr_wchar_t *aNewFilePath);
+
+    static xpr_uint64_t getFileSize(const xpr_char_t  *aFilePath);
+    static xpr_uint64_t getFileSize(const xpr_wchar_t *aFilePath);
+
+    static xpr_rcode_t chdir(const xpr_char_t  *aCurDir);
+    static xpr_rcode_t chdir(const xpr_wchar_t *aCurDir);
+
+    static xpr_rcode_t getcwd(xpr_char_t  *aCurDir, xpr_size_t aMaxLen);
+    static xpr_rcode_t getcwd(xpr_wchar_t *aCurDir, xpr_size_t aMaxLen);
+
+    static xpr_rcode_t getExePath(xpr_char_t  *aExePath, xpr_size_t aMaxLen);
+    static xpr_rcode_t getExePath(xpr_wchar_t *aExePath, xpr_size_t aMaxLen);
+
+    static xpr_rcode_t getExeDir(xpr_char_t  *aExeDir, xpr_size_t aMaxLen);
+    static xpr_rcode_t getExeDir(xpr_wchar_t *aExeDir, xpr_size_t aMaxLen);
+
+    static xpr_rcode_t getTempDir(xpr_char_t  *aTempDir, xpr_size_t aMaxLen);
+    static xpr_rcode_t getTempDir(xpr_wchar_t *aTempDir, xpr_size_t aMaxLen);
+};
 } // namespace xpr
 
 #endif // __XPR_FILE_SYS_H__
