@@ -21,6 +21,7 @@ XPR_DL_API xpr_char_t *xpr_strcpy(xpr_char_t *aDest, xpr_size_t aDestSize, const
     strncpy_s(aDest, aDestSize, aSrc, aCount);
     return aDest;
 #else // not, XPR_CFG_OS_WINDOWS
+#error Please, support for your OS. <xpr_cstr.h>
 #endif // XPR_CFG_OS_WINDOWS
 }
 
