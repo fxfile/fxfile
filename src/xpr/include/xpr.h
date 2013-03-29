@@ -20,6 +20,8 @@
 #include "xpr_time.h"
 #include "xpr_memory.h"
 #include "xpr_system.h"
+#include "xpr_process.h"
+#include "xpr_thread.h"
 #include "xpr_env.h"
 #include "xpr_file_sys.h"
 #include "xpr_file_io.h"

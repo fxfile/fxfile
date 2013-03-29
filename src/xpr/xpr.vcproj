@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\xpr\xpr_process_win.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\xpr\xpr_rcode.cpp"
 				>
 			</File>
@@ -388,6 +392,10 @@
 			</File>
 			<File
 				RelativePath=".\include\xpr_pattern.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\xpr_process.h"
 				>
 			</File>
 			<File
