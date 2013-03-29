@@ -37,7 +37,7 @@ typedef struct
 XPR_DL_API void getVer(ver_t &aVer);
 XPR_DL_API const xpr_char_t *getVer(void);
 XPR_DL_API const xpr_char_t *getBuildTime(void);
-XPR_DL_API void getBuildTime(Time &aTime);
+XPR_DL_API void getBuildTime(TimeExpr &aTimeExpr);
 } // namespace xpr
 
 #endif // __XPR_VER_H__
