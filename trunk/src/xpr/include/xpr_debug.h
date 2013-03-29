@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -16,8 +16,8 @@ namespace xpr
 #if defined(XPR_CFG_OS_WINDOWS)
     #if defined(XPR_CFG_BUILD_DEBUG)
 
-XPR_DL_API void traceOutA(xpr_char_t *aFormat, ...);
-XPR_DL_API void traceOutW(xpr_wchar_t *aFormat, ...);
+XPR_DL_API void traceOutA(const xpr_char_t *aFormat, ...);
+XPR_DL_API void traceOutW(const xpr_wchar_t *aFormat, ...);
 #if defined(XPR_CFG_UNICODE)
 #define XPR_TRACE              xpr::traceOutW
 #else
