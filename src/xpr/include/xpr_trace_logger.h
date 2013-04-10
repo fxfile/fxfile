@@ -42,11 +42,11 @@ public:
     {
         kFlagNone       = 0x0000,
         kFlagThreadSafe = 0x0001,
-        kFlagTraceOut   = 0x0002,
+        kFlagTraceOut   = 0x0002, // TODO
         kFlagCircular   = 0x0004,
         kFlagFileSync   = 0x0008,
-        kFlagBulkSync   = 0x0010,
-        kFlagThread     = 0x0020,
+        kFlagBulkSync   = 0x0010, // TODO
+        kFlagThread     = 0x0020, // TODO async trace logging
     };
 
 public:
