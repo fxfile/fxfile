@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -110,7 +110,7 @@ xpr_size_t AttrTime::getCount(void)
 
 const xpr_tchar_t *AttrTime::getPath(xpr_sint_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mPathDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mPathDeque))
         return XPR_NULL;
 
     return mPathDeque[aIndex].c_str();

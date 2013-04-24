@@ -141,7 +141,7 @@ void TipDlg::OnPaint(void)
     sTextRect.bottom = sRect.bottom - sOffsetRect.bottom;
 
     const xpr_tchar_t *sText = XPR_NULL;
-    if (XPR_STL_IS_INDEXABLE(mIndex, mTipDeque))
+    if (FXFILE_STL_IS_INDEXABLE(mIndex, mTipDeque))
     {
         sText = mTipDeque[mIndex].c_str();
     }

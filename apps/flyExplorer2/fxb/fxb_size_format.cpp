@@ -81,7 +81,7 @@ xpr_size_t SizeFormat::getCount(void)
 
 SizeFormat::Item *SizeFormat::getItem(xpr_size_t nIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(nIndex, mFormatDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(nIndex, mFormatDeque))
         return XPR_NULL;
 
     return mFormatDeque[nIndex];

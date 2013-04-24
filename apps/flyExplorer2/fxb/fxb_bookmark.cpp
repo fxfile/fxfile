@@ -223,7 +223,7 @@ xpr_sint_t BookmarkMgr::getCount(void)
 
 BookmarkItem *BookmarkMgr::getBookmark(xpr_sint_t nBookmark)
 {
-    if (!XPR_STL_IS_INDEXABLE(nBookmark, mBookmarkDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(nBookmark, mBookmarkDeque))
         return XPR_NULL;
 
     return mBookmarkDeque[nBookmark];

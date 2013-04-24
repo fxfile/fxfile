@@ -148,7 +148,7 @@ xpr_size_t LanguageTable::getLanguageCount(void) const
 
 const LanguagePack::Desc *LanguageTable::getLanguageDesc(xpr_size_t aIndex) const
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mLanguageDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mLanguageDeque))
         return XPR_NULL;
 
     return mLanguageDeque[aIndex]->getLanguageDesc();

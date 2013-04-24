@@ -54,7 +54,7 @@ void ProgramAss::addItem(ProgramAssItem *aProgramAssItem)
 
 ProgramAssItem *ProgramAss::getItem(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mProgramAssDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mProgramAssDeque))
         return XPR_NULL;
 
     return mProgramAssDeque[aIndex];

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -63,7 +63,7 @@ xpr_size_t ShellNew::getCount(void)
 
 ShellNew::Item *ShellNew::getItem(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mShellNewDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mShellNewDeque))
         return XPR_NULL;
 
     return mShellNewDeque[aIndex];

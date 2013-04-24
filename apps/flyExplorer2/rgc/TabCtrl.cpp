@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -150,7 +150,7 @@ xpr_size_t TabCtrl::addTab(const xpr_tchar_t *aText, xpr_sint_t aImageIndex, voi
 
 xpr_size_t TabCtrl::insertTab(xpr_size_t aTab, const xpr_tchar_t *aText, xpr_sint_t aImageIndex, void *aData)
 {
-    if (aTab != InvalidTab && !XPR_STL_IS_INDEXABLE(aTab, mTabDeque))
+    if (aTab != InvalidTab && !FXFILE_STL_IS_INDEXABLE(aTab, mTabDeque))
         return InvalidTab;
 
     TabItem *sTabItem = new TabItem;
@@ -203,7 +203,7 @@ xpr_size_t TabCtrl::getCurTab(void) const
 
 TabCtrl::TabItem *TabCtrl::getTabItem(xpr_size_t aTab) const
 {
-    if (XPR_STL_IS_INDEXABLE(aTab, mTabDeque))
+    if (FXFILE_STL_IS_INDEXABLE(aTab, mTabDeque))
         return mTabDeque[aTab];
 
     return XPR_NULL;
@@ -254,7 +254,7 @@ xpr_size_t TabCtrl::hitTest(const POINT &aPoint) const
 
 xpr_bool_t TabCtrl::setCurTab(xpr_size_t aTab)
 {
-    if (!XPR_STL_IS_INDEXABLE(aTab, mTabDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aTab, mTabDeque))
         return XPR_FALSE;
 
     if (mCurTab == aTab)
@@ -319,7 +319,7 @@ xpr_bool_t TabCtrl::moveTab(xpr_size_t aSourceTab, xpr_size_t aTargetTab)
     if (aSourceTab == aTargetTab)
         return XPR_TRUE;
 
-    if (!XPR_STL_IS_INDEXABLE(aSourceTab, mTabDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aSourceTab, mTabDeque))
         return XPR_FALSE;
 
     TabDeque::iterator sIterator = mTabDeque.begin() + aSourceTab;
@@ -340,7 +340,7 @@ xpr_bool_t TabCtrl::moveTab(xpr_size_t aSourceTab, xpr_size_t aTargetTab)
 
 xpr_bool_t TabCtrl::removeTab(xpr_size_t aTab)
 {
-    if (!XPR_STL_IS_INDEXABLE(aTab, mTabDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aTab, mTabDeque))
         return XPR_FALSE;
 
     if (XPR_IS_NOT_NULL(mObserver))

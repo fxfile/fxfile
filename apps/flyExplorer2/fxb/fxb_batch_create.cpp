@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -361,7 +361,7 @@ BatchCreate::Status BatchCreate::getStatus(xpr_size_t *aPreparedCount, xpr_size_
 
 BatchCreate::Result BatchCreate::getItemResult(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mNewDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mNewDeque))
         return ResultNone;
 
     return mNewDeque[aIndex]->mResult;

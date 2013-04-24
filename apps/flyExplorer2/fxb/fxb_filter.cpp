@@ -60,7 +60,7 @@ xpr_sint_t Filter::getCount(void)
 
 FilterItem *Filter::getFilter(xpr_sint_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mFilterDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mFilterDeque))
         return XPR_NULL;
 
     return mFilterDeque[aIndex];

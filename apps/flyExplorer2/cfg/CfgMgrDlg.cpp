@@ -120,7 +120,7 @@ xpr_bool_t CfgMgrDlg::OnInitDialog(void)
     /*    */ addCfgItem(23, sIndex, new CfgAdvConfDirDlg,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.conf_dir")));
     /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
 
-    if (!XPR_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))
         mInitShowCfg = 0;
 
     // expand all
@@ -154,7 +154,7 @@ xpr_sint_t CfgMgrDlg::addCfgItem(xpr_sint_t aImage, xpr_sint_t aParent, CfgDlg *
     if (sCfgItem == XPR_NULL)
         return -1;
 
-    if (!XPR_STL_IS_INDEXABLE(aParent, mCfgDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aParent, mCfgDeque))
         aParent = -1;
 
     HTREEITEM sParentTreeItem = TVI_ROOT;
@@ -175,7 +175,7 @@ xpr_sint_t CfgMgrDlg::addCfgItem(xpr_sint_t aImage, xpr_sint_t aParent, CfgDlg *
 
 xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aCfgIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
         return XPR_FALSE;
 
     CfgItem *sCfgItem = mCfgDeque[aCfgIndex];
@@ -183,7 +183,7 @@ xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aCfgIndex)
     // hide
     if (mShowCfg != -1)
     {
-        if (XPR_STL_IS_INDEXABLE(mShowCfg, mCfgDeque))
+        if (FXFILE_STL_IS_INDEXABLE(mShowCfg, mCfgDeque))
         {
             CfgItem *sOldCfgItem = mCfgDeque[mShowCfg];
 
@@ -221,7 +221,7 @@ xpr_bool_t CfgMgrDlg::showCfg(xpr_sint_t aCfgIndex)
     xpr_size_t sInsertPos = sDesc.length();
     while (sParent != -1)
     {
-        if (!XPR_STL_IS_INDEXABLE(sParent, mCfgDeque))
+        if (!FXFILE_STL_IS_INDEXABLE(sParent, mCfgDeque))
             break;
 
         sDesc.insert(sInsertPos, mCfgDeque[sParent]->mText);
@@ -266,7 +266,7 @@ void CfgMgrDlg::OnDestroy(void)
 
 void CfgMgrDlg::showCfgByTree(xpr_sint_t aCfgIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
         return;
 
     mChanging = XPR_TRUE;
@@ -304,7 +304,7 @@ void CfgMgrDlg::onSetModified(xpr_size_t aCfgIndex, xpr_bool_t aModified)
         return;
 
     xpr_size_t sCount = mCfgDeque.size();
-    if (XPR_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
+    if (FXFILE_STL_IS_INDEXABLE(aCfgIndex, mCfgDeque))
     {
         mCfgDeque[aCfgIndex]->mModified = aModified;
 
@@ -335,7 +335,7 @@ xpr_bool_t CfgMgrDlg::onIsModified(CfgDlg &aCfgDlg)
 {
     xpr_size_t sCfgIndex = aCfgDlg.getCfgIndex();
 
-    if (!XPR_STL_IS_INDEXABLE(sCfgIndex, mCfgDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(sCfgIndex, mCfgDeque))
         return 0;
 
     return mCfgDeque[sCfgIndex]->mModified;

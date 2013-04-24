@@ -621,7 +621,7 @@ void CToolBarEx::OnGetButtonInfo( NMHDR* pNMHDR, LRESULT* pResult )
     *pResult = FALSE;
 
     int nItem = lpnmtb->iItem;
-    if (!XPR_STL_IS_INDEXABLE(nItem, m_dqButtons))
+    if (!FXFILE_STL_IS_INDEXABLE(nItem, m_dqButtons))
         return;
 
     lpnmtb->tbButton = m_dqButtons[nItem]->tbinfo;
