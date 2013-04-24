@@ -30,7 +30,7 @@ XPR_INLINE void generateMutexName(xpr_key_t aKey, xpr_char_t *aName, xpr_size_t 
 {
     _snprintf(aName,
               aMaxLength,
-              XPR_MBCS_STRING_LITERAL("Global\\xpr::ProcessMutex_%08x"),
+              XPR_MBCS_STRING_LITERAL("xpr::ProcessMutex_%08x"),
               aKey);
 }
 
@@ -62,7 +62,7 @@ xpr_rcode_t ProcessMutex::open(xpr_key_t aKey)
     xpr_char_t sName[0xff] = {0};
     generateMutexName(aKey, sName, XPR_COUNT_OF(sName));
 
-    mHandle.mHandle = ::OpenMutexA(XPR_NULL, XPR_FALSE, sName);
+    mHandle.mHandle = ::OpenMutexA(MUTEX_ALL_ACCESS, XPR_FALSE, sName);
     if (mHandle.mHandle == XPR_NULL)
     {
         return XPR_RCODE_GET_OS_ERROR();

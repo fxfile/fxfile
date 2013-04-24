@@ -31,7 +31,7 @@ XPR_INLINE void generateShmName(xpr_key_t aKey, xpr_char_t *aName, xpr_size_t aM
 {
     _snprintf(aName,
               aMaxLength,
-              XPR_MBCS_STRING_LITERAL("Global\\xpr::Shm_%08x"),
+              XPR_MBCS_STRING_LITERAL("xpr::Shm_%08x"),
               aKey);
 }
 
