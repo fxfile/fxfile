@@ -152,7 +152,7 @@ xpr_size_t StatusBar::addPane(xpr_size_t aPaneId, const xpr_tchar_t *aText, HICO
 
 xpr_size_t StatusBar::insertPane(xpr_size_t aIndex, xpr_size_t aPaneId, const xpr_tchar_t *aText, HICON aIcon, void *aData)
 {
-    if (aIndex != InvalidIndex && !XPR_STL_IS_INDEXABLE(aIndex, mPaneDeque))
+    if (aIndex != InvalidIndex && !FXFILE_STL_IS_INDEXABLE(aIndex, mPaneDeque))
         return InvalidIndex;
 
     PaneItem *sPaneItem = new PaneItem;
@@ -290,7 +290,7 @@ xpr_size_t StatusBar::getPaneCount(void) const
 
 StatusBar::PaneItem *StatusBar::getPaneItem(xpr_size_t aPane) const
 {
-    if (XPR_STL_IS_INDEXABLE(aPane, mPaneDeque))
+    if (FXFILE_STL_IS_INDEXABLE(aPane, mPaneDeque))
         return mPaneDeque[aPane];
 
     return XPR_NULL;
@@ -375,7 +375,7 @@ xpr_size_t StatusBar::IdToIndex(xpr_size_t aPaneId) const
 
 xpr_bool_t StatusBar::removePane(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mPaneDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mPaneDeque))
         return XPR_FALSE;
 
     if (XPR_IS_NOT_NULL(mObserver))

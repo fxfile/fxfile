@@ -357,7 +357,7 @@ void HistoryDlg::getContextMenu(xpr_bool_t sRightClick)
         return;
 
     xpr_uint_t sIndex = getItemIndex(sTreeItem);
-    if (XPR_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque) == XPR_FALSE)
+    if (FXFILE_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque) == XPR_FALSE)
         return;
 
     fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
@@ -396,7 +396,7 @@ void HistoryDlg::OnTvnSelchangedTree(NMHDR *pNMHDR, LRESULT *pResult)
     if (sTreeItem != XPR_NULL)
     {
         xpr_uint_t sIndex = getItemIndex(sTreeItem);
-        if (XPR_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque))
+        if (FXFILE_STL_IS_INDEXABLE(sIndex, *sHistoryDisp->mHistoryDeque))
         {
             fxb::HistoryDeque::const_reverse_iterator sReverseIterator = sHistoryDisp->mHistoryDeque->rbegin() + sIndex;
             if (sReverseIterator != sHistoryDisp->mHistoryDeque->rend())
@@ -469,7 +469,7 @@ void HistoryDlg::OnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult)
 
 void HistoryDlg::showTab(xpr_size_t aIndex)
 {
-    if (XPR_STL_IS_INDEXABLE(aIndex, mHistoryDispDeque) == XPR_FALSE)
+    if (FXFILE_STL_IS_INDEXABLE(aIndex, mHistoryDispDeque) == XPR_FALSE)
         return;
 
     mTreeCtrl.DeleteAllItems();
@@ -516,7 +516,7 @@ void HistoryDlg::showTab(xpr_size_t aIndex)
 
 HistoryDlg::HistoryDisp *HistoryDlg::getCurHistoryDisp(void)
 {
-    if (XPR_STL_IS_INDEXABLE(mCurHistoryDisp, mHistoryDispDeque) == XPR_FALSE)
+    if (FXFILE_STL_IS_INDEXABLE(mCurHistoryDisp, mHistoryDispDeque) == XPR_FALSE)
         return XPR_NULL;
 
     return mHistoryDispDeque[mCurHistoryDisp];

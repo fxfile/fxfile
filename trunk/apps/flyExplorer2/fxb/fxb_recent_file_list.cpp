@@ -47,7 +47,7 @@ xpr_size_t RecentFileList::getFileCount(void) const
 
 const xpr_tchar_t *RecentFileList::getFile(xpr_size_t aIndex) const
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mFileDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mFileDeque))
         return XPR_NULL;
 
     return mFileDeque[aIndex].c_str();

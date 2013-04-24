@@ -240,7 +240,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
         return;
     }
 
-    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mBackwardList)
+    FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mBackwardList)
     {
         const std::tstring &sHistoryPath = *sHistoryIterator;
 
@@ -251,7 +251,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
         }
     }
 
-    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mForwardList)
+    FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mForwardList)
     {
         const std::tstring &sHistoryPath = *sHistoryIterator;
 
@@ -262,7 +262,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
         }
     }
 
-    XPR_STL_FOR_EACH(sHistoryIterator, aTabOption.mHistoryList)
+    FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mHistoryList)
     {
         const std::tstring &sHistoryPath = *sHistoryIterator;
 
@@ -306,7 +306,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
             ExplorerCtrl      *sExplorerCtrl;
             Option::Main::TabDeque::iterator sIterator;
 
-            XPR_STL_FOR_EACH(sIterator, gOpt->mMain.mView[mViewIndex].mTabDeque)
+            FXFILE_STL_FOR_EACH(sIterator, gOpt->mMain.mView[mViewIndex].mTabDeque)
             {
                 sTabOption = *sIterator;
                 XPR_ASSERT(sTabOption != XPR_NULL);
@@ -617,7 +617,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
         if (XPR_IS_NOT_NULL(sBackwardDeque))
         {
-            XPR_STL_FOR_EACH(sIterator, *sBackwardDeque)
+            FXFILE_STL_FOR_EACH(sIterator, *sBackwardDeque)
             {
                 sFullPidl = *sIterator;
                 XPR_ASSERT(sFullPidl != XPR_NULL);
@@ -634,7 +634,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
         if (XPR_IS_NOT_NULL(sForwardDeque))
         {
-            XPR_STL_FOR_EACH(sIterator, *sForwardDeque)
+            FXFILE_STL_FOR_EACH(sIterator, *sForwardDeque)
             {
                 sFullPidl = *sIterator;
                 XPR_ASSERT(sFullPidl != XPR_NULL);
@@ -651,7 +651,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
         if (XPR_IS_NOT_NULL(sHistoryDeque))
         {
-            XPR_STL_FOR_EACH(sIterator, *sHistoryDeque)
+            FXFILE_STL_FOR_EACH(sIterator, *sHistoryDeque)
             {
                 sFullPidl = *sIterator;
                 XPR_ASSERT(sFullPidl != XPR_NULL);

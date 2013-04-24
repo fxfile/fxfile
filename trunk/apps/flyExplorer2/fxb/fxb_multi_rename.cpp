@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -354,7 +354,7 @@ MultiRename::Status MultiRename::getStatus(xpr_size_t *aPreparedCount, xpr_size_
 
 MultiRename::Result MultiRename::getItemResult(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mRenDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mRenDeque))
         return ResultNone;
 
     return mRenDeque[aIndex]->mResult;

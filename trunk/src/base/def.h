@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -38,8 +38,14 @@ typedef string tstring;
 #endif
 } // namespace std
 
-#define STL_IS_INDEXABLE(aIndex, aContainer) \
-    ((0 <= (aIndex)) && ((aIndex) < ((aContainer).size())))
+#define FXFILE_STL_FOR_EACH(aIterator, aContainer) \
+    for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))
+
+#define FXFILE_STL_FOR_EACH_REVERSE(aIterator, aContainer) \
+    for ((aIterator) = (aContainer).rbegin(); (aIterator) != (aContainer).rend(); ++(aIterator))
+
+#define FXFILE_STL_IS_INDEXABLE(aIndex, aContainer) \
+    ((0 <= ((xpr_sint_t)(aIndex))) && (((xpr_sint_t)(aIndex)) < ((xpr_sint_t)(aContainer).size())))
 
 #if defined(XPR_CFG_OS_WINDOWS)
 #include "def_win.h"

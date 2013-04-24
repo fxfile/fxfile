@@ -110,7 +110,7 @@ void ViewSetMgr::clear(void)
     FolderViewSet *sFolderViewSet;
     HashMap::iterator sIterator;
 
-    XPR_STL_FOR_EACH(sIterator, mHashMap)
+    FXFILE_STL_FOR_EACH(sIterator, mHashMap)
     {
         sFolderViewSet = sIterator->second;
         XPR_ASSERT(sFolderViewSet != XPR_NULL);
@@ -140,7 +140,7 @@ void ViewSetMgr::load(void)
     loadIndex(sIniFile);
 
     // load view set
-    XPR_STL_FOR_EACH(sIndexIterator, mIndexMap)
+    FXFILE_STL_FOR_EACH(sIndexIterator, mIndexMap)
     {
         const std::tstring &sHashValue = sIndexIterator->second;
 
@@ -190,7 +190,7 @@ xpr_bool_t ViewSetMgr::save(void) const
     saveIndex(sIniFile);
 
     // save view set
-    XPR_STL_FOR_EACH(sIterator, mHashMap)
+    FXFILE_STL_FOR_EACH(sIterator, mHashMap)
     {
         const std::tstring &sHashValue     = sIterator->first;
         FolderViewSet      *sFolderViewSet = sIterator->second;
@@ -289,7 +289,7 @@ xpr_bool_t ViewSetMgr::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFold
 
     _tcscpy(sPath, aPath);
 
-    XPR_STL_FOR_EACH(sIterator, mSubSet)
+    FXFILE_STL_FOR_EACH(sIterator, mSubSet)
     {
         const std::tstring &sPathForAllSubApply = *sIterator;
 
@@ -633,7 +633,7 @@ void ViewSetMgr::verify(void)
     {
         HashMap::iterator sIterator;
 
-        XPR_STL_FOR_EACH(sIterator, mHashMap)
+        FXFILE_STL_FOR_EACH(sIterator, mHashMap)
         {
             const std::tstring &sHash = sIterator->first;
 

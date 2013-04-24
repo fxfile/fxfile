@@ -119,7 +119,7 @@ xpr_size_t FileScrap::getGroupCount(void) const
 
 FileScrap::Group *FileScrap::getGroup(xpr_size_t aIndex) const
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mGroupDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mGroupDeque))
         return XPR_NULL;
 
     return mGroupDeque[aIndex];
@@ -444,7 +444,7 @@ void FileScrap::removeItem(xpr_uint_t aGroupId, xpr_size_t aIndex)
     if (XPR_IS_NULL(sGroup))
         return;
 
-    if (!XPR_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
         return;
 
     ItemDeque::iterator sIterator;
@@ -528,7 +528,7 @@ const xpr_tchar_t *FileScrap::getItemPath(xpr_uint_t aGroupId, xpr_size_t aIndex
     if (XPR_IS_NULL(sGroup))
         return XPR_NULL;
 
-    if (!XPR_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
         return XPR_NULL;
 
     Item *sItem = sGroup->mItemDeque[aIndex];
@@ -544,7 +544,7 @@ FileScrap::Item *FileScrap::getItem(xpr_uint_t aGroupId, xpr_size_t aIndex) cons
     if (XPR_IS_NULL(sGroup))
         return XPR_NULL;
 
-    if (!XPR_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, sGroup->mItemDeque))
         return XPR_NULL;
 
     return sGroup->mItemDeque[aIndex];

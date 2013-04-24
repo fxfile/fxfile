@@ -376,7 +376,7 @@ void Option::Main::View::clear(void)
     Tab *sTab;
     TabDeque::iterator sIterator;
 
-    XPR_STL_FOR_EACH(sIterator, mTabDeque)
+    FXFILE_STL_FOR_EACH(sIterator, mTabDeque)
     {
         sTab = *sIterator;
         XPR_ASSERT(sTab != XPR_NULL);

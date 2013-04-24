@@ -79,13 +79,6 @@ namespace xpr
     for ((i) = (0); (i) < aMax; ++(i))
 #define XPR_FOR_EACH_REVERSE(i, aMin) \
     for (; (i) >= aMin; --(i))
-
-#define XPR_STL_FOR_EACH(aIterator, aContainer) \
-    for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))
-#define XPR_STL_FOR_EACH_REVERSE(aIterator, aContainer) \
-    for ((aIterator) = (aContainer).rbegin(); (aIterator) != (aContainer).rend(); ++(aIterator))
-#define XPR_STL_IS_INDEXABLE(aIndex, aContainer) \
-    ((0 <= ((xpr_sint_t)(aIndex))) && (((xpr_sint_t)(aIndex)) < ((xpr_sint_t)(aContainer).size())))
 } // namespace xpr
 
 #endif // __XPR_DEFINE_H__

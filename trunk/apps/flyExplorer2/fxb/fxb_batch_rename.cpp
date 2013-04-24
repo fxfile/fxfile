@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -98,7 +98,7 @@ xpr_size_t BatchRename::getCount(void)
 
 BatRenItem *BatchRename::getItem(xpr_size_t aIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aIndex, mBatRenDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mBatRenDeque))
         return XPR_NULL;
 
     return mBatRenDeque[aIndex];

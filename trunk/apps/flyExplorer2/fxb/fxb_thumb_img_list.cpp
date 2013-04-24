@@ -65,7 +65,7 @@ xpr_sint_t ThumbImgList::getImageCount(void) const
 
 ThumbImgList::ThumbElement *ThumbImgList::getImage(xpr_sint_t aImageIndex)
 {
-    if (!XPR_STL_IS_INDEXABLE(aImageIndex, mThumbDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aImageIndex, mThumbDeque))
         return XPR_NULL;
 
     return &mThumbDeque[aImageIndex];

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -174,7 +174,7 @@ xpr_size_t CrcVerify::getCrcCount(void)
 
 const xpr_tchar_t *CrcVerify::getCrcPath(xpr_size_t aCrc)
 {
-    if (!XPR_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
         return XPR_NULL;
 
     return mCrcFileDeque[aCrc].mPath.c_str();
@@ -182,7 +182,7 @@ const xpr_tchar_t *CrcVerify::getCrcPath(xpr_size_t aCrc)
 
 xpr_size_t CrcVerify::getVerifyCount(xpr_size_t aCrc)
 {
-    if (!XPR_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
         return XPR_NULL;
 
     return mCrcFileDeque[aCrc].mVerifyFileDeque.size();
@@ -190,10 +190,10 @@ xpr_size_t CrcVerify::getVerifyCount(xpr_size_t aCrc)
 
 CrcVerify::VerifyFile *CrcVerify::getVerifyFile(xpr_size_t aCrc, xpr_size_t aVerify)
 {
-    if (!XPR_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aCrc, mCrcFileDeque))
         return XPR_NULL;
 
-    if (!XPR_STL_IS_INDEXABLE(aVerify, mCrcFileDeque[aCrc].mVerifyFileDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aVerify, mCrcFileDeque[aCrc].mVerifyFileDeque))
         return XPR_NULL;
 
     return &mCrcFileDeque[aCrc].mVerifyFileDeque[aVerify];

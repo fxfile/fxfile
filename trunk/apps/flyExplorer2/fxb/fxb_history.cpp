@@ -162,7 +162,7 @@ LPITEMIDLIST History::popBackward(LPITEMIDLIST aFullPidl)
 
 LPITEMIDLIST History::popBackward(LPITEMIDLIST aFullPidl, xpr_size_t aBack)
 {
-    if (!XPR_STL_IS_INDEXABLE(aBack, mBackwardDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aBack, mBackwardDeque))
         return XPR_NULL;
 
     LPITEMIDLIST sFullPidl;
@@ -212,7 +212,7 @@ LPITEMIDLIST History::popForward(LPITEMIDLIST aFullPidl)
 
 LPITEMIDLIST History::popForward(LPITEMIDLIST aFullPidl, xpr_size_t aForward)
 {
-    if (!XPR_STL_IS_INDEXABLE(aForward, mForwardDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aForward, mForwardDeque))
         return XPR_NULL;
 
     LPITEMIDLIST sFullPidl;
@@ -248,7 +248,7 @@ LPITEMIDLIST History::getHistory(xpr_size_t aHistory) const
 {
     aHistory = mHistoryDeque.size() - aHistory - 1;
 
-    if (!XPR_STL_IS_INDEXABLE(aHistory, mHistoryDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aHistory, mHistoryDeque))
         return XPR_NULL;
 
     return mHistoryDeque.at(aHistory);
