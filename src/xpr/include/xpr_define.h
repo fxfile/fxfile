@@ -78,7 +78,7 @@ namespace xpr
 #define XPR_FOR_EACH(i, aMax) \
     for ((i) = (0); (i) < aMax; ++(i))
 #define XPR_FOR_EACH_REVERSE(i, aMin) \
-    for ((i) = (0); (i) >= aMin; --(i))
+    for (; (i) >= aMin; --(i))
 
 #define XPR_STL_FOR_EACH(aIterator, aContainer) \
     for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))
