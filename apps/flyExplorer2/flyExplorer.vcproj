@@ -150,7 +150,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../../src/xpr/include;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
+				AdditionalIncludeDirectories="./;../../src/xpr/include;../../src/base;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -1419,10 +1419,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\fxb\fxb_macros.h"
-				>
-			</File>
-			<File
 				RelativePath=".\fxb\fxb_md5.cpp"
 				>
 			</File>
@@ -1975,11 +1971,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\LauncherMgr.cpp"
+				RelativePath=".\LauncherManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\LauncherMgr.h"
+				RelativePath=".\LauncherManager.h"
 				>
 			</File>
 			<File
@@ -2201,6 +2197,14 @@
 			</File>
 			<File
 				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdaterManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\UpdaterManager.h"
 				>
 			</File>
 			<File
@@ -3152,6 +3156,42 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="[1] Base layer"
+			>
+			<File
+				RelativePath="..\..\src\base\conf_file.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\conf_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\conf_file_ex.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\def.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\def_win.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\update_info_manager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\update_info_manager.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\base\updater_def.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\res\flyExplorer.exe.manifest"

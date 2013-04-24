@@ -140,8 +140,8 @@ xpr_bool_t AccelTable::save(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCou
     FileHeader sFileHeader = {0};
     strcpy(sFileHeader.mProgram,     "flyExplorer");
     strcpy(sFileHeader.mDescription, "AccelKey");
-    sFileHeader.mMajorVer     = MAJOR_VER;
-    sFileHeader.mMinorVer     = MINOR_VER;
+    sFileHeader.mMajorVer     = FXFILE_MAJOR_VER;
+    sFileHeader.mMinorVer     = FXFILE_MINOR_VER;
     sFileHeader.mCommpression = 0;
     sFileHeader.mStringMode   = 0;
     sFileHeader.mFileType     = 1;

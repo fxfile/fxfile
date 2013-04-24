@@ -506,6 +506,15 @@
 			<String ID="popup.about.version">버전</String>
 			<String ID="popup.about.button.system_info">시스템 정보(&amp;S)...</String>
 			<String ID="popup.about.button.bug_report">버그 보고(&amp;B)...</String>
+			<String ID="popup.about.button.update">업데이트(&amp;U)</String>
+			<String ID="popup.about.label.update.checking">업데이트 검사 중...</String>
+			<String ID="popup.about.label.update.check_failed">업데이트 검사 실패.</String>
+			<String ID="popup.about.label.update.checked">새 버전이 존재합니다. (새 버전: v%1%)</String>
+			<String ID="popup.about.label.update.downloading">새 버전 다운로드 중... (새 버전: v%1%)</String>
+			<String ID="popup.about.label.update.downloaded">최신 버전으로 업데이트가 필요합니다. (새 버전: v%1%)</String>
+			<String ID="popup.about.label.update.download_failed">새 버전 다운로드 실패.</String>
+			<String ID="popup.about.label.update.latest_version">설치된 프로그램이 최신 버전입니다.</String>
+			<String ID="popup.about.msg.installer_execute_error">설치 프로그램 실행 오류 (오류코드: %1%)</String>
 
 			<!-- keyboard shortcut popup -->
 			<String ID="popup.accel.title">단축키 설정</String>
@@ -1355,6 +1364,7 @@
 			<String ID="popup.cfg.tree.advanced">고급</String>
 			<String ID="popup.cfg.tree.advanced.conf_dir">설정 파일</String>
 			<String ID="popup.cfg.tree.advanced.global_hotkey">전역 단축키</String>
+			<String ID="popup.cfg.tree.advanced.update">업데이트</String>
 			<String ID="popup.cfg.msg.confirm_default">환경 설정을 모두 기본값으로 설정하시겠습니까?&#10;지금 기본값으로 설정되면 이전 설정값으로 되돌릴 수 없습니다.</String>
 			<String ID="popup.cfg.msg.default_ok">환경 설정의 모든 내용을 초기화하였습니다.</String>
 			<String ID="popup.cfg.msg.apply_language_on_next_loading_time">적용하고자 하는 언어는 다음번 프로그램 실행시 적용됩니다.</String>
@@ -1664,12 +1674,14 @@
 			<String ID="popup.cfg.body.advanced.check.system_tray_show_tray_when_minimizing">최소화시 트레이로 표시(&amp;Z)</String>
 			<String ID="popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring">복원시 초기 폴더로 이동하기(&amp;I)</String>
 			<String ID="popup.cfg.body.advanced.check.system_tray_restore_on_one_click">한번 클릭으로 복원/숨기기(&amp;O)</String>
+			<String ID="popup.cfg.body.advanced.check.update_enable">최신 버전 업데이트 검사</String>
+			<String ID="popup.cfg.body.advanced.check.update_check_minor_version_up">마이너 버전도 업데이트 검사</String>
 			<String ID="popup.cfg.body.advanced.button.remove_recent_file_list">최근 실행된 목록 지우기(&amp;E)</String>
 			<String ID="popup.cfg.body.advanced.button.restore_to_default">기본값 복원(&amp;D)</String>
 			<String ID="popup.cfg.body.advanced.msg.confirm_remove_recent_file_list">최근 실행된 목록을 정말 모두 지우시겠습니까?</String>
 
-			<String ID="popup.cfg.body.advanced.conf_dir.radio.program">프로그램과 같은 경로(관리자 권한 필요할 수도 있음)(&amp;P)</String>
 			<String ID="popup.cfg.body.advanced.conf_dir.radio.appdata">%AppData% 폴더(기본값)(&amp;D)</String>
+			<String ID="popup.cfg.body.advanced.conf_dir.radio.program">프로그램 설치 폴더(&amp;P)</String>
 			<String ID="popup.cfg.body.advanced.conf_dir.radio.custom">사용자 정의 폴더(&amp;U)</String>
 			<String ID="popup.cfg.body.advanced.conf_dir.folder_browse.title">폴더를 선택하여 주십시오.</String>
 			<String ID="popup.cfg.body.advanced.conf_dir.msg.cannot_set">지정하신 폴더로 설정 파일을 저장할 수 없습니다. 지정하신 폴더는 관리자 권한이 필요하거나 파일 쓰기 금지가 되어 있을 수 있습니다. 검토 후 다시 설정해 주십시오.</String>
@@ -1680,6 +1692,9 @@
 			<String ID="popup.cfg.body.advanced.global_hotkey.label.ref">(참고: 윈도우 탐색기의 실행 기본 전역 단축키는 Window키 + E 입니다.)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.windows_startup">윈도우즈 시작시 자동 실행(&amp;W)</String>
 			<String ID="popup.cfg.body.advanced.global_hotkey.check.show_tray">시스템 트레이 표시(&amp;T)</String>
+
+			<String ID="popup.cfg.body.advanced.update.check.enable">최신 버전 검사(&amp;E)</String>
+			<String ID="popup.cfg.body.advanced.update.check.check_minor_version_up">프로그램 시작시 검사(&amp;P)</String>
 
 			<!-- popup: select folder -->
 			<String ID="popup.select_folder.title">폴더 선택</String>

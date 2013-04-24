@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "LauncherMgr.h"
+#include "LauncherManager.h"
 
 #include <atlbase.h> // for CRegKey
 
@@ -18,18 +18,18 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-static const xpr_tchar_t kLauncherProgramDebug[] = XPR_STRING_LITERAL("fxLauncher_dbg.exe");
-static const xpr_tchar_t kLauncherProgram[]      = XPR_STRING_LITERAL("fxLauncher.exe");
-static const xpr_tchar_t kLauncherWindowClass[]  = XPR_STRING_LITERAL("fxLauncher");
+static const xpr_tchar_t kLauncherProgramDebug          [] = XPR_STRING_LITERAL("fxLauncher_dbg.exe");
+static const xpr_tchar_t kLauncherProgram               [] = XPR_STRING_LITERAL("fxLauncher.exe");
+static const xpr_tchar_t kLauncherWindowClass           [] = XPR_STRING_LITERAL("fxLauncher");
+static const xpr_tchar_t kLauncherRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+static const xpr_tchar_t kLauncherRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxLauncher");
 
 static const xpr_uint_t WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Load"));
 static const xpr_uint_t WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Tray"));
 static const xpr_uint_t WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: HotKey"));
 static const xpr_uint_t WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Exit"));
 
-static const xpr_tchar_t kKeyName[] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-
-void LauncherMgr::startLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
+void LauncherManager::startupProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
 {
     HWND sHwnd = ::FindWindow(kLauncherWindowClass, XPR_NULL);
     if (XPR_IS_NULL(sHwnd))
@@ -59,7 +59,7 @@ void LauncherMgr::startLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray
     }
 }
 
-void LauncherMgr::stopLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
+void LauncherManager::shutdownProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
 {
     HWND sHwnd = ::FindWindow(kLauncherWindowClass, XPR_NULL);
     if (XPR_IS_NOT_NULL(sHwnd))
@@ -71,15 +71,15 @@ void LauncherMgr::stopLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
     }
 }
 
-void LauncherMgr::registerWinStartup(void)
+void LauncherManager::registerWinStartup(void)
 {
     CRegKey sRegKey;
-    if (sRegKey.Open(HKEY_CURRENT_USER, kKeyName) == ERROR_SUCCESS)
+    if (sRegKey.Open(HKEY_CURRENT_USER, kLauncherRegKey) == ERROR_SUCCESS)
     {
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         fxb::GetModuleDir(sPath, XPR_MAX_PATH);
 
-        _tcscat(sPath, XPR_STRING_LITERAL("\\"));
+        _tcscat(sPath, XPR_FILE_SEPARATOR_STRING);
 
 #ifdef XPR_CFG_BUILD_DEBUG
         _tcscat(sPath, kLauncherProgramDebug);
@@ -87,18 +87,18 @@ void LauncherMgr::registerWinStartup(void)
         _tcscat(sPath, kLauncherProgram);
 #endif
 
-        sRegKey.SetStringValue(XPR_STRING_LITERAL("fxLauncher"), sPath);
+        sRegKey.SetStringValue(kLauncherRegValueNameWinStartup, sPath);
     }
 
     sRegKey.Close();
 }
 
-void LauncherMgr::unregisterWinStartup(void)
+void LauncherManager::unregisterWinStartup(void)
 {
     CRegKey sRegKey;
-    if (sRegKey.Open(HKEY_CURRENT_USER, kKeyName) == ERROR_SUCCESS)
+    if (sRegKey.Open(HKEY_CURRENT_USER, kLauncherRegKey) == ERROR_SUCCESS)
     {
-        sRegKey.DeleteValue(XPR_STRING_LITERAL("fxLauncher"));
+        sRegKey.DeleteValue(kLauncherRegValueNameWinStartup);
     }
 
     sRegKey.Close();

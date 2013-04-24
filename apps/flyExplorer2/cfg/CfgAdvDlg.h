@@ -33,6 +33,7 @@ protected:
     afx_msg void OnTray(void);
     afx_msg void OnDefault(void);
     afx_msg void OnRemoveRecentFileList(void);
+    afx_msg void OnUpdateChecker(void);
 };
 
 #endif // __FX_CFG_ADV_DLG_H__

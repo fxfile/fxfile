@@ -39,6 +39,8 @@ public:
         TypeCoolBar,
         TypeToolBar,
         TypeThumbnail,
+        TypeLauncher,
+        TypeUpdater,
         TypeEnd,
     };
 

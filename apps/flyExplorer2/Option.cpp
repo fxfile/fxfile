@@ -351,6 +351,9 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.global_hotkey.windows_startup"),              OptionKey::TypeBoolean, &Option::mConfig.mLauncherWinStartup,           (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.global_hotkey.key"),                          OptionKey::TypeInteger, &Option::mConfig.mLauncherGlobalHotKey,         (void *)XPR_FALSE                      },
 
+    { XPR_STRING_LITERAL("config.update_check.enable"),                        OptionKey::TypeInteger, &Option::mConfig.mUpdateCheckEnable,            (void *)XPR_TRUE                       },
+    { XPR_STRING_LITERAL("config.update_check.minor_version_up"),              OptionKey::TypeInteger, &Option::mConfig.mUpdateCheckMinorVer,          (void *)XPR_FALSE                      },
+
     { XPR_STRING_LITERAL("config.language"),                                   OptionKey::TypeString,   Option::mConfig.mLanguage,                     (void *)XPR_STRING_LITERAL("English")  },
 };
 
