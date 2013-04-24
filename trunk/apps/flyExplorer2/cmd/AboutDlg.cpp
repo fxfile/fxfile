@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -18,14 +18,29 @@
 
 #include <atlbase.h>
 
+#include "updater_def.h"
+#include "update_info_manager.h"
+#include "UpdaterManager.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
+using namespace fxfile;
+using namespace fxfile::base;
+
+// user defined timer
+enum
+{
+    kTimerIdUpdateCheckFirst = 100,
+    kTimerIdUpdateCheck,
+};
+
 AboutDlg::AboutDlg(void)
     : super(IDD_ABOUT)
+    , mUpdateInfoManager(XPR_NULL)
 {
 }
 
@@ -38,8 +53,10 @@ void AboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(AboutDlg, super)
     ON_WM_LBUTTONDOWN()
     ON_WM_DESTROY()
+    ON_WM_TIMER()
     ON_BN_CLICKED(IDC_ABOUT_BUG,    OnBug)
     ON_BN_CLICKED(IDC_ABOUT_SYSTEM, OnSystem)
+    ON_BN_CLICKED(IDC_ABOUT_UPDATE, OnUpdate)
 END_MESSAGE_MAP()
 
 xpr_bool_t AboutDlg::OnInitDialog(void) 
@@ -72,14 +89,7 @@ xpr_bool_t AboutDlg::OnInitDialog(void)
 
     // Version
     xpr_tchar_t sVersion[0xff] = {0};
-    _stprintf(sVersion, XPR_STRING_LITERAL("version %d.%d.%d %s"), MAJOR_VER, MINOR_VER, PATCH_VER,
-#ifdef XPR_CFG_UNICODE
-        XPR_STRING_LITERAL("Unicode")
-#else
-        XPR_STRING_LITERAL("Ansicode")
-#endif
-        );
-    _tcscat(sVersion, XPR_STRING_LITERAL(", alpha3"));
+    getFullAppVer(sVersion);
     SetDlgItemText(IDC_ABOUT_VERSION, sVersion);
 
     // Get Version - Module, Dll
@@ -127,6 +137,13 @@ xpr_bool_t AboutDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDC_ABOUT_SYSTEM,       theApp.loadString(XPR_STRING_LITERAL("popup.about.button.system_info")));
     SetDlgItemText(IDC_ABOUT_BUG,          theApp.loadString(XPR_STRING_LITERAL("popup.about.button.bug_report")));
+    SetDlgItemText(IDC_ABOUT_UPDATE,       theApp.loadString(XPR_STRING_LITERAL("popup.about.button.update")));
+
+    // disable update button
+    GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_HIDE);
+
+    // start update check timer
+    SetTimer(kTimerIdUpdateCheckFirst, 0, XPR_NULL);
 
     return XPR_TRUE;
 }
@@ -139,8 +156,106 @@ void AboutDlg::OnLButtonDown(xpr_uint_t nFlags, CPoint point)
 
 void AboutDlg::OnDestroy(void) 
 {
+    // stop update check timer
+    KillTimer(kTimerIdUpdateCheckFirst);
+    KillTimer(kTimerIdUpdateCheck);
+
+    XPR_SAFE_DELETE(mUpdateInfoManager);
+
     super::OnDestroy();
+
     mBoldFont.DeleteObject();
+}
+
+void AboutDlg::OnTimer(xpr_uint_t aIdEvent)
+{
+    if (aIdEvent == kTimerIdUpdateCheckFirst ||
+        aIdEvent == kTimerIdUpdateCheck)
+    {
+        if (aIdEvent == kTimerIdUpdateCheckFirst)
+        {
+            KillTimer(aIdEvent);
+            SetTimer(kTimerIdUpdateCheck, 300, XPR_NULL);
+        }
+
+        xpr_rcode_t sRcode;
+        xpr_tchar_t sStatus[0xff];
+        xpr_tchar_t sCheckedVersion[0xff];
+        UpdateInfo  sUpdateInfo = {0};
+
+        if (XPR_IS_NULL(mUpdateInfoManager))
+        {
+            mUpdateInfoManager = new UpdateInfoManager;
+            mUpdateInfoManager->setUpdateHomeDir(L"C:\\Users\\flychk\\AppData\\Roaming\\fxfile\\update");
+
+            sRcode = mUpdateInfoManager->openUpdateInfo();
+            if (XPR_RCODE_IS_ERROR(sRcode))
+            {
+                XPR_SAFE_DELETE(mUpdateInfoManager);
+                return;
+            }
+        }
+
+        if (XPR_IS_NOT_NULL(mUpdateInfoManager))
+        {
+            sRcode = mUpdateInfoManager->readUpdateInfo(sUpdateInfo);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                switch (sUpdateInfo.mStatus)
+                {
+                case kUpdateStatusCheckInProgress:
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.label.update.checking")));
+                    break;
+
+                case kUpdateStatusCheckFailed:
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.label.update.check_failed")));
+                    break;
+
+                case kUpdateStatusExistNewVer:
+                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+
+                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.checked"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+                    break;
+
+                case kUpdateStatusLastestVer:
+                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+
+                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.latest_version"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+
+                    KillTimer(aIdEvent);
+                    break;
+
+                case kUpdateStatusDownloading:
+                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+
+                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.downloading"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+                    break;
+
+                case kUpdateStatusDownloaded:
+                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+
+                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.downloaded"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+                    GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_SHOW);
+
+                    KillTimer(aIdEvent);
+                    break;
+
+                case kUpdateStatusDownloadFailed:
+                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+
+                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.download_failed"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+                    break;
+                }
+            }
+        }
+    }
+
+    CWnd::OnTimer(aIdEvent);
 }
 
 void AboutDlg::OnBug(void) 
@@ -199,4 +314,37 @@ void AboutDlg::OnBug(void)
 void AboutDlg::OnSystem(void)
 {
     ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), XPR_STRING_LITERAL("msinfo32.exe"), XPR_NULL, XPR_NULL, 0);
+}
+
+void AboutDlg::OnUpdate(void)
+{
+    xpr_rcode_t sRcode;
+    UpdateInfo  sUpdateInfo = {0};
+    xpr_tchar_t sDownloadedFilePath[XPR_MAX_PATH + 1] = {0};
+
+    sRcode = mUpdateInfoManager->readUpdateInfo(sUpdateInfo);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
+    {
+        if (sUpdateInfo.mStatus == kUpdateStatusDownloaded)
+        {
+            UpdateInfoManager::getDownloadedFilePath(sUpdateInfo, sDownloadedFilePath, XPR_MAX_PATH);
+
+            HINSTANCE sInstance = ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sDownloadedFilePath, XPR_NULL, XPR_NULL, SW_SHOW);
+            if ((xpr_sint_t)(xpr_sintptr_t)sInstance < 32)
+            {
+                xpr_sint_t sErrorCode = (xpr_sint_t)(xpr_sintptr_t)sInstance;
+
+                xpr_tchar_t sMsg[0xff] = {0};
+                _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.msg.installer_execute_error"), XPR_STRING_LITERAL("%d")), sErrorCode);
+                ::MessageBox(XPR_NULL, sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
+
+                if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))
+                {
+                    // restart update checker program
+                    UpdaterManager::shutdownProcess();
+                    UpdaterManager::startupProcess();
+                }
+            }
+        }
+    }
 }

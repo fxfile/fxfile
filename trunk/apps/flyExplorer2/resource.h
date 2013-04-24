@@ -209,6 +209,8 @@
 #define IDC_ABOUT_NAME                  1001
 #define IDC_CREATE_SHORTCUT_STARTUP     1002
 #define IDC_SEARCH_TEXT                 1002
+#define IDC_ABOUT_NAME2                 1002
+#define IDC_ABOUT_UPDATE_INFO           1002
 #define IDC_SHORTCUT_TARGET             1003
 #define IDC_CREATE_SHORTCUT_TARGET      1003
 #define IDC_BROWSE                      1005
@@ -1052,6 +1054,7 @@
 #define IDC_ABOUT_SYSTEM                1508
 #define IDC_CFG_HISTORY_LABEL_HISTORY_COUNT 1509
 #define IDC_ACCEL_LABEL_CATEGORY        1509
+#define IDC_ABOUT_UPDATE                1509
 #define IDC_CFG_DESC                    1513
 #define IDC_ACCEL_LABEL_ASSIGNED_TO     1515
 #define IDC_ACCEL_LABEL_COMMANDS        1516
@@ -1389,6 +1392,8 @@
 #define IDC_CFG_ADV_GROUP_TRAY          1834
 #define IDC_CFG_ADV_TRAY_NONE           1835
 #define IDC_CFG_ADV_TRAY_SHOW           1836
+#define IDC_CFG_ADV_UPDATE_ENABLE       1844
+#define IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP 1845
 #define ID_FILE_NEW_FOLDER              30000
 #define ID_FILE_NEW_FILE                30001
 #define ID_FILE_NEW_TEXT                30002
@@ -1789,7 +1794,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        424
 #define _APS_NEXT_COMMAND_VALUE         50006
-#define _APS_NEXT_CONTROL_VALUE         1837
+#define _APS_NEXT_CONTROL_VALUE         1846
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

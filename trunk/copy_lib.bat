@@ -28,3 +28,8 @@ xcopy "lib\libxml2\bin\zlib1.dll" "bin" /c /e /r /y
 xcopy "lib\libxml2\bin\zlib1.dll" "bin\x86-ansicode" /c /e /r /y
 xcopy "lib\libxml2\bin\zlib1.dll" "bin\x86-unicode" /c /e /r /y
 xcopy "lib\libxml2\bin\zlib1.dll" "bin\x64-unicode" /c /e /r /y
+
+xcopy "lib\libcurl\bin\libcurl.dll" "bin" /c /e /r /y
+xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-ansicode" /c /e /r /y
+xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-unicode" /c /e /r /y
+xcopy "lib\libcurl\bin\libcurl.dll" "bin\x64-unicode" /c /e /r /y

@@ -212,6 +212,8 @@ const xpr_tchar_t *ConfDir::getFileName(xpr_sint_t aType)
     case TypeCoolBar:    return XPR_STRING_LITERAL("fxfile-coolbar.dat");
     case TypeToolBar:    return XPR_STRING_LITERAL("fxfile-toolbar.dat");
     case TypeThumbnail:  return XPR_STRING_LITERAL("fxfile-thumbnail.*");
+    case TypeLauncher:   return XPR_STRING_LITERAL("fxfile-launcher.conf");
+    case TypeUpdater:    return XPR_STRING_LITERAL("fxfile-updater.conf");
     }
 
     return XPR_NULL;

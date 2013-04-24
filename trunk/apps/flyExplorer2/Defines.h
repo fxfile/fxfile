@@ -70,6 +70,10 @@
 #define MIN_PANE_SIZE             (50)
 #define SPLITTER_SIZE             (2)
 
+#define UPDATE_CHECK_TIME_MIN     (1)
+#define UPDATE_CHECK_TIME_DEF     (24)
+#define UPDATE_CHECK_TIME_MAX     (365 * 24)
+
 enum
 {
     RENAME_EXT_TYPE_DEFAULT = 0,

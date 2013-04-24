@@ -7,17 +7,17 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FX_LAUNCHER_MGR_H__
-#define __FX_LAUNCHER_MGR_H__
+#ifndef __FX_LAUNCHER_MANAGER_H__
+#define __FX_LAUNCHER_MANAGER_H__
 #pragma once
 
-class LauncherMgr
+class LauncherManager
 {
 public:
-    static void startLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray);
-    static void stopLauncher(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray);
+    static void startupProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray);
+    static void shutdownProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray);
     static void registerWinStartup(void);
     static void unregisterWinStartup(void);
 };
 
-#endif // __FX_LAUNCHER_MGR_H__
+#endif // __FX_LAUNCHER_MANAGER_H__

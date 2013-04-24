@@ -28,7 +28,8 @@
 #include "AppVer.h"
 #include "command_string_table.h"
 #include "ShellRegistry.h"
-#include "LauncherMgr.h"
+#include "LauncherManager.h"
+#include "UpdaterManager.h"
 
 #include "gfl/libgfl.h"
 
@@ -428,25 +429,40 @@ void ExplorerApp::onChangedConfig(Option &aOption)
         ShellRegistry::unregisterShell();
     }
 
-    // launcher
+    // fxfile-launcher
     if (XPR_IS_TRUE(aOption.mConfig.mLauncher))
     {
-        LauncherMgr::startLauncher(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
+        LauncherManager::startupProcess(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
     }
     else
     {
-        LauncherMgr::stopLauncher(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
+        LauncherManager::shutdownProcess(aOption.mConfig.mLauncherGlobalHotKey, aOption.mConfig.mLauncherTray);
     }
 
     if (XPR_IS_TRUE(aOption.mConfig.mLauncherWinStartup))
     {
-        LauncherMgr::registerWinStartup();
+        LauncherManager::registerWinStartup();
     }
     else
     {
-        LauncherMgr::unregisterWinStartup();
+        LauncherManager::unregisterWinStartup();
     }
 
+    // fxfile-updater
+    UpdaterManager::writeUpdaterConf(aOption.mConfig);
+
+    if (XPR_IS_TRUE(aOption.mConfig.mUpdateCheckEnable))
+    {
+        UpdaterManager::startupProcess();
+        UpdaterManager::registerWinStartup();
+    }
+    else
+    {
+        UpdaterManager::shutdownProcess();
+        UpdaterManager::unregisterWinStartup();
+    }
+
+    // notify changed options to main frame
     MainFrame *sMainFrame = (MainFrame *)GetMainWnd();
 
     sMainFrame->setChangedOption(aOption);

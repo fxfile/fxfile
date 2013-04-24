@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,6 +11,14 @@
 #define __FX_ABOUT_DLG_H__
 #pragma once
 
+namespace fxfile
+{
+namespace base
+{
+class UpdateInfoManager;
+} // namespace base
+} // namespace fxfile
+
 class AboutDlg : public CDialog
 {
     typedef CDialog super;
@@ -19,9 +27,10 @@ public:
     AboutDlg(void);
 
 protected:
-    CFont mBoldFont;
+    fxfile::base::UpdateInfoManager *mUpdateInfoManager;
 
 protected:
+    CFont   mBoldFont;
     CStatic mProgramWnd;
 
 protected:
@@ -32,8 +41,10 @@ protected:
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnLButtonDown(xpr_uint_t nFlags, CPoint point);
     afx_msg void OnDestroy(void);
+    afx_msg void OnTimer(xpr_uint_t aIdEvent);
     afx_msg void OnBug(void);
     afx_msg void OnSystem(void);
+    afx_msg void OnUpdate(void);
 };
 
 #endif // __FX_ABOUT_DLG_H__

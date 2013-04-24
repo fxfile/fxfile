@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,10 +11,17 @@
 #define __FX_APP_VER_H__
 #pragma once
 
-#define MAJOR_VER 2
-#define MINOR_VER 0
-#define PATCH_VER 0
+// minor version
+//   - odd version : stable version
+//   - even version: development version
+
+#define FXFILE_MAJOR_VER 2
+#define FXFILE_MINOR_VER 0
+#define FXFILE_PATCH_VER 3
+
+#define FXFILE_VER_STRING "2.0.3"
 
 void getAppVer(xpr_tchar_t *aAppVer);
+void getFullAppVer(xpr_tchar_t *aAppVer);
 
 #endif // __FX_APP_VER_H__

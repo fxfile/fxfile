@@ -11,32 +11,11 @@
 #define __FXB_H__
 #pragma once
 
-//
-// C++ standard libraries
-//
-#include <stack>
-#include <queue>
-#include <deque>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
-#include <string>
-#include <cctype>
-
-//
-// windows
-//
-#include <shlwapi.h>
-#include <shlobj.h>
+#include "def.h"
 
 //
 // flyExplorer base library
 //
-#include "fxb_macros.h"
 #include "fxb_string.h"
 #include "fxb_path.h"
 #include "fxb_bitmap.h"
