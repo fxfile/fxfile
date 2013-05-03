@@ -24,6 +24,7 @@ XPR_DL_API void traceOutW(const xpr_wchar_t *aFormat, ...);
 #define XPR_TRACE              xpr::traceOutA
 #endif
 #define XPR_ASSERT(exp)        assert(exp)
+#define XPR_DEBUG_ASSERT(exp)  assert(exp)
 #define XPR_VERIFY(exp)        assert(exp)
 #define XPR_WARNING(cond, msg) ((cond) ? __noop : XPR_TRACE(msg))
 
@@ -31,7 +32,8 @@ XPR_DL_API void traceOutW(const xpr_wchar_t *aFormat, ...);
 
 inline void traceOut(...) {}
 #define XPR_TRACE              __noop
-#define XPR_ASSERT(exp)        __noop
+#define XPR_ASSERT(exp)        assert(exp)
+#define XPR_DEBUG_ASSERT(exp)  __noop
 #define XPR_VERIFY(exp)        exp
 #define XPR_WARNING(cond, msg) __noop
 
