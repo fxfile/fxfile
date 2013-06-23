@@ -294,9 +294,14 @@ void String::reset(void)
 void String::clear(void)
 {
     mLength = 0;
+
+    if (XPR_IS_NOT_NULL(mString))
+    {
+        mString[0] = 0;
+    }
 }
 
-xpr_bool_t String::empty(void)
+xpr_bool_t String::empty(void) const
 {
     return (XPR_IS_NULL(mString) || mLength == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -868,24 +873,30 @@ String::Iterator String::insert(Iterator aPos, Iterator aFirst, Iterator aLast)
 
 String& String::erase(xpr_size_t aPos, xpr_size_t aLength)
 {
+    xpr_size_t sLength = aLength;
+
     if (aPos == 0)
     {
-        if (aLength == npos || mLength >= aLength)
+        if (sLength == npos || sLength >= mLength)
         {
             clear();
             return *this;
         }
     }
 
-    if (aLength == npos)
+    if (sLength == npos)
     {
-        aLength = mLength - aPos;
+        sLength = mLength - aPos;
+    }
+    else
+    {
+        sLength = min(sLength, mLength - aPos);
     }
 
-    memmove(mString + aPos, mString + aPos + aLength, (mLength - (aPos + aLength)) * sizeof(xpr_char_t));
-    mString[mLength - aLength] = 0;
+    memmove(mString + aPos, mString + aPos + sLength, (mLength - (aPos + sLength)) * sizeof(xpr_char_t));
+    mString[mLength - sLength] = 0;
 
-    mLength -= aLength;
+    mLength -= sLength;
 
     return *this;
 }
@@ -945,16 +956,20 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
         return *this;
     }
 
-    xpr_size_t sLength = strlen(aString);
-    if (sLength > aLength2)
-        sLength = aLength2;
+    xpr_size_t sLength1 = aLength1;
+    if (sLength1 == npos)
+        sLength1 = strlen(mString + aPos);
 
-    xpr_size_t sNewLength = mLength - aLength1 + sLength;
+    xpr_size_t sLength2 = strlen(aString);
+    if (sLength2 > aLength2)
+        sLength2 = aLength2;
+
+    xpr_size_t sNewLength = mLength - sLength1 + sLength2;
 
     if (mCapacity > sNewLength)
     {
-        memmove(mString + aPos + sLength, mString + aPos + aLength1, (mLength - aPos - aLength1) * sizeof(xpr_char_t));
-        strncpy(mString + aPos, aString, sLength);
+        memmove(mString + aPos + sLength2, mString + aPos + sLength1, (mLength - aPos - sLength1) * sizeof(xpr_char_t));
+        strncpy(mString + aPos, aString, sLength2);
         mString[sNewLength] = 0;
 
         mLength = sNewLength;
@@ -971,8 +986,8 @@ String& String::replace(xpr_size_t aPos, xpr_size_t aLength1, const xpr_char_t *
         }
 
         strncpy(sNewString, mString, aPos);
-        strncpy(sNewString + aPos, aString, sLength);
-        strncpy(sNewString + aPos + sLength, mString + aPos + aLength1, mLength - aPos - aLength1);
+        strncpy(sNewString + aPos, aString, sLength2);
+        strncpy(sNewString + aPos + sLength2, mString + aPos + sLength1, mLength - aPos - sLength1);
         sNewString[sNewLength] = 0;
 
         reset();
@@ -1689,42 +1704,42 @@ xpr_sint_t String::compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char
     return (aLength1 < aLength2) ? -1 : 1;
 }
 
-xpr_sint_t String::compare_incase(const String &aString) const
+xpr_sint_t String::compare_case(const String &aString) const
 {
-    return compare_incase(0, mLength, aString.mString, aString.mLength);
+    return compare_case(0, mLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare_incase(const xpr_char_t *aString) const
-{
-    if (XPR_IS_NULL(aString))
-        return 1;
-
-    xpr_size_t sLength = strlen(aString);
-
-    return compare_incase(0, mLength, aString, sLength);
-}
-
-xpr_sint_t String::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const String &aString) const
-{
-    return compare_incase(aPos, aLength, aString.mString, aString.mLength);
-}
-
-xpr_sint_t String::compare_incase(xpr_size_t aPos, xpr_size_t aLength, const xpr_char_t *aString) const
+xpr_sint_t String::compare_case(const xpr_char_t *aString) const
 {
     if (XPR_IS_NULL(aString))
         return 1;
 
     xpr_size_t sLength = strlen(aString);
 
-    return compare_incase(aPos, aLength, aString, sLength);
+    return compare_case(0, mLength, aString, sLength);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
+xpr_sint_t String::compare_case(xpr_size_t aPos, xpr_size_t aLength, const String &aString) const
 {
-    return compare_incase(aPos1, aLength1, aString.mString + aPos2, aLength2);
+    return compare_case(aPos, aLength, aString.mString, aString.mLength);
 }
 
-xpr_sint_t String::compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char_t *aString, xpr_size_t aLength2) const
+xpr_sint_t String::compare_case(xpr_size_t aPos, xpr_size_t aLength, const xpr_char_t *aString) const
+{
+    if (XPR_IS_NULL(aString))
+        return 1;
+
+    xpr_size_t sLength = strlen(aString);
+
+    return compare_case(aPos, aLength, aString, sLength);
+}
+
+xpr_sint_t String::compare_case(xpr_size_t aPos1, xpr_size_t aLength1, const String &aString, xpr_size_t aPos2, xpr_size_t aLength2) const
+{
+    return compare_case(aPos1, aLength1, aString.mString + aPos2, aLength2);
+}
+
+xpr_sint_t String::compare_case(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_char_t *aString, xpr_size_t aLength2) const
 {
     XPR_ASSERT(aPos1 <= mLength);
 
