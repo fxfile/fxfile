@@ -217,6 +217,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\xpr\xpr_file_path_win.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\xpr\xpr_file_sys_win.cpp"
 				>
 			</File>
@@ -371,6 +375,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\xpr_file_path.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\xpr_file_sys.h"
 				>
 			</File>
@@ -452,6 +460,10 @@
 			</File>
 			<File
 				RelativePath=".\include\xpr_types.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\xpr_uri.h"
 				>
 			</File>
 			<File
