@@ -96,7 +96,7 @@ public:
     xpr_sint_t mGmtOff;      // seconds east of UTC
 };
 
-const TimeExpr kInitTimeExpr = {0, 0, 0, 0, 0, 0, 0, 0, XPR_FALSE};
+const TimeExpr kInitTimeExpr = {0, 0, 0, 0, 0, 0, 0, 0, XPR_FALSE, 0};
 
 XPR_DL_API xpr_time_t getTimeNow(void);
 XPR_DL_API void getTimeNow(xpr_time_t &aTimeNow);
