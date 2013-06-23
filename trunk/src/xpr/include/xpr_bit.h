@@ -14,7 +14,7 @@ namespace xpr
 #define XPR_BIT_MASK(n) (XPR_BIT(n) - 1)
 #define XPR_TEST_BIT_INDEX(n, i) (((n) & (XPR_BIT(i))) == 1)
 #define XPR_SET_BIT_INDEX(n, i) ((n) |= (XPR_BIT(i)))
-#define XPR_CLEAR_BIT_INDEX(n, i) ((n) &= ~(XPR_BIT(i)))
+#define XPR_CLR_BIT_INDEX(n, i) ((n) &= ~(XPR_BIT(i)))
 
 #define XPR_ANY_BITS(x, bits) (((x) & (bits)) ? XPR_TRUE : XPR_FALSE)
 #define XPR_TEST_BITS(x, bits) (((x) & (bits)) == (bits))
@@ -23,9 +23,9 @@ namespace xpr
 #define XPR_NONE_BITS(x) ((x) == (0))
 #define XPR_FLIP_BITS(x) ((x) = ~(x))
 #define XPR_SET_BITS(x, bits) ((x) |= (bits))
-#define XPR_CLEAR_BITS(x, bits) ((x) &= ~(bits))
-#define XPR_SET_OR_CLEAR_BITS(x, bits, set) \
-    do { if (set) { XPR_SET_BITS(x, bits); } else { XPR_CLEAR_BITS(x, bits); } } while (false)
+#define XPR_CLR_BITS(x, bits) ((x) &= ~(bits))
+#define XPR_SET_OR_CLR_BITS(x, bits, set) \
+    do { if (set) { XPR_SET_BITS(x, bits); } else { XPR_CLR_BITS(x, bits); } } while (false)
 
 #define XPR_FAST_SWAP(x, y) \
     do { (x) ^= (y); (y) ^= (x); (x) ^= (y); } while (false)

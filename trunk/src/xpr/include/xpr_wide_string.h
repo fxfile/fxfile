@@ -68,7 +68,7 @@ public:
     xpr_size_t capacity(void) const;
     void       reserve(xpr_size_t aCapacity = 0);
     void       clear(void);
-    xpr_bool_t empty(void);
+    xpr_bool_t empty(void) const;
 
 public:
     // element access
@@ -198,12 +198,12 @@ public:
     xpr_sint_t compare(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2) const;
     xpr_sint_t compare(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aPos2) const;
 
-    xpr_sint_t compare_incase(const WideString &aString) const;
-    xpr_sint_t compare_incase(const xpr_wchar_t *aString) const;
-    xpr_sint_t compare_incase(xpr_size_t aPos, xpr_size_t aLength, const WideString &aString) const;
-    xpr_sint_t compare_incase(xpr_size_t aPos, xpr_size_t aLength, const xpr_wchar_t *aString) const;
-    xpr_sint_t compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2) const;
-    xpr_sint_t compare_incase(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2) const;
+    xpr_sint_t compare_case(const WideString &aString) const;
+    xpr_sint_t compare_case(const xpr_wchar_t *aString) const;
+    xpr_sint_t compare_case(xpr_size_t aPos, xpr_size_t aLength, const WideString &aString) const;
+    xpr_sint_t compare_case(xpr_size_t aPos, xpr_size_t aLength, const xpr_wchar_t *aString) const;
+    xpr_sint_t compare_case(xpr_size_t aPos1, xpr_size_t aLength1, const WideString &aString, xpr_size_t aPos2, xpr_size_t aLength2) const;
+    xpr_sint_t compare_case(xpr_size_t aPos1, xpr_size_t aLength1, const xpr_wchar_t *aString, xpr_size_t aLength2) const;
 
 protected:
     xpr_wchar_t *alloc(const xpr_size_t &aMinCapacity, xpr_size_t &aCapacity) const;
