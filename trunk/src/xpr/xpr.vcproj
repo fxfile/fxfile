@@ -277,6 +277,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\xpr\xpr_trace_logger.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\xpr_trace_logger.h"
+				>
+			</File>
+			<File
 				RelativePath=".\xpr\xpr_ustring.cpp"
 				>
 			</File>
@@ -388,10 +396,6 @@
 			</File>
 			<File
 				RelativePath=".\include\xpr_net_io.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\xpr_pattern.h"
 				>
 			</File>
 			<File
