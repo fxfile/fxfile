@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #ifndef __XPR_VER_H__
-#define __XPR_VER_H__
+#define __XPR_VER_H__ 1
 #pragma once
 
 #include "xpr_time.h"

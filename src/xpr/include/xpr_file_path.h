@@ -161,7 +161,7 @@ protected:
     xpr_size_t   mPathType;
 };
 
-XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const tstring &aFilePath2)
+XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const xpr::tstring &aFilePath2)
 {
     return FilePath(aFilePath1) += aFilePath2;
 }
@@ -173,7 +173,7 @@ XPR_INLINE FilePath operator+ (const xpr_tchar_t *aFilePath1, const FilePath &aF
 
 XPR_INLINE FilePath operator+ (xpr_tchar_t aChar, const FilePath &aFilePath2)
 {
-    return FilePath(tstring(1, aChar)) += aFilePath2;
+    return FilePath(xpr::tstring(1, aChar)) += aFilePath2;
 }
 
 XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const xpr_tchar_t *aFilePath2)

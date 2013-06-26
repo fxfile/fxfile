@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #ifndef __XPR_CONFIG_H__
-#define __XPR_CONFIG_H__
+#define __XPR_CONFIG_H__ 1
 #pragma once
 
 #include <stdio.h>
