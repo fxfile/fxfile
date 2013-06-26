@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #ifndef __XPR_TSTRING_H__
-#define __XPR_TSTRING_H__
+#define __XPR_TSTRING_H__ 1
 #pragma once
 
 #include "xpr_string.h"

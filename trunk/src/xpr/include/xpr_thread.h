@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #ifndef __XPR_THREAD_H__
-#define __XPR_THREAD_H__
+#define __XPR_THREAD_H__ 1
 #pragma once
 
 #include "xpr_types.h"

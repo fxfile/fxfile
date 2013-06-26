@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #ifndef __XPR_BUFFER_H__
-#define __XPR_BUFFER_H__
+#define __XPR_BUFFER_H__ 1
 #pragma once
 
 namespace xpr
