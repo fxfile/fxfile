@@ -191,11 +191,11 @@ xpr_sint_t Pidl::compare(LPCITEMIDLIST aPidl, xpr_sint_t aSpecialFolder)
     }
 
     xpr_sint_t   sResult = 0;
-    HRESULT      sHResult;
+    HRESULT      sComResult;
     LPITEMIDLIST sSpecialPidl = XPR_NULL;
 
-    sHResult = ::SHGetSpecialFolderLocation(XPR_NULL, aSpecialFolder, &sSpecialPidl);
-    if (FAILED(sHResult) || XPR_IS_NULL(sSpecialPidl))
+    sComResult = ::SHGetSpecialFolderLocation(XPR_NULL, aSpecialFolder, &sSpecialPidl);
+    if (FAILED(sComResult) || XPR_IS_NULL(sSpecialPidl))
     {
         sResult = -1;
     }
@@ -343,7 +343,7 @@ xpr_bool_t Pidl::isDesktopFolder(LPCITEMIDLIST aPidl)
 
 xpr_bool_t Pidl::isSimplePidl(LPCITEMIDLIST aPidl)
 {
-    if (XPR_IS_FALSE(Pidl::isDesktopFolder(aPidl)))
+    if (XPR_IS_TRUE(Pidl::isDesktopFolder(aPidl)))
     {
         return XPR_TRUE;
     }
@@ -400,13 +400,20 @@ LPITEMIDLIST Pidl::create(const xpr_tchar_t *aPath)
     return sPidl;
 }
 
+LPITEMIDLIST Pidl::create(const xpr::tstring &aPath)
+{
+    const xpr_tchar_t *sPath = aPath.c_str();
+
+    return create(sPath);
+}
+
 LPITEMIDLIST Pidl::create(xpr_sint_t aSpecialFolder)
 {
-    HRESULT      sHResult;
+    HRESULT      sComResult;
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
-    sHResult = ::SHGetSpecialFolderLocation(XPR_NULL, aSpecialFolder, &sFullPidl);
-    if (FAILED(sHResult) || XPR_IS_NULL(sFullPidl))
+    sComResult = ::SHGetSpecialFolderLocation(XPR_NULL, aSpecialFolder, &sFullPidl);
+    if (FAILED(sComResult) || XPR_IS_NULL(sFullPidl))
     {
         XPR_ASSERT(sFullPidl == XPR_NULL);
 
@@ -418,7 +425,7 @@ LPITEMIDLIST Pidl::create(xpr_sint_t aSpecialFolder)
 
 LPITEMIDLIST Pidl::create(const KNOWNFOLDERID &aKnownFolderId)
 {
-    HRESULT      sHResult;
+    HRESULT      sComResult;
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
     HINSTANCE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
@@ -427,8 +434,8 @@ LPITEMIDLIST Pidl::create(const KNOWNFOLDERID &aKnownFolderId)
         SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t *)380);
         if (XPR_IS_NOT_NULL(sSHGetKnownFolderIDListFunc))
         {
-            sHResult = sSHGetKnownFolderIDListFunc(aKnownFolderId, 0, XPR_NULL, &sFullPidl);
-            if (FAILED(sHResult) || XPR_IS_NULL(sFullPidl))
+            sComResult = sSHGetKnownFolderIDListFunc(aKnownFolderId, 0, XPR_NULL, &sFullPidl);
+            if (FAILED(sComResult) || XPR_IS_NULL(sFullPidl))
             {
                 XPR_ASSERT(sFullPidl == XPR_NULL);
 
@@ -442,6 +449,58 @@ LPITEMIDLIST Pidl::create(const KNOWNFOLDERID &aKnownFolderId)
     return sFullPidl;
 }
 
+HRESULT Pidl::create(const xpr_tchar_t *aPath, LPITEMIDLIST &aFullPidl)
+{
+    LPITEMIDLIST sFullPidl = create(aPath);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return E_FAIL;
+    }
+
+    aFullPidl = sFullPidl;
+
+    return S_OK;
+}
+
+HRESULT Pidl::create(const xpr::tstring &aPath, LPITEMIDLIST &aFullPidl)
+{
+    LPITEMIDLIST sFullPidl = create(aPath);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return E_FAIL;
+    }
+
+    aFullPidl = sFullPidl;
+
+    return S_OK;
+}
+
+HRESULT Pidl::create(xpr_sint_t aSpecialFolder, LPITEMIDLIST &aFullPidl)
+{
+    LPITEMIDLIST sFullPidl = create(aSpecialFolder);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return E_FAIL;
+    }
+
+    aFullPidl = sFullPidl;
+
+    return S_OK;
+}
+
+HRESULT Pidl::create(const KNOWNFOLDERID &aKnownFolderId, LPITEMIDLIST &aFullPidl)
+{
+    LPITEMIDLIST sFullPidl = create(aKnownFolderId);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return E_FAIL;
+    }
+
+    aFullPidl = sFullPidl;
+
+    return S_OK;
+}
+
 // IShellFolder + PIDL -> full qualified PIDL
 LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimplePidl)
 {
@@ -452,10 +511,10 @@ LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimple
 
     LPITEMIDLIST  sFullPidl   = XPR_NULL;
     IDataObject  *sDataObject = XPR_NULL;
-    HRESULT       sHResult;
+    HRESULT       sComResult;
 
-    sHResult = aShellFolder->GetUIObjectOf(0, 1, &aSimplePidl, IID_IDataObject, 0, (LPVOID *)&sDataObject);
-    if (SUCCEEDED(sHResult))
+    sComResult = aShellFolder->GetUIObjectOf(0, 1, &aSimplePidl, IID_IDataObject, 0, (LPVOID *)&sDataObject);
+    if (SUCCEEDED(sComResult))
     {
         FORMATETC sFormatEtc = {0};
         sFormatEtc.cfFormat = RegisterClipboardFormat(CFSTR_SHELLIDLIST);
@@ -465,9 +524,9 @@ LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimple
         sFormatEtc.tymed    = TYMED_HGLOBAL;
 
         STGMEDIUM sStgMedium;
-        sHResult = sDataObject->GetData(&sFormatEtc, &sStgMedium);
+        sComResult = sDataObject->GetData(&sFormatEtc, &sStgMedium);
 
-        if (SUCCEEDED(sHResult))
+        if (SUCCEEDED(sComResult))
         {
             LPIDA sPida = (LPIDA)::GlobalLock(sStgMedium.hGlobal);
 
@@ -496,7 +555,7 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
 
     LPSHELLFOLDER sShellFolder = XPR_NULL;
     LPITEMIDLIST  sSimplePidl  = XPR_NULL;
-    HRESULT       sHResult     = E_FAIL;
+    HRESULT       sComResult     = E_FAIL;
 
     if (Pidl::isSimplePidl(aFullPidl) == XPR_TRUE)
     {
@@ -504,8 +563,8 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
 
         sChildPidl = Pidl::findLastItem(aFullPidl);
 
-        sHResult = ::SHGetDesktopFolder((LPSHELLFOLDER *)&sShellFolder);
-        if (SUCCEEDED(sHResult))
+        sComResult = ::SHGetDesktopFolder((LPSHELLFOLDER *)&sShellFolder);
+        if (SUCCEEDED(sComResult))
         {
             sSimplePidl = sChildPidl;
         }
@@ -522,16 +581,16 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
 
         if (XPR_IS_TRUE(Pidl::removeLastItem(sParentPidl)))
         {
-            sHResult = ::SHGetDesktopFolder(&sDesktopShellFolder);
-            if (SUCCEEDED(sHResult))
+            sComResult = ::SHGetDesktopFolder(&sDesktopShellFolder);
+            if (SUCCEEDED(sComResult))
             {
-                sHResult = sDesktopShellFolder->BindToObject(
+                sComResult = sDesktopShellFolder->BindToObject(
                     sParentPidl,
                     XPR_NULL,
                     IID_IShellFolder,
                     (LPVOID *)&sShellFolder);
 
-                if (SUCCEEDED(sHResult))
+                if (SUCCEEDED(sComResult))
                 {
                     sSimplePidl = sChildPidl;
                 }
@@ -542,7 +601,7 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
         COM_RELEASE(sDesktopShellFolder);
     }
 
-    if (XPR_IS_NULL(aSimplePidl))
+    if (XPR_IS_NULL(sSimplePidl))
     {
         COM_RELEASE(sShellFolder);
 
@@ -554,7 +613,266 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
         return XPR_FALSE;
     }
 
+    aShellFolder = sShellFolder;
+    aSimplePidl  = sSimplePidl;
+
     return XPR_TRUE;
+}
+
+xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen)
+{
+    xpr_bool_t    sResult      = XPR_FALSE;
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    LPCITEMIDLIST sPidl        = XPR_NULL;
+
+    sResult = getSimplePidl(aFullPidl, sShellFolder, sPidl);
+    if (XPR_IS_TRUE(sResult))
+    {
+        sResult = getName(sShellFolder, sPidl, aFlags, aName, aMaxLen);
+    }
+
+    COM_RELEASE(sShellFolder);
+
+    return sResult;
+}
+
+xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aName)
+{
+    xpr_bool_t    sResult      = XPR_FALSE;
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    LPCITEMIDLIST sPidl        = XPR_NULL;
+
+    sResult = getSimplePidl(aFullPidl, sShellFolder, sPidl);
+    if (XPR_IS_TRUE(sResult))
+    {
+        sResult = getName(sShellFolder, sPidl, aFlags, aName);
+    }
+
+    COM_RELEASE(sShellFolder);
+
+    return sResult;
+}
+
+xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen)
+{
+    STRRET  sStrRet = {0};
+    HRESULT sComResult;
+
+    sComResult = aShellFolder->GetDisplayNameOf(aPidl, aFlags, &sStrRet);
+    if (SUCCEEDED(sComResult))
+    {
+        sComResult = ::StrRetToBuf(&sStrRet, aPidl, aName, (xpr_uint_t)aMaxLen);
+        if (SUCCEEDED(sComResult))
+        {
+            return XPR_TRUE;
+        }
+    }
+
+    return XPR_FALSE;
+}
+
+xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aName)
+{
+    STRRET     sStrRet = {0};
+    HRESULT    sComResult;
+    xpr_bool_t sResult = XPR_FALSE;
+
+    sComResult = aShellFolder->GetDisplayNameOf(aPidl, aFlags, &sStrRet);
+    if (SUCCEEDED(sComResult))
+    {
+        switch (sStrRet.uType)
+        {
+        case STRRET_WSTR:
+            {
+#if defined(XPR_CFG_UNICODE)
+                aName = sStrRet.pOleStr;
+#else
+                xpr_size_t sStringLength = wcslen(sStrRet.pOleStr);
+
+                aName.clear();
+                aName.reserve(sStringLength + 1);
+
+                xpr_tchar_t *sName = (xpr_tchar_t *)aName.c_str();
+
+                xpr_size_t sInputBytes = sStringLength * sizeof(xpr_wchar_t);
+                xpr_size_t sOutputBytes = sStringLength * sizeof(xpr_tchar_t);
+                XPR_UTF16_TO_MBS(sStrRet.pOleStr, &sInputBytes, sName, &sOutputBytes);
+                sName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+#endif
+                sResult = XPR_TRUE;
+                break;
+            }
+
+        case STRRET_CSTR:
+        case STRRET_OFFSET:
+            {
+                const xpr_char_t *sString;
+                switch (sStrRet.uType)
+                {
+                case STRRET_CSTR:
+                    sString = sStrRet.cStr;
+                    break;
+
+                case STRRET_OFFSET:
+                    sString = ((const xpr_char_t *)&aPidl->mkid) + sStrRet.uOffset;
+                    break;
+
+                default:
+                    XPR_ASSERT(0);
+                    break;
+                }
+
+                xpr_size_t sStringLength = strlen(sString);
+
+                aName.clear();
+                aName.reserve(sStringLength + 1);
+
+                xpr_tchar_t *sName = (xpr_tchar_t *)aName.c_str();
+
+                xpr_size_t sInputBytes = sStringLength * sizeof(xpr_char_t);
+                xpr_size_t sOutputBytes = sStringLength * sizeof(xpr_tchar_t);
+                XPR_MBS_TO_TCS(sStrRet.pOleStr, &sInputBytes, sName, &sOutputBytes);
+                sName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                sResult = XPR_TRUE;
+                break;
+            }
+
+        default:
+            {
+                sResult = XPR_FALSE;
+                break;
+            }
+        }
+    }
+
+    return sResult;
+}
+
+static void filterAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aAttributes)
+{
+    HRESULT         sComResult;
+    WIN32_FIND_DATA sWin32FindData = {0};
+
+    sComResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
+    if (SUCCEEDED(sComResult))
+    {
+        if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_HIDDEN))
+        {
+            aAttributes |= SFGAO_GHOSTED;
+        }
+
+        if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+        {
+            aAttributes |= SFGAO_FOLDER;
+        }
+        else
+        {
+            aAttributes &= ~SFGAO_FOLDER;
+        }
+    }
+}
+
+xpr_ulong_t Pidl::getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl)
+{
+    xpr_ulong_t sAttributes = SFGAO_CAPABILITYMASK | SFGAO_DISPLAYATTRMASK | SFGAO_CONTENTSMASK | 0x7F300000;
+
+    HRESULT sComResult = aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &sAttributes);
+    if (FAILED(sComResult))
+    {
+        return 0;
+    }
+
+    filterAttributes(aShellFolder, aPidl, sAttributes);
+
+    return sAttributes;
+}
+
+xpr_bool_t Pidl::getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aAttributes)
+{
+    HRESULT sComResult = aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &aAttributes);
+    if (FAILED(sComResult))
+    {
+        return XPR_FALSE;
+    }
+
+    filterAttributes(aShellFolder, aPidl, aAttributes);
+
+    return XPR_TRUE;
+}
+
+xpr_ulong_t Pidl::getAttributes(LPCITEMIDLIST aFullPidl)
+{
+    xpr_bool_t    sResult      = XPR_FALSE;
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    LPCITEMIDLIST sPidl        = XPR_NULL;
+
+    sResult = getSimplePidl(aFullPidl, sShellFolder, sPidl);
+    if (XPR_IS_TRUE(sResult))
+    {
+        return getAttributes(sShellFolder, sPidl);
+    }
+
+    COM_RELEASE(sShellFolder);
+
+    return 0;
+}
+
+xpr_bool_t Pidl::getAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aAttributes)
+{
+    xpr_bool_t    sResult      = XPR_FALSE;
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    LPCITEMIDLIST sPidl        = XPR_NULL;
+
+    sResult = getSimplePidl(aFullPidl, sShellFolder, sPidl);
+    if (XPR_IS_TRUE(sResult))
+    {
+        return getAttributes(sShellFolder, sPidl, aAttributes);
+    }
+
+    COM_RELEASE(sShellFolder);
+
+    return sResult;
+}
+
+xpr_bool_t GetInfotip(HWND aHwnd, LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen)
+{
+    xpr_bool_t  sResult    = XPR_FALSE;
+    IQueryInfo *sQueryInfo = XPR_NULL;
+    HRESULT     sComResult;
+
+    sComResult = aShellFolder->GetUIObjectOf(
+        XPR_NULL,
+        1,
+        (LPCITEMIDLIST *)&aPidl,
+        IID_IQueryInfo,
+        0,
+        (LPVOID *)&sQueryInfo);
+
+    if (SUCCEEDED(sComResult) && XPR_IS_NOT_NULL(sQueryInfo))
+    {
+        xpr_wchar_t *sWideInfotip = XPR_NULL;
+
+        sComResult = sQueryInfo->GetInfoTip(SHGDN_INFOLDER, &sWideInfotip);
+        if (SUCCEEDED(sComResult) && XPR_IS_NOT_NULL(sWideInfotip))
+        {
+            if (sWideInfotip[0] != 0)
+            {
+                xpr_size_t sInputBytes = wcslen(sWideInfotip) * sizeof(xpr_wchar_t);
+                xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                XPR_UTF16_TO_TCS(sWideInfotip, &sInputBytes, aInfotip, &sOutputBytes);
+                aInfotip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                sResult = XPR_TRUE;
+            }
+        }
+
+        COM_FREE(sWideInfotip);
+    }
+
+    COM_RELEASE(sQueryInfo);
+
+    return sResult;
 }
 } // namespace base
 } // namespace fxfile

@@ -123,17 +123,17 @@ xpr_bool_t MetaDataFile::verifyChecksum(const xpr::tstring &aProgramFilePath, Me
     }
 
     // verify the calculated checksum between checksum of meta file
-    if (aMetaData.mHashCrc32.compare_incase(sHashCrc32) != 0)
+    if (aMetaData.mHashCrc32.compare_case(sHashCrc32) != 0)
     {
         return XPR_FALSE;
     }
 
-    if (aMetaData.mHashMd5.compare_incase(sHashMd5) != 0)
+    if (aMetaData.mHashMd5.compare_case(sHashMd5) != 0)
     {
         return XPR_FALSE;
     }
 
-    if (aMetaData.mHashSha1.compare_incase(sHashSha1) != 0)
+    if (aMetaData.mHashSha1.compare_case(sHashSha1) != 0)
     {
         return XPR_FALSE;
     }

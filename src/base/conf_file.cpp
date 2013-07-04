@@ -23,8 +23,8 @@ namespace base
 class ConfFile::Key
 {
 public:
-    std::tstring mName;
-    std::tstring mValue;
+    xpr::tstring mName;
+    xpr::tstring mValue;
 };
 
 class ConfFile::Section
@@ -53,7 +53,7 @@ public:
     }
 
 public:
-    std::tstring mName;
+    xpr::tstring mName;
     KeyList      mKeyList;
     KeyMap       mKeyMap;
     xpr_size_t   mMaxNameLen;
@@ -62,7 +62,7 @@ public:
 class ConfFile::Comment
 {
 public:
-    std::tstring mComment;
+    xpr::tstring mComment;
 };
 
 ConfFile::SectionIterator::SectionIterator(void)

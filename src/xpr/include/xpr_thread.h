@@ -89,6 +89,8 @@ protected:
     ThreadState  mThreadState;
     xpr_uint_t   mExitCode;
 };
+
+typedef Thread thread;
 } // namespace xpr
 
 #endif // __XPR_THREAD_H__

@@ -8,10 +8,8 @@
 // found in the LICENSE file.
 
 #ifndef __FXFILE_BASE_DEF_H__
-#define __FXFILE_BASE_DEF_H__
+#define __FXFILE_BASE_DEF_H__ 1
 #pragma once
-
-#include "xpr.h"
 
 //
 // C++ standard libraries
@@ -28,15 +26,6 @@
 #include <algorithm>
 #include <string>
 #include <cctype>
-
-namespace std
-{
-#if defined(XPR_CFG_UNICODE)
-typedef wstring tstring;
-#else
-typedef string tstring;
-#endif
-} // namespace std
 
 #define FXFILE_STL_FOR_EACH(aIterator, aContainer) \
     for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))

@@ -120,7 +120,7 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
 
-            sResult = aShellItem->setFilePath(sPath);
+            sResult = aShellItem->assign(sPath);
             break;
         }
 
@@ -131,7 +131,7 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
 
             sPath[3] = XPR_STRING_LITERAL('\0');
 
-            sResult = aShellItem->setFilePath(sPath);
+            sResult = aShellItem->assign(sPath);
             break;
         }
 
@@ -142,19 +142,19 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
 
             sPath[3] = XPR_STRING_LITERAL('\0');
 
-            sResult = aShellItem->setFilePath(sPath);
+            sResult = aShellItem->assign(sPath);
             break;
         }
 
     case CSIDL_LIBRARIES:
         {
-            sResult = aShellItem->setSpecialFolder(ShellItem::SpecialFolderLibraries);
+            sResult = aShellItem->assign(ShellItem::SpecialFolderLibraries);
             break;
         }
 
     case CSIDL_MYDOCUMENTS:
         {
-            sResult = aShellItem->setSpecialFolder(ShellItem::SpecialFolderMyDocuments);
+            sResult = aShellItem->assign(ShellItem::SpecialFolderMyDocuments);
             break;
         }
 
@@ -162,7 +162,7 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
         {
             xpr_sint_t sCSIDL = sIterator->second + 0xffff;
 
-            sResult = aShellItem->setSpecialFolder(sCSIDL);
+            sResult = aShellItem->assign(sCSIDL);
             break;
         }
     }
@@ -255,7 +255,7 @@ static inline xpr_bool_t getEnv(const xpr::tstring &aEnvPath, xpr::tstring &aEnv
     if (aEnvPath.length() >= 3 && aEnvPath[0] == XPR_STRING_LITERAL('%'))
     {
         xpr_size_t sFind = aEnvPath.find('%', 1);
-        if (sFind != std::tstring::npos)
+        if (sFind != xpr::tstring::npos)
         {
             aEnv = aEnvPath.substr(0, sFind + 1);
         }

@@ -11,7 +11,7 @@
 #define __FXFILE_BASE_EVN_PATH_H__
 #pragma once
 
-#include "xpr_pattern.h"
+#include "pattern.h"
 #include "shell_item.h"
 
 namespace fxfile
@@ -24,9 +24,9 @@ namespace base
 #define CSIDL_WINDRIVE      0x80000002
 #define CSIDL_LIBRARIES     0x80000004
 
-class EnvPath : public xpr::Singleton<EnvPath>
+class EnvPath : public Singleton<EnvPath>
 {
-    friend class xpr::Singleton<EnvPath>;
+    friend class Singleton<EnvPath>;
 
 protected: EnvPath(void);
 public:   ~EnvPath(void);
