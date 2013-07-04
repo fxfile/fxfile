@@ -23,7 +23,7 @@
 #include "XmlLogFile.h"
 #include "Globals.h"
 
-#include "fxcrash.h"
+#include "fxfile-crash.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

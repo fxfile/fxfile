@@ -1,10 +1,11 @@
-#if !defined(__FX_CRASH_H__)
-#define __FX_CRASH_H__
+#ifndef __FXFILE_CRASH_H__
+#define __FXFILE_CRASH_H__ 1
+#pragma once
 
 #ifdef FXCRASH_EXPORTS
-	#define FXCRASH_API __declspec(dllexport)
+    #define FXCRASH_API __declspec(dllexport)
 #else
-	#define FXCRASH_API __declspec(dllimport)
+    #define FXCRASH_API __declspec(dllimport)
 #endif
 
 #ifdef __cplusplus
@@ -22,4 +23,4 @@ FXCRASH_API void    APIENTRY fxSetDevelopInfo(LPCTSTR lpcszEmail, LPCTSTR lpcszH
 }
 #endif // __cplusplus
 
-#endif // __FX_CRASH_H__
+#endif // __FXFILE_CRASH_H__
