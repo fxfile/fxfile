@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="fxCrash"
+	Name="fxfile-crash"
 	ProjectGUID="{E8CF1ADA-264A-4127-86C2-FD7057D3792C}"
 	RootNamespace="BugTrap"
 	Keyword="Win32Proj"
@@ -19,7 +19,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="../../bin/x86-ansicode"
-			IntermediateDirectory="../../obj/fxCrash/dbg-x86-ansicode"
+			IntermediateDirectory="../../obj/fxfile-crash/dbg-x86-ansicode"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -111,7 +111,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="../../bin/x86-ansicode"
-			IntermediateDirectory="../../obj/fxCrash/rel-x86-ansicode"
+			IntermediateDirectory="../../obj/fxfile-crash/rel-x86-ansicode"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -206,7 +206,7 @@
 		<Configuration
 			Name="Unicode Debug|Win32"
 			OutputDirectory="../../bin/x86-unicode"
-			IntermediateDirectory="../../obj/fxCrash/dbg-x86-unicode"
+			IntermediateDirectory="../../obj/fxfile-crash/dbg-x86-unicode"
 			ConfigurationType="2"
 			CharacterSet="1"
 			>
@@ -298,7 +298,7 @@
 		<Configuration
 			Name="Unicode Release|Win32"
 			OutputDirectory="../../bin/x86-unicode"
-			IntermediateDirectory="../../obj/fxCrash/rel-x86-unicode"
+			IntermediateDirectory="../../obj/fxfile-crash/rel-x86-unicode"
 			ConfigurationType="2"
 			CharacterSet="1"
 			>
@@ -911,7 +911,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\fxcrash.h"
+					RelativePath=".\fxfile-crash.h"
 					>
 				</File>
 				<File
