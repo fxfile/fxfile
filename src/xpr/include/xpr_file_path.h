@@ -115,6 +115,8 @@ public:
 
     xpr_bool_t getExt(xpr_tchar_t *aExt, xpr_size_t aMaxLen) const;
     xpr_bool_t getExt(xpr::tstring &aExt) const;
+    xpr_bool_t equalExt(const xpr_tchar_t *aExt) const;
+    xpr_bool_t equalExt(xpr::tstring &aExt) const;
     xpr_bool_t hasExt(void) const;
 
     xpr_sint_t compare(const xpr_tchar_t *aFilePath) const;
