@@ -97,7 +97,7 @@ typedef mode_t             xpr_mode_t;
 #define XPR_ULONGLONG_LITERAL(x) (x#ull)
 #endif
 
-#define XPR_MBCS_STRING_LITERAL(x) (x)
+#define XPR_MBCS_STRING_LITERAL(x) x
 #define XPR_WIDE_STRING_LITERAL(x) L##x
 
 #if defined(XPR_CFG_UNICODE)
