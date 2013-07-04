@@ -48,7 +48,7 @@ BEGIN
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
     "LANGUAGE 18, 1\r\n"
     "#pragma code_page(949)\r\n"
-    "#include ""res\\fxLauncher.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""res\\fxfile-launcher.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""     // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -81,14 +81,14 @@ BEGIN
         BEGIN
             VALUE "Comments", "이 프로그램은 flyExplorer를 위한 전역 단축키 프로그램입니다. 문의 사항은 홈페이지 http://www.flychk.com나 전자 우편 flychk@flychk.com으로 연락주십시오."
             VALUE "CompanyName", "이재광, Leon Lee, http://www.flychk.com, flychk@flychk.com"
-            VALUE "FileDescription", "fxLauncher"
+            VALUE "FileDescription", "fxfile-launcher"
             VALUE "FileVersion", "1.0.0.1"
-            VALUE "InternalName", "fxLauncher.exe"
+            VALUE "InternalName", "fxfile-launcher.exe"
             VALUE "LegalCopyright", "Copyright (C) 2001-2010 Leon Lee. All rights reserved."
-            VALUE "LegalTrademarks", "fxLauncher"
-            VALUE "OriginalFilename", "fxLauncher.exe"
+            VALUE "LegalTrademarks", "fxfile-launcher"
+            VALUE "OriginalFilename", "fxfile-launcher.exe"
             VALUE "PrivateBuild", "1"
-            VALUE "ProductName", "fxLauncher"
+            VALUE "ProductName", "fxfile-launcher"
             VALUE "ProductVersion", "1.0.0.1"
             VALUE "SpecialBuild", "1"
         END
@@ -107,7 +107,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_TRAY                ICON                    "res\\fxLauncher.ico"
+IDI_TRAY                ICON                    "res\\fxfile-launcher.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -151,7 +151,7 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 LANGUAGE 18, 1
 #pragma code_page(949)
-#include "res\fxLauncher.rc2"  // non-Microsoft Visual C++ edited resources
+#include "res\fxfile-launcher.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
 #endif
 

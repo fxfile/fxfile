@@ -4,12 +4,12 @@
 // that uses this DLL. This way any other project whose source files include this file see 
 // FXKEYHOOK_API functions as being imported from a DLL, whereas this DLL sees symbols
 // defined with this macro as being exported.
-#ifdef FXKEYHOOK_EXPORTS
-#define FX_KEYHOOK_EXT_API __declspec(dllexport)
+#ifdef FXFILE_KEYHOOK_EXPORTS
+#define FXFILE_KEYHOOK_EXT_API __declspec(dllexport)
 #else
-#define FX_KEYHOOK_EXT_API __declspec(dllimport)
+#define FXFILE_KEYHOOK_EXT_API __declspec(dllimport)
 #endif
 
-FX_KEYHOOK_EXT_API BOOL InstallHook(HWND hWnd, UINT uMsg);
-FX_KEYHOOK_EXT_API BOOL SetHookKey(WORD wVirtualKeyCode);
-FX_KEYHOOK_EXT_API void RemoveHook();
+FXFILE_KEYHOOK_EXT_API BOOL InstallHook(HWND hWnd, UINT uMsg);
+FXFILE_KEYHOOK_EXT_API BOOL SetHookKey(WORD wVirtualKeyCode);
+FXFILE_KEYHOOK_EXT_API void RemoveHook();

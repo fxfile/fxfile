@@ -8,7 +8,7 @@
 #include "MainWnd.h"
 
 #include "resource.h"
-#include "../fxKeyHook/fxKeyHook.h"
+#include "../fxfile-keyhook/fxfile-keyhook.h"
 #include "SysTray.h"
 #include "IniFile.h"
 #include "CmdLineParser.h"
