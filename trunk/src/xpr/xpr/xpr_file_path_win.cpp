@@ -1570,6 +1570,30 @@ xpr_bool_t FilePath::getExt(xpr::tstring &aExt) const
     return XPR_TRUE;
 }
 
+xpr_bool_t FilePath::equalExt(const xpr_tchar_t *aExt) const
+{
+    XPR_ASSERT(aExt != XPR_NULL);
+
+    xpr::tstring sExt;
+    if (XPR_IS_FALSE(getExt(sExt)))
+    {
+        return XPR_FALSE;
+    }
+
+    return (mFilePath.compare_case(aExt) == 0) ? XPR_TRUE : XPR_FALSE;
+}
+
+xpr_bool_t FilePath::equalExt(xpr::tstring &aExt) const
+{
+    xpr::tstring sExt;
+    if (XPR_IS_FALSE(getExt(sExt)))
+    {
+        return XPR_FALSE;
+    }
+
+    return (mFilePath.compare_case(aExt) == 0) ? XPR_TRUE : XPR_FALSE;
+}
+
 xpr_bool_t FilePath::hasExt(void) const
 {
     xpr::tstring sExt;
