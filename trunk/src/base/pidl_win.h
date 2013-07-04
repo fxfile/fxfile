@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_BASE_PIDL_H__
-#define __FXFILE_BASE_PIDL_H__ 1
+#ifndef __FXFILE_BASE_PIDL_WIN_H__
+#define __FXFILE_BASE_PIDL_WIN_H__ 1
 #pragma once
 
 namespace fxfile
@@ -38,12 +38,27 @@ public:
     static xpr_bool_t   isDesktopFolder(LPCITEMIDLIST aPidl);
     static xpr_bool_t   isSimplePidl(LPCITEMIDLIST aPidl);
     static LPITEMIDLIST create(const xpr_tchar_t *aPath);
+    static LPITEMIDLIST create(const xpr::tstring &aPath);
     static LPITEMIDLIST create(xpr_sint_t aSpecialFolder);
     static LPITEMIDLIST create(const KNOWNFOLDERID &aKnownFolderId);
+    static HRESULT      create(const xpr_tchar_t *aPath, LPITEMIDLIST &aFullPidl);
+    static HRESULT      create(const xpr::tstring &aPath, LPITEMIDLIST &aFullPidl);
+    static HRESULT      create(xpr_sint_t aSpecialFolder, LPITEMIDLIST &aFullPidl);
+    static HRESULT      create(const KNOWNFOLDERID &aKnownFolderId, LPITEMIDLIST &aFullPidl);
     static LPITEMIDLIST getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimplePidl);
     static xpr_bool_t   getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFolder, LPCITEMIDLIST &aSimplePidl);
+
+    static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen);
+    static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aName);
+    static xpr_bool_t   getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen);
+    static xpr_bool_t   getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aName);
+    static xpr_ulong_t  getAttributes(LPCITEMIDLIST aFullPidl);
+    static xpr_bool_t   getAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aAttributes);
+    static xpr_ulong_t  getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
+    static xpr_bool_t   getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aAttributes);
+    static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen);
 };
 } // namespace base
 } // namespace fxfile
 
-#endif // __FXFILE_BASE_PIDL_H__
+#endif // __FXFILE_BASE_PIDL_WIN_H__

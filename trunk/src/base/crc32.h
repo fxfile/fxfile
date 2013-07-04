@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #ifndef __FXFILE_BASE_CRC32_H__
-#define __FXFILE_BASE_CRC32_H__
+#define __FXFILE_BASE_CRC32_H__ 1
 #pragma once
 
 #include <inttypes.h>

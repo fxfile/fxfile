@@ -21,42 +21,55 @@ static const xpr_wchar_t kSpecialFolderLibariesGuidString   [] = XPR_WIDE_STRING
 ShellItem::ShellItem(void)
     : mShellFolder(XPR_NULL)
     , mPidl(XPR_NULL)
+    , mAttributes(AttrbitueNone)
 {
 }
 
 ShellItem::ShellItem(ShellItem &aShellItem)
     : mShellFolder(XPR_NULL)
     , mPidl(XPR_NULL)
+    , mAttributes(AttrbitueNone)
 {
-    setShellItem(aShellItem);
+    assign(aShellItem);
 }
 
 ShellItem::ShellItem(xpr_sint_t aSpecialFolder)
     : mShellFolder(XPR_NULL)
     , mPidl(XPR_NULL)
+    , mAttributes(AttrbitueNone)
 {
-    setSpecialFolder(aSpecialFolder);
+    assign(aSpecialFolder);
 }
 
 ShellItem::ShellItem(const xpr_tchar_t *aFilePath)
     : mShellFolder(XPR_NULL)
     , mPidl(XPR_NULL)
+    , mAttributes(AttrbitueNone)
 {
-    setFilePath(aFilePath);
+    assign(aFilePath);
+}
+
+ShellItem::ShellItem(const xpr::tstring &aFilePath)
+    : mShellFolder(XPR_NULL)
+    , mPidl(XPR_NULL)
+    , mAttributes(AttrbitueNone)
+{
+    assign(aFilePath);
 }
 
 ShellItem::~ShellItem(void)
 {
-    reset();
+    clear();
 }
 
-void ShellItem::reset(void)
+void ShellItem::clear(void)
 {
     COM_RELEASE(mShellFolder);
     COM_FREE(mPidl);
+    mAttributes = AttrbitueNone;
 }
 
-xpr_bool_t ShellItem::setShellItem(const ShellItem &aShellItem)
+xpr_bool_t ShellItem::assign(const ShellItem &aShellItem)
 {
     LPSHELLFOLDER sShellFolder = XPR_NULL;
     LPITEMIDLIST  sPidl        = XPR_NULL;
@@ -80,7 +93,7 @@ xpr_bool_t ShellItem::setShellItem(const ShellItem &aShellItem)
         sShellFolder->AddRef();
     }
 
-    reset();
+    clear();
 
     mShellFolder = sShellFolder;
     mPidl        = sPidl;
@@ -88,7 +101,7 @@ xpr_bool_t ShellItem::setShellItem(const ShellItem &aShellItem)
     return XPR_TRUE;
 }
 
-xpr_bool_t ShellItem::setFilePath(const xpr_tchar_t *aPath)
+xpr_bool_t ShellItem::assign(const xpr_tchar_t *aPath)
 {
     LPITEMIDLIST sFullPidl = Pidl::create(aPath);
     if (XPR_IS_NULL(sFullPidl))
@@ -96,7 +109,7 @@ xpr_bool_t ShellItem::setFilePath(const xpr_tchar_t *aPath)
         return XPR_FALSE;
     }
 
-    reset();
+    clear();
 
     mShellFolder = XPR_NULL;
     mPidl        = sFullPidl;
@@ -104,7 +117,23 @@ xpr_bool_t ShellItem::setFilePath(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t ShellItem::setSpecialFolder(xpr_sint_t aSpecialFolder)
+xpr_bool_t ShellItem::assign(const xpr::tstring &aPath)
+{
+    LPITEMIDLIST sFullPidl = Pidl::create(aPath);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    clear();
+
+    mShellFolder = XPR_NULL;
+    mPidl        = sFullPidl;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t ShellItem::assign(xpr_sint_t aSpecialFolder)
 {
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
@@ -133,7 +162,7 @@ xpr_bool_t ShellItem::setSpecialFolder(xpr_sint_t aSpecialFolder)
                 case SpecialFolderLibraries:   sSpecialFolderGuidString = kSpecialFolderLibariesGuidString;    break;
 
                 default:
-                    XPR_ASSERT(0);
+                    XPR_DEBUG_ASSERT(0);
                     break;
                 }
 
@@ -172,7 +201,7 @@ xpr_bool_t ShellItem::setSpecialFolder(xpr_sint_t aSpecialFolder)
         return XPR_FALSE;
     }
 
-    reset();
+    clear();
 
     mShellFolder = XPR_NULL;
     mPidl        = sFullPidl;

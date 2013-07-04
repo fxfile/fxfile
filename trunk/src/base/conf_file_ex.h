@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #ifndef __FXFILE_BASE_CONF_FILE_EX_H__
-#define __FXFILE_BASE_CONF_FILE_EX_H__
+#define __FXFILE_BASE_CONF_FILE_EX_H__ 1
 #pragma once
 
 #include "conf_file.h"
@@ -45,7 +45,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi(sValue);
     }
@@ -54,7 +56,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi(sValue);
     }
@@ -63,7 +67,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi64(sValue);
     }
@@ -72,7 +78,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi64(sValue);
     }
@@ -81,7 +89,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi(sValue);
     }
@@ -90,7 +100,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _ttoi(sValue);
     }
@@ -99,7 +111,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _tstof(sValue);
     }
@@ -108,7 +122,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         return _tstof(sValue);
     }
@@ -127,7 +143,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         RECT sRect = aDefValue;
 
@@ -140,7 +158,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         RECT sRect = aDefValue;
 
@@ -153,7 +173,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         SIZE sSize = aDefValue;
 
@@ -166,7 +188,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         SIZE sSize = aDefValue;
 
@@ -179,7 +203,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         POINT sPoint = aDefValue;
 
@@ -192,7 +218,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         POINT sPoint = aDefValue;
 
@@ -205,7 +233,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         COLORREF sColor = aDefValue;
 
@@ -235,7 +265,9 @@ public:
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
+        {
             return aDefValue;
+        }
 
         COLORREF sColor = aDefValue;
 
@@ -338,13 +370,6 @@ public:
         return super::setValue(aSection, aKey, aValue);
     }
 
-    inline xpr_bool_t setValueS(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const std::tstring &aValue)
-    {
-        const xpr_tchar_t *sValue = aValue.c_str();
-
-        return super::setValue(aSection, aKey, sValue);
-    }
-
     inline xpr_bool_t setValueS(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr::tstring &aValue)
     {
         const xpr_tchar_t *sValue = aValue.c_str();
@@ -355,13 +380,6 @@ public:
     inline xpr_bool_t setValueS(ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr_tchar_t *aValue)
     {
         return super::setValue(aSection, aKey, aValue);
-    }
-
-    inline xpr_bool_t setValueS(ConfFile::Section *aSection, const xpr_tchar_t *aKey, const std::tstring &aValue)
-    {
-        const xpr_tchar_t *sValue = aValue.c_str();
-
-        return super::setValue(aSection, aKey, sValue);
     }
 
     inline xpr_bool_t setValueS(ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr::tstring &aValue)

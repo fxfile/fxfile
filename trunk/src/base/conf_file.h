@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #ifndef __FXFILE_BASE_CONF_FILE_H__
-#define __FXFILE_BASE_CONF_FILE_H__
+#define __FXFILE_BASE_CONF_FILE_H__ 1
 #pragma once
 
 namespace fxfile
@@ -34,7 +34,7 @@ protected:
     typedef std::list<Section *> SectionList;
     typedef std::list<Key     *> KeyList;
     typedef std::list<Comment *> CommentList;
-    typedef std::tr1::unordered_map<std::tstring, Key *> KeyMap;
+    typedef std::tr1::unordered_map<xpr::tstring, Key *> KeyMap;
 
 public:
     class SectionIterator
