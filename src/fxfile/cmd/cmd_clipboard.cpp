@@ -1170,7 +1170,7 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
             {
                 sIndex = sExplorerCtrl->GetNextSelectedItem(sPosition);
 
-                if (sClipText.empty() == false)
+                if (sClipText.empty() == XPR_FALSE)
                     sClipText += sClipSeperatorText;
 
                 sClipText += sExplorerCtrl->GetItemText(sIndex, 0);
@@ -1317,7 +1317,7 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
                 {
                     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, sFileName);
 
-                    if (sClipText.empty() == false)
+                    if (sClipText.empty() == XPR_FALSE)
                         sClipText += sClipSeperatorText;
 
                     sClipText += sFileName;
@@ -1487,7 +1487,7 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
                     else
                         GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
-                    if (sClipText.empty() == false)
+                    if (sClipText.empty() == XPR_FALSE)
                         sClipText += sClipSeperatorText;
 
                     sClipText += sPath;
@@ -1634,7 +1634,7 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
 
                     ConvDevPath(sPath);
 
-                    if (sClipText.empty() == false)
+                    if (sClipText.empty() == XPR_FALSE)
                         sClipText += sClipSeperatorText;
 
                     sClipText += sPath;
@@ -1715,7 +1715,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
             {
                 sSrItemData->getPath(sPath);
 
-                if (sClipText.empty() == false)
+                if (sClipText.empty() == XPR_FALSE)
                     sClipText += sClipSeperatorText;
 
                 sFind = 0;
@@ -1771,7 +1771,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
 
                     ConvUrlPath(sPath);
 
-                    if (sClipText.empty() == false)
+                    if (sClipText.empty() == XPR_FALSE)
                         sClipText += sClipSeperatorText;
 
                     sClipText += sPath;

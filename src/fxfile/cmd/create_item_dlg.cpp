@@ -126,7 +126,7 @@ void CreateItemDlg::OnOK(void)
     xpr::tstring sPath;
     sPath = mDir;
 
-    if (sPath.empty() == false)
+    if (sPath.empty() == XPR_FALSE)
     {
         if (sPath.at(sPath.length()-1) != XPR_STRING_LITERAL('\\'))
             sPath += XPR_STRING_LITERAL('\\');
@@ -134,7 +134,7 @@ void CreateItemDlg::OnOK(void)
 
     sPath += sNewName;
 
-    if (mExt.empty() == false)
+    if (mExt.empty() == XPR_FALSE)
     {
         if (mExt[0] != XPR_STRING_LITERAL('.'))
             sPath += XPR_STRING_LITERAL('.');

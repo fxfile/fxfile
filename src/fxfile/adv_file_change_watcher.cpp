@@ -127,7 +127,7 @@ public:
 
     AdvWatchId registerWatch(const xpr::tstring &aRootPath, AdvWatchItem *aNewAdvWatchItem)
     {
-        if (aRootPath.empty() == true || XPR_IS_NULL(aNewAdvWatchItem))
+        if (aRootPath.empty() == XPR_TRUE || XPR_IS_NULL(aNewAdvWatchItem))
             return InvalidAdvWatchId;
 
         if (XPR_IS_NULL(mDirectory))

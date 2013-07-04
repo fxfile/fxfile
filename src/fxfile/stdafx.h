@@ -55,7 +55,7 @@
 
 // crash handler
 #if defined(XPR_CFG_BUILD_RELEASE)
-    #include "fxcrash.h"
+    #include "fxfile-crash.h"
 
     #ifdef XPR_CFG_UNICODE
         #pragma comment(lib, "fxcrashu.lib")

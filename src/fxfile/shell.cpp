@@ -243,7 +243,7 @@ void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath)
         sName.clear();
         GetName(sFullPidl2, SHGDN_INFOLDER | SHGDN_FORPARSING, sName);
 
-        if (sName.empty() == true)
+        if (sName.empty() == XPR_TRUE)
             break;
 
         aFullPath.insert(0, sName);
@@ -252,7 +252,7 @@ void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath)
         fxfile::base::Pidl::removeLastItem(sFullPidl2);
     }
 
-    if (aFullPath.empty() == false)
+    if (aFullPath.empty() == XPR_FALSE)
         aFullPath.erase(0, 1);
 
     COM_FREE(sFullPidl2);
@@ -1420,7 +1420,7 @@ xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl)
 
 xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFullPath)
 {
-    if (aFullPath.empty() == true)
+    if (aFullPath.empty() == XPR_TRUE)
         return XPR_TRUE;
 
     if (IsFileSystem(aFullPidl))
@@ -1441,7 +1441,7 @@ xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFul
         xpr::tstring sPath;
         GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
-        if (sPath.empty() == false && sPath[0] == XPR_STRING_LITERAL('\\') && sPath[1] == XPR_STRING_LITERAL('\\'))
+        if (sPath.empty() == XPR_FALSE && sPath[0] == XPR_STRING_LITERAL('\\') && sPath[1] == XPR_STRING_LITERAL('\\'))
             return XPR_FALSE;
     }
 
@@ -2003,7 +2003,7 @@ xpr_bool_t ExecFile(LPCITEMIDLIST      aFullPidl,
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
-    if (sStartup.empty() == true && IsVirtualItem(aFullPidl) == XPR_FALSE)
+    if (sStartup.empty() == XPR_TRUE && IsVirtualItem(aFullPidl) == XPR_FALSE)
     {
         GetName(aFullPidl, SHGDN_FORPARSING, sStartup);
 
@@ -2061,7 +2061,7 @@ xpr_bool_t ExecFile(const xpr_tchar_t *aPath,
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
-    if (sStartup.empty() == true)
+    if (sStartup.empty() == XPR_TRUE)
     {
         sStartup = aPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
@@ -2114,7 +2114,7 @@ xpr_bool_t OpenAsFile(const xpr_tchar_t *aPath,
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
-    if (sStartup.empty() == true)
+    if (sStartup.empty() == XPR_TRUE)
     {
         sStartup = aPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));

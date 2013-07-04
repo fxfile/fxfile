@@ -1851,7 +1851,7 @@ xpr_sint_t MainFrame::insertRecentFileListPopupMenu(BCMenu *aPopupMenu, xpr_sint
 
         *sDest = 0;
 
-        wsprintf(sText, XPR_WIDE_STRING_LITERAL("%d %s"), i + 1, sDispPath);
+        _stprintf(sText, XPR_STRING_LITERAL("%d %s"), i + 1, sDispPath);
         aPopupMenu->InsertMenu(aInsert + (xpr_uint_t)i, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_FILE_LIST_FIRST + i, sText);
     }
 

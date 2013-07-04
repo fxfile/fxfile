@@ -363,7 +363,7 @@ xpr_sint_t ContentsWnd::SingleSelItem::draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_
     aDc->DrawText(mType.c_str(), sRect, DT_LEFT | DT_NOPREFIX | DT_WORDBREAK | DT_CALCRECT);
     aDc->DrawText(mType.c_str(), sRect, DT_LEFT | DT_NOPREFIX | DT_WORDBREAK);
 
-    if (mDate.empty() == false)
+    if (mDate.empty() == XPR_FALSE)
     {
         sRect.right = aWidth;
         sRect.top = sRect.bottom + aHeight;
@@ -372,7 +372,7 @@ xpr_sint_t ContentsWnd::SingleSelItem::draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_
         aDc->DrawText(mDate.c_str(), sRect, DT_LEFT | DT_NOPREFIX | DT_WORDBREAK);
     }
 
-    if (mSize.empty() == false)
+    if (mSize.empty() == XPR_FALSE)
     {
         sRect.right = aWidth;
         sRect.top = sRect.bottom + aHeight;
@@ -381,7 +381,7 @@ xpr_sint_t ContentsWnd::SingleSelItem::draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_
         aDc->DrawText(mSize.c_str(), sRect, DT_LEFT | DT_NOPREFIX | DT_WORDBREAK);
     }
 
-    if (mAttr.empty() == false)
+    if (mAttr.empty() == XPR_FALSE)
     {
         sRect.right = aWidth;
         sRect.top = sRect.bottom + aHeight;

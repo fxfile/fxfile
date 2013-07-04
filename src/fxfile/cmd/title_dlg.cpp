@@ -70,7 +70,7 @@ xpr_bool_t TitleDlg::OnInitDialog(void)
         sLogFont.lfWeight = FW_BOLD;
     mTitleFont.CreateFontIndirect(&sLogFont);
 
-    if (mTitle.empty() == false)
+    if (mTitle.empty() == XPR_FALSE)
         SetWindowText(mTitle.c_str());
 
     SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));

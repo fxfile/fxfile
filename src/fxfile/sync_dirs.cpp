@@ -67,7 +67,7 @@ void SyncItem::getSubPath(xpr::tstring &aSubPath)
 
 xpr_bool_t SyncItem::getPath(const xpr::tstring &aDir, xpr::tstring &aPath)
 {
-    if (aDir.empty() == true)
+    if (aDir.empty() == XPR_TRUE)
         return XPR_FALSE;
 
     aPath = aDir;
@@ -715,7 +715,7 @@ bool SyncDirs::sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2)
         }
     }
 
-    if (sDir1.empty() == false && sDir2.empty() == false)
+    if (sDir1.empty() == XPR_FALSE && sDir2.empty() == XPR_FALSE)
     {
         xpr_sint_t sCompare = (lstrcmpi(sDir1.c_str(), sDir2.c_str()) != 0) ? XPR_TRUE : XPR_FALSE;
         if (sCompare != 0)
@@ -735,7 +735,7 @@ bool SyncDirs::sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2)
 
 xpr_bool_t SyncDirs::scan(void)
 {
-    if (mDir[0].empty() == true || mDir[1].empty() == true)
+    if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
         return XPR_FALSE;
 
     if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -768,7 +768,7 @@ xpr_bool_t SyncDirs::scan(void)
 
 xpr_bool_t SyncDirs::compare(void)
 {
-    if (mDir[0].empty() == true || mDir[1].empty() == true)
+    if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
         return XPR_FALSE;
 
     if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -788,7 +788,7 @@ xpr_bool_t SyncDirs::compare(void)
 
 xpr_bool_t SyncDirs::scanCompare(void)
 {
-    if (mDir[0].empty() == true || mDir[1].empty() == true)
+    if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
         return XPR_FALSE;
 
     if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -808,7 +808,7 @@ xpr_bool_t SyncDirs::scanCompare(void)
 
 xpr_bool_t SyncDirs::synchronize(void)
 {
-    if (mDir[0].empty() == true || mDir[1].empty() == true)
+    if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
         return XPR_FALSE;
 
     if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -863,7 +863,7 @@ unsigned __stdcall SyncDirs::ScanProc(void *aParam)
 
 DWORD SyncDirs::OnScan(void)
 {
-    //if (mDir[0].empty() == true || mDir[1].empty() == true)
+    //if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
     //    return 0;
 
     //if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -971,7 +971,7 @@ void SyncDirs::getCompareFlags(SyncItem::CompareFlags &aCompareFlags)
 
 DWORD SyncDirs::OnCompare(void)
 {
-    //if (mDir[0].empty() == true || mDir[1].empty() == true)
+    //if (mDir[0].empty() == XPR_TRUE || mDir[1].empty() == XPR_TRUE)
     //    return 0;
 
     //if (IsExistFile(mDir[0]) == XPR_FALSE || IsExistFile(mDir[1]) == XPR_FALSE)
@@ -1292,13 +1292,13 @@ static void getFilterList(const xpr_tchar_t *aFilter, FilterDeque &aFilterDeque)
             break;
 
         sString = sFilter.substr(sOffset, sFind-sOffset);
-        if (sString.empty() == false)
+        if (sString.empty() == XPR_FALSE)
             aFilterDeque.push_back(sString);
         sOffset = sFind + 1;
     }
 
     sString = sFilter.substr(sOffset);
-    if (sString.empty() == false)
+    if (sString.empty() == XPR_FALSE)
         aFilterDeque.push_back(sString);
 }
 

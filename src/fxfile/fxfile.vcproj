@@ -252,7 +252,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="./;../../src/xpr/include;../../src/base;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include;../../lib/fxCrash/include"
+				AdditionalIncludeDirectories="./;../../src/xpr/include;../../src/base;&quot;../../src/fxfile-crash&quot;;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -355,7 +355,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./;../../src/xpr/include;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
+				AdditionalIncludeDirectories="./;../../src/xpr/include;../../src/base;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -456,7 +456,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="./;../../src/xpr/include;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include;../../lib/fxCrash/include"
+				AdditionalIncludeDirectories="./;../../src/xpr/include;../../src/base;&quot;../../src/fxfile-crash&quot;;../../lib/gfl/include;../../lib/iconv/include;../../lib/libxml2/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -3036,6 +3036,22 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug-x86-Ansicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release-x86-Ansicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\base\crc32.h"
@@ -3100,6 +3116,22 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug-x86-Ansicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release-x86-Ansicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\base\md5.h"
@@ -3130,6 +3162,22 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release-x86-Unicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug-x86-Ansicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release-x86-Ansicode|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

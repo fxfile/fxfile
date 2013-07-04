@@ -627,7 +627,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
                 if (Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
                 {
-                    if (sHistoryPath.empty() == false)
+                    if (sHistoryPath.empty() == XPR_FALSE)
                     {
                         aTab.mBackwardList.push_back(sHistoryPath);
                     }
@@ -644,7 +644,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
                 if (Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
                 {
-                    if (sHistoryPath.empty() == false)
+                    if (sHistoryPath.empty() == XPR_FALSE)
                     {
                         aTab.mForwardList.push_back(sHistoryPath);
                     }
@@ -661,7 +661,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
 
                 if (Pidl2Path(sFullPidl, sHistoryPath) == XPR_TRUE)
                 {
-                    if (sHistoryPath.empty() == false)
+                    if (sHistoryPath.empty() == XPR_FALSE)
                     {
                         aTab.mHistoryList.push_back(sHistoryPath);
                     }

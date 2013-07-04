@@ -76,11 +76,11 @@ void GetEnvRealPath(const xpr::tstring &aEnvPath, xpr::tstring &aRealPath)
     if (GetEnv(aEnvPath, sEnv) == XPR_TRUE)
     {
         GetEnvPath(sEnv, aRealPath);
-        if (aRealPath.empty() == false)
+        if (aRealPath.empty() == XPR_FALSE)
             aRealPath.append(aEnvPath.c_str()+sEnv.length());
     }
 
-    if (aRealPath.empty() == true)
+    if (aRealPath.empty() == XPR_TRUE)
     {
         aRealPath = aEnvPath;
     }
@@ -109,14 +109,14 @@ LPITEMIDLIST GetEnvRealPidl(const xpr::tstring &aEnvPath)
         sFullPidl = GetEnvPidl(sEnv, &sCSIDL);
 
         sSubPath = aEnvPath.c_str() + sEnv.length();
-        if (sSubPath.empty() == false)
+        if (sSubPath.empty() == XPR_FALSE)
         {
             if (sSubPath[0] == XPR_STRING_LITERAL('\\'))
                 sSubPath.erase(0, 1);
         }
     }
 
-    if (sSubPath.empty() == true)
+    if (sSubPath.empty() == XPR_TRUE)
     {
         if (XPR_IS_NOT_NULL(sFullPidl))
             return sFullPidl;
@@ -127,7 +127,7 @@ LPITEMIDLIST GetEnvRealPidl(const xpr::tstring &aEnvPath)
     if (XPR_IS_NULL(sFullPidl))
         return XPR_NULL;
 
-    if (sSubPath.empty() == true)
+    if (sSubPath.empty() == XPR_TRUE)
         return sFullPidl;
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};

@@ -111,7 +111,7 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
 
     mNewName = aNewName;
 
-    if (mNewName.empty() == true)
+    if (mNewName.empty() == XPR_TRUE)
         return ResultSucceeded;
 
     xpr_size_t nNewNameLen = mNewName.length();

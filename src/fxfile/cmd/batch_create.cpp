@@ -56,7 +56,7 @@ BatchCreate::CreateType BatchCreate::getCreateType(void)
 
 BatchCreate::Result BatchCreate::addPath(const xpr::tstring &aPath)
 {
-    if (aPath.empty() == true)
+    if (aPath.empty() == XPR_TRUE)
         return ResultEmptiedName;
 
     if (aPath.length() >= XPR_MAX_PATH)

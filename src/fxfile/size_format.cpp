@@ -238,11 +238,11 @@ const xpr_tchar_t *SizeFormat::getDefUnitText(xpr_sint_t aUnit)
 {
     switch (aUnit)
     {
-    case SIZE_UNIT_DEFAULT: return (mDefaultText.empty()  == false) ? mDefaultText.c_str()  : XPR_STRING_LITERAL("Default");
-    case SIZE_UNIT_AUTO:    return (mAutoText.empty()     == false) ? mAutoText.c_str()     : XPR_STRING_LITERAL("Automatic");
-    case SIZE_UNIT_CUSTOM:  return (mCustomText.empty()   == false) ? mCustomText.c_str()   : XPR_STRING_LITERAL("Custom");
-    case SIZE_UNIT_NONE:    return (mNoneText.empty()     == false) ? mNoneText.c_str()     : XPR_STRING_LITERAL("None");
-    case SIZE_UNIT_BYTE:    return (mByteUnitText.empty() == false) ? mByteUnitText.c_str() : XPR_STRING_LITERAL("Byte(s)");
+    case SIZE_UNIT_DEFAULT: return (mDefaultText.empty()  == XPR_FALSE) ? mDefaultText.c_str()  : XPR_STRING_LITERAL("Default");
+    case SIZE_UNIT_AUTO:    return (mAutoText.empty()     == XPR_FALSE) ? mAutoText.c_str()     : XPR_STRING_LITERAL("Automatic");
+    case SIZE_UNIT_CUSTOM:  return (mCustomText.empty()   == XPR_FALSE) ? mCustomText.c_str()   : XPR_STRING_LITERAL("Custom");
+    case SIZE_UNIT_NONE:    return (mNoneText.empty()     == XPR_FALSE) ? mNoneText.c_str()     : XPR_STRING_LITERAL("None");
+    case SIZE_UNIT_BYTE:    return (mByteUnitText.empty() == XPR_FALSE) ? mByteUnitText.c_str() : XPR_STRING_LITERAL("Byte(s)");
     case SIZE_UNIT_KB:      return XPR_STRING_LITERAL("KB");
     case SIZE_UNIT_MB:      return XPR_STRING_LITERAL("MB");
     case SIZE_UNIT_GB:      return XPR_STRING_LITERAL("GB");
