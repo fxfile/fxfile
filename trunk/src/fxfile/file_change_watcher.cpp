@@ -57,7 +57,7 @@ FileChangeWatcher::WatchId FileChangeWatcher::registerWatch(WatchItem *aWatchIte
     if (XPR_IS_NULL(aWatchItem))
         return InvalidWatchId;
 
-    if (XPR_IS_NULL(aWatchItem->mHwnd) || aWatchItem->mMsg == 0 || aWatchItem->mPath.empty() == true)
+    if (XPR_IS_NULL(aWatchItem->mHwnd) || aWatchItem->mMsg == 0 || aWatchItem->mPath.empty() == XPR_TRUE)
         return InvalidWatchId;
 
     if (IsExistFile(aWatchItem->mPath) == XPR_FALSE)

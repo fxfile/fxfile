@@ -104,7 +104,7 @@ static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::tstring>
         aMultiStr[i] = XPR_STRING_LITERAL('\0');
 
         sString = sStringEnum;
-        if (sString.empty() == false)
+        if (sString.empty() == XPR_FALSE)
             aStringDeque.push_back(sString);
 
         aMultiStr[i] = XPR_STRING_LITERAL(';');
@@ -113,7 +113,7 @@ static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::tstring>
     }
 
     sString = sStringEnum;
-    if (sString.empty() == false)
+    if (sString.empty() == XPR_FALSE)
         aStringDeque.push_back(sString);
 
     return aStringDeque.size();

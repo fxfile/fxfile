@@ -48,7 +48,7 @@ xpr_bool_t FileScrapGroupDlg::OnInitDialog(void)
 {
     CDialog::OnInitDialog();
 
-    if (mTitle.empty() == false)
+    if (mTitle.empty() == XPR_FALSE)
         SetWindowText(mTitle.c_str());
 
     FileScrap &sFileScrap = FileScrap::instance();

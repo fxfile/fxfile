@@ -70,7 +70,7 @@ xpr_bool_t ConfDir::getDir(const xpr_tchar_t *aConfDir, xpr_tchar_t *aDir, xpr_s
     xpr::tstring sDir;
     GetEnvRealPath(aConfDir, sDir);
 
-    if (sDir.empty() == true)
+    if (sDir.empty() == XPR_TRUE)
         return XPR_FALSE;
 
     if (sDir.length() > aMaxLen)

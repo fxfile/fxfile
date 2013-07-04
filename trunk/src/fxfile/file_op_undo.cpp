@@ -257,7 +257,7 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
                 }
             }
 
-            if (sPath.empty() == false)
+            if (sPath.empty() == XPR_FALSE)
             {
                 sSourceDeque.push_back(new xpr_tchar_t[sPath.length() + 1]);
                 _tcscpy(*(sSourceDeque.end()-1), sPath.c_str());

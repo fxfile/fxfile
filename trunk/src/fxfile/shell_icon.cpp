@@ -63,7 +63,7 @@ xpr_bool_t ShellIcon::getAsyncIcon(AsyncIcon *aAsyncIcon)
     if (XPR_IS_NULL(aAsyncIcon))
         return XPR_FALSE;
 
-    if ((XPR_IS_NULL(aAsyncIcon->mShellFolder) || XPR_IS_NULL(aAsyncIcon->mPidl)) && (aAsyncIcon->mPath.empty() == true))
+    if ((XPR_IS_NULL(aAsyncIcon->mShellFolder) || XPR_IS_NULL(aAsyncIcon->mPidl)) && (aAsyncIcon->mPath.empty() == XPR_TRUE))
         return XPR_FALSE;
 
     if (IsRunning() == XPR_FALSE)
@@ -153,7 +153,7 @@ unsigned ShellIcon::OnEntryProc(void)
 
         case TypeIconIndex:
             {
-                if (sAsyncIcon->mPath.empty() == false)
+                if (sAsyncIcon->mPath.empty() == XPR_FALSE)
                     sAsyncIcon->mResult.mIconIndex = GetItemIconIndex(sAsyncIcon->mPath.c_str());
                 else
                     sAsyncIcon->mResult.mIconIndex = GetItemIconIndex(sAsyncIcon->mShellFolder, sAsyncIcon->mPidl);
@@ -162,7 +162,7 @@ unsigned ShellIcon::OnEntryProc(void)
 
         case TypeOverlayIndex:
             {
-                if (sAsyncIcon->mPath.empty() == false)
+                if (sAsyncIcon->mPath.empty() == XPR_FALSE)
                     sAsyncIcon->mResult.mIconIndex = GetItemIconOverlayIndex(sAsyncIcon->mPath.c_str());
                 else
                     sAsyncIcon->mResult.mIconIndex = GetItemIconOverlayIndex(sAsyncIcon->mShellFolder, sAsyncIcon->mPidl);
@@ -184,7 +184,7 @@ HICON ShellIcon::getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, c
 {
     HICON sIcon = XPR_NULL;
 
-    if (aIconPath.empty() == false)
+    if (aIconPath.empty() == XPR_FALSE)
     {
         sIcon = extractIcon(aIconPath, aIconIndex, aLarge);
         if (XPR_IS_NULL(sIcon))
@@ -201,7 +201,7 @@ HICON ShellIcon::getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, c
 
     if (XPR_IS_NULL(sIcon))
     {
-        if (aPath.empty() == false)
+        if (aPath.empty() == XPR_FALSE)
         {
             if (XPR_IS_TRUE(aFastNetIcon))
             {

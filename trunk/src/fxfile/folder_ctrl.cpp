@@ -1630,7 +1630,7 @@ LRESULT FolderCtrl::OnShellChangeNotify(WPARAM wParam, LPARAM lParam)
     }
 
 #ifdef XPR_CFG_BUILD_DEBUG
-    //if (sMsg.empty() == false)
+    //if (sMsg.empty() == XPR_FALSE)
     //    MessageBox(sMsg.c_str());
 #endif
 

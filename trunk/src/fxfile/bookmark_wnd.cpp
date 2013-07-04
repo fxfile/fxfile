@@ -81,7 +81,7 @@ xpr_sint_t BookmarkWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void BookmarkWnd::PreSubclassWindow(void) 
 {
-    if (mBookmarkItem->mName.empty() == true)
+    if (mBookmarkItem->mName.empty() == XPR_TRUE)
     {
         xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
         GetWindowText(sName, XPR_MAX_PATH);

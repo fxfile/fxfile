@@ -145,7 +145,7 @@ void SysImgListMgr::getCustomImgList(const xpr_tchar_t *aCustomImagePath16, cons
         {
             sPath = sImagePath[i];
 
-            if (sPath.empty() == false && sPath[0] == XPR_STRING_LITERAL('%'))
+            if (sPath.empty() == XPR_FALSE && sPath[0] == XPR_STRING_LITERAL('%'))
             {
                 sPath.clear();
                 GetEnvRealPath(sImagePath[i], sPath);

@@ -122,7 +122,7 @@ xpr_bool_t AttrTimeDlg::OnInitDialog(void)
     sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_file_and_folder")));
 
     SetDlgItemText(IDC_ATTR_PATH,
-                   (mDir.empty() == true && mDir[0] == '\0') ?
+                   (mDir.empty() == XPR_TRUE && mDir[0] == '\0') ?
                    theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.multiple_folders")) : mDir.c_str());
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);

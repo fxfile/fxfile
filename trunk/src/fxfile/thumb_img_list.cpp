@@ -39,7 +39,7 @@ xpr_sint_t ThumbImgList::add(ThumbImage *aThumbImage, xpr_uint_t aThumbImageId)
     if (XPR_IS_NULL(aThumbImage))
         return -1;
 
-    if (XPR_IS_NULL(aThumbImage->mImage) || aThumbImage->mPath.empty() == true || aThumbImage->mWidth <= 0 || aThumbImage->mHeight <= 0 || aThumbImage->mDepth <= 0)
+    if (XPR_IS_NULL(aThumbImage->mImage) || aThumbImage->mPath.empty() == XPR_TRUE || aThumbImage->mWidth <= 0 || aThumbImage->mHeight <= 0 || aThumbImage->mDepth <= 0)
         return -1;
 
     xpr_sint_t sImageIndex = mImageList.Add(aThumbImage->mImage, CLR_NONE);

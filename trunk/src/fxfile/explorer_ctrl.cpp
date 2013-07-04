@@ -3055,7 +3055,7 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     // update status
     updateStatus();
 
-    if (mOption.mParentFolder == XPR_TRUE && mSubFolder.empty() == true && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
+    if (mOption.mParentFolder == XPR_TRUE && mSubFolder.empty() == XPR_TRUE && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
         selectItem(0);
 }
 
@@ -6702,7 +6702,7 @@ xpr_bool_t ExplorerCtrl::goUp(void)
 
     if (mOption.mGoUpSelSubFolder)
     {
-        if (mSubFolder.empty() == false)
+        if (mSubFolder.empty() == XPR_FALSE)
         {
             LVFINDINFO sLvFindInfo = {0};
             sLvFindInfo.flags = LVFI_STRING;
@@ -8824,7 +8824,7 @@ LRESULT ExplorerCtrl::OnDriveShellChangeNotify(WPARAM wParam, LPARAM lParam)
             xpr::tstring sCurPath;
             getCurPath(sCurPath);
 
-            if (sDrive.empty() == false && sCurPath.empty() == false && sCurPath[0] == sDrive[0])
+            if (sDrive.empty() == XPR_FALSE && sCurPath.empty() == XPR_FALSE && sCurPath[0] == sDrive[0])
             {
                 HRESULT sHResult;
                 LPITEMIDLIST sFullPidl = XPR_NULL;

@@ -518,7 +518,7 @@ xpr_bool_t BookmarkMgr::save(const xpr_tchar_t *aPath) const
         _stprintf(sKey, kPathKey, i + 1);
         sConfFile.setValueS(sSection, sKey, sBookmark->mPath);
 
-        if (sBookmark->mIconPath.empty() == false)
+        if (sBookmark->mIconPath.empty() == XPR_FALSE)
         {
             _stprintf(sKey, kIconKey, i + 1);
             sConfFile.setValueS(sSection, sKey,      sBookmark->mIconPath);
@@ -527,13 +527,13 @@ xpr_bool_t BookmarkMgr::save(const xpr_tchar_t *aPath) const
             sConfFile.setValueI(sSection, sKey, sBookmark->mIconIndex);
         }
 
-        if (sBookmark->mParam.empty() == false)
+        if (sBookmark->mParam.empty() == XPR_FALSE)
         {
             _stprintf(sKey, kParameterKey, i + 1);
             sConfFile.setValueS(sSection, sKey, sBookmark->mParam);
         }
 
-        if (sBookmark->mStartup.empty() == false)
+        if (sBookmark->mStartup.empty() == XPR_FALSE)
         {
             _stprintf(sKey, kStartupKey, i + 1);
             sConfFile.setValueS(sSection, sKey, sBookmark->mStartup);

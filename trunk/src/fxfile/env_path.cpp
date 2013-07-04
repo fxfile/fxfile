@@ -266,7 +266,7 @@ xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_
         }
     }
 
-    xpr_bool_t sResult = (aPath.empty() == true) ? XPR_FALSE : XPR_TRUE;
+    xpr_bool_t sResult = (aPath.empty() == XPR_TRUE) ? XPR_FALSE : XPR_TRUE;
     if (XPR_IS_TRUE(sResult))
     {
         if (XPR_IS_NOT_NULL(aCSIDL))

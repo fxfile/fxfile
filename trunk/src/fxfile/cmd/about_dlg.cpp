@@ -193,7 +193,7 @@ void AboutDlg::OnTimer(xpr_uint_t aIdEvent)
         if (XPR_IS_NULL(mUpdateInfoManager))
         {
             mUpdateInfoManager = new UpdateInfoManager;
-            mUpdateInfoManager->setUpdateHomeDir(L"C:\\Users\\flychk\\AppData\\Roaming\\fxfile\\update");
+            mUpdateInfoManager->setUpdateHomeDir(XPR_STRING_LITERAL("C:\\Users\\flychk\\AppData\\Roaming\\fxfile\\update"));
 
             sRcode = mUpdateInfoManager->openUpdateInfo();
             if (XPR_RCODE_IS_ERROR(sRcode))
