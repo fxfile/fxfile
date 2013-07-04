@@ -2,10 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="fxLauncher"
-	ProjectGUID="{1F74ECEA-0BDC-49F6-835D-165A1C03AF4E}"
-	RootNamespace="fxLauncher"
-	Keyword="MFCProj"
+	Name="fxfile-keyhook"
+	ProjectGUID="{5C0A2E46-FC14-4523-BFA9-E3533E9FFAB2}"
+	RootNamespace="fxfile-keyhook"
+	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
@@ -18,10 +18,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="../../../bin"
-			IntermediateDirectory="../../../obj/fxLauncher/dbg-x86"
-			ConfigurationType="1"
-			UseOfMFC="2"
+			OutputDirectory="../../bin"
+			IntermediateDirectory="../../obj/fxfile-keyhook/dbg-x86"
+			ConfigurationType="2"
 			CharacterSet="2"
 			>
 			<Tool
@@ -38,14 +37,11 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;FXFILE_KEYHOOK_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -59,19 +55,14 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fxKeyHook_dbg.lib"
-				OutputFile="$(OutDir)\$(ProjectName)_dbg.exe"
+				OutputFile="$(OutDir)\$(ProjectName)_dbg.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../../../bin"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -103,10 +94,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="../../../bin"
-			IntermediateDirectory="../../../obj/fxLauncher/rel-x86"
-			ConfigurationType="1"
-			UseOfMFC="1"
+			OutputDirectory="../../bin"
+			IntermediateDirectory="../../obj/fxfile-keyhook/rel-x86"
+			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -124,15 +114,11 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS"
-				MinimalRebuild="false"
-				RuntimeLibrary="0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;FXFILE_KEYHOOK_EXPORTS"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -143,18 +129,13 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="fxKeyHook.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../../../bin"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -196,19 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\CmdLineParser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\IniFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\LauncherApp.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MainWnd.cpp"
+				RelativePath=".\fxfile-keyhook.cpp"
 				>
 			</File>
 			<File
@@ -231,10 +200,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath=".\SysTray.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -242,31 +207,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\CmdLineParser.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IniFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\LauncherApp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\MainWnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
+				RelativePath=".\fxfile-keyhook.h"
 				>
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SysTray.h"
 				>
 			</File>
 		</Filter>
@@ -275,18 +220,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\res\fxLauncher.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\fxLauncher.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\res\fxLauncher.rc2"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

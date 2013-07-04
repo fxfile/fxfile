@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "fxKeyHook.h"
+#include "fxfile-keyhook.h"
 
 #ifdef _MANAGED
 #pragma managed(push, off)
@@ -35,7 +35,7 @@ BOOL APIENTRY DllMain(HMODULE hModule,
     return TRUE;
 }
 
-FX_KEYHOOK_EXT_API BOOL InstallHook(HWND hWnd, UINT uMsg)
+FXFILE_KEYHOOK_EXT_API BOOL InstallHook(HWND hWnd, UINT uMsg)
 {
 	g_hWnd = NULL;
 	g_uMsg = 0;
@@ -50,7 +50,7 @@ FX_KEYHOOK_EXT_API BOOL InstallHook(HWND hWnd, UINT uMsg)
 	return g_hHook ? TRUE : FALSE;
 }
 
-FX_KEYHOOK_EXT_API BOOL SetHookKey(WORD wVirtualKeyCode)
+FXFILE_KEYHOOK_EXT_API BOOL SetHookKey(WORD wVirtualKeyCode)
 {
 	if (!g_hHook)
 		return FALSE;
@@ -60,7 +60,7 @@ FX_KEYHOOK_EXT_API BOOL SetHookKey(WORD wVirtualKeyCode)
 	return TRUE;
 }
 
-FX_KEYHOOK_EXT_API void RemoveHook()
+FXFILE_KEYHOOK_EXT_API void RemoveHook()
 {
 	::UnhookWindowsHookEx(g_hHook);
 	g_hHook = NULL;
