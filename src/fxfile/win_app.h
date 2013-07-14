@@ -15,7 +15,7 @@
 #error include 'stdafx.h' before including this file for PCH
 #endif
 
-#include "gui/WinAppEx.h"
+#include "gui/rebar/WinAppEx.h"
 
 #include "option_observer.h"
 

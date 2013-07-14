@@ -23,7 +23,7 @@
 #include "stdafx.h"
 #include "CustomizeDialog.h"
 
-#include "../resource.h"
+#include "../../resource.h"
 #include "GlobalData.h"
 #include "ToolBarEx.h"
 

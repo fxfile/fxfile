@@ -11,7 +11,7 @@
 #define __FXFILE_DRAG_DROP_TOOL_BAR_H__
 #pragma once
 
-#include "ToolBarEx.h"
+#include "rebar/ToolBarEx.h"
 #include "DropTarget.h"
 
 class DragDropToolBar : public CToolBarEx, public DropTargetObserver

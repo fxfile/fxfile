@@ -11,7 +11,7 @@
 #define __FXFILE_MAIN_FRAME_H__ 1
 #pragma once
 
-#include "gui/FrameWndEx.h"
+#include "gui/rebar/FrameWndEx.h"
 #include "gui/BCMenu.h"
 #include "gui/DropTarget.h"
 

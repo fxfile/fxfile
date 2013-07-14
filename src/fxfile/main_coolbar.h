@@ -11,7 +11,7 @@
 #define __FXFILE_MAIN_COOL_BAR_H__ 1
 #pragma once
 
-#include "gui/SizableReBar.h"
+#include "gui/rebar/SizableReBar.h"
 #include "main_toolBar.h"
 #include "drive_toolBar.h"
 #include "bookmark_toolBar.h"
