@@ -1,0 +1,39 @@
+fxfile
+======
+
+Copyright (c) 2013 Leon Lee Author. All rights reserved.
+
+
+Overview
+--------
+fxfile is a free, open source, professional file manager for Microsoft Windows platform.
+
+
+Requirements to Build
+----------------------
+1. Check out gyp.
+   svn co -r 1541 http://gyp.googlecode.com/svn/trunk tools/gyp
+
+2. Check out python.
+   svn co -r 89111 http://src.chromium.org/svn/trunk/tools/third_party/python_26 tools/python_26
+
+
+Build on Windows
+----------------
+1. Run 'build.bat'.
+   build.bat [msvs_version] [target_arch]
+
+2. Build 'fxfile.sln'.
+   Run 'devenv.exe' and build
+
+
+License
+-------
+Read 'LICENSE' file.
+
+
+Contact
+-------
+Web site: http://www.flychk.com
+E-mail:   flychk@flychk.com
+

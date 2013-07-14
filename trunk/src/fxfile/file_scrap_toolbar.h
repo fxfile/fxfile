@@ -11,7 +11,7 @@
 #define __FXFILE_FILE_SCRAP_TOOL_BAR_H__ 1
 #pragma once
 
-#include "gui/ToolBarEx.h"
+#include "gui/rebar/ToolBarEx.h"
 
 namespace fxfile
 {

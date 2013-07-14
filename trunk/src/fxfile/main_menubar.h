@@ -11,7 +11,7 @@
 #define __FXFILE_MAIN_MENU_BAR_H__ 1
 #pragma once
 
-#include "gui/MenuBar.h"
+#include "gui/rebar/MenuBar.h"
 
 namespace fxfile
 {

@@ -25,7 +25,7 @@
 #include "MenuBar.h"
 #include "SizableReBar.h"
 
-#include "BCMenu.h"
+#include "../BCMenu.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
