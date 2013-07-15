@@ -31,6 +31,9 @@ UserEnv::~UserEnv(void)
 
 void UserEnv::getUserEnvironment(void)
 {
+    mOSVerInfo.dwOSVersionInfoSize = sizeof(mOSVerInfo);
+    ::GetVersionEx((LPOSVERSIONINFO)&mOSVerInfo);
+
     DWORD sComctl32DllVer = getDllVersion(XPR_STRING_LITERAL("Comctl32.dll"));
     DWORD sShlwapiDllVer  = getDllVersion(XPR_STRING_LITERAL("Shlwapi.dll"));
     DWORD sShell32DllVer  = getDllVersion(XPR_STRING_LITERAL("Shell32.dll"));
