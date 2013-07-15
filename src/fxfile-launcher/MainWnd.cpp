@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -19,13 +19,13 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-const LPCTSTR LAUNCHER_WND_CLASS = _T("fxLauncher");
+const LPCTSTR LAUNCHER_WND_CLASS = _T("fxfile-launcher");
 
 static const UINT WM_TASKRESTARTED           = ::RegisterWindowMessage(_T("TaskbarCreated")); 
-static const UINT WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(_T("fxLauncher: Load"));
-static const UINT WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(_T("fxLauncher: Tray"));
-static const UINT WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(_T("fxLauncher: HotKey"));
-static const UINT WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(_T("fxLauncher: Exit"));
+static const UINT WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(_T("fxfile-launcher: Load"));
+static const UINT WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(_T("fxfile-launcher: Tray"));
+static const UINT WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(_T("fxfile-launcher: HotKey"));
+static const UINT WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(_T("fxfile-launcher: Exit"));
 
 enum
 {
@@ -177,7 +177,7 @@ void MainWnd::install(void)
     if (mInstalled == FALSE)
     {
         CString sMsg = _T("Error!\r\n\r\nUnable to install hook");
-        ::MessageBox(NULL, sMsg, _T("fxLauncher"), MB_OK | MB_ICONSTOP);
+        ::MessageBox(NULL, sMsg, _T("fxfile-launcher"), MB_OK | MB_ICONSTOP);
     }
 }
 
@@ -198,7 +198,7 @@ void MainWnd::createTray(void)
     HICON sIcon = (HICON)::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(sIconId), IMAGE_ICON, 16, 16, 0);
 
     mTray = new SysTray;
-    mTray->createTray(GetSafeHwnd(), WM_TRAY_MESSAGE, IDS_TRAY_NOTIFY, _T("fxLauncher"), sIcon);
+    mTray->createTray(GetSafeHwnd(), WM_TRAY_MESSAGE, IDS_TRAY_NOTIFY, _T("fxfile-launcher"), sIcon);
 }
 
 void MainWnd::destroyTray(void)
@@ -219,7 +219,7 @@ void MainWnd::getSettingPath(LPTSTR aPath)
 
     if (::SHGetSpecialFolderPath(NULL, aPath, CSIDL_APPDATA, FALSE))
     {
-        _tcscat(aPath, _T("\\fxLauncher"));
+        _tcscat(aPath, _T("\\fxfile-launcher"));
         ::CreateDirectory(aPath, NULL);
     }
     else
@@ -227,7 +227,7 @@ void MainWnd::getSettingPath(LPTSTR aPath)
         ::GetModuleDir(aPath, MAX_PATH);
     }
 
-    _tcscat(aPath, _T("\\fxLauncher.ini"));
+    _tcscat(aPath, _T("\\fxfile-launcher.ini"));
 }
 
 void MainWnd::loadSetting(void)
@@ -310,9 +310,9 @@ LRESULT MainWnd::OnKeyHooked(WPARAM wParam, LPARAM lParam)
     _tcscpy(sPath, sDir);
 
 #ifdef _DEBUG
-    _tcscat(sPath, _T("\\flyExplorer_dbg.exe"));
+    _tcscat(sPath, _T("\\fxfile_dbg.exe"));
 #else
-    _tcscat(sPath, _T("\\flyExplorer.exe"));
+    _tcscat(sPath, _T("\\fxfile.exe"));
 #endif
 
     ::ShellExecute(NULL, _T("open"), sPath, NULL, sDir, 0);

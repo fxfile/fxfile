@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by fxLauncher.rc
+// Used by fxfile-launcher.rc
 //
 #define IDI_TRAY                        129
 #define IDS_TRAY_MESSAGE                130

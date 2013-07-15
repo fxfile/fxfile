@@ -79,7 +79,7 @@ BEGIN
     BEGIN
         BLOCK "041204e4"
         BEGIN
-            VALUE "Comments", "이 프로그램은 flyExplorer를 위한 전역 단축키 프로그램입니다. 문의 사항은 홈페이지 http://www.flychk.com나 전자 우편 flychk@flychk.com으로 연락주십시오."
+            VALUE "Comments", "이 프로그램은 fxfile를 위한 전역 단축키 프로그램입니다. 문의 사항은 홈페이지 http://www.flychk.com나 전자 우편 flychk@flychk.com으로 연락주십시오."
             VALUE "CompanyName", "이재광, Leon Lee, http://www.flychk.com, flychk@flychk.com"
             VALUE "FileDescription", "fxfile-launcher"
             VALUE "FileVersion", "1.0.0.1"
