@@ -118,7 +118,6 @@
                 'msvs_configuration_attributes':
                 {
                     'UseOfMFC':              1,
-                    'ATLMinimizesCRunTimeLibraryUsage': 'false',
                     'ConfigurationType':     1,
                 },
                 'msvs_settings':
