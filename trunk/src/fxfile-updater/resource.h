@@ -1,9 +1,8 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by fxupdate.rc
+// Used by fxfile-updater.rc
 //
 #define IDM_ABOUTBOX                    0x0010
-#define IDD_ABOUTBOX                    100
 #define IDD_FXUPDATE_DIALOG             102
 #define IDR_MAINFRAME                   128
 

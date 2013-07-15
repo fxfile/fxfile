@@ -22,16 +22,16 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxfile
 {
-static const xpr_tchar_t kLauncherProgramDebug          [] = XPR_STRING_LITERAL("fxLauncher_dbg.exe");
-static const xpr_tchar_t kLauncherProgram               [] = XPR_STRING_LITERAL("fxLauncher.exe");
-static const xpr_tchar_t kLauncherWindowClass           [] = XPR_STRING_LITERAL("fxLauncher");
+static const xpr_tchar_t kLauncherProgramDebug          [] = XPR_STRING_LITERAL("fxfile-launcher_dbg.exe");
+static const xpr_tchar_t kLauncherProgram               [] = XPR_STRING_LITERAL("fxfile-launcher.exe");
+static const xpr_tchar_t kLauncherWindowClass           [] = XPR_STRING_LITERAL("fxfile-launcher");
 static const xpr_tchar_t kLauncherRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-static const xpr_tchar_t kLauncherRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxLauncher");
+static const xpr_tchar_t kLauncherRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-launcher");
 
-static const xpr_uint_t WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Load"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Tray"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: HotKey"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxLauncher: Exit"));
+static const xpr_uint_t WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Load"));
+static const xpr_uint_t WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Tray"));
+static const xpr_uint_t WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: HotKey"));
+static const xpr_uint_t WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Exit"));
 
 void LauncherManager::startupProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
 {

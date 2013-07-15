@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
 //
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
@@ -24,14 +24,14 @@ END_MESSAGE_MAP()
 
 BOOL LauncherApp::InitInstance(void)
 {
-    gMutex = ::OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("fxLauncher_Mutex"));
+    gMutex = ::OpenMutex(MUTEX_ALL_ACCESS, FALSE, _T("fxfile-launcher_Mutex"));
     if (gMutex != NULL)
     {
         gMutex = NULL;
         return FALSE;
     }
 
-    gMutex = ::CreateMutex(NULL, FALSE, _T("fxLauncher_Mutex"));
+    gMutex = ::CreateMutex(NULL, FALSE, _T("fxfile-launcher_Mutex"));
 
     INITCOMMONCONTROLSEX InitCtrls;
     InitCtrls.dwSize = sizeof(InitCtrls);
