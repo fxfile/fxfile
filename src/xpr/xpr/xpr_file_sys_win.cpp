@@ -337,7 +337,7 @@ xpr_rcode_t FileSys::chdir(const xpr_wchar_t *aCurDir)
 
 xpr_rcode_t FileSys::getcwd(xpr_char_t *aCurDir, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetCurrentDirectoryA(aMaxLen, aCurDir);
+    DWORD sResult = ::GetCurrentDirectoryA((DWORD)aMaxLen, aCurDir);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
@@ -355,7 +355,7 @@ xpr_rcode_t FileSys::getcwd(xpr_char_t *aCurDir, xpr_size_t aMaxLen)
 
 xpr_rcode_t FileSys::getcwd(xpr_wchar_t *aCurDir, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetCurrentDirectoryW(aMaxLen, aCurDir);
+    DWORD sResult = ::GetCurrentDirectoryW((DWORD)aMaxLen, aCurDir);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
@@ -373,7 +373,7 @@ xpr_rcode_t FileSys::getcwd(xpr_wchar_t *aCurDir, xpr_size_t aMaxLen)
 
 xpr_rcode_t FileSys::getExePath(xpr_char_t *aExePath, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetModuleFileNameA(XPR_NULL, aExePath, aMaxLen);
+    DWORD sResult = ::GetModuleFileNameA(XPR_NULL, aExePath, (DWORD)aMaxLen);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
@@ -384,7 +384,7 @@ xpr_rcode_t FileSys::getExePath(xpr_char_t *aExePath, xpr_size_t aMaxLen)
 
 xpr_rcode_t FileSys::getExePath(xpr_wchar_t *aExePath, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetModuleFileNameW(XPR_NULL, aExePath, aMaxLen);
+    DWORD sResult = ::GetModuleFileNameW(XPR_NULL, aExePath, (DWORD)aMaxLen);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
@@ -455,7 +455,7 @@ xpr_rcode_t FileSys::getExeDir(xpr_wchar_t *aExeDir, xpr_size_t aMaxLen)
 
 xpr_rcode_t FileSys::getTempDir(xpr_char_t *aTempDir, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetTempPathA(aMaxLen, aTempDir);
+    DWORD sResult = ::GetTempPathA((DWORD)aMaxLen, aTempDir);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
@@ -473,7 +473,7 @@ xpr_rcode_t FileSys::getTempDir(xpr_char_t *aTempDir, xpr_size_t aMaxLen)
 
 xpr_rcode_t FileSys::getTempDir(xpr_wchar_t *aTempDir, xpr_size_t aMaxLen)
 {
-    DWORD sResult = ::GetTempPathW(aMaxLen, aTempDir);
+    DWORD sResult = ::GetTempPathW((DWORD)aMaxLen, aTempDir);
     if (sResult == 0)
     {
         return XPR_RCODE_GET_OS_ERROR();
