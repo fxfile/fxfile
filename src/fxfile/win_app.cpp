@@ -74,10 +74,10 @@ WinApp::WinApp(void)
     _tcscat(sAppVer, XPR_STRING_LITERAL(""));
 #endif
 
-    fxCrashHandler();
-    fxSetAppName(XPR_STRING_LITERAL("fxfile"));
-    fxSetAppVer(sAppVer);
-    fxSetDevelopInfo(XPR_STRING_LITERAL("flychk@flychk.com"), XPR_STRING_LITERAL("http://www.flychk.com"));
+    fxfile_crash_init();
+    fxfile_crash_setAppName(XPR_STRING_LITERAL("fxfile"));
+    fxfile_crash_setAppVer(sAppVer);
+    fxfile_crash_setDevelopInfo(XPR_STRING_LITERAL("flychk@flychk.com"), XPR_STRING_LITERAL("http://www.flychk.com"));
 
 #endif
 }
