@@ -1988,33 +1988,33 @@ extern "C" BOOL APIENTRY BT_SendSnapshot(void)
 	return bResult;
 }
 
-FXCRASH_API void APIENTRY fxCrashHandler()
+FXFILE_CRASH_DL_API void APIENTRY fxfile_crash_init()
 {
 	BT_InstallSehFilter();
 	BT_SetFlags(BTF_DETAILEDMODE | BTF_EDITMAIL | BTF_ATTACHREPORT| BTF_SCREENCAPTURE);
 }
 
-FXCRASH_API LPCTSTR APIENTRY fxGetAppName()
+FXFILE_CRASH_DL_API LPCTSTR APIENTRY fxfile_crash_getAppName()
 {
 	return BT_GetAppName();
 }
 
-FXCRASH_API void APIENTRY fxSetAppName(LPCTSTR lpcszAppName)
+FXFILE_CRASH_DL_API void APIENTRY fxfile_crash_setAppName(LPCTSTR lpcszAppName)
 {
 	BT_SetAppName(lpcszAppName);
 }
 
-FXCRASH_API LPCTSTR APIENTRY fxGetAppVer()
+FXFILE_CRASH_DL_API LPCTSTR APIENTRY fxfile_crash_getAppVer()
 {
 	return BT_GetAppVersion();
 }
 
-FXCRASH_API void APIENTRY fxSetAppVer(LPCTSTR lpcszAppVer)
+FXFILE_CRASH_DL_API void APIENTRY fxfile_crash_setAppVer(LPCTSTR lpcszAppVer)
 {
 	BT_SetAppVersion(lpcszAppVer);
 }
 
-FXCRASH_API void APIENTRY fxSetDevelopInfo(LPCTSTR lpcszEmail, LPCTSTR lpcszHomepage)
+FXFILE_CRASH_DL_API void APIENTRY fxfile_crash_setDevelopInfo(LPCTSTR lpcszEmail, LPCTSTR lpcszHomepage)
 {
 	BT_SetSupportEMail(lpcszEmail);
 	BT_SetSupportURL(lpcszHomepage);

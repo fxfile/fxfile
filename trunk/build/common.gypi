@@ -103,6 +103,7 @@
                     'VCLinkerTool': 
                     {
                         'LinkIncremental':            1,
+                        'LinkTimeCodeGeneration':     1, # /LTCG
                         'OptimizeReferences':         2,
                         'EnableCOMDATFolding':        2,
                         'GenerateMapFile':            'true',
@@ -139,38 +140,23 @@
                 },
             },
             
-            'MFC-Ansicode_Base':
+            'Ansicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'MFC_Base' ],
                 
                 'msvs_configuration_attributes':
                 {
                     'CharacterSet':          2,
                 },
-                'msvs_settings':
-                {
-                    'VCLinkerTool': 
-                    {
-                    },
-                },
             },
             
-            'MFC-Unicode_Base':
+            'Unicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'MFC_Base' ],
                 
                 'msvs_configuration_attributes':
                 {
                     'CharacterSet':          1,
-                },
-                'msvs_settings':
-                {
-                    'VCLinkerTool': 
-                    {
-                        'EntryPointSymbol': 'wWinMainCRTStartup',
-                    },
                 },
             },
             
@@ -184,6 +170,7 @@
                         'TargetMachine': '1',
                     },
                 },
+                
                 'msvs_configuration_platform': 'Win32',
             },
 
@@ -197,6 +184,7 @@
                         'TargetMachine': '17',  # x86-64
                     },
                 },
+                
                 'msvs_configuration_platform': 'x64',
             },
             
@@ -224,52 +212,100 @@
                 'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base' ],
             },
             
+            'Debug-x86-Unicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'Unicode_Base' ],
+            },
+            
+            'Debug-x86-Ansicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'Ansicode_Base' ],
+            },
+            
+            'Release-x86-Unicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'Unicode_Base' ],
+            },
+            
+            'Release-x86-Ansicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'Ansicode_Base' ],
+            },
+            
+            'Debug-x64-Unicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'Unicode_Base' ],
+            },
+            
+            'Debug-x64-Ansicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'Ansicode_Base' ],
+            },
+            
+            'Release-x64-Unicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'Unicode_Base' ],
+            },
+            
+            'Release-x64-Ansicode_Base':
+            {
+                'abstract': 1,
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'Ansicode_Base' ],
+            },
+            
             'Debug-x86-MFC-Unicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'MFC-Unicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'MFC_Base', 'Unicode_Base' ],
             },
             
             'Release-x86-MFC-Unicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'MFC-Unicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'MFC_Base', 'Unicode_Base' ],
             },
             
             'Debug-x86-MFC-Ansicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'MFC-Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Debug_Base', 'MFC_Base', 'Ansicode_Base' ],
             },
             
             'Release-x86-MFC-Ansicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'MFC-Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x86_Base', 'Release_Base', 'MFC_Base', 'Ansicode_Base' ],
             },
             
             'Debug-x64-MFC-Unicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'MFC-Unicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'MFC_Base', 'Unicode_Base' ],
             },
             
             'Release-x64-MFC-Unicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'MFC-Unicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'MFC_Base', 'Unicode_Base' ],
             },
             
             'Debug-x64-MFC-Ansicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'MFC-Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Debug_Base', 'MFC_Base', 'Ansicode_Base' ],
             },
             
             'Release-x64-MFC-Ansicode_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'MFC-Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'x64_Base', 'Release_Base', 'MFC_Base', 'Ansicode_Base' ],
             },
         },
     },

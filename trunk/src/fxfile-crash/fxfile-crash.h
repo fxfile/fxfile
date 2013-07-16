@@ -2,22 +2,22 @@
 #define __FXFILE_CRASH_H__ 1
 #pragma once
 
-#ifdef FXCRASH_EXPORTS
-    #define FXCRASH_API __declspec(dllexport)
+#ifdef FXFILE_CRASH_DL_EXPORTS
+    #define FXFILE_CRASH_DL_API __declspec(dllexport)
 #else
-    #define FXCRASH_API __declspec(dllimport)
+    #define FXFILE_CRASH_DL_API __declspec(dllimport)
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 
-FXCRASH_API void    APIENTRY fxCrashHandler();
-FXCRASH_API LPCTSTR APIENTRY fxGetAppName();
-FXCRASH_API void    APIENTRY fxSetAppName(LPCTSTR lpcszAppName);
-FXCRASH_API LPCTSTR APIENTRY fxGetAppVer();
-FXCRASH_API void    APIENTRY fxSetAppVer(LPCTSTR lpcszAppName);
-FXCRASH_API void    APIENTRY fxSetDevelopInfo(LPCTSTR lpcszEmail, LPCTSTR lpcszHomepage);
+FXFILE_CRASH_DL_API void    APIENTRY fxfile_crash_init();
+FXFILE_CRASH_DL_API LPCTSTR APIENTRY fxfile_crash_getAppName();
+FXFILE_CRASH_DL_API void    APIENTRY fxfile_crash_setAppName(LPCTSTR lpcszAppName);
+FXFILE_CRASH_DL_API LPCTSTR APIENTRY fxfile_crash_getAppVer();
+FXFILE_CRASH_DL_API void    APIENTRY fxfile_crash_setAppVer(LPCTSTR lpcszAppName);
+FXFILE_CRASH_DL_API void    APIENTRY fxfile_crash_setDevelopInfo(LPCTSTR lpcszEmail, LPCTSTR lpcszHomepage);
 
 #ifdef __cplusplus
 }
