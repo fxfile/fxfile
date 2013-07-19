@@ -3,10 +3,6 @@ mkdir "bin\x86-ansicode"
 mkdir "bin\x86-unicode"
 mkdir "bin\x64-unicode"
 
-xcopy "lib\fxCrash\bin\fxcrash.dll" "bin\x86-ansicode" /c /e /r /y
-xcopy "lib\fxCrash\bin\fxcrashu.dll" "bin\x86-unicode" /c /e /r /y
-xcopy "lib\fxCrash\bin\fxcrashu.dll" "bin\x64-unicode" /c /e /r /y
-
 xcopy "lib\gfl\lib\libgfl340.dll" "bin\x86-ansicode" /c /e /r /y
 xcopy "lib\gfl\lib\libgfle340.dll" "bin\x86-ansicode" /c /e /r /y
 xcopy "lib\gfl\libW\libgfl340.dll" "bin\x86-unicode" /c /e /r /y
