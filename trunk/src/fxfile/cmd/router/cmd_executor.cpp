@@ -12,7 +12,7 @@
 #include "cmd_context.h"
 #include "cmd_command.h"
 
-#include "../functors.h"
+#include "../../functors.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

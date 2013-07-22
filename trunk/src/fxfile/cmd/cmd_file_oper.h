@@ -11,7 +11,7 @@
 #define __FXFILE_CMD_FILE_OPER_H__ 1
 #pragma once
 
-#include "cmd_command.h"
+#include "router/cmd_command.h"
 
 namespace fxfile
 {

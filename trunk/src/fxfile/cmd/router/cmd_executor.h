@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_CMD_DISPATCHER_H__
-#define __FXFILE_CMD_DISPATCHER_H__ 1
+#ifndef __FXFILE_CMD_EXECUTOR_H__
+#define __FXFILE_CMD_EXECUTOR_H__ 1
 #pragma once
 
 namespace fxfile
@@ -53,4 +53,4 @@ protected:
 } // namespace cmd
 } // namespace fxfile
 
-#endif // __FXFILE_CMD_DISPATCHER_H__
+#endif // __FXFILE_CMD_EXECUTOR_H__

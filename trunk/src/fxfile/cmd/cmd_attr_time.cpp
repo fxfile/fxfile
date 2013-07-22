@@ -12,7 +12,7 @@
 
 #include "functors.h"
 
-#include "cmd_context.h"
+#include "router/cmd_context.h"
 #include "explorer_ctrl.h"
 #include "folder_ctrl.h"
 

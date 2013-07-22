@@ -24,8 +24,8 @@
 #include "explorer_ctrl.h"
 #include "search_result_ctrl.h"
 
-#include "cmd_parameters.h"
-#include "cmd_parameter_define.h"
+#include "router/cmd_parameters.h"
+#include "router/cmd_parameter_define.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
