@@ -53,12 +53,12 @@
 #include "ctrl_id.h"
 #include "dlg_state_manager.h"
 
-#include "cmd/cmd_command.h"
-#include "cmd/cmd_context.h"
-#include "cmd/cmd_executor.h"
-#include "cmd/cmd_command_map.h"
-#include "cmd/cmd_parameters.h"
-#include "cmd/cmd_parameter_define.h"
+#include "cmd/router/cmd_command.h"
+#include "cmd/router/cmd_context.h"
+#include "cmd/router/cmd_executor.h"
+#include "cmd/router/cmd_command_map.h"
+#include "cmd/router/cmd_parameters.h"
+#include "cmd/router/cmd_parameter_define.h"
 #include "cmd/cmd_clipboard.h"
 #include "cmd/trash.h"
 

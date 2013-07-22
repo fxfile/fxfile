@@ -19,8 +19,8 @@
 #include "folder_ctrl.h"
 #include "option.h"
 
-#include "cmd/cmd_parameters.h"
-#include "cmd/cmd_parameter_define.h"
+#include "cmd/router/cmd_parameters.h"
+#include "cmd/router/cmd_parameter_define.h"
 #include "cmd/cmd_clipboard.h"
 
 #ifdef _DEBUG

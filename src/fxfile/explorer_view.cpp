@@ -38,8 +38,8 @@
 #include "file_scrap_pane.h"
 #include "tab_pane.h"
 
-#include "cmd/cmd_parameters.h"
-#include "cmd/cmd_parameter_define.h"
+#include "cmd/router/cmd_parameters.h"
+#include "cmd/router/cmd_parameter_define.h"
 #include "cmd/cmd_clipboard.h"
 
 #include "cmd/param_exec_dlg.h"

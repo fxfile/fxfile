@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "cmd_execute.h"
 
-#include "cmd_context.h"
+#include "router/cmd_context.h"
 #include "explorer_ctrl.h"
 #include "search_result_ctrl.h"
 

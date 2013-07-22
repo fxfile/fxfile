@@ -10,8 +10,8 @@
 #include "stdafx.h"
 #include "cmd_program_ass.h"
 
+#include "router/cmd_context.h"
 #include "program_ass.h"
-#include "cmd_context.h"
 #include "program_ass_dlg.h"
 #include "explorer_ctrl.h"
 #include "search_result_ctrl.h"

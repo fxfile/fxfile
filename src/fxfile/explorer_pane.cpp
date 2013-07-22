@@ -35,8 +35,8 @@
 #include "explorer_status_bar.h"
 #include "tab_type.h"
 
-#include "cmd/cmd_parameters.h"
-#include "cmd/cmd_parameter_define.h"
+#include "cmd/router/cmd_parameters.h"
+#include "cmd/router/cmd_parameter_define.h"
 #include "cmd/cmd_clipboard.h"
 
 #include "cmd/param_exec_dlg.h"
