@@ -501,20 +501,20 @@
 
 			<!-- about popup -->
 			<String ID="popup.about.title">fxfile 정보</String>
-			<String ID="popup.about.label.accept">이 제품은 다음 사용자에게 사용이 허가되었습니다.</String>
-			<String ID="popup.about.module">모듈</String>
-			<String ID="popup.about.version">버전</String>
-			<String ID="popup.about.button.system_info">시스템 정보(&amp;S)...</String>
-			<String ID="popup.about.button.bug_report">버그 보고(&amp;B)...</String>
-			<String ID="popup.about.button.update">업데이트(&amp;U)</String>
-			<String ID="popup.about.label.update.checking">업데이트 검사 중...</String>
-			<String ID="popup.about.label.update.check_failed">업데이트 검사 실패.</String>
-			<String ID="popup.about.label.update.checked">새 버전이 존재합니다. (새 버전: v%1%)</String>
-			<String ID="popup.about.label.update.downloading">새 버전 다운로드 중... (새 버전: v%1%)</String>
-			<String ID="popup.about.label.update.downloaded">최신 버전으로 업데이트가 필요합니다. (새 버전: v%1%)</String>
-			<String ID="popup.about.label.update.download_failed">새 버전 다운로드 실패.</String>
-			<String ID="popup.about.label.update.latest_version">설치된 프로그램이 최신 버전입니다.</String>
-			<String ID="popup.about.msg.installer_execute_error">설치 프로그램 실행 오류 (오류코드: %1%)</String>
+			<String ID="popup.about.tab.info">정보</String>
+			<String ID="popup.about.tab.license">License</String>
+			<String ID="popup.about.tab.credits">Credits</String>
+			<String ID="popup.about.tab.info.button.system_info">시스템 정보(&amp;S)...</String>
+			<String ID="popup.about.tab.info.button.report">의견 보내기(&amp;I)...</String>
+			<String ID="popup.about.tab.info.button.update">업데이트(&amp;U)</String>
+			<String ID="popup.about.tab.info.label.update.checking">업데이트 검사 중...</String>
+			<String ID="popup.about.tab.info.label.update.check_failed">업데이트 검사 실패.</String>
+			<String ID="popup.about.tab.info.label.update.checked">새 버전이 존재합니다. (새 버전: v%1%)</String>
+			<String ID="popup.about.tab.info.label.update.downloading">새 버전 다운로드 중... (새 버전: v%1%)</String>
+			<String ID="popup.about.tab.info.label.update.downloaded">최신 버전으로 업데이트가 필요합니다. (새 버전: v%1%)</String>
+			<String ID="popup.about.tab.info.label.update.download_failed">새 버전 다운로드 실패.</String>
+			<String ID="popup.about.tab.info.label.update.latest_version">설치된 프로그램이 최신 버전입니다.</String>
+			<String ID="popup.about.tab.info.msg.installer_execute_error">설치 프로그램 실행 오류 (오류코드: %1%)</String>
 
 			<!-- keyboard shortcut popup -->
 			<String ID="popup.accel.title">단축키 설정</String>

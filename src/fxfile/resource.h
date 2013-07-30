@@ -8,6 +8,7 @@
 #define IDC_PIC_CONV_COLOR_APPLY_ALL    3
 #define IDC_SHARED_PROC_PROPERTIES      3
 #define IDC_CFG_APPLY                   3
+#define IDC_ABOUT_REPORT                3
 #define IDC_GO_PATH_EXP1_PATH           4
 #define IDC_CFG_DEFAULT                 4
 #define IDC_SEARCH_SYSTEM               5
@@ -199,8 +200,10 @@
 #define IDR_TAB                         423
 #define IDD_BATCH_CREATE_TAB_TEXT       423
 #define IDD_CFG_ADV_HOTKEY              424
+#define IDR_CREDITS                     424
 #define IDD_CFG_FUNC_HISTORY            425
 #define IDD_CFG_APPEARANCE_HISTORY      425
+#define IDR_LICENSE                     425
 #define IDD_CFG_FUNC_FILEOP             426
 #define IDD_CFG_FUNC_FILE_OP            426
 #define IDD_CFG_GENERAL_STARTUP         427
@@ -217,6 +220,11 @@
 #define IDD_CFG_APPEARANCE_FOLDER_TREE  437
 #define IDD_CFG_APPEARANCE_FILE_LIST    438
 #define IDD_CFG_APPEARANCE_FILTERING    439
+#define IDD_ABOUT_TAB_ABOUT             440
+#define IDD_ABOUT_TAB_INFO              440
+#define IDD_ABOUT_TAB_CREDIT            441
+#define IDD_ABOUT_TAB_LICENSE           441
+#define IDD_ABOUT_TAB_CREDITS           442
 #define IDC_ABOUT_WINDOWS               1000
 #define IDC_ABOUT_NAME                  1001
 #define IDC_CREATE_SHORTCUT_STARTUP     1002
@@ -373,6 +381,7 @@
 #define IDC_PROGRAM_ASS_SET_PROGRAM     1037
 #define IDC_FILE_SCRAP_CLEAR_ALL        1037
 #define IDC_CFG_LANGUAGE_DESC_LANGUAGE  1037
+#define IDC_ABOUT_LICENSE               1037
 #define IDC_NEW_NUMBER_START            1038
 #define IDC_BUTTON3                     1038
 #define IDC_CONFIGURATION4              1038
@@ -1406,6 +1415,10 @@
 #define IDC_CFG_ADV_TRAY_SHOW           1836
 #define IDC_CFG_ADV_UPDATE_ENABLE       1844
 #define IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP 1845
+#define IDC_ABOUT_TAB                   1846
+#define IDC_ABOUT_CREDITS               1847
+#define IDC_PROGRAM                     1848
+#define IDC_ABOUT_PROGRAM               1848
 #define ID_FILE_NEW_FOLDER              30000
 #define ID_FILE_NEW_FILE                30001
 #define ID_FILE_NEW_TEXT                30002
@@ -1804,9 +1817,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        424
+#define _APS_NEXT_RESOURCE_VALUE        425
 #define _APS_NEXT_COMMAND_VALUE         50006
-#define _APS_NEXT_CONTROL_VALUE         1846
+#define _APS_NEXT_CONTROL_VALUE         1849
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

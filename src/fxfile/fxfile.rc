@@ -26,27 +26,14 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // Dialog
 //
 
-IDD_ABOUT DIALOGEX 0, 0, 243, 196
+IDD_ABOUT DIALOGEX 0, 0, 299, 229
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About fxfile"
 FONT 9, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,172,131,64,13,WS_GROUP
-    PUSHBUTTON      "&System Info...",IDC_ABOUT_SYSTEM,172,146,64,13,WS_GROUP
-    PUSHBUTTON      "&Bug Report...",IDC_ABOUT_BUG,172,161,64,13,WS_GROUP
-    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,48,79,188,43
-    CONTROL         "fxfile",IDC_FXFILE,"Static",SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,48,7,188,8
-    LTEXT           "Copyright (C) 2001-2013 Leon Lee. All rights reserved.",IDC_STATIC,48,31,176,8
-    LTEXT           "...",IDC_ABOUT_WINDOWS,48,41,168,8
-    LTEXT           "This software accepts the following user for use.",IDC_ABOUT_LABEL_ACCEPT,7,133,161,18
-    LTEXT           "",IDC_ABOUT_NAME,7,155,159,8
-    LTEXT           "Homepage: http://www.flychk.com",IDC_STATIC,49,56,116,8
-    LTEXT           "E-mail: flychk@flychk.com",IDC_STATIC,49,67,88,8
-    CONTROL         133,IDC_STATIC,"Static",SS_BITMAP,7,7,35,133
-    LTEXT           "version X.XX build XXXX",IDC_ABOUT_VERSION,48,16,188,8
-    PUSHBUTTON      "&Update",IDC_ABOUT_UPDATE,172,176,64,13,WS_GROUP
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,127,230,1
-    LTEXT           "",IDC_ABOUT_UPDATE_INFO,7,179,159,8
+    CONTROL         "",IDC_ABOUT_TAB,"SysTabControl32",0x0,3,37,293,170
+    DEFPUSHBUTTON   "OK",IDOK,183,211,55,14
+    PUSHBUTTON      "Cancel",IDCANCEL,240,211,55,14
 END
 
 IDD_BATCH_CREATE DIALOGEX 0, 0, 318, 279
@@ -1667,6 +1654,39 @@ BEGIN
     PUSHBUTTON      "De&fault",IDC_CFG_FILTER_DEFAULT,56,227,68,14
 END
 
+IDD_ABOUT_TAB_INFO DIALOGEX 0, 0, 280, 149
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&System Info...",IDC_ABOUT_SYSTEM,7,76,64,13,WS_GROUP
+    PUSHBUTTON      "Report an &issue...",IDC_ABOUT_REPORT,74,76,64,13,WS_GROUP
+    LTEXT           "Copyright (C) 2001-2013 Leon Lee. All rights reserved.",IDC_STATIC,7,19,176,8
+    LTEXT           "...",IDC_ABOUT_WINDOWS,7,31,168,8
+    LTEXT           "Homepage: http://www.flychk.com",IDC_STATIC,7,53,116,8
+    LTEXT           "E-mail: flychk@flychk.com",IDC_STATIC,7,64,88,8
+    PUSHBUTTON      "&Update",IDC_ABOUT_UPDATE,7,136,64,13,WS_GROUP
+    LTEXT           "Checking for up-to-date...",IDC_ABOUT_UPDATE_INFO,7,124,159,8
+    LTEXT           "fxfile",IDC_ABOUT_PROGRAM,7,7,176,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,46,272,1
+END
+
+IDD_ABOUT_TAB_LICENSE DIALOGEX 0, 0, 273, 197
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_ABOUT_LICENSE,25,21,213,150,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL
+END
+
+IDD_ABOUT_TAB_CREDITS DIALOGEX 0, 0, 273, 197
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_ABOUT_CREDITS,25,21,213,150,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1679,10 +1699,9 @@ BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 236
-        VERTGUIDE, 48
+        RIGHTMARGIN, 292
         TOPMARGIN, 7
-        BOTTOMMARGIN, 189
+        BOTTOMMARGIN, 222
     END
 
     IDD_BATCH_CREATE, DIALOG
@@ -2115,6 +2134,24 @@ BEGIN
         LEFTMARGIN, 3
         RIGHTMARGIN, 248
         TOPMARGIN, 3
+    END
+
+    IDD_ABOUT_TAB_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+    END
+
+    IDD_ABOUT_TAB_LICENSE, DIALOG
+    BEGIN
+        RIGHTMARGIN, 163
+        BOTTOMMARGIN, 92
+    END
+
+    IDD_ABOUT_TAB_CREDITS, DIALOG
+    BEGIN
+        RIGHTMARGIN, 163
+        BOTTOMMARGIN, 92
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -3372,6 +3409,14 @@ END
 //
 
 1                       RT_MANIFEST             "res\\fxfile.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+IDR_CREDITS             TEXT                    "..\\..\\CREDITS"
+IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
 #endif    // Korean resources
 /////////////////////////////////////////////////////////////////////////////
 
