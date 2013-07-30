@@ -9,21 +9,12 @@
 
 #include "stdafx.h"
 #include "about_dlg.h"
-
-#include "user_env.h"
-#include "winapi_ex.h"
-
-#include "app_ver.h"
-#include "option.h"
+#include "about_tab_dlg.h"
+#include "about_tab_info_dlg.h"
+#include "about_tab_license_dlg.h"
+#include "about_tab_credits_dlg.h"
 #include "resource.h"
-
-#include "gfl/libgfl.h"
-
-#include <atlbase.h>
-
-#include "updater_def.h"
-#include "update_info_manager.h"
-#include "updater_manager.h"
+#include "app_ver.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,322 +29,200 @@ namespace fxfile
 {
 namespace cmd
 {
-// user defined timer
-enum
-{
-    kTimerIdUpdateCheckFirst = 100,
-    kTimerIdUpdateCheck,
-};
-
 AboutDlg::AboutDlg(void)
     : super(IDD_ABOUT)
-    , mUpdateInfoManager(XPR_NULL)
+    , mOldShowDlg(-1)
+    , mProgram(XPR_STRING_LITERAL("fxfile"))
+    , mLicense(XPR_STRING_LITERAL("This program is free software, licensed under GNU General Public License."))
 {
 }
 
 void AboutDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_FXFILE, mProgramWnd);
+    DDX_Control(pDX, IDC_ABOUT_TAB, mTabCtrl);
 }
 
 BEGIN_MESSAGE_MAP(AboutDlg, super)
-    ON_WM_LBUTTONDOWN()
     ON_WM_DESTROY()
-    ON_WM_TIMER()
-    ON_BN_CLICKED(IDC_ABOUT_BUG,    OnBug)
-    ON_BN_CLICKED(IDC_ABOUT_SYSTEM, OnSystem)
-    ON_BN_CLICKED(IDC_ABOUT_UPDATE, OnUpdate)
+    ON_WM_PAINT()
+    ON_NOTIFY(TCN_SELCHANGE, IDC_ABOUT_TAB, OnSelchangeTab)
 END_MESSAGE_MAP()
 
 xpr_bool_t AboutDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
-    UserEnv &sUserEnv = UserEnv::instance();
+    addTabDialog(new AboutTabInfoDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info")));
+    addTabDialog(new AboutTabLicenseDlg, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.license")));
+    addTabDialog(new AboutTabCreditsDlg, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.credits")));
 
-    // Get User Name
-    xpr_tchar_t sUserName[0xff] = {0};
-    DWORD dwUserNameLength = 0xfe;
-    GetUserName(sUserName, &dwUserNameLength);
+    showTabDialog(0);
 
-    SetDlgItemText(IDC_ABOUT_NAME, sUserName);
-
-    // Get Version - Windows, Shell
-    CString sWindows;
-    sWindows.Format(XPR_STRING_LITERAL("Microsoft (R) Windows %d.%d build %d"), 
-        LOWORD(sUserEnv.mOSVerInfo.dwMajorVersion),
-        LOWORD(sUserEnv.mOSVerInfo.dwMinorVersion),
-        LOWORD(sUserEnv.mOSVerInfo.dwBuildNumber));
-    SetDlgItemText(IDC_ABOUT_WINDOWS, sWindows);
-
-    // fxfile
-    LOGFONT sLogFont = {0};
-    mProgramWnd.GetFont()->GetLogFont(&sLogFont);
-    sLogFont.lfWeight = FW_BOLD;
-    mBoldFont.CreateFontIndirect(&sLogFont);
-    mProgramWnd.SetFont(&mBoldFont);
-
-    // Version
-    xpr_tchar_t sVersion[0xff] = {0};
-    getFullAppVer(sVersion);
-    SetDlgItemText(IDC_ABOUT_VERSION, sVersion);
-
-    // Get Version - Module, Dll
-    xpr_sint_t i = 0;
-    CListCtrl *sListCtrl = (CListCtrl *)GetDlgItem(IDC_LIST);
-    sListCtrl->SetExtendedStyle(sListCtrl->GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    sListCtrl->InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.about.module")),  LVCFMT_LEFT,  208);
-    sListCtrl->InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.about.version")), LVCFMT_RIGHT, 100);
-
-    xpr_tchar_t sGflVersion[0xff] = {0};
-#ifdef XPR_CFG_UNICODE
-    xpr_size_t sInputBytes = strlen(gflGetVersion());
-    xpr_size_t sOutputBytes = 0xfe * sizeof(xpr_tchar_t);
-    XPR_MBS_TO_TCS(gflGetVersion(), &sInputBytes, sGflVersion, &sOutputBytes);
-    sGflVersion[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-#else
-    strcpy(sGflVersion, gflGetVersion());
-#endif
-
-    sListCtrl->InsertItem(i, XPR_STRING_LITERAL("gfl SDK"));
-    sListCtrl->SetItem(i++, 1, LVIF_TEXT, sGflVersion, 0, 0, 0, 0);
-
-    sListCtrl->InsertItem(i, XPR_STRING_LITERAL("Windows Shell"));
-    sListCtrl->SetItem(i++, 1, LVIF_TEXT, sUserEnv.mShellVer.c_str(), 0, 0, 0, 0);
-
-    xpr_tchar_t szText[0xff];
-    DWORD sMajorVersion, sMinorVersion, sBuildNumber;
-    UserEnv::getDllVersion(XPR_STRING_LITERAL("comctl32.dll"), &sMajorVersion, &sMinorVersion, &sBuildNumber);
-    _stprintf(szText, XPR_STRING_LITERAL("%d.%d.%d"), sMajorVersion, sMinorVersion, sBuildNumber);
-    sListCtrl->InsertItem(i, XPR_STRING_LITERAL("comctl32.dll"));
-    sListCtrl->SetItem(i++, 1, LVIF_TEXT, szText, 0, 0, 0, 0);
-
-    UserEnv::getDllVersion(XPR_STRING_LITERAL("shlwapi.dll"), &sMajorVersion, &sMinorVersion, &sBuildNumber);
-    _stprintf(szText, XPR_STRING_LITERAL("%d.%d.%d"), sMajorVersion, sMinorVersion, sBuildNumber);
-    sListCtrl->InsertItem(i, XPR_STRING_LITERAL("shlwapi.dll"));
-    sListCtrl->SetItem(i++, 1, LVIF_TEXT, szText, 0, 0, 0, 0);
-
-    UserEnv::getDllVersion(XPR_STRING_LITERAL("shell32.dll"), &sMajorVersion, &sMinorVersion, &sBuildNumber);
-    _stprintf(szText, XPR_STRING_LITERAL("%d.%d.%d"), sMajorVersion, sMinorVersion, sBuildNumber);
-    sListCtrl->InsertItem(i, XPR_STRING_LITERAL("shell32.dll"));
-    sListCtrl->SetItem(i++, 1, LVIF_TEXT, szText, 0, 0, 0, 0);
-
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.about.title")));
-    SetDlgItemText(IDC_ABOUT_LABEL_ACCEPT, theApp.loadString(XPR_STRING_LITERAL("popup.about.label.accept")));
-    SetDlgItemText(IDOK,                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDC_ABOUT_SYSTEM,       theApp.loadString(XPR_STRING_LITERAL("popup.about.button.system_info")));
-    SetDlgItemText(IDC_ABOUT_BUG,          theApp.loadString(XPR_STRING_LITERAL("popup.about.button.bug_report")));
-    SetDlgItemText(IDC_ABOUT_UPDATE,       theApp.loadString(XPR_STRING_LITERAL("popup.about.button.update")));
-
-    // disable update button
-    GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_HIDE);
-
-    // start update check timer
-    SetTimer(kTimerIdUpdateCheckFirst, 0, XPR_NULL);
+    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
 
-void AboutDlg::OnLButtonDown(xpr_uint_t nFlags, CPoint point) 
-{
-    //PostMessage(WM_NCLBUTTONDOWN, HTCAPTION);
-    super::OnLButtonDown(nFlags, point);
-}
-
 void AboutDlg::OnDestroy(void) 
 {
-    // stop update check timer
-    KillTimer(kTimerIdUpdateCheckFirst);
-    KillTimer(kTimerIdUpdateCheck);
+    AboutTabDlg *sDlg;
+    TabDeque::iterator sIterator;
 
-    XPR_SAFE_DELETE(mUpdateInfoManager);
+    sIterator = mTabDeque.begin();
+    for (; sIterator != mTabDeque.end(); ++sIterator)
+    {
+        sDlg = *sIterator;
+        DESTROY_DELETE(sDlg);
+    }
+
+    mTabDeque.clear();
 
     super::OnDestroy();
-
-    mBoldFont.DeleteObject();
 }
 
-void AboutDlg::OnTimer(xpr_uint_t aIdEvent)
+void AboutDlg::OnPaint(void) 
 {
-    if (aIdEvent == kTimerIdUpdateCheckFirst ||
-        aIdEvent == kTimerIdUpdateCheck)
+    CPaintDC sPaintDc(this);
+
+    const CRect sOffsetRect(10, 10, 7, 7);
+    const CPoint sTextOffset(15, 0);
+
+    CRect sRect;
+    GetClientRect(&sRect);
+
+    CRect sTabRect;
+    GetDlgItem(IDC_ABOUT_TAB)->GetWindowRect(&sTabRect);
+    ScreenToClient(&sTabRect);
+    sRect.bottom = sTabRect.top - sOffsetRect.bottom;
+
+    // draw background
+    sPaintDc.FillSolidRect(sRect, RGB(255,255,255));
+
+    HICON sIcon = theApp.LoadIcon(IDR_MAINFRAME);
+    if (sIcon != XPR_NULL)
     {
-        if (aIdEvent == kTimerIdUpdateCheckFirst)
+        CPoint sIconPoint(sOffsetRect.left, sOffsetRect.top);
+        ::DrawIconEx(sPaintDc.m_hDC, sIconPoint.x, sIconPoint.y, sIcon, 32, 32, 0, XPR_NULL, DI_NORMAL);
+        DESTROY_ICON(sIcon);
+    }
+
+    CPen sPen(PS_SOLID, 1, RGB(200,200,200));
+    CPen *sOldPen = sPaintDc.SelectObject(&sPen);
+    sPaintDc.MoveTo(sRect.left,  sRect.bottom);
+    sPaintDc.LineTo(sRect.right, sRect.bottom);
+    sPaintDc.SelectObject(sOldPen);
+
+    CRect sTitleRect(sRect), sCalcRect;
+    sTitleRect.left   = sOffsetRect.left + 32 + sTextOffset.x;
+    sTitleRect.top    = sOffsetRect.top;
+    sTitleRect.bottom = sTitleRect.top + 32;
+
+    LOGFONT sLogFont = {0};
+    GetFont()->GetLogFont(&sLogFont);
+
+    CFont sTextFont;
+    sTextFont.CreateFontIndirect(&sLogFont);
+
+    CFont sTitleFont;
+    sLogFont.lfHeight = -MulDiv(13, GetDeviceCaps(sPaintDc.m_hDC, LOGPIXELSY), 72);
+    sTitleFont.CreateFontIndirect(&sLogFont);
+
+    sPaintDc.SetTextColor(RGB(0,50,150));
+
+    CFont *sOldFont = sPaintDc.SelectObject(&sTitleFont);
+
+    sPaintDc.DrawText(mProgram.c_str(), (xpr_sint_t)mProgram.length(), sTitleRect, DT_SINGLELINE | DT_LEFT | DT_TOP);
+
+    sCalcRect = sTitleRect;
+    sPaintDc.DrawText(mProgram.c_str(), (xpr_sint_t)mProgram.length(), sCalcRect,  DT_SINGLELINE | DT_LEFT | DT_TOP | DT_CALCRECT);
+
+    sPaintDc.SelectObject(sOldFont);
+
+    sPaintDc.SetTextColor(RGB(0,0,0));
+
+    sOldFont = sPaintDc.SelectObject(&sTextFont);
+
+    CRect sTextRect;
+    sTextRect.left   = sTitleRect.left;
+    sTextRect.top    = sCalcRect.bottom + 0;
+    sTextRect.right  = sRect.right  - sOffsetRect.right;
+    sTextRect.bottom = sTextRect.top + 32;
+
+    sPaintDc.DrawText(mLicense.c_str(), (xpr_sint_t)mLicense.length(), sTextRect, DT_LEFT | DT_TOP);
+
+    sPaintDc.SelectObject(sOldFont);
+}
+
+void AboutDlg::addTabDialog(AboutTabDlg *aDlg, const xpr_tchar_t *aTitle)
+{
+    xpr_sint_t sIndex = mTabCtrl.GetItemCount();
+
+    mTabCtrl.InsertItem(sIndex, aTitle);
+    mTabDeque.push_back(aDlg);
+}
+
+AboutTabDlg *AboutDlg::getTabDialog(xpr_sint_t aIndex)
+{
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mTabDeque))
+        return XPR_NULL;
+
+    return mTabDeque[aIndex];
+}
+
+void AboutDlg::OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult) 
+{
+    showTabDialog(mTabCtrl.GetCurSel());
+    *pResult = 0;
+}
+
+void AboutDlg::showTabDialog(xpr_sint_t aIndex)
+{
+    if (!FXFILE_STL_IS_INDEXABLE(aIndex, mTabDeque))
+        return;
+
+    AboutTabDlg *sOldDlg;
+    AboutTabDlg *sNewDlg;
+
+    sNewDlg = mTabDeque[aIndex];
+    if (sNewDlg == XPR_NULL)
+        return;
+
+    // Hide
+    if (FXFILE_STL_IS_INDEXABLE(mOldShowDlg, mTabDeque))
+    {
+        sOldDlg = mTabDeque[mOldShowDlg];
+        if (sOldDlg != XPR_NULL)
         {
-            KillTimer(aIdEvent);
-            SetTimer(kTimerIdUpdateCheck, 300, XPR_NULL);
-        }
-
-        xpr_rcode_t sRcode;
-        xpr_tchar_t sStatus[0xff];
-        xpr_tchar_t sCheckedVersion[0xff];
-        UpdateInfo  sUpdateInfo = {0};
-
-        if (XPR_IS_NULL(mUpdateInfoManager))
-        {
-            mUpdateInfoManager = new UpdateInfoManager;
-            mUpdateInfoManager->setUpdateHomeDir(XPR_STRING_LITERAL("C:\\Users\\flychk\\AppData\\Roaming\\fxfile\\update"));
-
-            sRcode = mUpdateInfoManager->openUpdateInfo();
-            if (XPR_RCODE_IS_ERROR(sRcode))
-            {
-                XPR_SAFE_DELETE(mUpdateInfoManager);
-                return;
-            }
-        }
-
-        if (XPR_IS_NOT_NULL(mUpdateInfoManager))
-        {
-            sRcode = mUpdateInfoManager->readUpdateInfo(sUpdateInfo);
-            if (XPR_RCODE_IS_SUCCESS(sRcode))
-            {
-                switch (sUpdateInfo.mStatus)
-                {
-                case kUpdateStatusCheckInProgress:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.label.update.checking")));
-                    break;
-
-                case kUpdateStatusCheckFailed:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.label.update.check_failed")));
-                    break;
-
-                case kUpdateStatusExistNewVer:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.checked"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    break;
-
-                case kUpdateStatusLastestVer:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.latest_version"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-
-                    KillTimer(aIdEvent);
-                    break;
-
-                case kUpdateStatusDownloading:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.downloading"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    break;
-
-                case kUpdateStatusDownloaded:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.downloaded"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_SHOW);
-
-                    KillTimer(aIdEvent);
-                    break;
-
-                case kUpdateStatusDownloadFailed:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.label.update.download_failed"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    break;
-                }
-            }
+            if (sOldDlg->m_hWnd != XPR_NULL)
+                sOldDlg->ShowWindow(SW_HIDE);
         }
     }
 
-    CWnd::OnTimer(aIdEvent);
-}
+    // Show
+    if (sNewDlg->m_hWnd == XPR_NULL)
+        sNewDlg->Create(this);
 
-void AboutDlg::OnBug(void) 
-{
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    GetModulePath(sPath, XPR_MAX_PATH);
+    sNewDlg->OnTabInit();
 
-    xpr_bool_t sResult = XPR_FALSE;
-    xpr_tchar_t sVersion[0xff];
-    void *sBlock = new xpr_char_t[5120];
-    if (GetFileVersionInfo(sPath, 0, 5120, sBlock))
-    {
-        struct LangAndCodePage
-        {
-            WORD wLanguage;
-            WORD wCodePage;
-        } *sTranslate;
+    CRect sTabRect(0,0,0,0);
+    mTabCtrl.GetWindowRect(&sTabRect);
+    ScreenToClient(&sTabRect);
 
-        xpr_uint_t sTranslateLength = 0;
-        if (VerQueryValue(sBlock,
-                          XPR_STRING_LITERAL("\\VarFileInfo\\Translation"),
-                          (LPVOID*)&sTranslate,
-                          &sTranslateLength))
-        {
-            xpr_tchar_t sSubBlock[0xff] = {0};
-            void *sBuffer = XPR_NULL;
-            xpr_uint_t sBytes = 0;
-            xpr_sint_t i, sCount;
+    CRect sItemRect(0,0,0,0);
+    mTabCtrl.GetItemRect(0, &sItemRect);
 
-            sCount = sTranslateLength / sizeof(LangAndCodePage);
-            for (i = 0; i < sCount; ++i)
-            {
-                _stprintf(sSubBlock, XPR_STRING_LITERAL("\\StringFileInfo\\%04x%04x\\FileVersion"),
-                    sTranslate[i].wLanguage, sTranslate[i].wCodePage);
+    sTabRect.DeflateRect(3, sItemRect.Height()+5, 3, 3);
 
-                if (VerQueryValue(sBlock, sSubBlock, &sBuffer, &sBytes))
-                {
-                    _tcscpy(sVersion, (xpr_tchar_t *)sBuffer);
-                    sResult = XPR_TRUE;
-                    break;
-                }
-            }
-        }
-    }
+    sNewDlg->MoveWindow(sTabRect);
+    sNewDlg->SetWindowPos(&wndTop, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    sNewDlg->ShowWindow(SW_SHOW);
+    sNewDlg->SetFocus();
+    UpdateWindow();
 
-    XPR_SAFE_DELETE_ARRAY(sBlock);
-
-    if (sResult == XPR_FALSE)
-        _stprintf(sVersion, XPR_STRING_LITERAL("1"));
-
-    xpr_tchar_t sUrl[XPR_MAX_URL_LENGTH+50] = {0};
-    _stprintf(sUrl, XPR_STRING_LITERAL("mailto:flychk@flychk.com?subject=fxfile v%s - bug report"), sVersion);
-    ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sUrl, XPR_NULL, XPR_NULL, 0);
-}
-
-void AboutDlg::OnSystem(void)
-{
-    ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), XPR_STRING_LITERAL("msinfo32.exe"), XPR_NULL, XPR_NULL, 0);
-}
-
-void AboutDlg::OnUpdate(void)
-{
-    xpr_rcode_t sRcode;
-    UpdateInfo  sUpdateInfo = {0};
-    xpr_tchar_t sDownloadedFilePath[XPR_MAX_PATH + 1] = {0};
-
-    sRcode = mUpdateInfoManager->readUpdateInfo(sUpdateInfo);
-    if (XPR_RCODE_IS_SUCCESS(sRcode))
-    {
-        if (sUpdateInfo.mStatus == kUpdateStatusDownloaded)
-        {
-            UpdateInfoManager::getDownloadedFilePath(sUpdateInfo, sDownloadedFilePath, XPR_MAX_PATH);
-
-            HINSTANCE sInstance = ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sDownloadedFilePath, XPR_NULL, XPR_NULL, SW_SHOW);
-            if ((xpr_sint_t)(xpr_sintptr_t)sInstance < 32)
-            {
-                xpr_sint_t sErrorCode = (xpr_sint_t)(xpr_sintptr_t)sInstance;
-
-                xpr_tchar_t sMsg[0xff] = {0};
-                _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.msg.installer_execute_error"), XPR_STRING_LITERAL("%d")), sErrorCode);
-                ::MessageBox(XPR_NULL, sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-
-                if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))
-                {
-                    // restart update checker program
-                    UpdaterManager::shutdownProcess();
-                    UpdaterManager::startupProcess();
-                }
-            }
-        }
-    }
+    mTabCtrl.SetCurSel(aIndex);
+    mOldShowDlg = aIndex;
 }
 } // namespace cmd
 } // namespace fxfile

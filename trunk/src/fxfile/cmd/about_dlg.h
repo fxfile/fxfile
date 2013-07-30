@@ -13,16 +13,10 @@
 
 namespace fxfile
 {
-namespace base
-{
-class UpdateInfoManager;
-} // namespace base
-} // namespace fxfile
-
-namespace fxfile
-{
 namespace cmd
 {
+class AboutTabDlg;
+
 class AboutDlg : public CDialog
 {
     typedef CDialog super;
@@ -30,12 +24,21 @@ class AboutDlg : public CDialog
 public:
     AboutDlg(void);
 
-protected:
-    fxfile::base::UpdateInfoManager *mUpdateInfoManager;
+public:
+    void addTabDialog(AboutTabDlg *aTabDlg, const xpr_tchar_t *aTitle);
+    AboutTabDlg *getTabDialog(xpr_sint_t aIndex);
+    void showTabDialog(xpr_sint_t aIndex);
 
 protected:
-    CFont   mBoldFont;
-    CStatic mProgramWnd;
+    xpr::tstring mProgram;
+    xpr::tstring mLicense;
+
+    typedef std::deque<AboutTabDlg *> TabDeque;
+    TabDeque   mTabDeque;
+    xpr_sint_t mOldShowDlg;
+
+protected:
+    CTabCtrl mTabCtrl;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -43,12 +46,9 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
-    afx_msg void OnLButtonDown(xpr_uint_t nFlags, CPoint point);
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
-    afx_msg void OnBug(void);
-    afx_msg void OnSystem(void);
-    afx_msg void OnUpdate(void);
+    afx_msg void OnPaint(void);
+    afx_msg void OnSelchangeTab(NMHDR* pNMHDR, LRESULT* pResult);
 };
 } // namespace cmd
 } // namespace fxfile
