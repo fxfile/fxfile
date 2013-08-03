@@ -134,6 +134,11 @@ xpr_bool_t  IsVirtualItem(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsExistFile(const xpr_tchar_t *aPath);
 xpr_bool_t  IsExistFile(const xpr::tstring &aPath);
 
+xpr_bool_t  IsLibrariesSubFolder(LPCITEMIDLIST aFullPidl);
+xpr_bool_t  IsLibrariesSubFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
+xpr_bool_t  getDefaultSaveFolderOfLibraryFolder(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aSavePath, xpr_size_t aMaxLen);
+xpr_bool_t  getDefaultSaveFolderOfLibraryFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aSavePath, xpr_size_t aMaxLen);
+
 //
 // disk and drive related
 //
