@@ -1160,12 +1160,12 @@ void String::format(const xpr_char_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    format(aFormat, sArgs);
+    format_args(aFormat, sArgs);
 
     va_end(sArgs);
 }
 
-void String::format(const xpr_char_t *aFormat, va_list aArgs)
+void String::format_args(const xpr_char_t *aFormat, va_list aArgs)
 {
     xpr_sint_t sLength = _vscprintf(aFormat, aArgs);
     if (sLength <= 0)
@@ -1205,12 +1205,12 @@ void String::append_format(const xpr_char_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    append_format(aFormat, sArgs);
+    append_format_args(aFormat, sArgs);
 
     va_end(sArgs);
 }
 
-void String::append_format(const xpr_char_t *aFormat, va_list aArgs)
+void String::append_format_args(const xpr_char_t *aFormat, va_list aArgs)
 {
     xpr_sint_t sLength = _vscprintf(aFormat, aArgs);
     if (sLength <= 0)
