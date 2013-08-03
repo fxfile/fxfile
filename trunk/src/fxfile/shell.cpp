@@ -14,6 +14,7 @@
 #include <afxpriv.h>
 #include <winioctl.h>      // NT I/O Control - Drive Type
 #include <wininet.h>
+#include <shobjidl.h>
 
 #include "vwin32.h"    // 9x I/O Control - Drive Type
 #include "file_op_thread.h"
@@ -27,6 +28,11 @@ static xpr_char_t THIS_FILE[] = __FILE__;
 
 namespace fxfile
 {
+static const xpr_wchar_t kSpecialFolderLibariesGuidString[] = XPR_WIDE_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
+
+typedef WINSHELLAPI HRESULT (WINAPI *SHCreateItemFromIDListFunc)(LPCITEMIDLIST, REFIID, void **);
+typedef WINSHELLAPI HRESULT (WINAPI *SHGetIDListFromObjectFunc)(IUnknown *, LPITEMIDLIST *);
+
 LPITEMIDLIST Path2Pidl(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NULL(aPath))
@@ -189,7 +195,16 @@ xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tc
     }
 
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-    GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
+
+    if (IsLibrariesSubFolder(aShellFolder, aPidl) == XPR_TRUE)
+    {
+        sResult = getDefaultSaveFolderOfLibraryFolder(aShellFolder, aPidl, sPath, XPR_MAX_PATH);
+    }
+
+    if (XPR_IS_FALSE(sResult))
+    {
+        GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
+    }
 
     if (aShellAttributes & SFGAO_LINK)
     {
@@ -1613,6 +1628,157 @@ xpr_bool_t IsExistFile(const xpr_tchar_t *aPath)
 xpr_bool_t IsExistFile(const xpr::tstring &aPath)
 {
     return IsExistFile(aPath.c_str());
+}
+
+xpr_bool_t IsLibrariesSubFolder(LPCITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(aFullPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    LPITEMIDLIST sParentFullPidl = base::Pidl::clone(aFullPidl);
+
+    if (base::Pidl::removeLastItem(sParentFullPidl) == XPR_FALSE)
+    {
+        return XPR_FALSE;
+    }
+
+    xpr_bool_t sLibrariesSubFolder = XPR_FALSE;
+
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    GetName(sParentFullPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, sPath);
+
+    if (_tcscmp(sPath, kSpecialFolderLibariesGuidString) == 0)
+    {
+        sLibrariesSubFolder = XPR_TRUE;
+    }
+
+    COM_FREE(sParentFullPidl);
+
+    return sLibrariesSubFolder;
+}
+
+xpr_bool_t IsLibrariesSubFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl)
+{
+    if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    LPITEMIDLIST sFullPidl = base::Pidl::getFullPidl(aShellFolder, aPidl);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    xpr_bool_t sLibrariesSubFolder = IsLibrariesSubFolder(sFullPidl);
+
+    COM_FREE(sFullPidl);
+
+    return sLibrariesSubFolder;
+}
+
+static HRESULT SHCreateItemFromIDList(LPCITEMIDLIST aFullPidl, REFIID riid, void **ppv)
+{
+    HRESULT sComResult = E_FAIL;
+
+    HMODULE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
+    if (XPR_IS_NOT_NULL(sDll))
+    {
+        SHCreateItemFromIDListFunc sSHCreateItemFromIDListFunc;
+        sSHCreateItemFromIDListFunc = (SHCreateItemFromIDListFunc)GetProcAddress(sDll, "SHCreateItemFromIDList");
+
+        if (XPR_IS_NOT_NULL(sSHCreateItemFromIDListFunc))
+        {
+            sComResult = sSHCreateItemFromIDListFunc(aFullPidl, riid, ppv);
+        }
+
+        ::FreeLibrary(sDll);
+        sDll = XPR_NULL;
+    }
+
+    return sComResult;
+}
+
+static HRESULT SHGetIDListFromObject(IUnknown *aUnknown, LPITEMIDLIST *aFullPidl)
+{
+    HRESULT sComResult = E_FAIL;
+
+    HMODULE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
+    if (XPR_IS_NOT_NULL(sDll))
+    {
+        SHGetIDListFromObjectFunc sSHGetIDListFromObjectFunc;
+        sSHGetIDListFromObjectFunc = (SHGetIDListFromObjectFunc)GetProcAddress(sDll, "SHGetIDListFromObject");
+
+        if (XPR_IS_NOT_NULL(sSHGetIDListFromObjectFunc))
+        {
+            sComResult = sSHGetIDListFromObjectFunc(aUnknown, aFullPidl);
+        }
+
+        ::FreeLibrary(sDll);
+        sDll = XPR_NULL;
+    }
+
+    return sComResult;
+}
+
+xpr_bool_t getDefaultSaveFolderOfLibraryFolder(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aSavePath, xpr_size_t aMaxLen)
+{
+    HRESULT        sComResult;
+    IShellItem    *sShellItem    = XPR_NULL;
+    IShellLibrary *sShellLibrary = XPR_NULL;
+
+    sComResult = SHCreateItemFromIDList(aFullPidl, IID_IShellItem, (void **)&sShellItem);
+    if (SUCCEEDED(sComResult))
+    {
+        sComResult = CoCreateInstance(CLSID_ShellLibrary, XPR_NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&sShellLibrary));
+        if (SUCCEEDED(sComResult))
+        {
+            sComResult = sShellLibrary->LoadLibraryFromItem(sShellItem, STGM_READ);
+            if (SUCCEEDED(sComResult))
+            {
+                IShellItem *sDefaultSaveFolder = XPR_NULL;
+
+                sComResult = sShellLibrary->GetDefaultSaveFolder(DSFT_DETECT, IID_IShellItem, (void **)&sDefaultSaveFolder);
+                if (SUCCEEDED(sComResult))
+                {
+                    LPITEMIDLIST sFullPidl = XPR_NULL;
+                    sComResult = SHGetIDListFromObject(sDefaultSaveFolder, &sFullPidl);
+
+                    GetName(sFullPidl, SHGDN_FORPARSING, aSavePath);
+
+                    COM_RELEASE(sDefaultSaveFolder);
+                }
+            }
+
+            COM_RELEASE(sShellLibrary);
+        }
+
+        COM_RELEASE(sShellItem);
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t getDefaultSaveFolderOfLibraryFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aSavePath, xpr_size_t aMaxLen)
+{
+    if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    LPITEMIDLIST sFullPidl = base::Pidl::getFullPidl(aShellFolder, aPidl);
+    if (XPR_IS_NULL(sFullPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    xpr_bool_t sResult = getDefaultSaveFolderOfLibraryFolder(sFullPidl, aSavePath, aMaxLen);
+
+    COM_FREE(sFullPidl);
+
+    return sResult;
 }
 
 //

@@ -1376,7 +1376,7 @@ xpr_sint_t ExplorerCtrl::getFileIconIndex(LPLVITEMDATA aLvItemData, const xpr_tc
     return sIconIndex;
 }
 
-// caution   : SHGetDataFromIDList API function don't fill for full fields.
+// caution   : SHGetDataFromIDList API function don't use becuase may not fill for full fields.
 // recommend : FindFirstFile or getFileTime
 // reference : SHGetDataFromIDList MSDN
 xpr_bool_t ExplorerCtrl::getFileSize(LPLVITEMDATA aLvItemData, xpr_uint64_t &aFileSize) const
@@ -1711,11 +1711,20 @@ void ExplorerCtrl::getFileTime(LPLVITEMDATA aLvItemData, xpr_tchar_t *aModifiedT
     if (!XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_CANCOPY))
         return;
 
-    HRESULT sHResult;
     static WIN32_FIND_DATA sWin32FindData = {0};
+    static xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+    sPath[0] = XPR_STRING_LITERAL('\0');
 
-    sHResult = ::SHGetDataFromIDList(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(sWin32FindData));
+    HRESULT sHResult = GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
     if (FAILED(sHResult))
+        return;
+
+    // check drive
+    if (sPath[2] == XPR_STRING_LITERAL('\0') || sPath[3] == XPR_STRING_LITERAL('\0'))
+        return;
+
+    HANDLE sFindFile = ::FindFirstFile(sPath, &sWin32FindData);
+    if (sFindFile == INVALID_HANDLE_VALUE)
         return;
 
     xpr_tchar_t sDateText[0xff] = {0};
@@ -1723,17 +1732,19 @@ void ExplorerCtrl::getFileTime(LPLVITEMDATA aLvItemData, xpr_tchar_t *aModifiedT
     FILETIME sFileTime = {0};
     SYSTEMTIME sSystemTime = {0};
 
-    if (::FileTimeToLocalFileTime(&sWin32FindData.ftLastWriteTime, &sFileTime) == XPR_FALSE)
-        return;
+    if (::FileTimeToLocalFileTime(&sWin32FindData.ftLastWriteTime, &sFileTime) == XPR_TRUE)
+    {
+        if (::FileTimeToSystemTime(&sFileTime, &sSystemTime) == XPR_TRUE)
+        {
+            const xpr_tchar_t *sDateFormat = XPR_IS_TRUE(mOption.m2YearDate)  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
+            const xpr_tchar_t *sTimeFormat = XPR_IS_TRUE(mOption.m24HourTime) ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
+            GetDateFormat(XPR_NULL, 0, &sSystemTime, sDateFormat, sDateText, 0xfe);
+            GetTimeFormat(XPR_NULL, 0, &sSystemTime, sTimeFormat, sTimeText, 0xfe);
+            _stprintf(aModifiedTime, XPR_STRING_LITERAL("%s %s"), sDateText, sTimeText);
+        }
+    }
 
-    if (::FileTimeToSystemTime(&sFileTime, &sSystemTime) == XPR_FALSE)
-        return;
-
-    const xpr_tchar_t *sDateFormat = XPR_IS_TRUE(mOption.m2YearDate)  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
-    const xpr_tchar_t *sTimeFormat = XPR_IS_TRUE(mOption.m24HourTime) ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
-    GetDateFormat(XPR_NULL, 0, &sSystemTime, sDateFormat, sDateText, 0xfe);
-    GetTimeFormat(XPR_NULL, 0, &sSystemTime, sTimeFormat, sTimeText, 0xfe);
-    _stprintf(aModifiedTime, XPR_STRING_LITERAL("%s %s"), sDateText, sTimeText);
+    ::FindClose(sFindFile);
 }
 
 void ExplorerCtrl::getFileTime(xpr_sint_t aIndex, xpr_tchar_t *aModifiedTime, const xpr_size_t aMaxLen) const
@@ -7736,7 +7747,7 @@ xpr_bool_t ExplorerCtrl::OnShcnUpdateDir(Shcn *aShcn)
 {
     HRESULT sHResult;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-    sHResult = GetName(aShcn->mPidl1, SHGDN_FORPARSING, sPath);
+    sHResult = GetFolderPath(aShcn->mPidl1, sPath);
     if (FAILED(sHResult))
         return XPR_FALSE;
 

@@ -752,10 +752,17 @@ xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD 
 static void filterAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aAttributes)
 {
     HRESULT         sComResult;
+    xpr_tchar_t     sPath[XPR_MAX_PATH + 1] = {0};
     WIN32_FIND_DATA sWin32FindData = {0};
 
-    sComResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
-    if (SUCCEEDED(sComResult))
+    sComResult = GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
+    if (FAILED(sComResult))
+    {
+        return;
+    }
+
+    HANDLE sFindFile = ::FindFirstFile(sPath, &sWin32FindData);
+    if (sFindFile != INVALID_HANDLE_VALUE)
     {
         if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_HIDDEN))
         {
@@ -770,6 +777,8 @@ static void filterAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xp
         {
             aAttributes &= ~SFGAO_FOLDER;
         }
+
+        ::FindClose(sFindFile);
     }
 }
 
