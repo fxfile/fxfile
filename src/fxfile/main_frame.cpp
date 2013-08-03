@@ -3669,19 +3669,17 @@ void MainFrame::gotoBookmark(xpr_sint_t aBookmarkIndex)
 
         if (XPR_IS_TRUE(sFile))
         {
-            // The bookmark item is file.
+            // file system - file
 
             ExecFile(sBookmarkPath, sBookmarkStartup, sBookmakrParam, sBookmarkShowCmd);
             sResult = XPR_TRUE;
         }
         else
         {
-            xpr_ulong_t sShellAttributes = SFGAO_FOLDER;
-            GetItemAttributes(sFullPidl, sShellAttributes);
-
-            if (!XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER))
+            if (XPR_IS_FALSE(IsFolder(sFullPidl)))
             {
-                // The bookmark item is virtual item such as date/time item of control panels.
+                // virtual item such as date/time item of control panels.
+
                 ExecFile(sFullPidl, sBookmarkStartup, sBookmakrParam, sBookmarkShowCmd);
                 sResult = XPR_TRUE;
             }
@@ -3692,7 +3690,7 @@ void MainFrame::gotoBookmark(xpr_sint_t aBookmarkIndex)
 
                 if ((_tcslen(sPath) > 3) || (_tcslen(sPath) <= 3 && IsExistFile(sPath) == XPR_TRUE))
                 {
-                    // The bookmark item is folder
+                    // folder
 
                     xpr_sint_t sIndex = -1;
                     //if (XPR_IS_TRUE(sShiftKey))

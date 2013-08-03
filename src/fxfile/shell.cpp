@@ -1267,6 +1267,60 @@ xpr_bool_t GetItemAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aShellAttribu
     return sResult;
 }
 
+xpr_bool_t IsFolder(LPCITEMIDLIST aFullPidl)
+{
+    if (XPR_IS_NULL(aFullPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
+    HRESULT       sComResult;
+
+    sComResult = ::SHGetDesktopFolder(&sShellFolder);
+    if (FAILED(sComResult))
+    {
+        return XPR_FALSE;
+    }
+
+    xpr_bool_t    sResult = XPR_FALSE;
+    LPCITEMIDLIST sPidl   = XPR_NULL;
+
+    sResult = fxfile::base::Pidl::getSimplePidl(aFullPidl, sShellFolder, sPidl);
+    if (XPR_IS_FALSE(sResult))
+    {
+        return XPR_FALSE;
+    }
+
+    sResult = IsFolder(sShellFolder, sPidl);
+
+    COM_RELEASE(sShellFolder);
+
+    return sResult;
+}
+
+xpr_bool_t IsFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl)
+{
+    if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidl))
+    {
+        return XPR_FALSE;
+    }
+
+    xpr_ulong_t sShellAttributes = SFGAO_FOLDER | SFGAO_FILESYSANCESTOR;
+    HRESULT sComResult = aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &sShellAttributes);
+
+    if (SUCCEEDED(sComResult))
+    {
+        if (XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER) ||
+            XPR_TEST_BITS(sShellAttributes, SFGAO_FILESYSANCESTOR))
+        {
+            return XPR_TRUE;
+        }
+    }
+
+    return XPR_FALSE;
+}
+
 xpr_bool_t IsFileSystem(LPCITEMIDLIST aFullPidl)
 {
     if (XPR_IS_NULL(aFullPidl))
