@@ -16,10 +16,8 @@
 // Neutral resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
-#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-#pragma code_page(949)
-#endif //_WIN32
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -3331,19 +3329,6 @@ BEGIN
     IDS_TRAY_NOTIFY         "Tray Notify Message"
 END
 
-#endif    // Neutral resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Korean resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
-#ifdef _WIN32
-LANGUAGE LANG_KOREAN, SUBLANG_DEFAULT
-#pragma code_page(949)
-#endif //_WIN32
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -3389,13 +3374,11 @@ BEGIN
     "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 18, 1\r\n"
-    "#pragma code_page(949)\r\n"
-    "#endif //_WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
     "#include ""res\\fxfile.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""l.kor\\afxres.rc""          // Standard components\r\n"
-    "#include ""l.kor\\afxprint.rc""        // printing/print preview resources\r\n"
+    "#include ""afxres.rc""        // Standard components\r\n"
+    "#include ""afxprint.rc""      // printing/print preview resources\r\n"
     "#endif\r\n"
     "\0"
 END
@@ -3417,7 +3400,7 @@ END
 
 IDR_CREDITS             TEXT                    "..\\..\\CREDITS"
 IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
-#endif    // Korean resources
+#endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -3433,13 +3416,11 @@ IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
 #define _AFX_NO_PROPERTY_RESOURCES
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
-#ifdef _WIN32
-LANGUAGE 18, 1
-#pragma code_page(949)
-#endif //_WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
 #include "res\fxfile.rc2"  // non-Microsoft Visual C++ edited resources
-#include "l.kor\afxres.rc"          // Standard components
-#include "l.kor\afxprint.rc"        // printing/print preview resources
+#include "afxres.rc"       // Standard components
+#include "afxprint.rc"     // printing/print preview resources
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
