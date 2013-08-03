@@ -78,7 +78,7 @@ xpr_bool_t AccelTable::load(const xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_
     if (XPR_RCODE_IS_ERROR(sRcode))
         return XPR_FALSE;
 
-    sResult = strncmp(sFileHeader.mProgram, "fxfile", 11) == 0 && sFileHeader.mFileType == 1;
+    sResult = strncmp(sFileHeader.mProgram, FXFILE_PROGRAM_NAME_MBCS, 11) == 0 && sFileHeader.mFileType == 1;
     if (sResult == XPR_TRUE)
     {
         //----------------------------------------------------------------------
@@ -141,7 +141,7 @@ xpr_bool_t AccelTable::save(xpr_tchar_t *aPath, ACCEL *aAccel, xpr_sint32_t aCou
     // File Header - 100 Bytes
     //----------------------------------------------------------------------
     FileHeader sFileHeader = {0};
-    strcpy(sFileHeader.mProgram,     "fxfile");
+    strcpy(sFileHeader.mProgram,     FXFILE_PROGRAM_NAME_MBCS);
     strcpy(sFileHeader.mDescription, "AccelKey");
     sFileHeader.mMajorVer     = FXFILE_MAJOR_VER;
     sFileHeader.mMinorVer     = FXFILE_MINOR_VER;

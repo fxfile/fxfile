@@ -191,7 +191,7 @@ void BookmarkSetWnd::updateBookmark(void)
 
     CRect sRect(10,0,200,0);
     CClientDC sClientDc(this);
-    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("fxfile"));
+    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("test"));
 
     sRect.bottom += OFFSET_MARGIN;
 
@@ -262,7 +262,7 @@ void BookmarkSetWnd::recalcLayout(void)
     GetClientRect(&sRect);
 
     CClientDC sClientDc(this);
-    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("fxfile"));
+    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("test"));
 
     SCROLLINFO sScrollInfo = {0};
     sScrollInfo.cbSize = sizeof(SCROLLINFO);
@@ -294,7 +294,7 @@ void BookmarkSetWnd::recalcLayout(void)
 void BookmarkSetWnd::OnVScroll(xpr_uint_t nSBCode, xpr_uint_t nPos, CScrollBar* pScrollBar)
 {
     CClientDC sClientDc(this);
-    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("fxfile"));
+    CSize sTextSize = sClientDc.GetTextExtent(XPR_STRING_LITERAL("test"));
     sTextSize.cy += OFFSET_HEIGHT;
 
     SCROLLINFO sScrollInfo = {0};

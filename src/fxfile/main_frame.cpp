@@ -26,6 +26,7 @@
 #include "winapi_ex.h"
 #include "keyboard.h"
 #include "clipboard.h"
+#include "app_ver.h"
 
 #include "gui/FileDialogST.h"
 #include "gui/SysTray.h"
@@ -2038,7 +2039,7 @@ SysTray *MainFrame::createTray(void)
     HICON sIcon = (HICON)::LoadImage(theApp.m_hInstance, MAKEINTRESOURCE(sIconId), IMAGE_ICON, 0, 0, 0);
 
     mSysTray = new SysTray;
-    if (mSysTray->createTray(GetSafeHwnd(), WM_TRAY_MESSAGE, IDS_TRAY_NOTIFY, XPR_STRING_LITERAL("fxfile"), sIcon) == XPR_FALSE)
+    if (mSysTray->createTray(GetSafeHwnd(), WM_TRAY_MESSAGE, IDS_TRAY_NOTIFY, FXFILE_PROGRAM_NAME, sIcon) == XPR_FALSE)
     {
         destroyTray();
         DESTROY_ICON(sIcon);
@@ -4164,7 +4165,7 @@ void MainFrame::setMainTitle(xpr_tchar_t *aTitle)
         _tcscat(sTitle, XPR_STRING_LITERAL(": "));
     }
 
-    _tcscat(sTitle, XPR_STRING_LITERAL("fxfile"));
+    _tcscat(sTitle, FXFILE_PROGRAM_NAME);
 
     SetWindowText(sTitle);
 }
