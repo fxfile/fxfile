@@ -143,9 +143,9 @@ public:
     void     trim_right(void);
 
     void     format(const xpr_char_t *aFormat, ...);
-    void     format(const xpr_char_t *aFormat, va_list aArgs);
+    void     format_args(const xpr_char_t *aFormat, va_list aArgs);
     void     append_format(const xpr_char_t *aFormat, ...);
-    void     append_format(const xpr_char_t *aFormat, va_list aArgs);
+    void     append_format_args(const xpr_char_t *aFormat, va_list aArgs);
 
     void     update(void);
 

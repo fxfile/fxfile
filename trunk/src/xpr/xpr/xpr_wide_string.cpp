@@ -1160,12 +1160,12 @@ void WideString::format(const xpr_wchar_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    format(aFormat, sArgs);
+    format_args(aFormat, sArgs);
 
     va_end(sArgs);
 }
 
-void WideString::format(const xpr_wchar_t *aFormat, va_list aArgs)
+void WideString::format_args(const xpr_wchar_t *aFormat, va_list aArgs)
 {
     xpr_sint_t sLength = _vscwprintf(aFormat, aArgs);
     if (sLength <= 0)
@@ -1205,12 +1205,12 @@ void WideString::append_format(const xpr_wchar_t *aFormat, ...)
     va_list sArgs;
     va_start(sArgs, aFormat);
 
-    append_format(aFormat, sArgs);
+    append_format_args(aFormat, sArgs);
 
     va_end(sArgs);
 }
 
-void WideString::append_format(const xpr_wchar_t *aFormat, va_list aArgs)
+void WideString::append_format_args(const xpr_wchar_t *aFormat, va_list aArgs)
 {
     xpr_sint_t sLength = _vscwprintf(aFormat, aArgs);
     if (sLength <= 0)
