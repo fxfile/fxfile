@@ -115,6 +115,8 @@ xpr_bool_t  GetItemAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, x
 xpr_ulong_t GetItemAttributes(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  GetItemAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aShellAttributes);
 void        SetItemAttribsFilter(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes);
+xpr_bool_t  IsFolder(LPCITEMIDLIST aFullPidl);
+xpr_bool_t  IsFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
 xpr_bool_t  IsFileSystem(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsFileSystem(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
 xpr_bool_t  IsFileSystem(const xpr_tchar_t *aPath);
