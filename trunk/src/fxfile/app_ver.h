@@ -17,11 +17,17 @@ namespace fxfile
 //   - odd version : stable version
 //   - even version: development version
 
+#define FXFILE_PROGRAM_NAME_MBCS "fxfile"
+#define FXFILE_PROGRAM_NAME_WIDE L"fxfile"
+#ifdef XPR_CFG_UNICODE
+#define FXFILE_PROGRAM_NAME FXFILE_PROGRAM_NAME_WIDE
+#else
+#define FXFILE_PROGRAM_NAME FXFILE_PROGRAM_NAME_MBCS
+#endif
+
 #define FXFILE_MAJOR_VER 2
 #define FXFILE_MINOR_VER 0
 #define FXFILE_PATCH_VER 3
-
-#define FXFILE_VER_STRING "2.0.3"
 
 void getAppVer(xpr_tchar_t *aAppVer);
 void getFullAppVer(xpr_tchar_t *aAppVer);

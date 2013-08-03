@@ -65,7 +65,7 @@ WinApp::WinApp(void)
 {
 #if defined(XPR_CFG_BUILD_RELEASE)
 
-    xpr_tchar_t sAppVer[100] = {0};
+    xpr_tchar_t sAppVer[0xff] = {0};
     getAppVer(sAppVer);
 
 #ifdef XPR_CFG_UNICODE
@@ -75,7 +75,7 @@ WinApp::WinApp(void)
 #endif
 
     fxfile_crash_init();
-    fxfile_crash_setAppName(XPR_STRING_LITERAL("fxfile"));
+    fxfile_crash_setAppName(FXFILE_PROGRAM_NAME);
     fxfile_crash_setAppVer(sAppVer);
     fxfile_crash_setDevelopInfo(XPR_STRING_LITERAL("flychk@flychk.com"), XPR_STRING_LITERAL("http://www.flychk.com"));
 
@@ -119,7 +119,7 @@ xpr_bool_t WinApp::InitInstance(void)
     // Program file name verification routine
 #if defined(XPR_CFG_BUILD_RELEASE)
     // fxfile File Name Check Routine
-    if (_tcsicmp(m_pszExeName, XPR_STRING_LITERAL("fxfile")) != 0)
+    if (_tcsicmp(m_pszExeName, FXFILE_PROGRAM_NAME) != 0)
     {
         CString sMsg;
         sMsg  = XPR_STRING_LITERAL("This program is \'fxfile\' file manager.\n");
@@ -129,7 +129,7 @@ xpr_bool_t WinApp::InitInstance(void)
         sMsg += XPR_STRING_LITERAL("\n");
         sMsg += XPR_STRING_LITERAL("Please, contact to homepage: http://flychk.com or e-mail: flychk@flychk.com for any question.");
         sMsg += XPR_STRING_LITERAL("\n");
-        MessageBox(XPR_NULL, sMsg, XPR_STRING_LITERAL("fxfile"), MB_OK | MB_ICONSTOP);
+        MessageBox(XPR_NULL, sMsg, FXFILE_PROGRAM_NAME, MB_OK | MB_ICONSTOP);
         return XPR_FALSE;
     }
 #endif // XPR_CFG_BUILD_RELEASE
@@ -181,7 +181,7 @@ xpr_bool_t WinApp::InitInstance(void)
     if (loadLanguageTable() == XPR_FALSE)
     {
         const xpr_tchar_t *sMsg = XPR_STRING_LITERAL("Language file(s) don't exist!!!");
-        MessageBox(XPR_NULL, sMsg, XPR_STRING_LITERAL("fxfile"), MB_OK | MB_ICONSTOP);
+        MessageBox(XPR_NULL, sMsg, FXFILE_PROGRAM_NAME, MB_OK | MB_ICONSTOP);
         return XPR_FALSE;
     }
 

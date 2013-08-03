@@ -27,6 +27,7 @@
 #include "clip_format.h"
 #include "sys_img_list.h"
 #include "clipboard.h"
+#include "app_ver.h"
 
 #include "gui/gdi.h"
 #include "gui/FlatHeaderCtrl.h"
@@ -367,7 +368,7 @@ xpr_sint_t ExplorerCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
-    SetWindowText(XPR_STRING_LITERAL("fxfile"));
+    SetWindowText(FXFILE_PROGRAM_NAME);
 
     // enable vist enhanced control
     enableVistaEnhanced(XPR_TRUE);

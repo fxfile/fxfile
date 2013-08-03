@@ -20,6 +20,7 @@
 #include "clip_format.h"
 #include "clipboard.h"
 #include "winapi_ex.h"
+#include "app_ver.h"
 
 #include "gui/gdi.h"
 #include "gui/DragImage.h"
@@ -205,7 +206,7 @@ xpr_sint_t FolderCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (super::OnCreate(aCreateStruct) == -1)
         return -1;
 
-    SetWindowText(XPR_STRING_LITERAL("fxfile"));
+    SetWindowText(FXFILE_PROGRAM_NAME);
 
     // enable vista enhanced control
     enableVistaEnhanced(XPR_TRUE);

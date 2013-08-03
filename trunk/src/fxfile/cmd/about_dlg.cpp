@@ -32,7 +32,7 @@ namespace cmd
 AboutDlg::AboutDlg(void)
     : super(IDD_ABOUT)
     , mOldShowDlg(-1)
-    , mProgram(XPR_STRING_LITERAL("fxfile"))
+    , mProgram(FXFILE_PROGRAM_NAME)
     , mLicense(XPR_STRING_LITERAL("This program is free software, licensed under GNU General Public License."))
 {
 }
