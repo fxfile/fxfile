@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -15,6 +15,7 @@ namespace fxfile
 {
 typedef struct LVITEMDATA
 {
+    xpr::tstring   mName;
     xpr_uint_t     mSignature;
     DWORD          mItemType;
     LPSHELLFOLDER  mShellFolder;

@@ -2957,6 +2957,8 @@ xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
     sLvItemData->mThumbImageId    = Thumbnail::InvalidThumbImageId;
     aShellFolder->AddRef();
 
+    insertNameHash(sLvItemData);
+
     static LVITEM sLvItem = {0};
     sLvItem.mask       = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE | LVIF_PARAM;
     sLvItem.iItem      = aIndex;
@@ -5700,6 +5702,8 @@ void ExplorerCtrl::OnDeleteitem(NMHDR *aNmHdr, LRESULT *aResult)
     LPLVITEMDATA sLvItemData = (LPLVITEMDATA)sNmListView->lParam;
     if (XPR_IS_NOT_NULL(sLvItemData))
     {
+        eraseNameHash(sLvItemData);
+
         COM_RELEASE(sLvItemData->mShellFolder);
         COM_RELEASE(sLvItemData->mShellFolder2);
         COM_FREE(sLvItemData->mPidl);
@@ -7019,114 +7023,68 @@ xpr_sint_t ExplorerCtrl::findItemFileName(const xpr_tchar_t *aFind) const
     return sIndex;
 }
 
-xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aFind) const
+xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aPath) const
 {
-    if (XPR_IS_NULL(aFind))
-        return -1;
-
     xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
-    SplitPath(aFind, XPR_NULL, sFindName);
+    SplitPath(aPath, XPR_NULL, sFindName);
 
     xpr_tchar_t *sExt = (xpr_tchar_t *)GetFileExt(sFindName);
     if (XPR_IS_NOT_NULL(sExt))
         sExt[0] = 0;
 
-    xpr_sint_t sIndex = -1;
-    xpr_sint_t sStart = -1;
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1];
-
-    LVFINDINFO sLvFindInfo = {0};
-    sLvFindInfo.flags = LVFI_STRING | LVFI_PARTIAL;
-    sLvFindInfo.psz   = sFindName;
-
-    do
-    {
-        sIndex = FindItem(&sLvFindInfo, sStart);
-        if (sIndex >= 0)
-        {
-            LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
-            if (XPR_IS_NOT_NULL(sLvItemData))
-            {
-                GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
-                if (_tcsicmp(aFind, sPath) == 0)
-                    break;
-            }
-            sStart = sIndex;
-        }
-    } while (sIndex != -1);
-
-    return sIndex;
+    return findItemPath(sFindName, aPath);
 }
 
 xpr_sint_t ExplorerCtrl::findItemPath(LPITEMIDLIST aFullPidl) const
 {
-    if (XPR_IS_NULL(aFullPidl))
-        return -1;
+    xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
 
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1];
     getItemName(aFullPidl, sFindName, XPR_MAX_PATH);
-
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
-    xpr_sint_t sIndex = -1;
-    xpr_sint_t sStart = -1;
-    xpr_tchar_t sPath2[XPR_MAX_PATH + 1];
-
-    LVFINDINFO sLvFindInfo = {0};
-    sLvFindInfo.flags = LVFI_STRING | LVFI_PARTIAL;
-    sLvFindInfo.psz   = sFindName;
-
-    do
-    {
-        sIndex = FindItem(&sLvFindInfo, sStart);
-        if (sIndex >= 0)
-        {
-            LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
-            if (XPR_IS_NOT_NULL(sLvItemData))
-            {
-                GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath2);
-                if (_tcsicmp(sPath, sPath2) == 0)
-                    break;
-            }
-            sStart = sIndex;
-        }
-    } while (sIndex != -1);
-
-    return sIndex;
+    return findItemPath(sFindName, sPath);
 }
 
 xpr_sint_t ExplorerCtrl::findItemPath(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl) const
 {
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1];
-    getItemName(aShellFolder, aPidl, sFindName, XPR_MAX_PATH);
+    xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
 
-    xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+    getItemName(aShellFolder, aPidl, sFindName, XPR_MAX_PATH);
     GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
 
-    xpr_sint_t sIndex = -1;
-    xpr_sint_t sStart = -1;
-    xpr_tchar_t sPath2[XPR_MAX_PATH + 1];
+    return findItemPath(sFindName, sPath);
+}
 
-    LVFINDINFO sLvFindInfo = {0};
-    sLvFindInfo.flags = LVFI_STRING | LVFI_PARTIAL;
-    sLvFindInfo.psz   = sFindName;
+xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aName, const xpr_tchar_t *aPath) const
+{
+    xpr_sint_t  sIndex = -1;
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    NameMap::const_iterator sIterator;
+    NameMapPairConstIterator sPairRangeIterator;
 
-    do
+    sPairRangeIterator = mNameMap.equal_range(aName);
+
+    sIterator = sPairRangeIterator.first;
+    for (; sIterator != sPairRangeIterator.second; ++sIterator)
     {
-        sIndex = FindItem(&sLvFindInfo, sStart);
-        if (sIndex >= 0)
+        LPLVITEMDATA sLvItemData = sIterator->second;
+        if (XPR_IS_NOT_NULL(sLvItemData))
         {
-            LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
-            if (XPR_IS_NOT_NULL(sLvItemData))
+            GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
+
+            if (_tcsicmp(aPath, sPath) == 0)
             {
-                GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath2);
-                if (_tcsicmp(sPath, sPath2) == 0)
-                    break;
+                LVFINDINFO sLvFindInfo = {0};
+                sLvFindInfo.flags  = LVFI_PARAM;
+                sLvFindInfo.lParam = (LPARAM)sLvItemData;
+
+                sIndex = FindItem(&sLvFindInfo);
+                break;
             }
-            sStart = sIndex;
         }
-    } while (sIndex != -1);
+    }
 
     return sIndex;
 }
@@ -7158,6 +7116,42 @@ xpr_sint_t ExplorerCtrl::findItemSignature(xpr_uint_t aSignature) const
     }
 
     return -1;
+}
+
+void ExplorerCtrl::insertNameHash(LPLVITEMDATA aLvItemData)
+{
+    static xpr_tchar_t sName[XPR_MAX_PATH + 1];
+
+    sName[0] = 0;
+    getItemName(aLvItemData, sName, XPR_MAX_PATH);
+
+    aLvItemData->mName = sName;
+
+    mNameMap.insert(NameMap::value_type(aLvItemData->mName, aLvItemData));
+}
+
+void ExplorerCtrl::eraseNameHash(LPLVITEMDATA aLvItemData)
+{
+    NameMap::const_iterator sIterator;
+    NameMapPairConstIterator sPairRangeIterator;
+
+    sPairRangeIterator = mNameMap.equal_range(aLvItemData->mName);
+
+    sIterator = sPairRangeIterator.first;
+    for (; sIterator != sPairRangeIterator.second; ++sIterator)
+    {
+        LPLVITEMDATA sLvItemData = sIterator->second;
+        if (sLvItemData == aLvItemData)
+        {
+            mNameMap.erase(sIterator->first);
+            break;
+        }
+    }
+}
+
+void ExplorerCtrl::clearNameHash(void)
+{
+    mNameMap.clear();
 }
 
 void ExplorerCtrl::enableChangeNotify(xpr_bool_t bNotify)
@@ -7856,176 +7850,33 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
         {
             if (XPR_IS_NOT_NULL(sTempLvItemData) && XPR_TEST_BITS(sTempLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
             {
-                xpr_bool_t sUpdateItemData = XPR_FALSE;
-
                 xpr_sint_t i, sCount;
-                xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-                xpr_tchar_t sSubItemText[XPR_MAX_PATH + 1] = {0};
-                xpr_tchar_t sNewSubItemText[XPR_MAX_PATH + 1] = {0};
-                ColumnId *sColumnId;
-                xpr_bool_t sAsyncSubItemText;
+                LVITEM sLvItem = {0};
 
+                // update name hash
+                eraseNameHash(sTempLvItemData);
+                insertNameHash(aLvItemData);
+
+                // update LVITEMDATA
+                sLvItem.mask   = LVIF_PARAM;
+                sLvItem.iItem  = sIndex;
+                sLvItem.lParam = (LPARAM)aLvItemData;
+                SetItem(&sLvItem);
+
+                // recall LVN_GETDISPINFO for text
                 sCount = GetHeaderCtrl()->GetItemCount();
                 for (i = 0; i < sCount; ++i)
                 {
-                    // Column 0 - name
-                    // Column 1 - size
-                    // Column 2 - type
-                    // Column 3 - modified time
-                    // Column 4 - attributes
-                    // Column 5 - extension
-
-                    sColumnId = getColumnId(i);
-                    if (XPR_IS_NULL(sColumnId))
-                        continue;
-
-                    sSubItemText[0] = 0;
-                    sNewSubItemText[0] = 0;
-                    sAsyncSubItemText = XPR_FALSE;
-
-                    GetItemText(sIndex, i, sSubItemText, XPR_MAX_PATH + 1);
-                    if (sColumnId->mFormatId == GUID_NULL)
-                    {
-                        switch (sColumnId->mPropertyId)
-                        {
-                        case 0: getItemName(aLvItemData, sNewSubItemText, XPR_MAX_PATH);      break;
-                        case 1: getFileSize(aLvItemData, sNewSubItemText, XPR_MAX_PATH);      break;
-                        case 2: getFileType(aLvItemData, sNewSubItemText, XPR_MAX_PATH);      break;
-                        case 3: getFileTime(aLvItemData, sNewSubItemText, XPR_MAX_PATH);      break;
-                        case 4: getFileAttr(aLvItemData, sNewSubItemText, XPR_MAX_PATH);      break;
-                        case 5: getFileExtension(aLvItemData, sNewSubItemText, XPR_MAX_PATH); break;
-                        }
-                    }
-                    else
-                    {
-                        LPSHELLFOLDER2 sShellFolder2 = aLvItemData->mShellFolder2;
-                        if (XPR_IS_NULL(sShellFolder2))
-                        {
-                            aLvItemData->mShellFolder->QueryInterface(IID_IShellFolder2, (LPVOID *)&sShellFolder2);
-                            aLvItemData->mShellFolder2 = sShellFolder2;
-                        }
-
-                        if (XPR_IS_NOT_NULL(sShellFolder2))
-                        {
-                            ShellColumn &sShellColumn = ShellColumn::instance();
-
-                            if (sShellColumn.isAsyncColumn(sShellFolder2, *sColumnId) == XPR_TRUE)
-                            {
-                                ShellColumn::AsyncInfo *sAsyncInfo = new ShellColumn::AsyncInfo;
-                                sAsyncInfo->mCode         = mCode;
-                                sAsyncInfo->mHwnd         = m_hWnd;
-                                sAsyncInfo->mMsg          = WM_SHELL_COLUMN_PROC;
-                                sAsyncInfo->mIndex        = sIndex;
-                                sAsyncInfo->mSignature    = aLvItemData->mSignature;
-                                sAsyncInfo->mColumnId     = *sColumnId;
-                                sAsyncInfo->mColumnIndex  = sShellColumn.getDetailColumn(sAsyncInfo->mColumnId);
-                                sAsyncInfo->mShellFolder2 = sShellFolder2;
-                                sAsyncInfo->mPidl         = fxfile::base::Pidl::clone(aLvItemData->mPidl);
-                                sAsyncInfo->mOldText      = new xpr_tchar_t[_tcslen(sSubItemText) + 1];
-                                sAsyncInfo->mText         = new xpr_tchar_t[XPR_MAX_PATH + 1+1];
-                                sAsyncInfo->mMaxLen       = XPR_MAX_PATH;
-                                sAsyncInfo->mFlags        = ShellColumn::FlagsEmptyNotify;
-                                sAsyncInfo->mShellFolder2->AddRef();
-                                sAsyncInfo->mText[0] = XPR_STRING_LITERAL('\0');
-                                _tcscpy(sAsyncInfo->mOldText, sSubItemText);
-
-                                if (sShellColumn.getAsyncColumnText(sAsyncInfo) == XPR_FALSE)
-                                {
-                                    XPR_SAFE_DELETE(sAsyncInfo);
-                                }
-                                else
-                                {
-                                    sAsyncSubItemText = XPR_TRUE;
-                                    sUpdateItemData = XPR_TRUE;
-                                }
-                            }
-                            else
-                            {
-                                sShellColumn.getColumnText(sShellFolder2, aLvItemData->mPidl, *sColumnId, sNewSubItemText, XPR_MAX_PATH + 1);
-                            }
-                        }
-                    }
-
-                    if (XPR_IS_FALSE(sAsyncSubItemText))
-                    {
-                        if (mOption.mNameCaseType == NAME_CASE_TYPE_UPPER || mOption.mNameCaseType == NAME_CASE_TYPE_LOWER)
-                        {
-                            if (_tcsicmp(sSubItemText, sNewSubItemText) != 0)
-                            {
-                                SetItemText(sIndex, i, sNewSubItemText);
-                                sUpdateItemData = XPR_TRUE;
-                            }
-                        }
-                        else
-                        {
-                            // upper/lower case check
-                            if (_tcscmp(sSubItemText, sNewSubItemText) != 0)
-                            {
-                                SetItemText(sIndex, i, sNewSubItemText);
-                                sUpdateItemData = XPR_TRUE;
-                            }
-                            else
-                            {
-                                //FILETIME ft1, ft2;
-                                //::getFileTime(
-                            }
-                        }
-                    }
+                    SetItemText(sIndex, i, LPSTR_TEXTCALLBACK);
                 }
 
-                GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
+                // recall LVN_GETDISPINFO for image
+                sLvItem.mask   = LVIF_IMAGE;
+                sLvItem.iItem  = sIndex;
+                sLvItem.iImage = I_IMAGECALLBACK;
+                SetItem(&sLvItem);
 
-                xpr_sint_t sIconIndex = -1;
-                if (mOption.mCustomIcon == XPR_TRUE)
-                {
-                    sIconIndex = getFileIconIndex(aLvItemData, sPath);
-                }
-                else
-                {
-                    // The icon of a executable file(.EXE) get by other thread.
-                    xpr_tchar_t *sExt = (xpr_tchar_t *)GetFileExt(sPath);
-                    if (XPR_IS_NOT_NULL(sExt) && _tcsicmp(sExt, XPR_STRING_LITERAL(".exe")) == 0)
-                    {
-                        static xpr_sint_t sExeIconIndex = -1;
-                        if (sExeIconIndex == -1)
-                            sExeIconIndex = GetFileExtIconIndex(XPR_STRING_LITERAL(".exe"));
-
-                        sIconIndex = sExeIconIndex;
-
-                        ShellIcon::AsyncIcon *sAsyncIcon = new ShellIcon::AsyncIcon;
-                        sAsyncIcon->mType              = ShellIcon::TypeIconIndex;
-                        sAsyncIcon->mCode              = mCode;
-                        sAsyncIcon->mItem              = sIndex;
-                        sAsyncIcon->mSignature         = aLvItemData->mSignature;
-                        sAsyncIcon->mShellFolder       = aLvItemData->mShellFolder;
-                        sAsyncIcon->mPidl              = fxfile::base::Pidl::clone(aLvItemData->mPidl);
-                        sAsyncIcon->mResult.mIconIndex = -1;
-                        sAsyncIcon->mShellFolder->AddRef();
-
-                        if (mShellIcon->getAsyncIcon(sAsyncIcon) == XPR_FALSE)
-                        {
-                            XPR_SAFE_DELETE(sAsyncIcon);
-                        }
-                    }
-                    else
-                    {
-                        sIconIndex = getFileIconIndex(aLvItemData);
-                    }
-                }
-
-                LVITEM sLvItem = {0};
-                sLvItem.mask  = LVIF_IMAGE | LVIF_STATE;
-                sLvItem.iItem = sIndex;
-                GetItem(&sLvItem);
-
-                if (sIconIndex != sLvItem.iImage)
-                {
-                    sLvItem.iImage = sIconIndex;
-                    SetItem(&sLvItem);
-
-                    sUpdateItemData = XPR_TRUE;
-                }
-
+                // update state
                 if (sTempLvItemData->mShellAttributes != aLvItemData->mShellAttributes)
                 {
                     sLvItem.mask = LVIF_STATE;
@@ -8037,8 +7888,6 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
                     }
                     else
                     {
-                        SetItemState(sIndex, 0, LVIS_CUT);
-
                         sLvItem.state     &= ~LVIS_CUT;
                         sLvItem.stateMask |= LVIS_CUT;
                     }
@@ -8055,50 +7904,15 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
                     }
 
                     SetItemState(sIndex, &sLvItem);
-
-                    sUpdateItemData = XPR_TRUE;
                 }
 
-                {
-                    // shell icon custom overlay
-                    ShellIcon::AsyncIcon *sAsyncIcon = new ShellIcon::AsyncIcon;
-                    sAsyncIcon->mType              = ShellIcon::TypeOverlayIndex;
-                    sAsyncIcon->mCode              = mCode;
-                    sAsyncIcon->mItem              = sIndex;
-                    sAsyncIcon->mSignature         = aLvItemData->mSignature;
-                    sAsyncIcon->mShellFolder       = aLvItemData->mShellFolder;
-                    sAsyncIcon->mPidl              = fxfile::base::Pidl::clone(aLvItemData->mPidl);
-                    sAsyncIcon->mResult.mIconIndex = -1;
-                    sAsyncIcon->mShellFolder->AddRef();
+                // free old LVITEMDATA
+                COM_RELEASE(sTempLvItemData->mShellFolder);
+                COM_RELEASE(sTempLvItemData->mShellFolder2);
+                COM_FREE(sTempLvItemData->mPidl);
+                XPR_SAFE_DELETE(sTempLvItemData);
 
-                    if (mShellIcon->getAsyncIcon(sAsyncIcon) == XPR_FALSE)
-                    {
-                        XPR_SAFE_DELETE(sAsyncIcon);
-                    }
-
-                    sUpdateItemData = XPR_TRUE;
-                }
-
-                if (XPR_IS_TRUE(sUpdateItemData))
-                {
-                    SetItemData(sIndex, (DWORD_PTR)aLvItemData);
-
-                    COM_RELEASE(sTempLvItemData->mShellFolder);
-                    COM_RELEASE(sTempLvItemData->mShellFolder2);
-                    COM_FREE(sTempLvItemData->mPidl);
-                    XPR_SAFE_DELETE(sTempLvItemData);
-
-                    sResult = XPR_TRUE;
-                }
-                else
-                {
-                    aLvItemData = sTempLvItemData;
-                }
-
-                if (isThumbnail() == XPR_TRUE)
-                {
-                    aLvItemData->mThumbImageId = getThumbImageId(sPath);
-                }
+                sResult = XPR_TRUE;
             }
 
             sNewItem = XPR_FALSE;
@@ -8117,7 +7931,11 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
         sLvItem.lParam     = (LPARAM)aLvItemData;
 
         if (InsertItem(&sLvItem) != -1)
+        {
+            insertNameHash(aLvItemData);
+
             sResult = XPR_TRUE;
+        }
     }
 
     return sResult;
@@ -8584,6 +8402,8 @@ void ExplorerCtrl::OnDeleteallitems(NMHDR *aNmHdr, LRESULT *aResult)
     {
         mShellIcon->clear();
     }
+
+    clearNameHash();
 
     *aResult = 0;
 }
