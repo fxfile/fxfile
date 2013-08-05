@@ -175,10 +175,11 @@ public:
     // find item
     xpr_sint_t findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStart = -1) const;
     xpr_sint_t findItemFileName(const xpr_tchar_t *aFind) const;
-    xpr_sint_t findItemPath(const xpr_tchar_t *aFind) const;
     xpr_sint_t findItemFolder(const xpr_tchar_t *aFind) const;
+    xpr_sint_t findItemPath(const xpr_tchar_t *aPath) const;
     xpr_sint_t findItemPath(LPITEMIDLIST aFullPidl) const;
     xpr_sint_t findItemPath(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl) const;
+    xpr_sint_t findItemPath(const xpr_tchar_t *aName, const xpr_tchar_t *aPath) const;
     xpr_sint_t findItemSignature(xpr_uint_t aSignature) const;
 
     // file information
@@ -422,6 +423,10 @@ protected:
     void           getViewSetKey(xpr_tchar_t *aEntry) const;
     DefColumnInfo *getDefColumnInfo(xpr_sint_t *aDefColumnCount = XPR_NULL) const;
 
+    void insertNameHash(LPLVITEMDATA aLvItemData);
+    void eraseNameHash(LPLVITEMDATA aLvItemData);
+    void clearNameHash(void);
+
 protected:
     static xpr_sint_t mRefCount;
     static xpr_uint_t mCodeMgr;
@@ -456,6 +461,11 @@ protected:
     FileChangeWatcher::WatchId       mWatchId;
     AdvFileChangeWatcher::AdvWatchId mAdvWatchId;
     xpr_bool_t                       mNotify;
+
+    typedef std::tr1::unordered_multimap<xpr::tstring, LPLVITEMDATA> NameMap;
+    typedef std::pair<NameMap::iterator, NameMap::iterator> NameMapPairIterator;
+    typedef std::pair<NameMap::const_iterator, NameMap::const_iterator> NameMapPairConstIterator;
+    NameMap mNameMap;
 
     // edit and insert
     xpr::tstring  mInsSel;           // Create Folder/Text File and Edit
