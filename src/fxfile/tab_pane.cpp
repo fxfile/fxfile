@@ -10,6 +10,10 @@
 #include "stdafx.h"
 #include "tab_pane.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 namespace fxfile
 {
 TabPane::TabPane(TabType aTabType)

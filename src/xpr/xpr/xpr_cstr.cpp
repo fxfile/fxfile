@@ -7,12 +7,6 @@
 #include "xpr_cstr.h"
 #include "xpr_rcode.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 namespace xpr
 {
 XPR_DL_API xpr_char_t *xpr_strcpy(xpr_char_t *aDest, xpr_size_t aDestSize, const xpr_char_t *aSrc, xpr_size_t aCount)

@@ -10,12 +10,6 @@
 #include "xpr_system.h"
 #include "xpr_math.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS)

@@ -73,8 +73,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 xpr_uint_t WM_SINGLEINST    = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile_Single_Instance"));
