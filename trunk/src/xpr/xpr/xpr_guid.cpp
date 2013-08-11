@@ -10,12 +10,6 @@
 #include "xpr_rcode.h"
 #include "xpr_char_set.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 namespace xpr
 {
 Guid::Guid(void)

@@ -14,8 +14,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static xpr_char_t THIS_FILE[] = __FILE__;
 #endif
 
 namespace fxfile
