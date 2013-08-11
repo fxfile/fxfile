@@ -46,6 +46,7 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/gfl/libW',
+                            '../../lib/vld/lib/Win32',
                         ],
                         'AdditionalDependencies':
                         [
@@ -100,6 +101,7 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/gfl/lib',
+                            '../../lib/vld/lib/Win32',
                         ],
                         'AdditionalDependencies':
                         [
@@ -158,6 +160,7 @@
                                     'AdditionalLibraryDirectories':
                                     [
                                         '../../lib/gfl/libW',
+                                        '../../lib/vld/lib/Win64',
                                     ],
                                     'AdditionalDependencies':
                                     [
@@ -212,6 +215,7 @@
                                     'AdditionalLibraryDirectories':
                                     [
                                         '../../lib/gfl/lib',
+                                        '../../lib/vld/lib/Win64',
                                     ],
                                     'AdditionalDependencies':
                                     [
@@ -271,6 +275,7 @@
                 '../../src/base',
                 '../../src/fxfile-crash',
                 '../../lib/gfl/include',
+                '../../lib/vld/include',
             ],
             
             'libraries':
@@ -578,8 +583,6 @@
                 './size_format.h',
                 './splitter.cpp',
                 './splitter.h',
-                './Stackwalker.cpp',
-                './Stackwalker.h',
                 './stdafx.cpp',
                 './stdafx.h',
                 './sync_dirs.cpp',

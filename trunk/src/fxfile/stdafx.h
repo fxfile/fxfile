@@ -59,4 +59,8 @@
 #pragma comment(lib, "fxfile-crash.lib")
 #endif
 
+#if defined(FXFILE_CHECK_MEMORY_LEAK)
+#include "vld.h"
+#endif
+
 #endif // __FXFILE_STDAFX_H__

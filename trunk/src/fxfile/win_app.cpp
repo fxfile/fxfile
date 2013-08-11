@@ -39,10 +39,6 @@
 
 #include "cmd/tip_dlg.h"
 
-#ifdef _MEM_LEAK
-#include "StackWalker.h"
-#endif
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -93,10 +89,6 @@ END_MESSAGE_MAP()
 
 xpr_bool_t WinApp::InitInstance(void)
 {
-#ifdef _MEM_LEAK
-    InitAllocCheck(ACOutput_Advanced);
-#endif
-
     // Initialize OLE libraries
     if (AfxOleInit() == XPR_FALSE)
     {
@@ -263,23 +255,19 @@ xpr_sint_t WinApp::ExitInstance(void)
     if (OptionManager::isInstance() == XPR_TRUE)
         OptionManager::instance().saveMainOption();
 
-    // destroy shell change notify
-    ShellChangeNotify &sShellChangeNotify = ShellChangeNotify::instance();
-    sShellChangeNotify.stop();
-    sShellChangeNotify.destroy();
-
     // destroy drive shell change notify
     DriveShcn &sDriveShcn = DriveShcn::instance();
     sDriveShcn.stop();
     sDriveShcn.destroy();
 
+    // destroy shell change notify
+    ShellChangeNotify &sShellChangeNotify = ShellChangeNotify::instance();
+    sShellChangeNotify.stop();
+    sShellChangeNotify.destroy();
+
     XPR_SAFE_DELETE(mLanguageTable);
 
     CLOSE_HANDLE(mSingleInstanceMutex);
-
-#ifdef _MEM_LEAK
-    DeInitAllocCheck();
-#endif
 
     //
     // finalize XPR
