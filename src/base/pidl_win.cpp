@@ -594,11 +594,12 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
                 {
                     sSimplePidl = sChildPidl;
                 }
+
+                COM_RELEASE(sDesktopShellFolder);
             }
         }
 
         COM_FREE(sParentPidl);
-        COM_RELEASE(sDesktopShellFolder);
     }
 
     if (XPR_IS_NULL(sSimplePidl))
@@ -617,6 +618,54 @@ xpr_bool_t Pidl::getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFol
     aSimplePidl  = sSimplePidl;
 
     return XPR_TRUE;
+}
+
+// parent IShellFolder, simple PIDL -> IShellFolder
+xpr_bool_t Pidl::getShellFolder(LPSHELLFOLDER aParentShellFolder, LPCITEMIDLIST aPidl, LPSHELLFOLDER &aShellFolder)
+{
+    XPR_ASSERT(aParentShellFolder != XPR_NULL);
+    XPR_ASSERT(aPidl != XPR_NULL);
+
+    HRESULT sComResult;
+
+    sComResult = aParentShellFolder->BindToObject(
+        (LPCITEMIDLIST)aPidl,
+        0,
+        IID_IShellFolder,
+        reinterpret_cast<LPVOID *>(&aShellFolder));
+
+    if (FAILED(sComResult) || XPR_IS_NULL(aShellFolder))
+    {
+        sComResult = ::SHGetDesktopFolder(&aShellFolder); // desktop PIDL is null.
+
+        if (FAILED(sComResult))
+        {
+            return XPR_FALSE;
+        }
+    }
+
+    return XPR_TRUE;
+}
+
+// full qualified PIDL -> IShellFolder
+xpr_bool_t Pidl::getShellFolder(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFolder)
+{
+    XPR_ASSERT(aFullPidl != XPR_NULL);
+
+    xpr_bool_t    sResult            = XPR_FALSE;
+    LPSHELLFOLDER sParentShellFolder = XPR_NULL;
+    LPCITEMIDLIST sPidl              = XPR_NULL;
+
+    if (getSimplePidl(aFullPidl, sParentShellFolder, sPidl) == XPR_FALSE)
+    {
+        return XPR_FALSE;
+    }
+
+    sResult = getShellFolder(sParentShellFolder, sPidl, aShellFolder);
+
+    COM_RELEASE(sParentShellFolder);
+
+    return sResult;
 }
 
 xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen)

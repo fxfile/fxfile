@@ -47,6 +47,8 @@ public:
     static HRESULT      create(const KNOWNFOLDERID &aKnownFolderId, LPITEMIDLIST &aFullPidl);
     static LPITEMIDLIST getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimplePidl);
     static xpr_bool_t   getSimplePidl(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFolder, LPCITEMIDLIST &aSimplePidl);
+    static xpr_bool_t   getShellFolder(LPSHELLFOLDER aParentShellFolder, LPCITEMIDLIST aPidl, LPSHELLFOLDER &aShellFolder);
+    static xpr_bool_t   getShellFolder(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFolder);
 
     static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen);
     static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aName);

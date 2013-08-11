@@ -9,8 +9,7 @@
 
 #include "stdafx.h"
 #include "explorer_ctrl.h"
-
-#include "fnmatch.h"
+#include "explorer_ctrl_observer.h"
 
 #include "thumbnail.h"
 #include "file_op_thread.h"
@@ -28,6 +27,10 @@
 #include "sys_img_list.h"
 #include "clipboard.h"
 #include "app_ver.h"
+#include "main_frame.h"
+#include "picture_viewer.h"
+#include "shell_enumerator.h"
+#include "fnmatch.h"
 
 #include "gui/gdi.h"
 #include "gui/FlatHeaderCtrl.h"
@@ -40,11 +43,6 @@
 
 #include <Intshcut.h> // for IUniformResourceLocator
 #include <math.h>
-
-#include "explorer_ctrl_observer.h"
-#include "main_frame.h"
-#include "picture_viewer.h"
-#include "conf_dir.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -137,16 +135,6 @@ enum ExplorerCtrl::FolderType
 };
 
 //
-// enum data
-//
-struct ExplorerCtrl::EnumData
-{
-    LPTVITEMDATA  mTvItemData;
-    xpr_bool_t    mUpdateBuddy;
-    ShNotifyInfo *mShNotifyInfo;
-};
-
-//
 // default column information
 //
 struct ExplorerCtrl::DefColumnInfo
@@ -165,7 +153,6 @@ xpr_uint_t ExplorerCtrl::mCodeMgr = 0;
 ExplorerCtrl::ExplorerCtrl(void)
     : mViewIndex(-1)
     , mNewOption(XPR_NULL)
-    , mFirstExplore(XPR_TRUE)
 {
     mRefCount++;
 
@@ -2690,7 +2677,9 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
 xpr_bool_t ExplorerCtrl::explore(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
 {
     if (XPR_IS_NULL(aFullPidl))
+    {
         return XPR_FALSE;
+    }
 
     // apply new option
     if (XPR_IS_NOT_NULL(mNewOption))
@@ -2702,64 +2691,85 @@ xpr_bool_t ExplorerCtrl::explore(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy
 
     xpr_bool_t sResult = exploreItem(aFullPidl, aUpdateBuddy);
 
-    mFirstExplore = XPR_FALSE;
-
     return sResult;
 }
 
 xpr_bool_t ExplorerCtrl::exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
 {
-    if (XPR_IS_NULL(aFullPidl))
-        return XPR_FALSE;
+    XPR_ASSERT(aFullPidl != XPR_NULL);
 
-    // Make Folder Data, mTvItemData
+    xpr_bool_t    sResult            = XPR_FALSE;
+    LPSHELLFOLDER sShellFolder       = XPR_NULL;
     LPSHELLFOLDER sParentShellFolder = XPR_NULL;
     LPCITEMIDLIST sPidl              = XPR_NULL;
-    if (fxfile::base::Pidl::getSimplePidl(aFullPidl, sParentShellFolder, sPidl) == XPR_FALSE)
+
+    if (base::Pidl::getSimplePidl(aFullPidl, sParentShellFolder, sPidl) == XPR_FALSE)
+    {
         return XPR_FALSE;
+    }
 
-    // explore
-    xpr_bool_t sResult = XPR_FALSE;
-    HRESULT sHResult;
-
-    LPSHELLFOLDER sShellFolder = XPR_NULL;
-    sHResult = sParentShellFolder->BindToObject(
-        (LPCITEMIDLIST)sPidl,
-        0,
-        IID_IShellFolder,
-        reinterpret_cast<LPVOID *>(&sShellFolder));
+    if (base::Pidl::getShellFolder(sParentShellFolder, sPidl, sShellFolder) == XPR_FALSE)
+    {
+        COM_RELEASE(sParentShellFolder);
+        return XPR_FALSE;
+    }
 
     //CWaitCursor waitCursor;
 
-    if (FAILED(sHResult) || XPR_IS_NULL(sShellFolder))
-        sHResult = ::SHGetDesktopFolder(&sShellFolder); // desktop PIDL is null.
+    LPTVITEMDATA sNewTvItemData  = XPR_NULL;
+    xpr_sint_t   sIndex          = 0;
+    LPITEMIDLIST sEnumPidl       = XPR_NULL;
+    xpr_sint_t   sEnumListType   = 0;
+    xpr_sint_t   sEnumAttributes = 0;
 
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sShellFolder))
+    sNewTvItemData = new TVITEMDATA;
+    memset(sNewTvItemData, 0, sizeof(TVITEMDATA));
+    sNewTvItemData->mShellFolder     = sParentShellFolder;
+    sNewTvItemData->mPidl            = fxfile::base::Pidl::clone(sPidl);
+    sNewTvItemData->mFullPidl        = aFullPidl;
+    sNewTvItemData->mShellAttributes = 0;
+
+    switch (mOption.mListType)
     {
-        EnumData sEnumData;
-        sEnumData.mTvItemData = new TVITEMDATA;
-        memset(sEnumData.mTvItemData, 0, sizeof(TVITEMDATA));
-        sEnumData.mTvItemData->mShellFolder     = sParentShellFolder;
-        sEnumData.mTvItemData->mPidl            = fxfile::base::Pidl::clone(sPidl);
-        sEnumData.mTvItemData->mFullPidl        = aFullPidl;
-        sEnumData.mTvItemData->mShellAttributes = 0;
+    case LIST_TYPE_ALL:    sEnumListType = base::ShellEnumerator::ListTypeAll;        break;
+    case LIST_TYPE_FILE:   sEnumListType = base::ShellEnumerator::ListTypeOnlyFile;   break;
+    case LIST_TYPE_FOLDER: sEnumListType = base::ShellEnumerator::ListTypeOnlyFolder; break;
+    }
 
-        sEnumData.mUpdateBuddy = aUpdateBuddy;
+    if (XPR_IS_TRUE(mOption.mShowHiddenAttribute)) sEnumAttributes |= base::ShellEnumerator::AttributeHidden;
+    if (XPR_IS_TRUE(mOption.mShowSystemAttribute)) sEnumAttributes |= base::ShellEnumerator::AttributeSystem;
 
-        sResult = enumItem(
-            sShellFolder,
-            &ExplorerCtrl::FailFillItem,
-            &ExplorerCtrl::PreFillItem,
-            &ExplorerCtrl::FillItem,
-            &ExplorerCtrl::PostFillItem,
-            &sEnumData);
+    base::ShellEnumerator sShellEnumerator;
 
-        if (XPR_IS_FALSE(sResult))
+    if (sShellEnumerator.enumerate(m_hWnd, sShellFolder, sEnumListType, sEnumAttributes) == XPR_TRUE)
+    {
+        preEnumeration(sNewTvItemData);
+
+        while (sShellEnumerator.next(&sEnumPidl) == XPR_TRUE)
         {
-            COM_RELEASE(sEnumData.mTvItemData->mShellFolder);
-            COM_FREE(sEnumData.mTvItemData->mPidl);
-            XPR_SAFE_DELETE(sEnumData.mTvItemData);
+            if (insertPidlItem(sShellFolder, sEnumPidl, sIndex) == XPR_FALSE)
+            {
+                break;
+            }
+
+            ++sIndex;
         }
+
+        postEnumeration(aUpdateBuddy);
+
+        sResult = XPR_TRUE;
+    }
+    else
+    {
+        // failed to enumerate
+        sResult = XPR_FALSE;
+    }
+
+    if (XPR_IS_FALSE(sResult))
+    {
+        COM_RELEASE(sNewTvItemData->mShellFolder);
+        COM_FREE(sNewTvItemData->mPidl);
+        XPR_SAFE_DELETE(sNewTvItemData);
     }
 
     COM_RELEASE(sShellFolder);
@@ -2767,75 +2777,24 @@ xpr_bool_t ExplorerCtrl::exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateB
     return sResult;
 }
 
-xpr_bool_t ExplorerCtrl::enumItem(LPSHELLFOLDER  aShellFolder,
-                                  FailEnumFunc   aFailEnumFunc,
-                                  PreEnumFunc    aPreEnumFunc,
-                                  FillItemFunc   aFillItemFunc,
-                                  PostEnumFunc   aPostEnumFunc,
-                                  EnumData      *aEnumData)
+void ExplorerCtrl::preEnumeration(LPTVITEMDATA aNewTvItemData)
 {
-    xpr_bool_t sResult = XPR_FALSE;
+    XPR_ASSERT(aNewTvItemData != XPR_NULL);
 
-    LPITEMIDLIST sPidl = XPR_NULL;
-    LPENUMIDLIST sEnumIdList = XPR_NULL;
-    xpr_ulong_t sFetched;
-    xpr_sint_t sCount = 0;
-    HRESULT sHResult;
-
-    DWORD sFlags = SHCONTF_FOLDERS | SHCONTF_NONFOLDERS;
-    if (mOption.mListType != LIST_TYPE_ALL)
-        sFlags = (mOption.mListType == LIST_TYPE_FOLDER) ? SHCONTF_FOLDERS : SHCONTF_NONFOLDERS;
-    if (mOption.mShowHiddenAttribute == XPR_TRUE) sFlags |= SHCONTF_INCLUDEHIDDEN;
-    if (mOption.mShowSystemAttribute == XPR_TRUE) sFlags |= SHCONTF_STORAGE;
-
-    sHResult = aShellFolder->EnumObjects(m_hWnd, sFlags, &sEnumIdList);
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sEnumIdList))
-    {
-        if (XPR_IS_NOT_NULL(aPreEnumFunc))
-            (this->*aPreEnumFunc)(aEnumData);
-
-        while (S_OK == sEnumIdList->Next(1, &sPidl, &sFetched))
-        {
-            if (!(this->*aFillItemFunc)(aShellFolder, sPidl, sCount, aEnumData))
-                break;
-            sCount++;
-        }
-
-        if (XPR_IS_NOT_NULL(aPostEnumFunc))
-            (this->*aPostEnumFunc)(aEnumData);
-
-        sResult = XPR_TRUE;
-    }
-    else
-    {
-        if (XPR_IS_NOT_NULL(aFailEnumFunc))
-            (this->*aFailEnumFunc)(aEnumData);
-    }
-
-    COM_RELEASE(sEnumIdList);
-
-    return sResult;
-}
-
-void ExplorerCtrl::FailFillItem(EnumData *aEnumData)
-{
-    //ShowWindow(SW_HIDE);
-
-    //DeleteAllItems();
-}
-
-void ExplorerCtrl::PreFillItem(EnumData *aEnumData)
-{
+    // check to equal old folder
     xpr_bool_t sEqualFolder = XPR_FALSE;
     if (XPR_IS_NOT_NULL(mTvItemData))
-        sEqualFolder = fxfile::base::Pidl::compare(aEnumData->mTvItemData->mFullPidl, mTvItemData->mFullPidl) ? XPR_FALSE : XPR_TRUE;
+    {
+        sEqualFolder = fxfile::base::Pidl::compare(aNewTvItemData->mFullPidl, mTvItemData->mFullPidl) ? XPR_FALSE : XPR_TRUE;
+    }
 
+    // release column
     releaseColumn(!sEqualFolder);
 
+    // free old TVITEMDATA
     if (XPR_IS_NOT_NULL(mTvItemData))
     {
-        // Go Back, Forward
-        // Save to history it, if sFullPidl don't equal to current folder,
+        // add history
         if (XPR_IS_TRUE(mGo) && XPR_IS_FALSE(sEqualFolder))
         {
             clearForward();
@@ -2847,23 +2806,27 @@ void ExplorerCtrl::PreFillItem(EnumData *aEnumData)
             }
         }
 
-        // Release, Free
+        // free old TVITEMDATA
         COM_RELEASE(mTvItemData->mShellFolder);
         COM_FREE(mTvItemData->mPidl);
         COM_FREE(mTvItemData->mFullPidl);
+        XPR_SAFE_DELETE(mTvItemData);
     }
 
-    XPR_SAFE_DELETE(mTvItemData);
-    mTvItemData = aEnumData->mTvItemData;
+    // replace new TVITEMDATA and get shell item attributes of folder
+    mTvItemData = aNewTvItemData;
     mTvItemData->mShellAttributes = GetItemAttributes(mTvItemData->mShellFolder, mTvItemData->mPidl);
 
-    // Get Folder Type
+    // get current path and current tree path
     GetFullPath(mTvItemData->mFullPidl, mCurFullPath);
     GetFolderPath(mTvItemData->mShellFolder, mTvItemData->mPidl, mCurPath, mTvItemData->mShellAttributes); // Get Current Directory
 
+    // get folder type
     mFolderType = FOLDER_DEFAULT;
     if (!XPR_TEST_BITS(mTvItemData->mShellAttributes, SFGAO_FILESYSTEM) && !XPR_TEST_BITS(mTvItemData->mShellAttributes, SFGAO_CANCOPY))
+    {
         mFolderType = fxfile::base::Pidl::compare(mTvItemData->mFullPidl, CSIDL_DRIVES) ? FOLDER_VIRTUAL : FOLDER_COMPUTER;
+    }
 
     //-------------------------------------------------------------------------
 
@@ -2871,65 +2834,49 @@ void ExplorerCtrl::PreFillItem(EnumData *aEnumData)
 
     mCodeMgr++;
     if (mCodeMgr == 0)
+    {
         mCodeMgr++;
+    }
 
-    mUpdated = XPR_FALSE;
-    mSorted = XPR_FALSE;
-    mCode = mCodeMgr;
+    mUpdated   = XPR_FALSE;
+    mSorted    = XPR_FALSE;
+    mCode      = mCodeMgr;
     mSignature = 0;
 
-    mRealSelCount = 0;
+    mRealSelCount       = 0;
     mRealSelFolderCount = 0;
-    mRealSelFileCount = 0;
+    mRealSelFileCount   = 0;
 
     mInsSel.clear();
 
     //-------------------------------------------------------------------------
 
     if (gFrame->mPictureViewer != XPR_NULL && gFrame->mPictureViewer->isDocking() == XPR_TRUE)
+    {
         gFrame->mPictureViewer->ShowWindow(SW_HIDE);
+    }
 
+    // hide window and lock to redraw to insert a lot of items to list view
     mVisible = IsWindowVisible();
     ShowWindow(SW_HIDE);
 
     SetRedraw(XPR_FALSE);
 
+    // delete all old items
     DeleteAllItems();
+
+    // init column
     initColumn();
 }
 
-xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData)
+xpr_bool_t ExplorerCtrl::insertPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex)
 {
-    // SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK | 
-    xpr_ulong_t sShellAttributes = SFGAO_FILESYSTEM | SFGAO_FOLDER |
-        SFGAO_CANRENAME | SFGAO_CANCOPY | SFGAO_CANMOVE | SFGAO_CANDELETE |
-        SFGAO_LINK | SFGAO_SHARE | SFGAO_GHOSTED | SFGAO_READONLY;
+    xpr_ulong_t  sShellAttributes = 0;
+    DWORD        sFileAttributes  = 0;
+    LPLVITEMDATA sLvItemData;
 
-    if (mFolderType == FOLDER_COMPUTER)
-        sShellAttributes &= ~SFGAO_READONLY;
-
-    aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &sShellAttributes);
-
-    static HRESULT sHResult;
-    static WIN32_FIND_DATA sWin32FindData;
-    DWORD sFileAttributes = 0;
-
-    if (XPR_TEST_BITS(sShellAttributes, SFGAO_FILESYSTEM))
-    {
-        sHResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
-        if (SUCCEEDED(sHResult))
-        {
-            if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)
-                sShellAttributes |= SFGAO_GHOSTED;
-
-            if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                sShellAttributes |= SFGAO_FOLDER;
-            else
-                sShellAttributes &= ~SFGAO_FOLDER;
-
-            sFileAttributes = sWin32FindData.dwFileAttributes;
-        }
-    }
+    // get shell item attributes
+    getItemAttributes(aShellFolder, aPidl, sShellAttributes, sFileAttributes);
 
     if (mOption.mShowSystemAttribute == XPR_FALSE)
     {
@@ -2940,13 +2887,8 @@ xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
         }
     }
 
-    LPLVITEMDATA sLvItemData = new LVITEMDATA;
-    if (XPR_IS_NULL(sLvItemData))
-    {
-        COM_FREE(aPidl);
-        return XPR_TRUE;
-    }
-
+    // allocate new LVITEMDATA to insert to list view
+    sLvItemData                   = new LVITEMDATA;
     sLvItemData->mSignature       = mSignature++;
     sLvItemData->mItemType        = IDT_SHELL;
     sLvItemData->mShellFolder     = aShellFolder;
@@ -2957,8 +2899,10 @@ xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
     sLvItemData->mThumbImageId    = Thumbnail::InvalidThumbImageId;
     aShellFolder->AddRef();
 
+    // name hashing to find faster item by name
     insertNameHash(sLvItemData);
 
+    // insert to list view
     static LVITEM sLvItem = {0};
     sLvItem.mask       = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE | LVIF_PARAM;
     sLvItem.iItem      = aIndex;
@@ -2973,15 +2917,130 @@ xpr_bool_t ExplorerCtrl::FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
     return XPR_TRUE;
 }
 
-void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
+void ExplorerCtrl::postEnumeration(xpr_bool_t aUpdateBuddy)
 {
-    LPTVITEMDATA sTvItemData = getFolderData();
+    xpr_bool_t sAddedParentItem = XPR_FALSE;
 
+    // watch file change
+    watchFileChange();
+
+    // [..] parent folder
+    if (XPR_IS_TRUE(mOption.mParentFolder))
+    {
+        if (XPR_IS_FALSE(base::Pidl::isDesktopFolder(mTvItemData->mFullPidl)))
+        {
+            addParentItem();
+            sAddedParentItem = XPR_TRUE;
+        }
+    }
+
+    // add drive box item and each drvie items
+    addDriveItem();
+
+    // move to first scroll position
+    EnsureVisible(0, XPR_FALSE);
+
+    // unlock to redraw and show window
+    SetRedraw();
+
+    if (XPR_IS_TRUE(mVisible))
+    {
+        ShowWindow(SW_SHOW);
+    }
+
+    //-------------------------------------------------------------------------
+
+    //waitCursor.Restore();
+
+    // sortItems
+    resortItems();
+    mSorted = XPR_TRUE;
+    mUpdated = XPR_TRUE;
+
+    // adjust automatic column width
+    if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && getViewStyle() == LVS_REPORT)
+    {
+        SetColumnWidth(0, LVSCW_AUTOSIZE);
+    }
+
+    // update notify message
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        const xpr_tchar_t *sCurPath = mCurPath.c_str();
+        mObserver->onExplore(*this, mTvItemData->mFullPidl, aUpdateBuddy, sCurPath);
+    }
+
+    // update status
+    updateStatus();
+
+    // select parent folder, if go up.
+    if (XPR_IS_TRUE(sAddedParentItem))
+    {
+        if (XPR_IS_TRUE(mSubFolder.empty()))
+        {
+            selectItem(0);
+        }
+    }
+}
+
+void ExplorerCtrl::getItemAttributes(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes, DWORD &aFileAttributes)
+{
+    aShellAttributes = 
+        SFGAO_FILESYSTEM |
+        SFGAO_FOLDER     |
+        SFGAO_CANRENAME  |
+        SFGAO_CANCOPY    |
+        SFGAO_CANMOVE    |
+        SFGAO_CANDELETE  |
+        SFGAO_LINK       |
+        SFGAO_SHARE      |
+        SFGAO_GHOSTED;
+
+    if (mFolderType != FOLDER_COMPUTER)
+    {
+        aShellAttributes |= SFGAO_READONLY;
+    }
+
+    //base::Pidl::getAttributes(aShellFolder, aPidl, sShellAttributes);
+
+    aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &aShellAttributes);
+
+    static HRESULT sComResult;
+    static WIN32_FIND_DATA sWin32FindData;
+
+    aFileAttributes = 0;
+
+    if (XPR_TEST_BITS(aShellAttributes, SFGAO_FILESYSTEM))
+    {
+        sComResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
+        if (SUCCEEDED(sComResult))
+        {
+            if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_HIDDEN))
+            {
+                aShellAttributes |= SFGAO_GHOSTED;
+            }
+
+            if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+            {
+                aShellAttributes |= SFGAO_FOLDER;
+            }
+            else
+            {
+                aShellAttributes &= ~SFGAO_FOLDER;
+            }
+
+            aFileAttributes = sWin32FindData.dwFileAttributes;
+        }
+    }
+}
+
+void ExplorerCtrl::watchFileChange(void)
+{
     // shell change notification
-    if (ShellChangeNotify::instance().modifyWatch(mShcnId, sTvItemData->mFullPidl, XPR_FALSE) == XPR_FALSE)
+    if (ShellChangeNotify::instance().modifyWatch(mShcnId, mTvItemData->mFullPidl, XPR_FALSE) == XPR_FALSE)
     {
         ShellChangeNotify::instance().unregisterWatch(mShcnId);
-        mShcnId = ShellChangeNotify::instance().registerWatch(this, WM_SHELL_CHANGE_NOTIFY, sTvItemData->mFullPidl, SHCNE_ALLEVENTS, XPR_FALSE);
+        mShcnId = ShellChangeNotify::instance().registerWatch(this, WM_SHELL_CHANGE_NOTIFY, mTvItemData->mFullPidl, SHCNE_ALLEVENTS, XPR_FALSE);
     }
 
     // advanced file change watcher
@@ -2990,7 +3049,7 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
     {
         sAdvWatchItem->mHwnd = m_hWnd;
         sAdvWatchItem->mMsg  = WM_ADV_FILE_CHANGE_NOTIFY;
-        GetName(sTvItemData->mFullPidl, SHGDN_FORPARSING, sAdvWatchItem->mPath);
+        GetName(mTvItemData->mFullPidl, SHGDN_FORPARSING, sAdvWatchItem->mPath);
         sAdvWatchItem->mSubPath = XPR_FALSE;
     }
 
@@ -3007,7 +3066,7 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
         FileChangeWatcher::WatchItem sWatchItem;
         sWatchItem.mHwnd = m_hWnd;
         sWatchItem.mMsg  = WM_FILE_CHANGE_NOTIFY;
-        GetName(sTvItemData->mFullPidl, SHGDN_FORPARSING, sWatchItem.mPath);
+        GetName(mTvItemData->mFullPidl, SHGDN_FORPARSING, sWatchItem.mPath);
         sWatchItem.mSubPath = XPR_FALSE;
 
         if (mWatchId == FileChangeWatcher::InvalidWatchId)
@@ -3015,62 +3074,24 @@ void ExplorerCtrl::PostFillItem(EnumData *aEnumData)
         else
             mWatchId = FileChangeWatcher::instance().modifyWatch(mWatchId, &sWatchItem);
     }
+}
 
-    // [..] Parent Folder
-    if (mOption.mParentFolder == XPR_TRUE && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
-    {
-        LPLVITEMDATA sLvItemData = new LVITEMDATA;
-        if (XPR_IS_NOT_NULL(sLvItemData))
-        {
-            memset(sLvItemData, 0, sizeof(LVITEMDATA));
-            sLvItemData->mItemType = IDT_PARENT;
+void ExplorerCtrl::addParentItem(void)
+{
+    LPLVITEMDATA sLvItemData = new LVITEMDATA;
 
-            LVITEM sLvItem = {0};
-            sLvItem.mask       = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
-            sLvItem.iItem      = 0;
-            sLvItem.iSubItem   = 0;
-            sLvItem.iImage     = -1;
-            sLvItem.pszText    = LPSTR_TEXTCALLBACK;
-            sLvItem.cchTextMax = XPR_MAX_PATH;
-            sLvItem.lParam     = (LPARAM)sLvItemData;
-            InsertItem(&sLvItem);
-        }
-    }
+    memset(sLvItemData, 0, sizeof(LVITEMDATA));
+    sLvItemData->mItemType = IDT_PARENT;
 
-    addDriveItem();
-
-    EnsureVisible(0, XPR_FALSE);
-
-    SetRedraw();
-
-    if (XPR_IS_TRUE(mVisible))
-        ShowWindow(SW_SHOW);
-
-    //-------------------------------------------------------------------------
-
-    //waitCursor.Restore();
-
-    // sortItems
-    resortItems();
-    mSorted = XPR_TRUE;
-    mUpdated = XPR_TRUE;
-
-    // Auto Column Width
-    if (mOption.mAutoColumnWidth == XPR_TRUE && getViewStyle() == LVS_REPORT)
-        SetColumnWidth(0, LVSCW_AUTOSIZE);
-
-    // update notify message
-    if (mObserver != XPR_NULL)
-    {
-        const xpr_tchar_t *sCurPath = mCurPath.c_str();
-        mObserver->onExplore(*this, sTvItemData->mFullPidl, aEnumData->mUpdateBuddy, sCurPath);
-    }
-
-    // update status
-    updateStatus();
-
-    if (mOption.mParentFolder == XPR_TRUE && mSubFolder.empty() == XPR_TRUE && XPR_IS_NOT_NULL(mTvItemData) && mTvItemData->mFullPidl->mkid.cb != 0)
-        selectItem(0);
+    LVITEM sLvItem = {0};
+    sLvItem.mask       = LVIF_TEXT | LVIF_IMAGE | LVIF_PARAM;
+    sLvItem.iItem      = 0;
+    sLvItem.iSubItem   = 0;
+    sLvItem.iImage     = -1;
+    sLvItem.pszText    = LPSTR_TEXTCALLBACK;
+    sLvItem.cchTextMax = XPR_MAX_PATH;
+    sLvItem.lParam     = (LPARAM)sLvItemData;
+    InsertItem(&sLvItem);
 }
 
 void ExplorerCtrl::addDriveItem(void)
@@ -7380,52 +7401,69 @@ LRESULT ExplorerCtrl::OnAdvFileChangeNotify(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-void ExplorerCtrl::enumShChangeNotify(ShNotifyInfo *aShNotifyInfo, xpr_bool_t aHiddenAdd)
+void ExplorerCtrl::enumerateShcn(ShNotifyInfo *aShNotifyInfo, xpr_bool_t aHiddenAdd)
 {
-    LPTVITEMDATA sTvItemData = getFolderData();
-    if (XPR_IS_NULL(sTvItemData))
-        return;
+    LPTVITEMDATA  sTvItemData  = getFolderData();
+    LPSHELLFOLDER sShellFolder = XPR_NULL;
 
-    HRESULT sHResult;
-    LPSHELLFOLDER sShellFolder;
+    XPR_ASSERT(sTvItemData != XPR_NULL);
 
-    sShellFolder = XPR_NULL;
-    sHResult = sTvItemData->mShellFolder->BindToObject(
-        (LPCITEMIDLIST)sTvItemData->mPidl,
-        0,
-        IID_IShellFolder,
-        reinterpret_cast<LPVOID *>(&sShellFolder));
-
-    if (FAILED(sHResult) || XPR_IS_NULL(sShellFolder))
+    if (base::Pidl::getShellFolder(sTvItemData->mShellFolder, sTvItemData->mPidl, sShellFolder) == XPR_FALSE)
     {
-        COM_RELEASE(sShellFolder);
-        sHResult = ::SHGetDesktopFolder(&sShellFolder);
+        return;
     }
 
-    if (SUCCEEDED(sHResult) || XPR_IS_NOT_NULL(sShellFolder))
-    {
-        EnumData sEnumData;
-        sEnumData.mShNotifyInfo = aShNotifyInfo;
+    LPITEMIDLIST sEnumPidl       = XPR_NULL;
+    xpr_sint_t   sEnumListType   = 0;
+    xpr_sint_t   sEnumAttributes = 0;
 
-        enumItem(
-            sShellFolder,
-            XPR_NULL,
-            &ExplorerCtrl::OnShcnPreEnum,
-            &ExplorerCtrl::OnShcnEnum,
-            &ExplorerCtrl::OnShcnPostEnum,
-            &sEnumData);
+    switch (mOption.mListType)
+    {
+    case LIST_TYPE_ALL:    sEnumListType = base::ShellEnumerator::ListTypeAll;        break;
+    case LIST_TYPE_FILE:   sEnumListType = base::ShellEnumerator::ListTypeOnlyFile;   break;
+    case LIST_TYPE_FOLDER: sEnumListType = base::ShellEnumerator::ListTypeOnlyFolder; break;
+    }
+
+    if (XPR_IS_TRUE(mOption.mShowHiddenAttribute)) sEnumAttributes |= base::ShellEnumerator::AttributeHidden;
+    if (XPR_IS_TRUE(mOption.mShowSystemAttribute)) sEnumAttributes |= base::ShellEnumerator::AttributeSystem;
+
+    base::ShellEnumerator sShellEnumerator;
+
+    if (sShellEnumerator.enumerate(m_hWnd, sShellFolder, sEnumListType, sEnumAttributes) == XPR_TRUE)
+    {
+        preShcnEnumeration();
+
+        while (sShellEnumerator.next(&sEnumPidl) == XPR_TRUE)
+        {
+            if (updateShcnPidlItem(sShellFolder, sEnumPidl, aShNotifyInfo) == XPR_FALSE)
+            {
+                break;
+            }
+        }
+
+        postShcnEnumeration();
+    }
+    else
+    {
+        // failed to enumerate
     }
 
     COM_RELEASE(sShellFolder);
 }
 
-void ExplorerCtrl::OnShcnPreEnum(EnumData *aEnumData)
+void ExplorerCtrl::preShcnEnumeration(void)
 {
     SetRedraw(XPR_FALSE);
 }
 
-xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData)
+xpr_bool_t ExplorerCtrl::updateShcnPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, ShNotifyInfo *aShNotifyInfo)
 {
+    xpr_bool_t   sResult          = XPR_FALSE;
+    xpr_ulong_t  sShellAttributes = 0;
+    DWORD        sFileAttributes  = 0;
+    LPLVITEMDATA sLvItemData;
+
+    // check list type
     if (mOption.mListType == LIST_TYPE_FOLDER && IsFileSystemFolder(aShellFolder, aPidl) == XPR_FALSE)
     {
         COM_FREE(aPidl);
@@ -7438,57 +7476,25 @@ xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPi
         return XPR_TRUE;
     }
 
-    ShNotifyInfo *sShNotifyInfo = (ShNotifyInfo *)aEnumData->mShNotifyInfo;
+    // get shell item attributes
+    getItemAttributes(aShellFolder, aPidl, sShellAttributes, sFileAttributes);
 
-    xpr_ulong_t sShellAttributes = SFGAO_FILESYSTEM | SFGAO_FOLDER | //SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK | 
-        SFGAO_CANRENAME | SFGAO_CANCOPY | SFGAO_CANMOVE | SFGAO_CANDELETE | SFGAO_LINK |
-        SFGAO_SHARE | SFGAO_GHOSTED | SFGAO_READONLY;
-
-    if (mFolderType == FOLDER_COMPUTER)
-        sShellAttributes &= ~SFGAO_READONLY;
-
-    aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &sShellAttributes);
-
-    static HRESULT sHResult;
-    static WIN32_FIND_DATA sWin32FindData;
-    DWORD sFileAttributes = 0;
-
-    if (XPR_TEST_BITS(sShellAttributes, SFGAO_FILESYSTEM))
-    {
-        sHResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
-        if (SUCCEEDED(sHResult))
-        {
-            if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_HIDDEN))
-                sShellAttributes |= SFGAO_GHOSTED;
-
-            if (XPR_TEST_BITS(sWin32FindData.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
-                sShellAttributes |= SFGAO_FOLDER;
-            else
-                sShellAttributes &= ~SFGAO_FOLDER;
-
-            sFileAttributes = sWin32FindData.dwFileAttributes;
-        }
-    }
-
+    // check hidden attribute
     if (mOption.mShowSystemAttribute == XPR_FALSE && mOption.mShowHiddenAttribute == XPR_FALSE && XPR_TEST_BITS(sShellAttributes, SFGAO_GHOSTED))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
     }
 
+    // check system attribute
     if (mOption.mShowSystemAttribute == XPR_FALSE && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_HIDDEN) && XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM))
     {
         COM_FREE(aPidl);
         return XPR_TRUE;
     }
 
-    LPLVITEMDATA sLvItemData = new LVITEMDATA;
-    if (XPR_IS_NULL(sLvItemData))
-    {
-        COM_FREE(aPidl);
-        return XPR_TRUE;
-    }
-
+    // allocate new LVITEMDATA
+    sLvItemData                   = new LVITEMDATA;
     sLvItemData->mSignature       = mSignature++;
     sLvItemData->mItemType        = IDT_SHELL;
     sLvItemData->mShellFolder     = aShellFolder;
@@ -7499,20 +7505,23 @@ xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPi
     sLvItemData->mThumbImageId    = Thumbnail::InvalidThumbImageId;
     aShellFolder->AddRef();
 
-    xpr_bool_t sResult = XPR_FALSE;
-
-    if (sShNotifyInfo->mEventId == SHCNE_NETSHARE || sShNotifyInfo->mEventId == SHCNE_NETUNSHARE)
+    if (aShNotifyInfo->mEventId == SHCNE_NETSHARE || aShNotifyInfo->mEventId == SHCNE_NETUNSHARE)
     {
-        static xpr::tstring srName;
-        GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER, srName);
+        static xpr::tstring sName;
+        GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER, sName);
 
-        if (_tcsicmp(srName.c_str(), sShNotifyInfo->mNewName) == 0)
-            if (OnShcnEnumNetShare(sLvItemData, sShNotifyInfo))
-                return XPR_FALSE; // enum end!
+        if (_tcsicmp(sName.c_str(), aShNotifyInfo->mNewName) == 0)
+        {
+            if (OnShcnEnumNetShare(sLvItemData, aShNotifyInfo))
+            {
+                // stop to enumerate
+                return XPR_FALSE;
+            }
+        }
     }
     else
     {
-        sResult = OnShcnEnumUpdateDir(sLvItemData);
+        sResult = updateShcnLvItemData(sLvItemData);
     }
 
     if (XPR_IS_FALSE(sResult))
@@ -7526,11 +7535,12 @@ xpr_bool_t ExplorerCtrl::OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPi
     return XPR_TRUE;
 }
 
-void ExplorerCtrl::OnShcnPostEnum(EnumData *aEnumData)
+void ExplorerCtrl::postShcnEnumeration(void)
 {
     // [2010/06/15] bug patched
     // redraw problem when view style is list. In particular, this bug occurs when many items will be insert by refresh.
     SetRedraw();
+
     Invalidate(XPR_FALSE);
     UpdateWindow();
 }
@@ -7599,7 +7609,7 @@ xpr_bool_t ExplorerCtrl::OnShcnCreateItem(Shcn *aShcn)
         sPidl = fxfile::base::Pidl::clone(sPidl);
 
         xpr_sint_t sLastInsertIndex = getLastInsertIndex();
-        sResult = FillItem(sShellFolder, (LPITEMIDLIST)sPidl, sLastInsertIndex, XPR_NULL);
+        sResult = insertPidlItem(sShellFolder, (LPITEMIDLIST)sPidl, sLastInsertIndex);
         Arrange(LVA_DEFAULT);
     }
 
@@ -7719,7 +7729,7 @@ xpr_bool_t ExplorerCtrl::OnShcnRenameItem(const xpr_tchar_t *aOldPath, LPITEMIDL
         LPCITEMIDLIST sPidl         = XPR_NULL;
         if (fxfile::base::Pidl::getSimplePidl(aFullPidl, sShellFolder, sPidl) == XPR_TRUE)
         {
-            if (FillItem(sShellFolder, fxfile::base::Pidl::clone(sPidl), sOldIndex, XPR_NULL) == XPR_TRUE)
+            if (insertPidlItem(sShellFolder, fxfile::base::Pidl::clone(sPidl), sOldIndex) == XPR_TRUE)
             {
                 if (sState != 0)
                 {
@@ -7751,7 +7761,7 @@ xpr_bool_t ExplorerCtrl::OnShcnUpdateDir(Shcn *aShcn)
 
         ShNotifyInfo sShNotifyInfo = {0};
         sShNotifyInfo.mEventId = aShcn->mEventId;
-        enumShChangeNotify(&sShNotifyInfo, XPR_FALSE);
+        enumerateShcn(&sShNotifyInfo, XPR_FALSE);
 
         return XPR_TRUE;
     }
@@ -7782,16 +7792,13 @@ xpr_uint_t ExplorerCtrl::getThumbImageId(const xpr_tchar_t *aPath)
     return sThumbImageId;
 }
 
-xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
+xpr_bool_t ExplorerCtrl::updateShcnLvItemData(LPLVITEMDATA aLvItemData)
 {
-    if (XPR_IS_NULL(aLvItemData))
-        return XPR_FALSE;
-
-    xpr_sint_t sIndex;
-    xpr_sint_t sFindStartIndex;
+    xpr_sint_t   sIndex;
+    xpr_sint_t   sFindStartIndex;
     LPLVITEMDATA sTempLvItemData;
-    xpr_bool_t sChanged;
-    HRESULT sHResult;
+    xpr_bool_t   sChanged;
+    HRESULT      sComResult;
 
     sIndex = sFindStartIndex = -1;
     sChanged = XPR_TRUE;
@@ -7811,14 +7818,14 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
             {
                 sTempLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
 
-                sHResult = aLvItemData->mShellFolder->CompareIDs(0, aLvItemData->mPidl, sTempLvItemData->mPidl);
-                if (sHResult != S_OK) // S_FALSE, Windows7 have 2 Control Panels in desktop folder.
+                sComResult = aLvItemData->mShellFolder->CompareIDs(0, aLvItemData->mPidl, sTempLvItemData->mPidl);
+                if (sComResult != S_OK) // S_FALSE, Windows7 have 2 Control Panels in desktop folder.
                 {
                     sFindStartIndex = sIndex + 1;
                     continue;
                 }
 
-                sChanged = ((xpr_sshort_t)SCODE_CODE(GetScode(sHResult)) == 0) ? XPR_TRUE : XPR_FALSE;
+                sChanged = ((xpr_sshort_t)SCODE_CODE(GetScode(sComResult)) == 0) ? XPR_TRUE : XPR_FALSE;
             }
 
             break;
@@ -7833,8 +7840,8 @@ xpr_bool_t ExplorerCtrl::OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData)
             sTempLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
 
             // SHCIDS_ALLFIELDS : internet explorer 5.0 more
-            sHResult = aLvItemData->mShellFolder->CompareIDs(SHCIDS_ALLFIELDS, aLvItemData->mPidl, sTempLvItemData->mPidl);
-            sChanged = ((xpr_sshort_t)SCODE_CODE(GetScode(sHResult)) == 0) ? XPR_FALSE : XPR_TRUE;
+            sComResult = aLvItemData->mShellFolder->CompareIDs(SHCIDS_ALLFIELDS, aLvItemData->mPidl, sTempLvItemData->mPidl);
+            sChanged = ((xpr_sshort_t)SCODE_CODE(GetScode(sComResult)) == 0) ? XPR_FALSE : XPR_TRUE;
 
             if (XPR_IS_FALSE(sChanged))
                 return XPR_FALSE;
@@ -8056,7 +8063,7 @@ xpr_bool_t ExplorerCtrl::OnShcnNetShare(Shcn *aShcn)
     if (FAILED(sHResult))
         return XPR_FALSE;
 
-    enumShChangeNotify(&sShNotifyInfo, XPR_FALSE);
+    enumerateShcn(&sShNotifyInfo, XPR_FALSE);
 
     return XPR_TRUE;
 }
@@ -8261,7 +8268,7 @@ void ExplorerCtrl::showHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModi
 {
     ShNotifyInfo sShNotifyInfo = {0};
     sShNotifyInfo.mEventId = SHCNE_UPDATEDIR;
-    enumShChangeNotify(&sShNotifyInfo, XPR_TRUE);
+    enumerateShcn(&sShNotifyInfo, XPR_TRUE);
 
     resortItems();
 }

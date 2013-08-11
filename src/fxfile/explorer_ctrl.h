@@ -45,7 +45,6 @@ class ExplorerCtrl : public ListCtrlEx, public DropTargetObserver
     typedef ListCtrlEx super;
 
     enum FolderType;
-    struct EnumData;
 
 public:
     struct Option
@@ -294,28 +293,16 @@ protected:
 
     xpr_bool_t exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy = XPR_TRUE);
 
-    typedef void (ExplorerCtrl::*FailEnumFunc)(EnumData *aEnumData);
-    typedef void (ExplorerCtrl::*PreEnumFunc)(EnumData *aEnumData);
-    typedef xpr_bool_t (ExplorerCtrl::*FillItemFunc)(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData);
-    typedef void (ExplorerCtrl::*PostEnumFunc)(EnumData *aEnumData);
-
-    // default
-    xpr_bool_t enumItem(
-        LPSHELLFOLDER  aShellFolder,
-        FailEnumFunc   aFailEnumFunc,
-        PreEnumFunc    aPreEnumFunc,
-        FillItemFunc   aFillItemFunc,
-        PostEnumFunc   aPostEnumFunc,
-        EnumData      *aEnumData);
-
-    void FailFillItem(EnumData *aEnumData);
-    void PreFillItem(EnumData *aEnumData);
-    xpr_bool_t FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData);
-    void PostFillItem(EnumData *aEnumData);
+    void       preEnumeration(LPTVITEMDATA aNewTvItemData);
+    xpr_bool_t insertPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex);
+    void       postEnumeration(xpr_bool_t aUpdateBuddy);
 
     FolderType getFolderType(void) const;
     xpr_bool_t isFolderType(FolderType aFolderType) const;
 
+    void watchFileChange(void);
+
+    void addParentItem(void);
     void addDriveItem(void);
     void updateDriveItem(void);
     void getDriveItemTotalSize(xpr_tchar_t *aDrive, xpr_tchar_t *aText, const xpr_size_t aMaxLen) const;
@@ -348,6 +335,7 @@ protected:
     xpr_bool_t getDescription(LPLVITEMDATA aLvItemData, xpr_tchar_t *aDesc, const xpr_sint_t aMaxLen, xpr_bool_t aOriginal = XPR_FALSE) const;
     xpr_bool_t getNetDescription(LPLVITEMDATA aLvItemData, xpr_tchar_t *aDesc, const xpr_size_t aMaxLen) const;
     void       getRootDriveType(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_tchar_t *aDriveType, const xpr_size_t aMaxLen) const; // Drive Type
+    void       getItemAttributes(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes, DWORD &aFileAttributes);
 
     // Callback Sorting Function
     static xpr_sint_t CALLBACK DefaultItemCompareProc(LPARAM, LPARAM, LPARAM); // Sorting(Name, Size, Type, Date)
@@ -365,16 +353,16 @@ protected:
     void showHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModifiedSystem);
     void hideHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModifiedSystem);
 
-    void       enumShChangeNotify(ShNotifyInfo *aShNotifyInfo, xpr_bool_t aHiddenAdd); // Shell Change Notify
-    void       OnShcnPreEnum(EnumData *aEnumData);
-    xpr_bool_t OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex, EnumData *aEnumData);
-    void       OnShcnPostEnum(EnumData *aEnumData);
+    void       enumerateShcn(ShNotifyInfo *aShNotifyInfo, xpr_bool_t aHiddenAdd); // Shell Change Notify
+    void       preShcnEnumeration(void);
+    xpr_bool_t updateShcnPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, ShNotifyInfo *aShNotifyInfo);
+    void       postShcnEnumeration(void);
 
     xpr_bool_t OnShcnCreateItem(Shcn *aShcn);
     xpr_bool_t OnShcnRenameItem(Shcn *aShcn);
     xpr_bool_t OnShcnRenameItem(const xpr_tchar_t *aOldPath, LPITEMIDLIST aFullPidl);
     xpr_bool_t OnShcnUpdateDir(Shcn *aShcn);
-    xpr_bool_t OnShcnEnumUpdateDir(LPLVITEMDATA aLvItemData);
+    xpr_bool_t updateShcnLvItemData(LPLVITEMDATA aLvItemData);
     xpr_bool_t OnShcnDeleteItem(Shcn *aShcn = XPR_NULL, const xpr_tchar_t *aParsing = XPR_NULL);
     xpr_bool_t OnShcnUpdateItem(void);
     xpr_bool_t OnShcnNetShare(Shcn *aShcn);
@@ -440,7 +428,6 @@ protected:
     // option
     Option       mOption;
     Option      *mNewOption;
-    xpr_bool_t   mFirstExplore;
 
     // folder information
     LPTVITEMDATA mTvItemData;    // current folder data
