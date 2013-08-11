@@ -91,7 +91,7 @@ WideString::WideString(Iterator aFirst, Iterator aLast)
 
 WideString::~WideString(void)
 {
-    clear();
+    reset();
 }
 
 WideString::Iterator WideString::begin(void)
