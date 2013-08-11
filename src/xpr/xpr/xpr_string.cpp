@@ -91,7 +91,7 @@ String::String(Iterator aFirst, Iterator aLast)
 
 String::~String(void)
 {
-    clear();
+    reset();
 }
 
 String::Iterator String::begin(void)
