@@ -129,29 +129,16 @@ protected:
 
     struct EnumData;
 
-    typedef void (FolderCtrl::*FailEnumFunc)(EnumData *aEnumData);
-    typedef void (FolderCtrl::*PreEnumFunc)(EnumData *aEnumData);
-    typedef xpr_bool_t (FolderCtrl::*ProcItemFunc)(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LPITEMIDLIST aFullPidl, HTREEITEM aParentTreeItem, EnumData *aEnumData);
-    typedef void (FolderCtrl::*PostEnumFunc)(EnumData *aEnumData);
+    xpr_bool_t enumerate(LPSHELLFOLDER  aShellFolder,
+                         LPITEMIDLIST   aFullPidl,
+                         HTREEITEM      aParentTreeItem,
+                         EnumData      *aEnumData);
 
-    // Default
-    xpr_bool_t enumItem(
-        LPSHELLFOLDER  aShellFolder,
-        LPITEMIDLIST   aFullPidl,
-        HTREEITEM      aParentTreeItem,
-        FailEnumFunc   aFailEnumFunc,
-        PreEnumFunc    aPreEnumFunc,
-        ProcItemFunc   aProcItemFunc,
-        PostEnumFunc   aPostEnumFunc,
-        EnumData      *aEnumData);
+    xpr_bool_t insertPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LPITEMIDLIST aFullPidl, HTREEITEM aParentTreeItem, EnumData *aEnumData);
 
-    void       FailFillItem(EnumData *aEnumData);
-    void       PreFillItem(EnumData *aEnumData);
-    xpr_bool_t FillItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LPITEMIDLIST aFullPidl, HTREEITEM aParentTreeItem, EnumData *aEnumData);
-    void       PostFillItem(EnumData *aEnumData);
-
-    HTREEITEM insertPartialNetComRootItem(LPITEMIDLIST aFullPidl);
-    void      getTreeIcon(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aFullPidl, LPITEMIDLIST aPidl, LPTVITEM aTvItem) const;
+    HTREEITEM  insertPartialNetComRootItem(LPITEMIDLIST aFullPidl);
+    xpr_bool_t getItemAttributes(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes, DWORD &aFileAttributes);
+    void       getTreeIcon(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aFullPidl, LPITEMIDLIST aPidl, LPTVITEM aTvItem) const;
 
     void sortItem(HTREEITEM aParentTreeItem);
     static xpr_sint_t CALLBACK TreeViewCompareProc(LPARAM, LPARAM, LPARAM);
@@ -168,10 +155,8 @@ protected:
     void hideHiddenSystem(HTREEITEM aTreeItem, xpr_bool_t aModifiedHidden, xpr_bool_t aModifiedSystem);
 
     // Shell Change Notify
-    void       enumShChangeNotify(HTREEITEM aParentTreeItem, ShNotifyInfo *aShNotifyInfo); // Shell Change Notify
-    void       OnShcnPreEnum(EnumData *aEnumData);
-    xpr_bool_t OnShcnEnum(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LPITEMIDLIST aFullPidl, HTREEITEM aParentTreeItem, EnumData *aEnumData);
-    void       OnShcnPostEnum(EnumData *aEnumData);
+    void       enumerateShcn(HTREEITEM aParentTreeItem, ShNotifyInfo *aShNotifyInfo); // Shell Change Notify
+    xpr_bool_t updateShcnPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, LPITEMIDLIST aFullPidl, HTREEITEM aParentTreeItem, ShNotifyInfo *aShNotifyInfo);
 
     xpr_bool_t OnShcnCreateItem(Shcn *aShcn);
     xpr_bool_t OnShcnRenameItem(Shcn *aShcn);
@@ -180,7 +165,7 @@ protected:
     xpr_bool_t OnShcnNetShare(Shcn *aShcn);
     xpr_bool_t OnShcnDriveAdd(Shcn *aShcn);
     xpr_bool_t OnShcnDriveRemove(Shcn *aShcn);
-    xpr_bool_t OnShcnEnumUpdateDir(LPTVITEMDATA aTvItemData, HTREEITEM aParentTreeItem, ShNotifyInfo *aShNotifyInfo);
+    xpr_bool_t updateShcnTvItemData(LPTVITEMDATA aTvItemData, HTREEITEM aParentTreeItem, ShNotifyInfo *aShNotifyInfo);
     xpr_bool_t OnShcnUpdateItem(Shcn *aShcn);
     xpr_bool_t OnShcnEnumNetShare(LPTVITEMDATA aTvItemData, HTREEITEM aTreeItem, ShNotifyInfo *aShNotifyInfo);
     void OnShcnUpdateImage(HTREEITEM aTreeItem, xpr_sint_t aImageIndex);

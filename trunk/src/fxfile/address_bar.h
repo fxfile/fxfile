@@ -45,6 +45,8 @@ protected:
 
     xpr_bool_t exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aNotifyBuddy = XPR_FALSE);
 
+    xpr_bool_t getItemAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes, DWORD &aFileAttributes);
+
     void doBaseItems(void);
     void doBaseItems(xpr_uint_t aType);
     void doBaseItemsInDesktop(void);

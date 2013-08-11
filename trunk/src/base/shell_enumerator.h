@@ -15,21 +15,32 @@ namespace fxfile
 {
 namespace base
 {
-class ShellItem;
-
 class ShellEnumerator
 {
 public:
-    ShellEnumerator(ShellItem &aShellFolderItem);
+    enum
+    {
+        ListTypeAll = 0,
+        ListTypeOnlyFile,
+        ListTypeOnlyFolder,
+    };
+
+    enum
+    {
+        AttributeHidden = 0x01,
+        AttributeSystem = 0x02,
+    };
+
+public:
+    ShellEnumerator(void);
     virtual ~ShellEnumerator(void);
 
 public:
-    xpr_bool_t enumerate(void);
-    xpr_bool_t next(ShellItem *aShellItem);
+    xpr_bool_t enumerate(HWND aHwnd, LPSHELLFOLDER aShellFolder, xpr_sint_t aListType, xpr_sint_t aAttributes);
+    xpr_bool_t next(LPITEMIDLIST *aPidl);
 
 protected:
-    ShellItem &mShellFolderItem;
-    void      *mEnumerator;
+    LPENUMIDLIST mEnumIdList;
 };
 } // namespace base
 } // namespace fxfile

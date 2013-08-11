@@ -13,6 +13,7 @@
 
 #include "main_frame.h"
 #include "option.h"
+#include "shell_enumerator.h"
 
 #include "gui/gdi.h"
 
@@ -39,15 +40,6 @@ enum
     WM_SHCN_DESKTOP  = WM_USER + 100,
     WM_SHCN_COMPUTER = WM_USER + 101,
 };
-
-static xpr_ulong_t getAttribsMask(void)
-{
-    xpr_ulong_t sShellAttributes = SFGAO_FILESYSTEM | SFGAO_FOLDER | //SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK | 
-        SFGAO_CANRENAME | SFGAO_CANCOPY | SFGAO_CANMOVE | SFGAO_CANDELETE | SFGAO_LINK |
-        SFGAO_SHARE | SFGAO_GHOSTED;
-
-    return sShellAttributes;
-}
 
 AddressBar::AddressBar(void)
 {
@@ -307,120 +299,145 @@ xpr_bool_t AddressBar::fillItem(LPSHELLFOLDER  aShellFolder,
     // SHCONTF_INCLUDEHIDDEN flag must be set.
     // Then, hidden folder can explore regardless of 'Display hidden file' option.
 
-    xpr_ulong_t sFlags = SHCONTF_FOLDERS | SHCONTF_INCLUDEHIDDEN;
+    xpr_bool_t   sResult         = XPR_FALSE;
+    LPITEMIDLIST sEnumPidl       = XPR_NULL;
+    xpr_sint_t   sEnumListType   = 0;
+    xpr_sint_t   sEnumAttributes = 0;
+
+    sEnumListType = base::ShellEnumerator::ListTypeOnlyFolder;
+
+    sEnumAttributes = base::ShellEnumerator::AttributeHidden;
     if (XPR_IS_TRUE(gOpt->mConfig.mShowSystemAttribute))
-        sFlags |= SHCONTF_STORAGE;
-
-    LPENUMIDLIST sEnumIdList = XPR_NULL;
-    HRESULT sHResult = aShellFolder->EnumObjects(m_hWnd, sFlags, &sEnumIdList);
-    if (FAILED(sHResult) || XPR_IS_NULL(sEnumIdList))
-        return XPR_FALSE;
-
-    xpr_bool_t sResult = XPR_FALSE;
-
-    xpr_sint_t sCount = 0;
-    xpr_tchar_t sName[XPR_MAX_PATH + 1];
-    LPITEMIDLIST sPidl = XPR_NULL;
-    LPABITEMDATA sCbItemData = XPR_NULL;
-    xpr_ulong_t sFetched, sShellAttributes;
-    xpr_bool_t sInserted = aName == XPR_NULL;
-    xpr_bool_t sMatched = XPR_FALSE;
-
-    CbItemDataDeque sCbItemDataDeque;
-
-    while (S_OK == sEnumIdList->Next(1, &sPidl, &sFetched))
     {
-        if (XPR_IS_NOT_NULL(aName))
+        sEnumAttributes |= base::ShellEnumerator::AttributeSystem;
+    }
+
+    base::ShellEnumerator sShellEnumerator;
+
+    if (sShellEnumerator.enumerate(m_hWnd, aShellFolder, sEnumListType, sEnumAttributes) == XPR_TRUE)
+    {
+        xpr::tstring    sName;
+        LPITEMIDLIST    sEnumPidl        = XPR_NULL;
+        LPABITEMDATA    sCbItemData      = XPR_NULL;
+        xpr_ulong_t     sShellAttributes;
+        DWORD           sFileAttributes;
+        xpr_bool_t      sInserted        = (aName == XPR_NULL) ? XPR_TRUE : XPR_FALSE;
+        xpr_bool_t      sMatched         = XPR_FALSE;
+        CbItemDataDeque sCbItemDataDeque;
+
+        while (sShellEnumerator.next(&sEnumPidl) == XPR_TRUE)
         {
-            GetName(aShellFolder, sPidl, SHGDN_INFOLDER, sName);
-            if (_tcsicmp(aName, sName) == 0)
-                sMatched = XPR_TRUE;
-            else
+            if (XPR_IS_NOT_NULL(aName))
             {
-                COM_FREE(sPidl);
+                GetName(aShellFolder, sEnumPidl, SHGDN_INFOLDER, sName);
+                if (_tcsicmp(aName, sName.c_str()) == 0)
+                {
+                    sMatched = XPR_TRUE;
+                }
+                else
+                {
+                    COM_FREE(sEnumPidl);
+                    continue;
+                }
+            }
+
+            sShellAttributes = 0;
+            sFileAttributes  = 0;
+
+            if (getItemAttributes(aShellFolder, sEnumPidl, sShellAttributes, sFileAttributes) == XPR_FALSE)
+            {
+                COM_FREE(sEnumPidl);
                 continue;
             }
-        }
 
-        sShellAttributes = getAttribsMask();
-        aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&sPidl, &sShellAttributes);
+            sCbItemData                   = new ABITEMDATA;
+            sCbItemData->mShellFolder     = aShellFolder;
+            sCbItemData->mPidl            = sEnumPidl;
+            sCbItemData->mFullPidl        = fxfile::base::Pidl::concat(aFullPidl, sEnumPidl);
+            sCbItemData->mShellAttributes = sShellAttributes;
+            sCbItemData->mLevel           = aLevel;
+            sCbItemData->mType            = aType;
+            aShellFolder->AddRef();
 
-        if (!XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER))
-        {
-            COM_FREE(sPidl);
-            continue;
-        }
+            sCbItemDataDeque.push_back(sCbItemData);
 
-        static HRESULT sHResult;
-        static WIN32_FIND_DATA sWin32FindData;
-        DWORD sFileAttributes = 0;
-
-        if (XPR_TEST_BITS(sShellAttributes, SFGAO_FILESYSTEM))
-        {
-            sHResult = ::SHGetDataFromIDList(aShellFolder, sPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
-            if (SUCCEEDED(sHResult))
+            if (XPR_IS_NOT_NULL(aName))
             {
-                if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)
-                    sShellAttributes |= SFGAO_GHOSTED;
+                sCbItemDataDeque.clear();
+                sCbItemDataDeque.push_back(sCbItemData);
 
-                if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-                    sShellAttributes |= SFGAO_FOLDER;
-                else
-                    sShellAttributes &= ~SFGAO_FOLDER;
-
-                sFileAttributes = sWin32FindData.dwFileAttributes;
+                sortItems(sCbItemDataDeque);
+                insertItems(sCbItemDataDeque, aInsert, gOpt->mConfig.mAddressFullPath);
+                sInserted = XPR_FALSE;
+                sResult = XPR_TRUE;
+                break;
             }
         }
 
-        if (!XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER))
+        if (XPR_IS_TRUE(sInserted))
         {
-            COM_FREE(sPidl);
-            continue;
-        }
-
-        sCbItemData = new ABITEMDATA;
-        if (XPR_IS_NULL(sCbItemData))
-        {
-            sResult = XPR_FALSE;
-
-            COM_FREE(sPidl);
-            continue;
-        }
-
-        sCbItemData->mShellFolder     = aShellFolder;
-        sCbItemData->mPidl            = sPidl;
-        sCbItemData->mFullPidl        = fxfile::base::Pidl::concat(aFullPidl, sPidl);
-        sCbItemData->mShellAttributes = sShellAttributes;
-        sCbItemData->mLevel           = aLevel;
-        sCbItemData->mType            = aType;
-        aShellFolder->AddRef();
-
-        sCbItemDataDeque.push_back(sCbItemData);
-
-        if (XPR_IS_NOT_NULL(aName))
-        {
-            sCbItemDataDeque.clear();
-            sCbItemDataDeque.push_back(sCbItemData);
-
             sortItems(sCbItemDataDeque);
-            insertItems(sCbItemDataDeque, aInsert, gOpt->mConfig.mAddressFullPath);
-            sInserted = XPR_FALSE;
+            insertItems(sCbItemDataDeque, aInsert);
             sResult = XPR_TRUE;
-            break;
         }
-    }
 
-    if (XPR_IS_TRUE(sInserted))
+        sCbItemDataDeque.clear();
+    }
+    else
     {
-        sortItems(sCbItemDataDeque);
-        insertItems(sCbItemDataDeque, aInsert);
-        sResult = XPR_TRUE;
+        // failed to enumerate
+        return XPR_FALSE;
     }
-
-    COM_RELEASE(sEnumIdList);
-    sCbItemDataDeque.clear();
 
     return sResult;
+}
+
+xpr_bool_t AddressBar::getItemAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aShellAttributes, DWORD &aFileAttributes)
+{
+    aShellAttributes = SFGAO_FILESYSTEM | SFGAO_FOLDER | //SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK | 
+        SFGAO_CANRENAME | SFGAO_CANCOPY | SFGAO_CANMOVE | SFGAO_CANDELETE | SFGAO_LINK |
+        SFGAO_SHARE | SFGAO_GHOSTED;
+
+    aShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&aPidl, &aShellAttributes);
+
+    if (!XPR_TEST_BITS(aShellAttributes, SFGAO_FOLDER))
+    {
+        return XPR_FALSE;
+    }
+
+    static HRESULT sComResult;
+    static WIN32_FIND_DATA sWin32FindData;
+    DWORD sFileAttributes = 0;
+
+    if (XPR_TEST_BITS(aShellAttributes, SFGAO_FILESYSTEM))
+    {
+        sComResult = ::SHGetDataFromIDList(aShellFolder, aPidl, SHGDFIL_FINDDATA, &sWin32FindData, sizeof(WIN32_FIND_DATA));
+        if (SUCCEEDED(sComResult))
+        {
+            if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)
+            {
+                aShellAttributes |= SFGAO_GHOSTED;
+            }
+
+            if (sWin32FindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+            {
+                aShellAttributes |= SFGAO_FOLDER;
+            }
+            else
+            {
+                aShellAttributes &= ~SFGAO_FOLDER;
+            }
+
+            sFileAttributes = sWin32FindData.dwFileAttributes;
+        }
+    }
+
+    if (!XPR_TEST_BITS(aShellAttributes, SFGAO_FOLDER))
+    {
+        return XPR_FALSE;
+    }
+
+    return XPR_TRUE;
 }
 
 static bool sortCbItemData(LPABITEMDATA aCbItemData1, LPABITEMDATA aCbItemData2)
@@ -644,6 +661,7 @@ xpr_bool_t AddressBar::exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aNotifyBud
         LPSHELLFOLDER   sShellFolder;
         LPCITEMIDLIST   sPidl;
         xpr_ulong_t     sShellAttributes;
+        DWORD           sFileAttributes;
         CbItemDataDeque sCbItemDataDeque;
 
         aFullPidl = fxfile::base::Pidl::clone(aFullPidl);
@@ -657,8 +675,10 @@ xpr_bool_t AddressBar::exploreItem(LPITEMIDLIST aFullPidl, xpr_bool_t aNotifyBud
             if (fxfile::base::Pidl::getSimplePidl(aFullPidl, sShellFolder, sPidl) == XPR_FALSE)
                 continue;
 
-            sShellAttributes = getAttribsMask();
-            GetItemAttributes(sShellFolder, sPidl, sShellAttributes);
+            sShellAttributes = 0;
+            sFileAttributes  = 0;
+
+            getItemAttributes(sShellFolder, sPidl, sShellAttributes, sFileAttributes);
 
             sCbItemData = new ABITEMDATA;
             sCbItemData->mShellFolder     = sShellFolder;
@@ -1155,14 +1175,17 @@ void AddressBar::OnShcnRenameItem(xpr_uint_t aType, Shcn *aShcn)
 
     xpr_bool_t    sResult;
     xpr_ulong_t   sShellAttributes;
+    DWORD         sFileAttributes;
     LPSHELLFOLDER sShellFolder = XPR_NULL;
     LPCITEMIDLIST sPidl        = XPR_NULL;
 
     sResult = fxfile::base::Pidl::getSimplePidl(aShcn->mPidl2, sShellFolder, sPidl);
     if (XPR_IS_TRUE(sResult) && XPR_IS_NOT_NULL(sShellFolder) && XPR_IS_NOT_NULL(sPidl))
     {
-        sShellAttributes = getAttribsMask();
-        sShellFolder->GetAttributesOf(1, (LPCITEMIDLIST *)&sPidl, &sShellAttributes);
+        sShellAttributes = 0;
+        sFileAttributes  = 0;
+
+        getItemAttributes(sShellFolder, sPidl, sShellAttributes, sFileAttributes);
 
         COM_RELEASE(sCbItemData->mShellFolder);
         COM_FREE(sCbItemData->mFullPidl);
