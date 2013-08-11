@@ -29,3 +29,16 @@ xcopy "lib\libcurl\bin\libcurl.dll" "bin" /c /e /r /y
 xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-ansicode" /c /e /r /y
 xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-unicode" /c /e /r /y
 xcopy "lib\libcurl\bin\libcurl.dll" "bin\x64-unicode" /c /e /r /y
+
+xcopy "lib\vld\bin\Win32\vld_x86.dll" "bin" /c /e /r /y
+xcopy "lib\vld\bin\Win32\dbghelp.dll" "bin" /c /e /r /y
+xcopy "lib\vld\bin\Win32\Microsoft.DTfW.DHL.manifest" "bin" /c /e /r /y
+xcopy "lib\vld\bin\Win32\vld_x86.dll" "bin\x86-ansicode" /c /e /r /y
+xcopy "lib\vld\bin\Win32\dbghelp.dll" "bin\x86-ansicode" /c /e /r /y
+xcopy "lib\vld\bin\Win32\Microsoft.DTfW.DHL.manifest" "bin\x86-ansicode" /c /e /r /y
+xcopy "lib\vld\bin\Win32\vld_x86.dll" "bin\x86-unicode" /c /e /r /y
+xcopy "lib\vld\bin\Win32\dbghelp.dll" "bin\x86-unicode" /c /e /r /y
+xcopy "lib\vld\bin\Win32\Microsoft.DTfW.DHL.manifest" "bin\x86-unicode" /c /e /r /y
+xcopy "lib\vld\bin\Win64\vld_x64.dll" "bin\x64-unicode" /c /e /r /y
+xcopy "lib\vld\bin\Win64\dbghelp.dll" "bin\x64-unicode" /c /e /r /y
+xcopy "lib\vld\bin\Win64\Microsoft.DTfW.DHL.manifest" "bin\x64-unicode" /c /e /r /y
