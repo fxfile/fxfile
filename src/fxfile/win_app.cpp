@@ -33,6 +33,7 @@
 #include "launcher_manager.h"
 #include "updater_manager.h"
 #include "singleton_manager.h"
+#include "single_process.h"
 
 #include "gfl/libgfl.h"
 
@@ -66,14 +67,11 @@ void freeTypeinfoMemory(void)
 static const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
 static const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
 
-static const xpr_tchar_t kSingleInstanceMutexName[] = XPR_STRING_LITERAL("fxfile - Single Instance");
-
 WinApp theApp;
 Option *gOpt;
 
 WinApp::WinApp(void)
-    : mSingleInstanceMutex(XPR_NULL)
-    , mLanguageTable(XPR_NULL), mStringTable(XPR_NULL), mFormatStringTable(XPR_NULL)
+    : mLanguageTable(XPR_NULL), mStringTable(XPR_NULL), mFormatStringTable(XPR_NULL)
 {
 #if defined(XPR_CFG_BUILD_RELEASE)
 
@@ -204,19 +202,17 @@ xpr_bool_t WinApp::InitInstance(void)
     // load bookmark
     BookmarkMgr::instance().load();
 
-    // check it if single instance by option
-    if (XPR_IS_TRUE(gOpt->mConfig.mSingleInstance))
+    // check it if single process by option
+    if (XPR_IS_TRUE(gOpt->mConfig.mSingleProcess))
     {
-        mSingleInstanceMutex = ::OpenMutex(MUTEX_ALL_ACCESS, XPR_FALSE, kSingleInstanceMutexName);
-        if (mSingleInstanceMutex != XPR_NULL)
+        if (SingleProcess::check() == XPR_FALSE)
         {
-            extern xpr_uint_t WM_SINGLEINST;
-            ::PostMessage(HWND_BROADCAST, WM_SINGLEINST, 0, 0);
+            SingleProcess::postMsg();
 
             return XPR_FALSE;
         }
 
-        setSingleInstance(XPR_TRUE);
+        SingleProcess::lock();
     }
 
     // load recent executed file list
@@ -285,7 +281,8 @@ xpr_sint_t WinApp::ExitInstance(void)
 
     XPR_SAFE_DELETE(mLanguageTable);
 
-    CLOSE_HANDLE(mSingleInstanceMutex);
+    // unlock if single process is locked
+    SingleProcess::unlock();
 
     // clean singleton manager
     SingletonManager::clean();
@@ -296,19 +293,6 @@ xpr_sint_t WinApp::ExitInstance(void)
     xpr::finalize();
 
     return super::ExitInstance();
-}
-
-void WinApp::setSingleInstance(xpr_bool_t aSingleInstance)
-{
-    if (aSingleInstance == XPR_TRUE)
-    {
-        if (mSingleInstanceMutex == XPR_NULL)
-            mSingleInstanceMutex = ::CreateMutex(XPR_NULL, XPR_FALSE, kSingleInstanceMutexName);
-    }
-    else
-    {
-        CLOSE_HANDLE(mSingleInstanceMutex);
-    }
 }
 
 void WinApp::LoadStdProfileSettings(xpr_uint_t aMaxMRU)
@@ -429,8 +413,15 @@ void WinApp::onChangedConfig(Option &aOption)
     // load language on runtime
     //loadLanguage(aOption.mConfig.mLanguage);
 
-    // set single instance
-    setSingleInstance(aOption.mConfig.mSingleInstance);
+    // set single process
+    if (XPR_IS_TRUE(aOption.mConfig.mSingleProcess))
+    {
+        SingleProcess::lock();
+    }
+    else
+    {
+        SingleProcess::unlock();
+    }
 
     // shell registry
     if (XPR_IS_TRUE(aOption.mConfig.mRegShellContextMenu))

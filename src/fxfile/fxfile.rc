@@ -1077,7 +1077,7 @@ IDD_CFG_ADV DIALOGEX 0, 0, 255, 241
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "&Single instance program",IDC_CFG_ADV_SINGLE_INSTANCE,
+    CONTROL         "&Single instance program",IDC_CFG_ADV_SINGLE_PROCESS,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,0,254,10
     CONTROL         "Confirm to e&xit program",IDC_CFG_ADV_CONFIRM_EXIT,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,12,254,10
