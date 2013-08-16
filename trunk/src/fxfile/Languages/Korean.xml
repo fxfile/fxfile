@@ -1663,7 +1663,7 @@
 			<String ID="popup.cfg.body.function.rename.radio.extension_keep">확장자 기억 방식(&amp;P)</String>
 			<String ID="popup.cfg.body.function.rename.radio.extension_select_except_for_extension">파일 이름 선택 방식(&amp;X)</String>
 
-			<String ID="popup.cfg.body.advanced.check.single_instance">fxfile 하나만 띄우기(&amp;S)</String>
+			<String ID="popup.cfg.body.advanced.check.single_process">fxfile 하나만 띄우기(&amp;S)</String>
 			<String ID="popup.cfg.body.advanced.check.confirm_to_exit">종료시 확인 후 종료하기(&amp;X)</String>
 			<String ID="popup.cfg.body.advanced.check.use_recent_file_list">최근 실행된 파일 목록 사용하기(&amp;R)</String>
 			<String ID="popup.cfg.body.advanced.check.register_to_shell_context_menu">윈도우 탐색기에 &#8216;flyExplorrer로 열기&#8217; 등록(&amp;M)</String>

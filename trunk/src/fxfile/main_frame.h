@@ -299,7 +299,7 @@ protected:
     afx_msg void OnActivateApp(xpr_bool_t aActive, DWORD aThreadId);
     afx_msg void OnEndSession(xpr_bool_t aEnding);
     afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);
-    afx_msg LRESULT OnSingleInstance(WPARAM wParam, LPARAM lParam);
+    afx_msg LRESULT OnSingleProcess(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnTaskRestarted(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnCompareDirsStatus(WPARAM wParam, LPARAM lParam);
     afx_msg void OnLButtonDblClk(xpr_uint_t aFlags, CPoint aPoint);

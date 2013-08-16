@@ -47,8 +47,6 @@ public:
     ~WinApp(void);
 
 public:
-    void setSingleInstance(xpr_bool_t aSingleInstance);
-
     void saveAllOptions(void);
 
 public:
@@ -60,7 +58,7 @@ public:
     const xpr_tchar_t *loadFormatString(const xpr_tchar_t *aId, const xpr_tchar_t *aReplaceFormatSpecifier);
 
 protected:
-    void LoadStdProfileSettings(xpr_uint_t nMaxMRU = _AFX_MRU_COUNT);
+    void LoadStdProfileSettings(xpr_uint_t aMaxMRU = _AFX_MRU_COUNT);
 
 protected:
     virtual xpr_bool_t InitInstance(void);
@@ -71,8 +69,6 @@ protected:
     virtual void onChangedConfig(Option &aOption);
 
 protected:
-    HANDLE mSingleInstanceMutex;
-
     fxfile::base::LanguageTable     *mLanguageTable;
     fxfile::base::StringTable       *mStringTable;
     fxfile::base::FormatStringTable *mFormatStringTable;

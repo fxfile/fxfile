@@ -235,7 +235,7 @@ public:
         xpr_bool_t      mFileScrapSave;
 
         // advanced options
-        xpr_bool_t      mSingleInstance;
+        xpr_bool_t      mSingleProcess;
         xpr_bool_t      mConfirmExit;
         xpr_bool_t      mRecentFile;
         xpr_bool_t      mRegShellContextMenu;

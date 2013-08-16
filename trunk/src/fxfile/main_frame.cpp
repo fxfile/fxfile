@@ -53,6 +53,7 @@
 #include "print_preview_view_ex.h"
 #include "ctrl_id.h"
 #include "dlg_state_manager.h"
+#include "single_process.h"
 
 #include "cmd/router/cmd_command.h"
 #include "cmd/router/cmd_context.h"
@@ -75,15 +76,15 @@
 #define new DEBUG_NEW
 #endif
 
-xpr_uint_t WM_SINGLEINST    = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile_Single_Instance"));
-xpr_uint_t WM_TASKRESTARTED = ::RegisterWindowMessage(XPR_STRING_LITERAL("TaskbarCreated")); 
-
 namespace fxfile
 {
 MainFrame *gFrame;
 
 #define DEFAULT_WINDOW_WIDTH  800
 #define DEFAULT_WINDOW_HEIGHT 600
+
+xpr_uint_t WM_TASK_RESTARTED = ::RegisterWindowMessage(XPR_STRING_LITERAL("TaskbarCreated"));
+xpr_uint_t WM_SINGLE_PROCESS = SingleProcess::getMsg();
 
 //
 // user defined message
@@ -237,8 +238,8 @@ BEGIN_MESSAGE_MAP(MainFrame, super)
     ON_WM_LBUTTONDBLCLK()
     ON_WM_CAPTURECHANGED()
     ON_NOTIFY(TBN_DROPDOWN, AFX_IDW_TOOLBAR, OnToolbarDropDown)
-    ON_REGISTERED_MESSAGE(WM_SINGLEINST, OnSingleInstance)
-    ON_REGISTERED_MESSAGE(WM_TASKRESTARTED, OnTaskRestarted)
+    ON_REGISTERED_MESSAGE(WM_SINGLE_PROCESS, OnSingleProcess)
+    ON_REGISTERED_MESSAGE(WM_TASK_RESTARTED, OnTaskRestarted)
     ON_MESSAGE(WM_TRAY_MESSAGE, OnTrayNotify)
     ON_MESSAGE(WM_COMPARE_DIRS_STATUS, OnCompareDirsStatus)
 END_MESSAGE_MAP()
@@ -3899,7 +3900,7 @@ void MainFrame::ActivateFrame(xpr_sint_t aCmdShow)
     super::ActivateFrame(aCmdShow);
 }
 
-LRESULT MainFrame::OnSingleInstance(WPARAM wParam, LPARAM lParam)
+LRESULT MainFrame::OnSingleProcess(WPARAM wParam, LPARAM lParam)
 {
     SetForceForegroundWindow(m_hWnd);
 

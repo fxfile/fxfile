@@ -304,7 +304,7 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.show_shell_new_menu"),                        OptionKey::TypeBoolean, &Option::mConfig.mShellNewMenu,                 (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.export_file_list_to_current_folder"),         OptionKey::TypeBoolean, &Option::mConfig.mFileListCurDir,               (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.register_shell_context_menu"),                OptionKey::TypeBoolean, &Option::mConfig.mRegShellContextMenu,          (void *)XPR_FALSE                      },
-    { XPR_STRING_LITERAL("config.single_instance"),                            OptionKey::TypeBoolean, &Option::mConfig.mSingleInstance,               (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.single_process"),                             OptionKey::TypeBoolean, &Option::mConfig.mSingleProcess,                (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.confirm_to_exit"),                            OptionKey::TypeBoolean, &Option::mConfig.mConfirmExit,                  (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.recent_file"),                                OptionKey::TypeBoolean, &Option::mConfig.mRecentFile,                   (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.animation_menu"),                             OptionKey::TypeBoolean, &Option::mConfig.mAnimationMenu,                (void *)XPR_FALSE                      },

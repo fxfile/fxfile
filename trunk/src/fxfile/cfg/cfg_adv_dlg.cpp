@@ -48,7 +48,7 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
     addIgnoreApply(IDC_CFG_ADV_OPTION);
     addIgnoreApply(IDC_CFG_ADV_REMOVE_RECENT_FILELIST);
 
-    SetDlgItemText(IDC_CFG_ADV_SINGLE_INSTANCE,                      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.single_instance")));
+    SetDlgItemText(IDC_CFG_ADV_SINGLE_PROCESS,                       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.single_process")));
     SetDlgItemText(IDC_CFG_ADV_CONFIRM_TO_EXIT,                      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.confirm_to_exit")));
     SetDlgItemText(IDC_CFG_ADV_RECENT_FILE_LIST,                     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.use_recent_file_list")));
     SetDlgItemText(IDC_CFG_ADV_SHELL_CONTEXT_MENU,                   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.register_to_shell_context_menu")));
@@ -69,7 +69,7 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
 
 void CfgAdvDlg::onInit(Option::Config &aConfig)
 {
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->SetCheck(aConfig.mSingleInstance);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_PROCESS                      ))->SetCheck(aConfig.mSingleProcess);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->SetCheck(aConfig.mConfirmExit);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->SetCheck(aConfig.mRecentFile);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->SetCheck(aConfig.mRegShellContextMenu);
@@ -88,7 +88,7 @@ void CfgAdvDlg::onInit(Option::Config &aConfig)
 
 void CfgAdvDlg::onApply(Option::Config &aConfig)
 {
-    aConfig.mSingleInstance        = ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->GetCheck();
+    aConfig.mSingleProcess         = ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_PROCESS                      ))->GetCheck();
     aConfig.mConfirmExit           = ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->GetCheck();
     aConfig.mRecentFile            = ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->GetCheck();
     aConfig.mRegShellContextMenu   = ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->GetCheck();
@@ -110,7 +110,7 @@ void CfgAdvDlg::OnTray(void)
 
 void CfgAdvDlg::OnDefault(void) 
 {
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_INSTANCE                     ))->SetCheck(XPR_FALSE);
+    ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_PROCESS                      ))->SetCheck(XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->SetCheck(XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_RECENT_FILE_LIST                    ))->SetCheck(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_SHELL_CONTEXT_MENU                  ))->SetCheck(XPR_FALSE);

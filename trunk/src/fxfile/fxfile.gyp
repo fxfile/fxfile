@@ -581,6 +581,8 @@
                 './shell_registry.h',
                 './singleton_manager.h',
                 './singleton_manager.cpp',
+                './single_process.h',
+                './single_process.cpp',
                 './size_format.cpp',
                 './size_format.h',
                 './splitter.cpp',
