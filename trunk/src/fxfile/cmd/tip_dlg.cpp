@@ -56,7 +56,7 @@ xpr_bool_t TipDlg::OnInitDialog(void)
     {
         _stprintf(sStringId, XPR_STRING_LITERAL("popup.tip_of_today.tip%d"), i);
 
-        sString = theApp.loadString(sStringId, XPR_TRUE);
+        sString = gApp.loadString(sStringId, XPR_TRUE);
         if (sString != XPR_NULL)
         {
             mTipDeque.push_back(sString);
@@ -72,10 +72,10 @@ xpr_bool_t TipDlg::OnInitDialog(void)
     if (mTipDeque.empty() == false)
         mIndex = rand() % mTipDeque.size();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.title")));
-    SetDlgItemText(IDC_TIP_SHOW_AT_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.check.show_at_startup")));
-    SetDlgItemText(IDC_TIP_NEXT,            theApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.button.next_tip")));
-    SetDlgItemText(IDOK,                    theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.title")));
+    SetDlgItemText(IDC_TIP_SHOW_AT_STARTUP, gApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.check.show_at_startup")));
+    SetDlgItemText(IDC_TIP_NEXT,            gApp.loadString(XPR_STRING_LITERAL("popup.tip_of_today.button.next_tip")));
+    SetDlgItemText(IDOK,                    gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
 
     return XPR_TRUE;
 }
@@ -98,7 +98,7 @@ void TipDlg::OnPaint(void)
     // draw background
     sPaintDc.FillSolidRect(sRect, RGB(255,255,255));
 
-    HICON sIcon = theApp.LoadIcon(IDI_TIP);
+    HICON sIcon = AfxGetApp()->LoadIcon(IDI_TIP);
     if (sIcon != XPR_NULL)
     {
         CPoint sIconPoint(sOffsetRect.left, sOffsetRect.top);

@@ -223,7 +223,7 @@ void ContentsWnd::OnPaint(void)
             if (BookmarkMgr::instance().getCount() > 0 && mEnabledBookmark == XPR_TRUE)
             {
                 xpr_tchar_t sBookmark[0xff] = {0};
-                _stprintf(sBookmark, XPR_STRING_LITERAL("%s:"), theApp.loadString(XPR_STRING_LITERAL("contents.bookmark")));
+                _stprintf(sBookmark, XPR_STRING_LITERAL("%s:"), gApp.loadString(XPR_STRING_LITERAL("contents.bookmark")));
 
                 CSize sSize = sMemDc.GetTextExtent(mFolderName.c_str());
                 CRect sBookmarkRect(10, sBookmarkTextTop, 200, sBookmarkTextTop+sSize.cy);
@@ -567,7 +567,7 @@ void ContentsWnd::setContentsNormal(LPTVITEMDATA aTvItemData, xpr_bool_t aUpdate
 
     clear();
 
-    mDispDeque.push_back(new HelpItem(theApp.loadString(XPR_STRING_LITERAL("contents.no_sel.desc"))));
+    mDispDeque.push_back(new HelpItem(gApp.loadString(XPR_STRING_LITERAL("contents.no_sel.desc"))));
 
     xpr_tchar_t sInfotip[INFOTIPSIZE + 1] = {0};
     if (GetInfotip(m_hWnd, aTvItemData->mShellFolder, aTvItemData->mPidl, sInfotip))
@@ -632,19 +632,19 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
     {
         if (aDate != XPR_NULL && *aDate != XPR_STRING_LITERAL('\0'))
         {
-            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.modified_date")), aDate);
+            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.modified_date")), aDate);
             sSingleSelItem->mDate = sText;
         }
 
         if (aSize != XPR_NULL && *aSize != XPR_STRING_LITERAL('\0'))
         {
-            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.size")), aSize);
+            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.size")), aSize);
             sSingleSelItem->mSize = sText;
         }
 
         if (gOpt->mConfig.mContentsARHSAttribute == XPR_TRUE)
         {
-            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.ARHS_attributes")), aAttr);
+            _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.ARHS_attributes")), aAttr);
             sSingleSelItem->mAttr = sText;
         }
         else
@@ -654,7 +654,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
 
             if (XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_READONLY))
             {
-                _stprintf(sText+_tcslen(sText), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.read_only")));
+                _stprintf(sText+_tcslen(sText), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.read_only")));
                 sNoAttrs = XPR_FALSE;
             }
 
@@ -663,7 +663,7 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
                 if (_tcslen(sText) > 0)
                     _tcscat(sText, XPR_STRING_LITERAL(", "));
 
-                _stprintf(sText+_tcslen(sText), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.hidden")));
+                _stprintf(sText+_tcslen(sText), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.hidden")));
                 sNoAttrs = XPR_FALSE;
             }
 
@@ -672,16 +672,16 @@ void ContentsWnd::setContentsSingleItem(LPLVITEMDATA       aLvItemData,
                 if (_tcslen(sText) > 0)
                     _tcscat(sText, XPR_STRING_LITERAL(", "));
 
-                _stprintf(sText+_tcslen(sText), theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.share")));
+                _stprintf(sText+_tcslen(sText), gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.share")));
                 sNoAttrs = XPR_FALSE;
             }
 
             if (sNoAttrs == XPR_TRUE)
-                _tcscat(sText, theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.general")));
+                _tcscat(sText, gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attribute.general")));
 
             sSingleSelItem->mAttr = sText;
             sSingleSelItem->mAttr.insert(0, XPR_STRING_LITERAL(": "));
-            sSingleSelItem->mAttr.insert(0, theApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attributes")));
+            sSingleSelItem->mAttr.insert(0, gApp.loadString(XPR_STRING_LITERAL("contents.single_sel.attributes")));
         }
     }
 
@@ -719,12 +719,12 @@ void ContentsWnd::setContentsMultiItem(xpr_size_t aCount, const xpr_tchar_t *aSi
     xpr_tchar_t sCountText[0xff] = {0};
     SizeFormat::getFormatedNumber(aCount, sCountText, XPR_COUNT_OF(sCountText) - 1);
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("contents.multi_sel.desc"), XPR_STRING_LITERAL("%s")), sCountText);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("contents.multi_sel.desc"), XPR_STRING_LITERAL("%s")), sCountText);
     sMultiSelItem->mCount = sText;
 
     if (aCount <= 100 && XPR_IS_NOT_NULL(aSize))
     {
-        _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.multi_sel.size")), aSize);
+        _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.multi_sel.size")), aSize);
         sMultiSelItem->mSize = sText;
     }
 
@@ -775,7 +775,7 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
 
     clear();
 
-    mDispDeque.push_back(new HelpItem(theApp.loadString(XPR_STRING_LITERAL("contents.no_sel.desc"))));
+    mDispDeque.push_back(new HelpItem(gApp.loadString(XPR_STRING_LITERAL("contents.no_sel.desc"))));
 
     xpr_tchar_t sText[0xff] = {0};
     GetName(aShellFolder, aPidl, SHGDN_INFOLDER, sText);
@@ -798,15 +798,15 @@ void ContentsWnd::setContentsDrive(LPSHELLFOLDER aShellFolder,
 
     xpr_tchar_t sFormatedSize[0xff] = {0};
     SizeFormat::getSizeUnitFormat(sTotalSize, SIZE_UNIT_AUTO, sFormatedSize, 0xfe);
-    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.total_size")), sFormatedSize);
+    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.total_size")), sFormatedSize);
     sDriveSpaceItem->mTotalSize = sText;
 
     SizeFormat::getSizeUnitFormat(sUsedSize, SIZE_UNIT_AUTO, sFormatedSize, 0xfe);
-    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.used_size")), sFormatedSize);
+    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.used_size")), sFormatedSize);
     sDriveSpaceItem->mUsedSize = sText;
 
     SizeFormat::getSizeUnitFormat(sFreeSize, SIZE_UNIT_AUTO, sFormatedSize, 0xfe);
-    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), theApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.free_size")), sFormatedSize);
+    _stprintf(sText, XPR_STRING_LITERAL("%s: %s"), gApp.loadString(XPR_STRING_LITERAL("contents.no_sel.drive.free_size")), sFormatedSize);
     sDriveSpaceItem->mFreeSize = sText;
 
     sDriveSpaceItem->mUsedPercentage = sTotalSize > 0ui64 ? (xpr_sint_t)(((xpr_double_t)sUsedSize / (xpr_double_t)sTotalSize)*100) : 0;

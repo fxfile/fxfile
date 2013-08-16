@@ -31,7 +31,7 @@ void SaveOptionCommand::execute(CommandContext &aContext)
 {
     FXFILE_COMMAND_DECLARE_CTRL;
 
-    theApp.saveAllOptions();
+    gApp.saveAllOptions();
 }
 
 xpr_sint_t AcceleratorCommand::canExecute(CommandContext &aContext)

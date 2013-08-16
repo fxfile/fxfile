@@ -671,7 +671,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoParentItem(LVITEM &aLvItem, LPLVITEMDATA a
         switch (aLvItem.iSubItem)
         {
         case 0:
-            _stprintf(aLvItem.pszText, XPR_STRING_LITERAL("[..] %s"), theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.up_folder")));
+            _stprintf(aLvItem.pszText, XPR_STRING_LITERAL("[..] %s"), gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.up_folder")));
             break;
         }
     }
@@ -694,7 +694,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoDriveItem(LVITEM &aLvItem, LPLVITEMDATA aL
         case 0:
             if (aLvItemData->mItemType == IDT_DRIVE_SEL)
             {
-                _stprintf(aLvItem.pszText, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive")));
+                _stprintf(aLvItem.pszText, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive")));
             }
             else
             {
@@ -1469,9 +1469,9 @@ void ExplorerCtrl::getFileType(LPLVITEMDATA aLvItemData, xpr_tchar_t *aTypeName,
         if (!XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_CANCOPY))
         {
             if (XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
-                _tcscpy(aTypeName, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.type.file_folder")));
+                _tcscpy(aTypeName, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.type.file_folder")));
             else
-                _tcscpy(aTypeName, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.type.system_folder")));
+                _tcscpy(aTypeName, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.type.system_folder")));
             return;
         }
     }
@@ -1751,17 +1751,17 @@ void ExplorerCtrl::getRootDriveType(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPi
         xpr_sint_t sDriveType = GetRootDriveType(sPath[0]);
         switch (sDriveType)
         {
-        case DriveType8InchFloppyDisk:   _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.8_inch_floppy")));    break;
-        case DriveType35InchFloppyDisk:  _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.3.5_inch_floppy")));  break;
-        case DriveType525InchFloppyDisk: _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.5.25_inch_floppy"))); break;
-        case DriveTypeRemovableDisk:     _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.removable")));        break;
-        case DriveTypeLocal:             _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.local")));            break;
-        case DriveTypeNetwork:           _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.network")));          break;
-        case DriveTypeCdRom:             _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.cdrom")));            break;
-        case DriveTypeRam:               _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.ram")));              break;
+        case DriveType8InchFloppyDisk:   _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.8_inch_floppy")));    break;
+        case DriveType35InchFloppyDisk:  _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.3.5_inch_floppy")));  break;
+        case DriveType525InchFloppyDisk: _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.5.25_inch_floppy"))); break;
+        case DriveTypeRemovableDisk:     _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.removable")));        break;
+        case DriveTypeLocal:             _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.local")));            break;
+        case DriveTypeNetwork:           _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.network")));          break;
+        case DriveTypeCdRom:             _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.cdrom")));            break;
+        case DriveTypeRam:               _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.ram")));              break;
 
         case DriveTypeUnknown:
-        default:                         _tcscpy(aDriveType, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.unknown")));          break;
+        default:                         _tcscpy(aDriveType, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.unknown")));          break;
         }
     }
 }
@@ -1882,7 +1882,7 @@ xpr_sint_t ExplorerCtrl::addColumn(ColumnId *aColumnId, xpr_sint_t aInsert)
         if (aColumnId->mPropertyId >= mDefColumnCount)
             return -1;
 
-        sLvColumn.pszText = (xpr_tchar_t *)theApp.loadString(mDefColumnInfo[aColumnId->mPropertyId].mNameStringId);
+        sLvColumn.pszText = (xpr_tchar_t *)gApp.loadString(mDefColumnInfo[aColumnId->mPropertyId].mNameStringId);
         sLvColumn.fmt     = mDefColumnInfo[aColumnId->mPropertyId].mFormat;
         sLvColumn.cx      = mDefColumnInfo[aColumnId->mPropertyId].mWidth;
     }
@@ -2250,7 +2250,7 @@ void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
                     continue;
                 }
 
-                sLvColumn.pszText = (xpr_tchar_t *)theApp.loadString(mDefColumnInfo[sFolderViewSet.mColumnItem[i].mPropertyId].mNameStringId);
+                sLvColumn.pszText = (xpr_tchar_t *)gApp.loadString(mDefColumnInfo[sFolderViewSet.mColumnItem[i].mPropertyId].mNameStringId);
                 sLvColumn.fmt     = mDefColumnInfo[sFolderViewSet.mColumnItem[i].mPropertyId].mFormat;
             }
             else
@@ -2390,7 +2390,7 @@ void ExplorerCtrl::getColumnDataList(LPSHELLFOLDER2 &aShellFolder2, ColumnDataLi
             sColumnInfo = new ColumnInfo;
             sColumnInfo->mFormatId   = sColumnId.mFormatId;
             sColumnInfo->mPropertyId = sColumnId.mPropertyId;
-            sColumnInfo->mName       = theApp.loadString(sDefColumnInfo[i].mNameStringId);
+            sColumnInfo->mName       = gApp.loadString(sDefColumnInfo[i].mNameStringId);
             sColumnInfo->mAlign      = sDefColumnInfo[i].mFormat;
             sColumnInfo->mWidth      = sDefColumnInfo[i].mWidth;
 
@@ -3181,11 +3181,11 @@ void ExplorerCtrl::getDriveItemFreeSize(xpr_tchar_t *aDrive, xpr_tchar_t *aText,
     xpr_uint64_t sFreeSize = 0ui64;
     GetDiskFreeSize(aDrive, sFreeSize);
 
-    _tcscpy(aText, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_prefix")));
+    _tcscpy(aText, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_prefix")));
     xpr_size_t sPrefixLen = _tcslen(aText);
 
     SizeFormat::getSizeUnitFormat(sFreeSize, SIZE_UNIT_AUTO, aText + sPrefixLen, aMaxLen - sPrefixLen);
-    _tcscat(aText, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_suffix")));
+    _tcscat(aText, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_suffix")));
 }
 
 ColumnId *ExplorerCtrl::getColumnId(xpr_sint_t aColumnIndex) const
@@ -4503,7 +4503,7 @@ CImageList* ExplorerCtrl::createDragImageEx(LPPOINT aPoint)
     sDragDC.FillSolidRect(CRect(0,0,200,200), RGB(0, 255, 0)); 
 
     xpr_tchar_t sTitle[0xff] = {0};
-    _stprintf(sTitle, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.drag_drop.title"), XPR_STRING_LITERAL("%d")), GetSelectedCount());
+    _stprintf(sTitle, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.drag_drop.title"), XPR_STRING_LITERAL("%d")), GetSelectedCount());
     CFont sFont, *sOldFont;
     sFont.CreateStockObject(DEFAULT_GUI_FONT);
     sOldFont = sDragDC.SelectObject(&sFont);
@@ -5447,7 +5447,7 @@ xpr_bool_t ExplorerCtrl::doPasteSelect(HWND            aHwnd,
                                        DROPEFFECT      aDropEffect,
                                        xpr_tchar_t    *aTarget)
 {
-    const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+    const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
     return DoPaste(aHwnd, aOleDataObject, aDragDrop, aShellIdListClipFormat, aDropEffect, aTarget, sLinkSuffix, WM_PASTE_SELITEM);
 }
@@ -5458,7 +5458,7 @@ xpr_bool_t ExplorerCtrl::doPasteSelect(HWND         aHwnd,
                                        xpr_tchar_t *aTarget,
                                        xpr_bool_t   aCopy)
 {
-    const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+    const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
     return DoPaste(aHwnd, aShellIdListClipFormat, aDropEffect, aTarget, sLinkSuffix, WM_PASTE_SELITEM, aCopy);
 }
@@ -6369,11 +6369,11 @@ void ExplorerCtrl::updateDriveItem(void)
                     GetDiskFreeSize(sDrive, sSize);
 
                     sMaxLen = XPR_MAX_PATH;
-                    _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_prefix")));
+                    _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_prefix")));
                     sPrefixLen = _tcslen(sText);
 
                     SizeFormat::getSizeUnitFormat(sSize, SIZE_UNIT_AUTO, sText + sPrefixLen, sMaxLen - sPrefixLen);
-                    _tcscat(sText, theApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_suffix")));
+                    _tcscat(sText, gApp.loadString(XPR_STRING_LITERAL("explorer_window.item.drive.free_size_suffix")));
                     SetItemText(i, 2, sText);
                 }
             }

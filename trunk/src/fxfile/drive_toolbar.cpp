@@ -324,7 +324,7 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
         {
             xpr_tchar_t sFormatedSize[0xff] = {0};
             SizeFormat::getSizeUnitFormat(sFreeSize, SIZE_UNIT_AUTO, sFormatedSize, 0xfe);
-            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s\n(%s: %s)"), sText, theApp.loadString(XPR_STRING_LITERAL("drive.tooltip.free_size")), sFormatedSize);
+            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s\n(%s: %s)"), sText, gApp.loadString(XPR_STRING_LITERAL("drive.tooltip.free_size")), sFormatedSize);
         }
         else
         {
@@ -831,7 +831,7 @@ void DriveToolBar::OnDropShortcut(STGMEDIUM *pstg, xpr_sint_t aDriveIndex)
     xpr::tstring sDir;
     xpr::tstring sName;
     xpr::tstring sLinkPath;
-    const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+    const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
     {
         xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};

@@ -113,17 +113,17 @@ BOOL COptionsDialog::OnInitDialog()
 
     CCustomizeDialog* pCustomizeDialog = GetCustomizeDialog();
 
-    pCustomizeDialog->AddTextType(m_cbTextType, TBT_TEXT,  fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.show")));
-    pCustomizeDialog->AddTextType(m_cbTextType, TBT_RIGHT, fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.show_on_right")));
-    pCustomizeDialog->AddTextType(m_cbTextType, TBT_NONE,  fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.none")));
+    pCustomizeDialog->AddTextType(m_cbTextType, TBT_TEXT,  fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.show")));
+    pCustomizeDialog->AddTextType(m_cbTextType, TBT_RIGHT, fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.show_on_right")));
+    pCustomizeDialog->AddTextType(m_cbTextType, TBT_NONE,  fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.text.none")));
     VERIFY(SelectTextType(m_nTextType));
 
-    pCustomizeDialog->AddIconType(m_cbIconType, TBI_SMALL, fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.icon.small")));
-    pCustomizeDialog->AddIconType(m_cbIconType, TBI_LARGE, fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.icon.large")));
+    pCustomizeDialog->AddIconType(m_cbIconType, TBI_SMALL, fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.icon.small")));
+    pCustomizeDialog->AddIconType(m_cbIconType, TBI_LARGE, fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.icon.large")));
     VERIFY(SelectIconType(m_nIconType));
 
-    SetDlgItemText(IDC_CUSTOM_TOOLBAR_LABEL_TEXT_OPTION, fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.label.text_option")));
-    SetDlgItemText(IDC_CUSTOM_TOOLBAR_LABEL_ICON_OPTION, fxfile::theApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.label.icon_option")));
+    SetDlgItemText(IDC_CUSTOM_TOOLBAR_LABEL_TEXT_OPTION, fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.label.text_option")));
+    SetDlgItemText(IDC_CUSTOM_TOOLBAR_LABEL_ICON_OPTION, fxfile::gApp.loadString(XPR_STRING_LITERAL("popup.custom_toolbar.label.icon_option")));
 
     return TRUE;  // return TRUE unless you set the focus to a control
                   // EXCEPTION: OCX Property Pages should return FALSE

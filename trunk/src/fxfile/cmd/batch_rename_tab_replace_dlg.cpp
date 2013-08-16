@@ -62,11 +62,11 @@ xpr_bool_t BatchRenameTabReplaceDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_OLD))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_NEW))->LimitText(XPR_MAX_PATH);
 
-    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_OLD,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.old")));
-    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_NEW,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.new")));
-    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_REPEAT, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.repeat")));
-    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_NOCASE,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.check.no_case")));
-    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_APPLY,        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.button.apply")));
+    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_OLD,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.old")));
+    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_NEW,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.new")));
+    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_REPEAT, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.repeat")));
+    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_NOCASE,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.check.no_case")));
+    SetDlgItemText(IDC_BATCH_RENAME_REPLACE_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.button.apply")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename2"));
     if (XPR_IS_NOT_NULL(mDlgState))

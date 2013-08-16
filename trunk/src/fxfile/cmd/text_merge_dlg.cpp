@@ -99,8 +99,8 @@ xpr_bool_t TextMergeDlg::OnInitDialog(void)
         mEncodingComboBox.EnableWindow(XPR_FALSE);
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.list.column.no")),       LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.list.column.text_doc")), LVCFMT_LEFT,  305, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.list.column.no")),       LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.list.column.text_doc")), LVCFMT_LEFT,  305, -1);
 
     xpr_sint_t i;
     PathDeque::iterator sIterator;
@@ -116,14 +116,14 @@ xpr_bool_t TextMergeDlg::OnInitDialog(void)
     }
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.count"), XPR_STRING_LITERAL("%d")), mPathDeque.size());
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.count"), XPR_STRING_LITERAL("%d")), mPathDeque.size());
     setStatus(sStatusText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.title")));
-    SetDlgItemText(IDC_TEXT_MERGE_LABEL_ENCODING, theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.label.encoding")));
-    SetDlgItemText(IDC_TEXT_MERGE_LABEL_LIST,     theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.label.list")));
-    SetDlgItemText(IDOK,                          theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.merge")));
-    SetDlgItemText(IDCANCEL,                      theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.title")));
+    SetDlgItemText(IDC_TEXT_MERGE_LABEL_ENCODING, gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.label.encoding")));
+    SetDlgItemText(IDC_TEXT_MERGE_LABEL_LIST,     gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.label.list")));
+    SetDlgItemText(IDOK,                          gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.merge")));
+    SetDlgItemText(IDCANCEL,                      gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("TextMerge"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -211,7 +211,7 @@ void TextMergeDlg::OnItemDown(void)
 void TextMergeDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK, (aEnable == XPR_TRUE) ?
-        theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.merge")) : theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.stop")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.merge")) : gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.button.stop")));
 
     GetDlgItem(IDC_TEXT_MERGE_ENCODING )->EnableWindow(aEnable);
     GetDlgItem(IDC_TEXT_MERGE_ITEM_UP  )->EnableWindow(aEnable);
@@ -241,7 +241,7 @@ void TextMergeDlg::OnOK(void)
     }
 
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.text_files")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.text_files")));
 
     CFileDialogST sFileDialog(XPR_FALSE, XPR_STRING_LITERAL("*.txt"), XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
@@ -281,7 +281,7 @@ void TextMergeDlg::OnTimer(UINT_PTR nIDEvent)
         mTextMerge->getStatus(&sSucceeded);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sSucceeded, sCount, (xpr_sint_t)((xpr_float_t)sSucceeded / (xpr_float_t)sCount * 100.0));
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sSucceeded, sCount, (xpr_sint_t)((xpr_float_t)sSucceeded / (xpr_float_t)sCount * 100.0));
         setStatus(sStatusText);
 
         mProgressCtrl.SetPos((xpr_sint_t)sSucceeded);
@@ -308,7 +308,7 @@ LRESULT TextMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case TextMerge::StatusFailed:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.text_merge.msg.failed"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.text_merge.msg.failed"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
@@ -316,14 +316,14 @@ LRESULT TextMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case TextMerge::StatusMergeCompleted:
         {
             xpr_size_t sCount = mPathDeque.size();
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.completed"), XPR_STRING_LITERAL("%d,%d")), sSucceeded, sCount-sSucceeded);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.completed"), XPR_STRING_LITERAL("%d,%d")), sSucceeded, sCount-sSucceeded);
             setStatus(sStatusText);
             break;
         }
 
     case TextMerge::StatusStopped:
         {
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.stoped"), XPR_STRING_LITERAL("%d")), sSucceeded);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.text_merge.status.stoped"), XPR_STRING_LITERAL("%d")), sSucceeded);
             setStatus(sStatusText);
             break;
         }

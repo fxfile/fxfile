@@ -48,20 +48,20 @@ xpr_bool_t SelNameDlg::OnInitDialog(void)
 
     if (mSelect == XPR_TRUE)
     {
-        SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.title")));
-        SetDlgItemText(IDC_SEL_NAME_DESC,     theApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.label.desc")));
-        SetDlgItemText(IDC_SEL_NAME_SEL_ONLY, theApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.check.select_only")));
+        SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.title")));
+        SetDlgItemText(IDC_SEL_NAME_DESC,     gApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.label.desc")));
+        SetDlgItemText(IDC_SEL_NAME_SEL_ONLY, gApp.loadString(XPR_STRING_LITERAL("popup.select_by_name.check.select_only")));
     }
     else
     {
         GetDlgItem(IDC_SEL_NAME_SEL_ONLY)->ShowWindow(SW_HIDE);
 
-        SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_name.title")));
-        SetDlgItemText(IDC_SEL_NAME_DESC, theApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_name.label.desc")));
+        SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_name.title")));
+        SetDlgItemText(IDC_SEL_NAME_DESC, gApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_name.label.desc")));
     }
 
-    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDOK,     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     // dialog state
     const xpr_tchar_t *sSection = (mSelect == XPR_TRUE) ? XPR_STRING_LITERAL("SelName") : XPR_STRING_LITERAL("UnSelName"); 
@@ -101,9 +101,9 @@ void SelNameDlg::OnOK(void)
     {
         xpr_tchar_t sMsg[0xff] = {0};
         if (mSelect == XPR_TRUE)
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.select_by_filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.select_by_filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
         else
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.deselect_by_filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.deselect_by_filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         mComboBox.SetFocus();

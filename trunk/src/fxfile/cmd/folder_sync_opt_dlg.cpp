@@ -51,10 +51,10 @@ xpr_bool_t FolderSyncOptDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    mDirectionComboBox.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.right")));
-    mDirectionComboBox.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.left")));
-    mDirectionComboBox.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.bi-drectional")));
-    mDirectionComboBox.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.none")));
+    mDirectionComboBox.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.right")));
+    mDirectionComboBox.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.left")));
+    mDirectionComboBox.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.bi-drectional")));
+    mDirectionComboBox.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.direction.none")));
     mDirectionComboBox.SetCurSel(0);
 
     SetDlgItemText(IDC_FOLDER_SYNC_OPTION_PATH1, mPath1.c_str());
@@ -66,20 +66,20 @@ xpr_bool_t FolderSyncOptDlg::OnInitDialog(void)
 
     SizeFormat::getFormatedNumber(mFiles1, sFilesFmt, 0xfe);
     SizeFormat::getFormatedNumber(mSize1,  sSizeFmt,  0xfe);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync_option.check.to_right"), XPR_STRING_LITERAL("%s,%s")), sFilesFmt, sSizeFmt);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync_option.check.to_right"), XPR_STRING_LITERAL("%s,%s")), sFilesFmt, sSizeFmt);
     SetDlgItemText(IDC_FOLDER_SYNC_OPTION_TO_RIGHT, sText);
 
     SizeFormat::getFormatedNumber(mFiles2, sFilesFmt, 0xfe);
     SizeFormat::getFormatedNumber(mSize2,  sSizeFmt,  0xfe);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync_option.check.to_left"), XPR_STRING_LITERAL("%s,%s")), sFilesFmt, sSizeFmt);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync_option.check.to_left"), XPR_STRING_LITERAL("%s,%s")), sFilesFmt, sSizeFmt);
     SetDlgItemText(IDC_FOLDER_SYNC_OPTION_TO_LEFT, sText);
 
     OnSelchangeDirection();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.title")));
-    SetDlgItemText(IDC_FOLDER_SYNC_OPTION_LABEL_DIRECTION, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.label.direction")));
-    SetDlgItemText(IDOK,                                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.title")));
+    SetDlgItemText(IDC_FOLDER_SYNC_OPTION_LABEL_DIRECTION, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync_option.label.direction")));
+    SetDlgItemText(IDOK,                                   gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                               gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }

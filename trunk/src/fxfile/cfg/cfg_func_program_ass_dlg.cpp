@@ -63,21 +63,21 @@ xpr_bool_t CfgFuncProgramAssDlg::OnInitDialog(void)
     addIgnoreApply(IDC_CFG_PROGRAM_ASS_DEFAULT);
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.name")),      LVCFMT_LEFT, 100);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.extension")), LVCFMT_LEFT, 100);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.program")),   LVCFMT_LEFT, 200);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.name")),      LVCFMT_LEFT, 100);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.extension")), LVCFMT_LEFT, 100);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.program")),   LVCFMT_LEFT, 200);
 
     mListCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, LVSIL_SMALL);
 
     xpr_tchar_t sText[0xff] = {0};
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.label.limit_count"), XPR_STRING_LITERAL("%d")), MAX_PROGRAM_ASS);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.label.limit_count"), XPR_STRING_LITERAL("%d")), MAX_PROGRAM_ASS);
     SetDlgItemText(IDC_CFG_PROGRAM_ASS_LABEL_LIMIT_COUNT, sText);
 
-    SetDlgItemText(IDC_CFG_PROGRAM_ASS_LABEL_LIST,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.label.list")));
-    SetDlgItemText(IDC_CFG_PROGRAM_ASS_DEFAULT,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.default")));
-    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_ADD,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.add")));
-    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_MODIFY,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.modify")));
-    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_DELETE,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.delete")));
+    SetDlgItemText(IDC_CFG_PROGRAM_ASS_LABEL_LIST,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.label.list")));
+    SetDlgItemText(IDC_CFG_PROGRAM_ASS_DEFAULT,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.default")));
+    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_ADD,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.add")));
+    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_MODIFY,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.modify")));
+    SetDlgItemText(IDC_CFG_PROGRAM_ASS_ITEM_DELETE,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.button.delete")));
 
     return XPR_TRUE;
 }
@@ -175,7 +175,7 @@ void CfgFuncProgramAssDlg::OnItemAdd(void)
     if (sCount > MAX_PROGRAM_ASS)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_PROGRAM_ASS);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_PROGRAM_ASS);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -258,7 +258,7 @@ void CfgFuncProgramAssDlg::OnItemDelete(void)
     if (sIndex == 0 || sIndex == 1)
         return;
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.confirm_delete"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.confirm_delete"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
     if (sMsgId == IDNO)
         return;
@@ -440,7 +440,7 @@ xpr_bool_t CfgFuncProgramAssDlg::PreTranslateMessage(MSG* pMsg)
 
 void CfgFuncProgramAssDlg::OnDefault(void)
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.confirm_default"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.msg.confirm_default"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId == IDNO)
         return;

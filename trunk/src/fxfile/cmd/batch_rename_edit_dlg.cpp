@@ -167,12 +167,12 @@ xpr_bool_t RenameEditDlg::OnInitDialog(void)
             mNewEditCtrl.ReplaceSel(XPR_STRING_LITERAL("\r\n"));
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.title")));
-    SetDlgItemText(IDC_RENAME_EDIT_LABEL_OLD_NAME, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.label.old_name")));
-    SetDlgItemText(IDC_RENAME_EDIT_LABEL_NEW_NAME, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.label.new_name")));
-    SetDlgItemText(IDC_RENAME_EDIT_SYNC_SCROLL,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.check.sync_scroll")));
-    SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.title")));
+    SetDlgItemText(IDC_RENAME_EDIT_LABEL_OLD_NAME, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.label.old_name")));
+    SetDlgItemText(IDC_RENAME_EDIT_LABEL_NEW_NAME, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.label.new_name")));
+    SetDlgItemText(IDC_RENAME_EDIT_SYNC_SCROLL,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.check.sync_scroll")));
+    SetDlgItemText(IDOK,                           gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("RenameEdit"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -255,7 +255,7 @@ void RenameEditDlg::OnOK(void)
 
     if (sNewCount < sOldCount)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_RENAME_EDIT_NEW_NAME_EDIT)->SetFocus();
@@ -294,7 +294,7 @@ void RenameEditDlg::OnOK(void)
 
     if (sIncorrected == XPR_TRUE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_RENAME_EDIT_NEW_NAME_EDIT)->SetFocus();
@@ -325,7 +325,7 @@ void RenameEditDlg::OnOK(void)
 
         if (sSkip == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
             GetDlgItem(IDC_RENAME_EDIT_NEW_NAME_EDIT)->SetFocus();
@@ -358,7 +358,7 @@ void RenameEditDlg::OnOK(void)
 
     if (mEditedList.size() != mNewList.size())
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.not_matched_count"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_RENAME_EDIT_NEW_NAME_EDIT)->SetFocus();

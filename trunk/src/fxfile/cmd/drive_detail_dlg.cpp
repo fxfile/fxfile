@@ -43,17 +43,17 @@ xpr_bool_t DriveDetailDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_DRIVE_LABEL_LABEL,      theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.label")));
-    SetDlgItemText(IDC_DRIVE_LABEL_TYPE,       theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.type")));
-    SetDlgItemText(IDC_DRIVE_LABEL_FILESYSTEM, theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.file_system")));
-    SetDlgItemText(IDC_DRIVE_LABEL_FREE,       theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.free_size")));
-    SetDlgItemText(IDC_DRIVE_LABEL_USED,       theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.used_size")));
-    SetDlgItemText(IDC_DRIVE_LABEL_TOTAL,      theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.total_size")));
+    SetDlgItemText(IDC_DRIVE_LABEL_LABEL,      gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.label")));
+    SetDlgItemText(IDC_DRIVE_LABEL_TYPE,       gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.type")));
+    SetDlgItemText(IDC_DRIVE_LABEL_FILESYSTEM, gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.file_system")));
+    SetDlgItemText(IDC_DRIVE_LABEL_FREE,       gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.free_size")));
+    SetDlgItemText(IDC_DRIVE_LABEL_USED,       gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.used_size")));
+    SetDlgItemText(IDC_DRIVE_LABEL_TOTAL,      gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.label.total_size")));
 
     mDrivePieCtrl.setString(
-        theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.total_size")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.used_size")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.free_size")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.total_size")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.used_size")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.pie.free_size")));
 
     return XPR_TRUE;
 }
@@ -71,7 +71,7 @@ void DriveDetailDlg::setDrive(xpr_tchar_t aDrive)
     _stprintf(sDrivePath, XPR_STRING_LITERAL("%c:\\"), aDrive);
 
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
-    _stprintf(sText, XPR_STRING_LITERAL("%c %s"), aDrive, theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.drive")));
+    _stprintf(sText, XPR_STRING_LITERAL("%c %s"), aDrive, gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.drive")));
     GetDlgItem(IDC_DRIVE_DRIVE)->SetWindowText(sText);
 
     SHFILEINFO sShFileInfo = {0};
@@ -82,17 +82,17 @@ void DriveDetailDlg::setDrive(xpr_tchar_t aDrive)
     xpr_sint_t sDriveType = GetRootDriveType(aDrive);
     switch (sDriveType)
     {
-    case DriveType8InchFloppyDisk:   _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.8_inch_floppy")));    break;
-    case DriveType35InchFloppyDisk:  _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.3.5_inch_floppy")));  break;
-    case DriveType525InchFloppyDisk: _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.5.25_inch_floppy"))); break;
-    case DriveTypeRemovableDisk:     _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.removable")));        break;
-    case DriveTypeLocal:             _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.local")));            break;
-    case DriveTypeNetwork:           _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.network")));          break;
-    case DriveTypeCdRom:             _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.cdrom")));            break;
-    case DriveTypeRam:               _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.ram")));              break;
+    case DriveType8InchFloppyDisk:   _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.8_inch_floppy")));    break;
+    case DriveType35InchFloppyDisk:  _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.3.5_inch_floppy")));  break;
+    case DriveType525InchFloppyDisk: _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.5.25_inch_floppy"))); break;
+    case DriveTypeRemovableDisk:     _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.removable")));        break;
+    case DriveTypeLocal:             _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.local")));            break;
+    case DriveTypeNetwork:           _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.network")));          break;
+    case DriveTypeCdRom:             _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.cdrom")));            break;
+    case DriveTypeRam:               _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.ram")));              break;
 
     case DriveTypeUnknown:
-    default:                         _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("common.drive.type.unknown")));          break;
+    default:                         _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("common.drive.type.unknown")));          break;
     }
 
     GetDlgItem(IDC_DRIVE_TYPE)->SetWindowText(sText);
@@ -100,8 +100,8 @@ void DriveDetailDlg::setDrive(xpr_tchar_t aDrive)
     xpr_tchar_t sFileSystem[XPR_MAX_PATH + 1] = {0};
     if (GetVolumeInformation(sDrivePath, sText, XPR_MAX_PATH, XPR_NULL, XPR_NULL, XPR_NULL, sFileSystem, XPR_MAX_PATH) == XPR_FALSE)
     {
-        _tcscpy(sText, theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.unknown_label")));
-        _tcscpy(sFileSystem, theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.unknown_file_system")));
+        _tcscpy(sText, gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.unknown_label")));
+        _tcscpy(sFileSystem, gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.unknown_file_system")));
     }
     GetDlgItem(IDC_DRIVE_FILESYSTEM)->SetWindowText(sFileSystem);
     GetDlgItem(IDC_DRIVE_LABEL)->SetWindowText(sText);

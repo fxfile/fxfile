@@ -48,9 +48,9 @@ xpr_bool_t CfgAdvConfDirDlg::OnInitDialog(void)
 
     ((CEdit *)GetDlgItem(IDC_CFG_CONF_DIR_CUSTOM_PATH))->LimitText(XPR_MAX_PATH);
 
-    SetDlgItemText(IDC_CFG_CONF_DIR_PROGRAM, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.program")));
-    SetDlgItemText(IDC_CFG_CONF_DIR_APPDATA, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.appdata")));
-    SetDlgItemText(IDC_CFG_CONF_DIR_CUSTOM,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.custom")));
+    SetDlgItemText(IDC_CFG_CONF_DIR_PROGRAM, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.program")));
+    SetDlgItemText(IDC_CFG_CONF_DIR_APPDATA, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.appdata")));
+    SetDlgItemText(IDC_CFG_CONF_DIR_CUSTOM,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.radio.custom")));
 
     return XPR_TRUE;
 }
@@ -136,7 +136,7 @@ void CfgAdvConfDirDlg::onApply(Option::Config &aConfig)
 
             loadConfDir(sOldConfDir);
 
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.msg.cannot_set"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.msg.cannot_set"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         }
     }
@@ -168,7 +168,7 @@ void CfgAdvConfDirDlg::OnCustomPathBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;//BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.conf_dir.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);

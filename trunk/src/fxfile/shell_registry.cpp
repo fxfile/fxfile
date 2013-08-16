@@ -36,7 +36,7 @@ void ShellRegistry::registerShell(void)
         _tcscat(sCmd, XPR_STRING_LITERAL("\\fxfile.exe\" \"%1\""));
 
         xpr_tchar_t sKey[0xff] = {0};
-        _stprintf(sKey, XPR_STRING_LITERAL("%sfxfile%s\\command"), theApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.prefix")), theApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.suffix")));
+        _stprintf(sKey, XPR_STRING_LITERAL("%sfxfile%s\\command"), gApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.prefix")), gApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.suffix")));
 
         sRegKey.SetKeyValue(sKey, sCmd);
     }
@@ -50,7 +50,7 @@ void ShellRegistry::unregisterShell(void)
     if (sRegKey.Open(HKEY_CLASSES_ROOT, kKeyName) == ERROR_SUCCESS)
     {
         xpr_tchar_t sKey[0xff] = {0};
-        _stprintf(sKey, XPR_STRING_LITERAL("%sfxfile%s"), theApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.prefix")), theApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.suffix")));
+        _stprintf(sKey, XPR_STRING_LITERAL("%sfxfile%s"), gApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.prefix")), gApp.loadString(XPR_STRING_LITERAL("shell_menu.open_with_fxfile.suffix")));
 
         sRegKey.RecurseDeleteKey(sKey);
     }

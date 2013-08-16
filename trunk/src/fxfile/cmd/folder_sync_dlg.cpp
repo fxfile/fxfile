@@ -121,13 +121,13 @@ xpr_bool_t FolderSyncDlg::OnInitDialog(void)
     sExtendedStyle |= LVS_EX_FULLROWSELECT;
     mListCtrl.SetExtendedStyle(sExtendedStyle);
 
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.name")),    LVCFMT_LEFT,   100);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.size")),    LVCFMT_RIGHT,   65);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.date")),    LVCFMT_LEFT,   100);
-    mListCtrl.InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.compare")), LVCFMT_CENTER,  40);
-    mListCtrl.InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.date")),    LVCFMT_LEFT,   100);
-    mListCtrl.InsertColumn(5, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.size")),    LVCFMT_RIGHT,   65);
-    mListCtrl.InsertColumn(6, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.name")),    LVCFMT_LEFT,   100);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.name")),    LVCFMT_LEFT,   100);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.size")),    LVCFMT_RIGHT,   65);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.date")),    LVCFMT_LEFT,   100);
+    mListCtrl.InsertColumn(3, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.compare")), LVCFMT_CENTER,  40);
+    mListCtrl.InsertColumn(4, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.date")),    LVCFMT_LEFT,   100);
+    mListCtrl.InsertColumn(5, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.size")),    LVCFMT_RIGHT,   65);
+    mListCtrl.InsertColumn(6, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.name")),    LVCFMT_LEFT,   100);
 
     mListCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, LVSIL_SMALL);
 
@@ -158,25 +158,25 @@ xpr_bool_t FolderSyncDlg::OnInitDialog(void)
         mPathBrowseWidth = sPathBrowseRect.Width();
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.title")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_OPTION,                 theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.group.scan_option")));
-    SetDlgItemText(IDC_FOLDER_SYNC_LABEL_SCAN_INCLUDE_FILTER,   theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.label.scan_include_filter")));
-    SetDlgItemText(IDC_FOLDER_SYNC_LABEL_SCAN_EXCLUDE_FILTER,   theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.label.scan_exclude_filter")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_EXCLUDE_EQUAL_FILENAME, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_exclude_equal_filename")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_EXCLUDE_OTHER_FILENAME, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_exclude_other_filename")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_SUBFOLDER,              theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_subfolder")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_SYSTEM,                 theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_system")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_HIDDEN,                 theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_hidden")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_OPTION,              theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.group.compare_option")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_DATETIME,         theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_date_time")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_ATTRIBUTES,       theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_attributes")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_SIZE,             theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_size")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_CONTENTS,         theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_contents")));
-    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE,                     theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.compare")));
-    SetDlgItemText(IDC_FOLDER_SYNC_PREV_DIFF,                   theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.previous_diff")));
-    SetDlgItemText(IDC_FOLDER_SYNC_NEXT_DIFF,                   theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.next_diff")));
-    SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE,                 theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.synchronize")));
-    SetDlgItemText(IDCANCEL,                                    theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.title")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_OPTION,                 gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.group.scan_option")));
+    SetDlgItemText(IDC_FOLDER_SYNC_LABEL_SCAN_INCLUDE_FILTER,   gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.label.scan_include_filter")));
+    SetDlgItemText(IDC_FOLDER_SYNC_LABEL_SCAN_EXCLUDE_FILTER,   gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.label.scan_exclude_filter")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_EXCLUDE_EQUAL_FILENAME, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_exclude_equal_filename")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_EXCLUDE_OTHER_FILENAME, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_exclude_other_filename")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_SUBFOLDER,              gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_subfolder")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_SYSTEM,                 gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_system")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SCAN_HIDDEN,                 gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.scan_hidden")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_OPTION,              gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.group.compare_option")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_DATETIME,         gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_date_time")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_ATTRIBUTES,       gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_attributes")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_SIZE,             gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_size")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE_BY_CONTENTS,         gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.check.compare_by_contents")));
+    SetDlgItemText(IDC_FOLDER_SYNC_COMPARE,                     gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.compare")));
+    SetDlgItemText(IDC_FOLDER_SYNC_PREV_DIFF,                   gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.previous_diff")));
+    SetDlgItemText(IDC_FOLDER_SYNC_NEXT_DIFF,                   gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.next_diff")));
+    SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE,                 gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.synchronize")));
+    SetDlgItemText(IDCANCEL,                                    gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("FolderSync"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -255,7 +255,7 @@ void FolderSyncDlg::OnPath1Browse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = 0;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -301,7 +301,7 @@ void FolderSyncDlg::OnPath2Browse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = 0;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -564,7 +564,7 @@ void FolderSyncDlg::scan(void)
     if (sIncorrectedPath[0] == XPR_TRUE || sIncorrectedPath[1] == XPR_TRUE)
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH * 3] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.msg.wrong_path"), XPR_STRING_LITERAL("%s,%s")), sPath[0], sPath[1]);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.msg.wrong_path"), XPR_STRING_LITERAL("%s,%s")), sPath[0], sPath[1]);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem((sIncorrectedPath[0] == XPR_TRUE) ? IDC_FOLDER_SYNC_PATH1 : IDC_FOLDER_SYNC_PATH2)->SetFocus();
@@ -576,7 +576,7 @@ void FolderSyncDlg::scan(void)
 
     if (_tcsicmp(sPath[0], sPath[1]) == 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.msg.same_path"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.msg.same_path"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FOLDER_SYNC_PATH1)->SetFocus();
@@ -605,7 +605,7 @@ void FolderSyncDlg::scan(void)
 
     if (sExcludeEqual == XPR_TRUE && sExcludeOther == XPR_TRUE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.msg.exclusive_option"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.msg.exclusive_option"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FOLDER_SYNC_SCAN_EXCLUDE_EQUAL_FILENAME)->SetFocus();
@@ -767,7 +767,7 @@ LRESULT FolderSyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
             xpr_tchar_t sFolderCountText[0xff] = {0};
             SizeFormat::getFormatedNumber(sFolderCount, sFolderCountText, 0xfe);
 
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.scan_completed"), XPR_STRING_LITERAL("%s")), sFolderCountText);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.scan_completed"), XPR_STRING_LITERAL("%s")), sFolderCountText);
             setStatus(sStatusText);
 
             if (mStop == XPR_TRUE)
@@ -818,7 +818,7 @@ LRESULT FolderSyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
             SizeFormat::getFormatedNumber(sRightExistCount, sRightExistCountText, 0xfe);
             SizeFormat::getFormatedNumber(sFailCount,       sFailCountText,       0xfe);
 
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.compare_completed"), XPR_STRING_LITERAL("%s,%s,%s,%s,%s,%s,%s,%s")), sTotalCountText, sDirCountText, sFileCountText, sEqualCountText, sNotEqualCountText, sLeftExistCountText, sRightExistCountText, sFailCountText);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.compare_completed"), XPR_STRING_LITERAL("%s,%s,%s,%s,%s,%s,%s,%s")), sTotalCountText, sDirCountText, sFileCountText, sEqualCountText, sNotEqualCountText, sLeftExistCountText, sRightExistCountText, sFailCountText);
             setStatus(sStatusText);
 
             view();
@@ -835,7 +835,7 @@ LRESULT FolderSyncDlg::OnSyncStatus(WPARAM wParam, LPARAM lParam)
             xpr_tchar_t sSyncCountText[0xff] = {0};
             SizeFormat::getFormatedNumber(sSyncCount, sSyncCountText, 0xfe);
 
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.synchronize_completed"), XPR_STRING_LITERAL("%s")), sSyncCountText);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.synchronize_completed"), XPR_STRING_LITERAL("%s")), sSyncCountText);
             setStatus(sStatusText);
 
             view();
@@ -862,21 +862,21 @@ void FolderSyncDlg::OnTimer(UINT_PTR nIDEvent)
         case SyncDirs::StatusScaning:
             {
                 SizeFormat::getFormatedNumber(sCount, sCountText, 0xfe);
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.scanning"), XPR_STRING_LITERAL("%s")), sCountText);
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.scanning"), XPR_STRING_LITERAL("%s")), sCountText);
                 break;
             }
 
         case SyncDirs::StatusComparing:
             {
                 SizeFormat::getFormatedNumber(sCount, sCountText, 0xfe);
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.comparing"), XPR_STRING_LITERAL("%s")), sCountText);
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.comparing"), XPR_STRING_LITERAL("%s")), sCountText);
                 break;
             }
 
         case SyncDirs::StatusSynchronizing:
             {
                 SizeFormat::getFormatedNumber(sCount, sCountText, 0xfe);
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.synchronizing"), XPR_STRING_LITERAL("%s")), sCountText);
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.folder_sync.status.synchronizing"), XPR_STRING_LITERAL("%s")), sCountText);
                 break;
             }
         }
@@ -950,16 +950,16 @@ void FolderSyncDlg::setControlState(State uState)
         switch (uState)
         {
         case StateCompare:
-            SetDlgItemText(IDC_FOLDER_SYNC_COMPARE, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.stop")));
+            SetDlgItemText(IDC_FOLDER_SYNC_COMPARE, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.stop")));
             break;
 
         case StateSynchronize:
-            SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.stop")));
+            SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.stop")));
             break;
 
         default:
-            SetDlgItemText(IDC_FOLDER_SYNC_COMPARE, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.compare")));
-            SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE, theApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.synchronize")));
+            SetDlgItemText(IDC_FOLDER_SYNC_COMPARE, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.compare")));
+            SetDlgItemText(IDC_FOLDER_SYNC_SYNCHRONIZE, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.button.synchronize")));
             break;
         }
 }
@@ -1078,7 +1078,7 @@ void FolderSyncDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bo
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     pBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     pBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -1086,7 +1086,7 @@ void FolderSyncDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bo
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         pBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }

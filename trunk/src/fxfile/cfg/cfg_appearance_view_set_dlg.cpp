@@ -49,37 +49,37 @@ xpr_bool_t CfgAppearanceViewSetDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_VIEW_STYLE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.large_icon")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.small_icon")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.list")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.detail")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.thumbnail")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.large_icon")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.small_icon")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.list")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.detail")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.view_style.thumbnail")));
 
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.name")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.size")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.type")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.date")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.attr")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.name")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.size")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.type")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.date")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort.attr")));
 
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT_ORDER);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort_order.ascending")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort_order.decending")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort_order.ascending")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.sort_order.decending")));
 
-    SetDlgItemText(IDC_CFG_VIEWSET_GROUP_VIEW_SET,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.group.view_set")));
-    SetDlgItemText(IDC_CFG_VIEWSET_NONE,                     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.none")));
-    SetDlgItemText(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.save_view_style")));
-    SetDlgItemText(IDC_CFG_VIEWSET_DEFAULT,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.default")));
-    SetDlgItemText(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.same_between_split")));
-    SetDlgItemText(IDC_CFG_VIEWSET_EACH_FOLDER,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.each_folder")));
-    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_VIEW_STYLE, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_view_style")));
-    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_SORT,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_sort")));
-    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_SORT_ORDER, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_sort_order")));
-    SetDlgItemText(IDC_CFG_VIEWSET_NO_SORT,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.no_sort")));
-    SetDlgItemText(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.automatic_column_width")));
-    SetDlgItemText(IDC_CFG_VIEWSET_CLEAN_ON_EXIT,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.clean_on_exit")));
-    SetDlgItemText(IDC_CFG_VIEWSET_CLEAN,                    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.button.clean")));
-    SetDlgItemText(IDC_CFG_VIEWSET_INIT,                     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.button.initialize")));
+    SetDlgItemText(IDC_CFG_VIEWSET_GROUP_VIEW_SET,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.group.view_set")));
+    SetDlgItemText(IDC_CFG_VIEWSET_NONE,                     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.none")));
+    SetDlgItemText(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.save_view_style")));
+    SetDlgItemText(IDC_CFG_VIEWSET_DEFAULT,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.default")));
+    SetDlgItemText(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.same_between_split")));
+    SetDlgItemText(IDC_CFG_VIEWSET_EACH_FOLDER,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.radio.each_folder")));
+    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_VIEW_STYLE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_view_style")));
+    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_SORT,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_sort")));
+    SetDlgItemText(IDC_CFG_VIEWSET_LABEL_DEFAULT_SORT_ORDER, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.label.default_sort_order")));
+    SetDlgItemText(IDC_CFG_VIEWSET_NO_SORT,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.no_sort")));
+    SetDlgItemText(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.automatic_column_width")));
+    SetDlgItemText(IDC_CFG_VIEWSET_CLEAN_ON_EXIT,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.check.clean_on_exit")));
+    SetDlgItemText(IDC_CFG_VIEWSET_CLEAN,                    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.button.clean")));
+    SetDlgItemText(IDC_CFG_VIEWSET_INIT,                     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.button.initialize")));
 
     return XPR_TRUE;
 }
@@ -123,7 +123,7 @@ void CfgAppearanceViewSetDlg::OnClean(void)
     ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
     sViewSetMgr.verify();
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_clean"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_clean"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
 }
 
@@ -131,7 +131,7 @@ void CfgAppearanceViewSetDlg::OnInit(void)
 {
     const xpr_tchar_t *sMsg;
 
-    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.confirm_initialize"));
+    sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.confirm_initialize"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -139,7 +139,7 @@ void CfgAppearanceViewSetDlg::OnInit(void)
     ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
     sViewSetMgr.clear();
 
-    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_initialize"));
+    sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.view_set.msg.completed_initialize"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
 }
 } // namespace cfg

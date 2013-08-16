@@ -177,18 +177,18 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
 
     EnableToolTips();
 
-    addTabDialog(new BatchRenameTabFormatDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format")));
-    addTabDialog(new BatchRenameTabReplaceDlg, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace")));
-    addTabDialog(new BatchRenameTabInsertDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert")));
-    addTabDialog(new BatchRenameTabDeleteDlg,  theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete")));
-    addTabDialog(new BatchRenameTabCaseDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case")));
+    addTabDialog(new BatchRenameTabFormatDlg,  gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format")));
+    addTabDialog(new BatchRenameTabReplaceDlg, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace")));
+    addTabDialog(new BatchRenameTabInsertDlg,  gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert")));
+    addTabDialog(new BatchRenameTabDeleteDlg,  gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete")));
+    addTabDialog(new BatchRenameTabCaseDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case")));
 
     ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_BACKUP))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_BATCH_FORMAT))->LimitText(MAX_BATCH_FORMAT);
 
     mListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.list.column.old_name")), LVCFMT_LEFT, 249, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.list.column.new_name")), LVCFMT_LEFT, 249, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.list.column.old_name")), LVCFMT_LEFT, 249, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.list.column.new_name")), LVCFMT_LEFT, 249, -1);
 
     {
         xpr::tstring sDir;
@@ -217,10 +217,10 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
                 sDir = sBatRenItem->mDir;
             else
             {
-                if (sDir != theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.path.multiple")))
+                if (sDir != gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.path.multiple")))
                 {
                     if (sDir != sBatRenItem->mDir)
-                        sDir = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.path.multiple"));
+                        sDir = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.path.multiple"));
                 }
             }
         }
@@ -228,7 +228,7 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
         GetDlgItem(IDC_BATCH_RENAME_PATH)->SetWindowText(sDir.c_str());
     }
 
-    GetDlgItem(IDC_BATCH_RENAME_BACKUP)->SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.backup_prefix")));
+    GetDlgItem(IDC_BATCH_RENAME_BACKUP)->SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.backup_prefix")));
 
     xpr_size_t sCount = mBatchRename->getCount();
 
@@ -236,18 +236,18 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
     mProgressCtrl.SetPos(0);
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.count"), XPR_STRING_LITERAL("%d")), sCount);
     setStatus(sStatusText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.title")));
-    SetDlgItemText(IDC_BATCH_RENAME_LABEL_PATH,         theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.path")));
-    SetDlgItemText(IDC_BATCH_RENAME_LABEL_BACKUP,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.backup_prefix")));
-    SetDlgItemText(IDC_BATCH_RENAME_LABEL_BATCH_FORMAT, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.batch_format")));
-    SetDlgItemText(IDC_BATCH_RENAME_BATCH_FORMAT_APPLY, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.apply_batch_format")));
-    SetDlgItemText(IDC_BATCH_RENAME_ITEM_EDIT,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.edit_item")));
-    SetDlgItemText(IDC_BATCH_RENAME_EDIT,               theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.directly_edit")));
-    SetDlgItemText(IDOK,                                theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                            theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.title")));
+    SetDlgItemText(IDC_BATCH_RENAME_LABEL_PATH,         gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.path")));
+    SetDlgItemText(IDC_BATCH_RENAME_LABEL_BACKUP,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.backup_prefix")));
+    SetDlgItemText(IDC_BATCH_RENAME_LABEL_BATCH_FORMAT, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.label.batch_format")));
+    SetDlgItemText(IDC_BATCH_RENAME_BATCH_FORMAT_APPLY, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.apply_batch_format")));
+    SetDlgItemText(IDC_BATCH_RENAME_ITEM_EDIT,          gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.edit_item")));
+    SetDlgItemText(IDC_BATCH_RENAME_EDIT,               gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.directly_edit")));
+    SetDlgItemText(IDOK,                                gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                            gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     xpr_bool_t sNoChangeExt        = XPR_TRUE;
     xpr_bool_t sResultApply        = XPR_TRUE;
@@ -612,7 +612,7 @@ void BatchRenameDlg::OnBatchFormatApply(void)
     xpr_bool_t sResult = mBatchRename->renameBatchFormat(sFormat);
     if (sResult == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_format"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_format"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -627,7 +627,7 @@ void BatchRenameDlg::enableWindow(xpr_bool_t aEnable)
 {
     GetDlgItem(IDOK)->SetWindowText(
         (aEnable == XPR_TRUE) ?
-        theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.stop")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.button.stop")));
 
     CWnd *sChildWnd;
     TabDeque::iterator sIterator;
@@ -691,7 +691,7 @@ void BatchRenameDlg::OnOK(void)
     GetDlgItemText(IDC_BATCH_RENAME_BACKUP, sBackup, XPR_MAX_PATH);
     if (_tcslen(sBackup) < 1)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_format"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_format"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_BATCH_RENAME_BACKUP)->SetFocus();
@@ -701,9 +701,9 @@ void BatchRenameDlg::OnOK(void)
     mBatchRename->setOwner(m_hWnd, WM_FINALIZE);
     mBatchRename->setBackupName(sBackup);
     mBatchRename->setString(
-        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.excess_max_length")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.max_filename_legnth")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.wrong_format")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.excess_max_length")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.max_filename_legnth")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.error.wrong_format")));
 
     if (mBatchRename->start() == XPR_TRUE)
     {
@@ -731,7 +731,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case MultiRename::StatusRenameCompleted:
         {
-            const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.completed"));
+            const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.completed"));
             setStatus(sStatusText);
 
             super::OnOK();
@@ -744,7 +744,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
             mListCtrl.UpdateWindow();
 
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.stoped"), XPR_STRING_LITERAL("%d,%d")), sRenamedCount, sCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.stoped"), XPR_STRING_LITERAL("%d,%d")), sRenamedCount, sCount);
             setStatus(sStatusText);
 
             enableWindow(XPR_TRUE);
@@ -762,7 +762,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
                     mListCtrl.Invalidate(XPR_FALSE);
                     mListCtrl.UpdateWindow();
 
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                     mListCtrl.SetFocus();
@@ -770,7 +770,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
                     mListCtrl.SetSelectionMark(sInvalidIndex);
                     mListCtrl.SetItemState(sInvalidIndex, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 
-                    const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.re-input"));
+                    const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.re-input"));
                     setStatus(sStatusText);
                     break;
                 }
@@ -782,7 +782,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
                     mListCtrl.Invalidate(XPR_FALSE);
                     mListCtrl.UpdateWindow();
 
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_input"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_input"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                     mListCtrl.SetFocus();
@@ -790,7 +790,7 @@ LRESULT BatchRenameDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
                     mListCtrl.SetSelectionMark(sInvalidIndex);
                     mListCtrl.SetItemState(sInvalidIndex, LVIS_FOCUSED | LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
 
-                    const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.re-input"));
+                    const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.status.re-input"));
                     setStatus(sStatusText);
                     break;
                 }
@@ -819,14 +819,14 @@ void BatchRenameDlg::OnTimer(UINT_PTR nIDEvent)
         {
         case MultiRename::StatusPreparing:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.preparing"), XPR_STRING_LITERAL("%d,%d,%d")), sPreparedCount, sCount, (xpr_sint_t)((xpr_float_t)sPreparedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.preparing"), XPR_STRING_LITERAL("%d,%d,%d")), sPreparedCount, sCount, (xpr_sint_t)((xpr_float_t)sPreparedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
                 break;
             }
 
         case MultiRename::StatusValidating:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.validating"), XPR_STRING_LITERAL("%d,%d,%d")), sValidatedCount, sCount, (xpr_sint_t)((xpr_float_t)sValidatedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.validating"), XPR_STRING_LITERAL("%d,%d,%d")), sValidatedCount, sCount, (xpr_sint_t)((xpr_float_t)sValidatedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
 
                 mProgressCtrl.SetPos((xpr_sint_t)sValidatedCount);
@@ -835,7 +835,7 @@ void BatchRenameDlg::OnTimer(UINT_PTR nIDEvent)
 
         case MultiRename::StatusRenaming:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.renaming"), XPR_STRING_LITERAL("%d,%d,%d")), sRenamedCount, sCount, (xpr_sint_t)((xpr_float_t)sRenamedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename.status.renaming"), XPR_STRING_LITERAL("%d,%d,%d")), sRenamedCount, sCount, (xpr_sint_t)((xpr_float_t)sRenamedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
 
                 mProgressCtrl.SetPos((xpr_sint_t)sRenamedCount);
@@ -1079,7 +1079,7 @@ void BatchRenameDlg::editItem(xpr_sint_t aIndex)
     }
 
     xpr_tchar_t sDesc[0xff] = {0};
-    _stprintf(sDesc, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename_input.label.desc"), XPR_STRING_LITERAL("%s")), sName.c_str());
+    _stprintf(sDesc, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_rename_input.label.desc"), XPR_STRING_LITERAL("%s")), sName.c_str());
 
     sName = sBatRenItem->mNew;
     if (sNoChangeExt == XPR_TRUE)
@@ -1094,7 +1094,7 @@ void BatchRenameDlg::editItem(xpr_sint_t aIndex)
 
     InputDlg sDlg;
     sDlg.setProfile(XPR_STRING_LITERAL("Rename-DirectInput"));
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_input.title")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_input.title")));
     sDlg.setDesc(sDesc);
     sDlg.setText(sName.c_str());
     sDlg.setFileRename();
@@ -1222,8 +1222,8 @@ void BatchRenameDlg::OnItemMove(void)
     _stprintf(sText, XPR_STRING_LITERAL("%d"), sIndex + 1);
 
     InputDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_move.title")));
-    sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_move.label.desc")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_move.title")));
+    sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_move.label.desc")));
     sDlg.setText(sText);
     if (sDlg.DoModal() == IDOK)
     {
@@ -1386,7 +1386,7 @@ void BatchRenameDlg::OnReplaceApply(void)
 
     if (VerifyFileName(sOld) == XPR_FALSE || _tcslen(sOld) == 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         sDlg->GetDlgItem(IDC_BATCH_RENAME_REPLACE_OLD)->SetFocus();
@@ -1395,7 +1395,7 @@ void BatchRenameDlg::OnReplaceApply(void)
 
     if (VerifyFileName(sNew) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         sDlg->GetDlgItem(IDC_BATCH_RENAME_REPLACE_NEW)->SetFocus();
@@ -1442,7 +1442,7 @@ void BatchRenameDlg::OnInsertApply(void)
 
     if (VerifyFileName(sInsert) == XPR_FALSE || _tcslen(sInsert) == 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         sDlg->GetDlgItem(IDC_BATCH_RENAME_INSERT_STRING)->SetFocus();
@@ -1558,15 +1558,15 @@ xpr_bool_t BatchRenameDlg::OnToolTipNotify(xpr_uint_t id, NMHDR *pNMHDR, LRESULT
 
     switch (sId)
     {
-    case IDC_BATCH_RENAME_INIT:                 _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.initialize")));           break;
-    case IDC_BATCH_RENAME_UNDO:                 _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.undo")));                 break;
-    case IDC_BATCH_RENAME_REDO:                 _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.redo")));                 break;
-    case IDC_BATCH_RENAME_ITEM_UP:              _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move_up")));              break;
-    case IDC_BATCH_RENAME_ITEM_DOWN:            _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move_down")));            break;
-    case IDC_BATCH_RENAME_ITEM_MOVE:            _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move")));                 break;
-    case IDC_BATCH_RENAME_ON_RESULT:            _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.rename_on_result")));     break;
-    case IDC_BATCH_RENAME_NO_CHANGE_EXT:        _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.no_change_ext")));        break;
-    case IDC_BATCH_RENAME_BATCH_FORMAT_ARCHIVE: _tcscpy(sTooltipText->szText, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.batch_rename_archive"))); break;
+    case IDC_BATCH_RENAME_INIT:                 _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.initialize")));           break;
+    case IDC_BATCH_RENAME_UNDO:                 _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.undo")));                 break;
+    case IDC_BATCH_RENAME_REDO:                 _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.redo")));                 break;
+    case IDC_BATCH_RENAME_ITEM_UP:              _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move_up")));              break;
+    case IDC_BATCH_RENAME_ITEM_DOWN:            _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move_down")));            break;
+    case IDC_BATCH_RENAME_ITEM_MOVE:            _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.move")));                 break;
+    case IDC_BATCH_RENAME_ON_RESULT:            _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.rename_on_result")));     break;
+    case IDC_BATCH_RENAME_NO_CHANGE_EXT:        _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.no_change_ext")));        break;
+    case IDC_BATCH_RENAME_BATCH_FORMAT_ARCHIVE: _tcscpy(sTooltipText->szText, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.toolbar.batch_rename_archive"))); break;
 
     default: sTooltipText->szText[0] = '\0'; break;
     }

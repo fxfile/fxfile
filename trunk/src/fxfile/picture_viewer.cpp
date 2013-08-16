@@ -248,7 +248,7 @@ xpr_bool_t PictureViewer::OnInitDialog(void)
         }
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.title")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.title")));
 
     return XPR_TRUE;
 }
@@ -743,7 +743,7 @@ void PictureViewer::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -751,7 +751,7 @@ void PictureViewer::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -954,14 +954,14 @@ void PictureViewer::toggleDocking(void)
 
     if (sViewSplitRowCount > 1 || sViewSplitColumnCount > 1)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.msg.docking_single_split"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.msg.docking_single_split"));
         gFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
     if (gOpt->mConfig.mContentsStyle != CONTENTS_EXPLORER)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.msg.docking_contents"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.msg.docking_contents"));
         gFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -1492,7 +1492,7 @@ void PictureViewer::OnUpdatePicShowFileName(CCmdUI *aCmdUI)
 void PictureViewer::setTitle(void)
 {
     xpr_tchar_t sTitle[XPR_MAX_PATH + fxfile::base::StringTable::kMaxStringLength + 1] = {0};
-    _tcscpy(sTitle, theApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.title")));
+    _tcscpy(sTitle, gApp.loadString(XPR_STRING_LITERAL("popup.pic_viewer.title")));
 
     if (mPicture == XPR_TRUE)
     {

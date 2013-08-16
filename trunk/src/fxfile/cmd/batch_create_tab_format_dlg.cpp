@@ -98,16 +98,16 @@ xpr_bool_t BatchCreateTabFormatDlg::OnInitDialog(void)
     ((CButton *)GetDlgItem((sEnd == XPR_TRUE) ? IDC_CREATE_IS_NUMBER_END : IDC_CREATE_IS_NUMBER_COUNT))->SetCheck(1);
     EnableWindow(sEnd);
 
-    SetDlgItemText(IDC_CREATE_LABEL_FORMAT,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.format")));
-    SetDlgItemText(IDC_CREATE_FORMAT_AUTO_NUM,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.number_digit")));
-    SetDlgItemText(IDC_CREATE_FORMAT_DATE,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.date")));
-    SetDlgItemText(IDC_CREATE_FORMAT_TIME,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.time")));
-    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_INCREASE, theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.increase")));
-    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_START,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.start_number")));
-    SetDlgItemText(IDC_CREATE_IS_NUMBER_END,         theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.end_number")));
-    SetDlgItemText(IDC_CREATE_IS_NUMBER_COUNT,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.count")));
-    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_LENGTH,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.length")));
-    SetDlgItemText(IDC_CREATE_NUMBER_ZERO,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.check.zero_filled")));
+    SetDlgItemText(IDC_CREATE_LABEL_FORMAT,          gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.format")));
+    SetDlgItemText(IDC_CREATE_FORMAT_AUTO_NUM,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.number_digit")));
+    SetDlgItemText(IDC_CREATE_FORMAT_DATE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.date")));
+    SetDlgItemText(IDC_CREATE_FORMAT_TIME,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.button.time")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_INCREASE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.increase")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_START,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.start_number")));
+    SetDlgItemText(IDC_CREATE_IS_NUMBER_END,         gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.end_number")));
+    SetDlgItemText(IDC_CREATE_IS_NUMBER_COUNT,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.count")));
+    SetDlgItemText(IDC_CREATE_LABEL_NUMBER_LENGTH,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.label.length")));
+    SetDlgItemText(IDC_CREATE_NUMBER_ZERO,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format.check.zero_filled")));
 
     return XPR_TRUE;
 }
@@ -153,7 +153,7 @@ void BatchCreateTabFormatDlg::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aInd
                     // if nId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -161,7 +161,7 @@ void BatchCreateTabFormatDlg::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aInd
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -330,7 +330,7 @@ xpr_bool_t BatchCreateTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
         xpr_sint_t sLength = GetDlgItemInt(IDC_CREATE_NUMBER_LENGTH);
         if (!XPR_IS_RANGE(1, sLength, 9))
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_number_length"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_number_length"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
 
             GetDlgItem(IDC_CREATE_NUMBER_LENGTH)->SetFocus();

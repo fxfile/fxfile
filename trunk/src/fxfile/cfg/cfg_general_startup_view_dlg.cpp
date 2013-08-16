@@ -50,14 +50,14 @@ xpr_bool_t CfgGeneralStartupViewDlg::OnInitDialog(void)
     ::SHAutoComplete(GetDlgItem(IDC_CFG_STARTUP_VIEW_FOLDER)->m_hWnd, SHACF_FILESYSTEM);
 
     CComboBox *sStartupComboBox = (CComboBox *)GetDlgItem(IDC_CFG_STARTUP_VIEW_STARTUP);
-    sStartupComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.none")));
-    sStartupComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.folder")));
-    sStartupComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.last_folder")));
-    sStartupComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.last_tab")));
+    sStartupComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.none")));
+    sStartupComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.folder")));
+    sStartupComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.last_folder")));
+    sStartupComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.startup.last_tab")));
 
-    SetDlgItemText(IDC_CFG_STARTUP_VIEW_LABEL_STARTUP,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.label.startup")));
-    SetDlgItemText(IDC_CFG_STARTUP_VIEW_LABEL_FOLDER,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.label.folder")));
-    SetDlgItemText(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.check.no_last_network_folder")));
+    SetDlgItemText(IDC_CFG_STARTUP_VIEW_LABEL_STARTUP,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.label.startup")));
+    SetDlgItemText(IDC_CFG_STARTUP_VIEW_LABEL_FOLDER,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.label.folder")));
+    SetDlgItemText(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.check.no_last_network_folder")));
 
     return XPR_TRUE;
 }
@@ -125,7 +125,7 @@ void CfgGeneralStartupViewDlg::OnFolderBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = 0;//BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.msg.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.startup.view.msg.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);

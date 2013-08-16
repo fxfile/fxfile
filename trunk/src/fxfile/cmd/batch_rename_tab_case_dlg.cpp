@@ -55,25 +55,25 @@ xpr_bool_t BatchRenameTabCaseDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.only_filename")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.only_extension")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.full_filename")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.only_filename")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.only_extension")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.type.full_filename")));
 
     sComboBox = (CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.lowercase")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase_first_character")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase_first_character_of_each_word")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.lowercase")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase_first_character")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.case.uppercase_first_character_of_each_word")));
 
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE_TYPE))->SetCurSel(0);
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE))->SetCurSel(0);
 
     ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_SKIP_SPEC_CHAR))->LimitText(XPR_MAX_PATH);
 
-    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_TYPE,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.type")));
-    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_CASE,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.case")));
-    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_SKIP_SPEC_CHAR, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.skip_special_characters")));
-    SetDlgItemText(IDC_BATCH_RENAME_CASE_APPLY,                theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.button.apply")));
+    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_TYPE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.type")));
+    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_CASE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.case")));
+    SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_SKIP_SPEC_CHAR, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.skip_special_characters")));
+    SetDlgItemText(IDC_BATCH_RENAME_CASE_APPLY,                gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.button.apply")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename5"));
     if (XPR_IS_NOT_NULL(mDlgState))

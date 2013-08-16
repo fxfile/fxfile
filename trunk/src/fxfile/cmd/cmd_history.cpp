@@ -88,9 +88,9 @@ static void goHistoryBox(ExplorerCtrl *sExplorerCtrl, xpr_sint_t aType)
         return;
 
     HistoryDlg sDlg(aType);
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.backward")), theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.backward")), sExplorerCtrl->getBackwardDeque());
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.forward")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.forward")),  sExplorerCtrl->getForwardDeque());
-    sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.history.title.history")),  theApp.loadString(XPR_STRING_LITERAL("popup.history.tab.history")),  sExplorerCtrl->getHistoryDeque());
+    sDlg.addHistory(gApp.loadString(XPR_STRING_LITERAL("popup.history.title.backward")), gApp.loadString(XPR_STRING_LITERAL("popup.history.tab.backward")), sExplorerCtrl->getBackwardDeque());
+    sDlg.addHistory(gApp.loadString(XPR_STRING_LITERAL("popup.history.title.forward")),  gApp.loadString(XPR_STRING_LITERAL("popup.history.tab.forward")),  sExplorerCtrl->getForwardDeque());
+    sDlg.addHistory(gApp.loadString(XPR_STRING_LITERAL("popup.history.title.history")),  gApp.loadString(XPR_STRING_LITERAL("popup.history.tab.history")),  sExplorerCtrl->getHistoryDeque());
     xpr_sintptr_t sId = sDlg.DoModal();
     if (sId != IDOK)
         return;

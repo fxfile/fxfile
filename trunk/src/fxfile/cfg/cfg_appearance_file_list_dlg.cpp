@@ -50,14 +50,14 @@ xpr_bool_t CfgAppearanceFileListDlg::OnInitDialog(void)
     CComboBox *sComboBox;
 
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.default")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.only_folder")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.only_file")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.default")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.only_folder")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.list_type.only_file")));
 
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.original")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.upper_case")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.lower_case")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.original")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.upper_case")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.case_sensitivity.lower_case")));
 
     ::SHAutoComplete(GetDlgItem(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH)->m_hWnd, SHACF_FILESYSTEM);
     ::SHAutoComplete(GetDlgItem(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH)->m_hWnd, SHACF_FILESYSTEM);
@@ -65,18 +65,18 @@ xpr_bool_t CfgAppearanceFileListDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH))->LimitText(XPR_MAX_PATH);
 
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_parent_folder")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_each_drive")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_drive_usage")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_drive_item")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_24-hour_format")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_2_digits_year")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_GRID_LINES,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_grid_lines")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.full_row_selection")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.use_custom_icon")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_SHOW_LIST_TYPE, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.show_list_type")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_TEXT_NAME_CASE, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.case_sensitivity")));
-    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_SIZE_UNIT,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.size_display_unit")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_parent_folder")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_each_drive")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_drive_usage")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_drive_item")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_24-hour_format")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_2_digits_year")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_GRID_LINES,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_grid_lines")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.full_row_selection")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.use_custom_icon")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_SHOW_LIST_TYPE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.show_list_type")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_TEXT_NAME_CASE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.case_sensitivity")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_SIZE_UNIT,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.size_display_unit")));
 
     return XPR_TRUE;
 }
@@ -152,7 +152,7 @@ xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHe
     aSatisfied = XPR_FALSE;
 
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.bmp)\0*.bmp\0%s (*.*)\0*.*\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.file_dialog.filter.16bit_bitmap_file")), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.bmp)\0*.bmp\0%s (*.*)\0*.*\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.file_dialog.filter.16bit_bitmap_file")), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.bmp"), XPR_NULL, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
         return XPR_FALSE;
@@ -192,7 +192,7 @@ void CfgAppearanceFileListDlg::OnCustomIcon16x16Browse(void)
     if (sSatisfied == XPR_FALSE)
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH + 0xff + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -212,7 +212,7 @@ void CfgAppearanceFileListDlg::OnCustomIcon32x32Browse(void)
     if (sSatisfied == XPR_FALSE)
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH + 0xff + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }

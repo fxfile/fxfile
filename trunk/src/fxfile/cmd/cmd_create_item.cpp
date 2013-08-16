@@ -59,11 +59,11 @@ void CreateFolderCommand::execute(CommandContext &aContext)
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;
-            sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.create_folder.title")));
+            sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.create_folder.title")));
             sDlg.setDir(sCurDir.c_str());
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.create_folder.msg.exist")));
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.create_folder.msg.empty")));
-            sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_folder.label.top_desc")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, gApp.loadString(XPR_STRING_LITERAL("popup.create_folder.msg.exist")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, gApp.loadString(XPR_STRING_LITERAL("popup.create_folder.msg.empty")));
+            sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.create_folder.label.top_desc")));
             sDlg.setDescIcon(IDR_MAINFRAME, XPR_TRUE);
 
             xpr_sintptr_t sId = sDlg.DoModal();
@@ -75,7 +75,7 @@ void CreateFolderCommand::execute(CommandContext &aContext)
         }
         else
         {
-            sResult = SetNewPath(sPath, sDir, theApp.loadString(XPR_STRING_LITERAL("popup.create_folder.new_name")), XPR_STRING_LITERAL(""));
+            sResult = SetNewPath(sPath, sDir, gApp.loadString(XPR_STRING_LITERAL("popup.create_folder.new_name")), XPR_STRING_LITERAL(""));
         }
 
         if (sResult == XPR_TRUE)
@@ -120,12 +120,12 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;
-            sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.title")));
+            sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.title")));
             sDlg.setDir(sCurDir.c_str());
             sDlg.setExt(XPR_STRING_LITERAL(""));
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.msg.exist")));
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.msg.empty")));
-            sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.label.top_desc")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, gApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.msg.exist")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, gApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.msg.empty")));
+            sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.label.top_desc")));
             sDlg.setDescIcon(sIcon, XPR_TRUE);
 
             xpr_sintptr_t sId = sDlg.DoModal();
@@ -139,7 +139,7 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
         }
         else
         {
-            sResult = SetNewPath(sPath, sDir, theApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.new_name")), XPR_STRING_LITERAL(""));
+            sResult = SetNewPath(sPath, sDir, gApp.loadString(XPR_STRING_LITERAL("popup.create_general_file.new_name")), XPR_STRING_LITERAL(""));
         }
 
         if (sResult == XPR_TRUE)
@@ -184,12 +184,12 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;
-            sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.title")));
+            sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.title")));
             sDlg.setDir(sCurDir.c_str());
             sDlg.setExt(XPR_STRING_LITERAL("txt"));
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.exist")));
-            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.empty")));
-            sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.label.top_desc")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, gApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.exist")));
+            sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, gApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.msg.empty")));
+            sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.label.top_desc")));
             sDlg.setDescIcon(sIcon, XPR_TRUE);
 
             xpr_sintptr_t sId = sDlg.DoModal();
@@ -203,7 +203,7 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
         }
         else
         {
-            sResult = SetNewPath(sPath, sDir, theApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.new_name")), XPR_STRING_LITERAL(".txt"));
+            sResult = SetNewPath(sPath, sDir, gApp.loadString(XPR_STRING_LITERAL("popup.create_text_file.new_name")), XPR_STRING_LITERAL(".txt"));
         }
 
         if (sResult == XPR_TRUE)

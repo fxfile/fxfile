@@ -37,17 +37,17 @@ void NetworkDriveConnectCommand::execute(CommandContext &aContext)
     sResult = WnetMgr::instance().connectNetDrive(sMainFrame->GetSafeHwnd());
     if (sResult == ERROR_INVALID_PASSWORD)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.wrong_password"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.wrong_password"));
         sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
     else if (sResult == ERROR_NO_NETWORK)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.cannot_connect"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.cannot_connect"));
         sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
     else if (sResult == ERROR_NOT_ENOUGH_MEMORY)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.insufficient_memory"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.network_drive.msg.insufficient_memory"));
         sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 }

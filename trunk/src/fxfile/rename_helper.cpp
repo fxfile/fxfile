@@ -156,7 +156,7 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
     {
         if (VerifyFileName(mNewName) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.wrong_filename"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.wrong_filename"));
             CWnd::FromHandle(aHwnd)->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return ResultInvalidName;
         }
@@ -167,8 +167,8 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
         if (sOldPath.length() <= 3)
         {
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3 + 1] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.msg.confirm_drive_rename"), XPR_STRING_LITERAL("%c,%s,%s")), sOldPath[0], mEditName.c_str(), mNewName.c_str());
-            sMsgId = ::MessageBox(aHwnd, sMsg, theApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.title")), MB_YESNO | MB_ICONQUESTION);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.msg.confirm_drive_rename"), XPR_STRING_LITERAL("%c,%s,%s")), sOldPath[0], mEditName.c_str(), mNewName.c_str());
+            sMsgId = ::MessageBox(aHwnd, sMsg, gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.title")), MB_YESNO | MB_ICONQUESTION);
             if (sMsgId == IDNO)
                 return ResultUserCancel;
         }
@@ -176,16 +176,16 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
         {
             xpr::tstring sAttributes;
             if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_READONLY))
-                sAttributes = theApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.read_only_file"));
+                sAttributes = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.read_only_file"));
             else
-                sAttributes = theApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.system_file"));
+                sAttributes = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.system_file"));
 
             xpr::tstring sOldFileName = sOldPath.substr(sOldPath.rfind(XPR_STRING_LITERAL('\\'))+1);
             xpr::tstring sNewFileName = sNewPath.substr(sNewPath.rfind(XPR_STRING_LITERAL('\\'))+1);
 
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3 + 1] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename"), XPR_STRING_LITERAL("%s,%s,%s")), sOldFileName.c_str(), sAttributes.c_str(), sNewFileName.c_str());
-            sMsgId = ::MessageBox(aHwnd, sMsg, theApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.title")), MB_YESNO | MB_ICONQUESTION);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename"), XPR_STRING_LITERAL("%s,%s,%s")), sOldFileName.c_str(), sAttributes.c_str(), sNewFileName.c_str());
+            sMsgId = ::MessageBox(aHwnd, sMsg, gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.title")), MB_YESNO | MB_ICONQUESTION);
             if (sMsgId == IDNO)
                 return ResultUserCancel;
         }

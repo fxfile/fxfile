@@ -59,9 +59,9 @@ xpr_bool_t BookmarkItemEditDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_BMK_ITEM_EDIT_SHOW);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.default")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.minimize")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.maximize")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.default")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.minimize")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.show.maximize")));
 
     WORD sInvalidComb = HKCOMB_A | HKCOMB_CA | HKCOMB_NONE | HKCOMB_S | HKCOMB_SA | HKCOMB_SC | HKCOMB_SCA;
     mHotKeyCtrl.SetRules(sInvalidComb, HOTKEYF_CONTROL);
@@ -88,18 +88,18 @@ xpr_bool_t BookmarkItemEditDlg::OnInitDialog(void)
         OnSeparator();
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.title")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_NAME,       theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.name")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_SEPARATOR,        theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.check.seperator")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_PATH,       theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.path")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_OPTION,     theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.option")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_ICON_INDEX, theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.icon_index")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_CUSTOM_ICON,      theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.check.custom_icon")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_ICON,       theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.icon")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_PARAM,      theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.parameter")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_STARTUP,    theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.startup")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_SHOW,       theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.show")));
-    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_HOTKEY,     theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.hotkey")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.title")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_NAME,       gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.name")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_SEPARATOR,        gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.check.seperator")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_PATH,       gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.path")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_OPTION,     gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.option")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_ICON_INDEX, gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.icon_index")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_CUSTOM_ICON,      gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.check.custom_icon")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_ICON,       gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.icon")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_PARAM,      gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.parameter")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_STARTUP,    gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.startup")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_SHOW,       gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.show")));
+    SetDlgItemText(IDC_BMK_ITEM_EDIT_LABEL_HOTKEY,     gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.label.hotkey")));
 
     return XPR_TRUE;
 }
@@ -160,7 +160,7 @@ void BookmarkItemEditDlg::getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::tstring &
             GetFullPath(aFullPidl, sFullPath);
 
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.question_real_path"), XPR_STRING_LITERAL("%s,%s")), sPath.c_str(), sFullPath.c_str());
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.question_real_path"), XPR_STRING_LITERAL("%s,%s")), sPath.c_str(), sFullPath.c_str());
             xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
             sOnlyFileSystemPath = (sMsgId == IDYES) ? XPR_TRUE : XPR_FALSE;
         }
@@ -262,7 +262,7 @@ void BookmarkItemEditDlg::OnPathBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_BROWSEINCLUDEFILES;// | BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.path.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.path.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 
@@ -312,7 +312,7 @@ void BookmarkItemEditDlg::OnStartupBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;//BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.startup.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.startup.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 
@@ -338,7 +338,7 @@ void BookmarkItemEditDlg::OnOK(void)
     // 9 - 57
     if (sVirtualKeyCode != 0 && !XPR_IS_RANGE(48, sVirtualKeyCode, 57))
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.wrong_hotkey"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.wrong_hotkey"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         mHotKeyCtrl.SetFocus();
         return;
@@ -356,7 +356,7 @@ void BookmarkItemEditDlg::OnOK(void)
 
     if (_tcslen(sPath) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.input_path"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_item_edit.msg.input_path"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_BMK_ITEM_EDIT_PATH)->SetFocus();

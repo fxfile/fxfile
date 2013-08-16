@@ -51,14 +51,14 @@ xpr_bool_t AboutDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    addTabDialog(new AboutTabInfoDlg,    theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info")));
-    addTabDialog(new AboutTabLicenseDlg, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.license")));
-    addTabDialog(new AboutTabCreditsDlg, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.credits")));
+    addTabDialog(new AboutTabInfoDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info")));
+    addTabDialog(new AboutTabLicenseDlg, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.license")));
+    addTabDialog(new AboutTabCreditsDlg, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.credits")));
 
     showTabDialog(0);
 
-    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDOK,     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -98,7 +98,7 @@ void AboutDlg::OnPaint(void)
     // draw background
     sPaintDc.FillSolidRect(sRect, RGB(255,255,255));
 
-    HICON sIcon = theApp.LoadIcon(IDR_MAINFRAME);
+    HICON sIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     if (sIcon != XPR_NULL)
     {
         CPoint sIconPoint(sOffsetRect.left, sOffsetRect.top);

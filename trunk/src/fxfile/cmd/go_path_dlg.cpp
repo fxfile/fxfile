@@ -78,13 +78,13 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
     GetDlgItem(IDC_GO_PATH_EXP1_PATH)->EnableWindow(mPidl1 ? XPR_TRUE : XPR_FALSE);
     GetDlgItem(IDC_GO_PATH_EXP2_PATH)->EnableWindow(mPidl2 ? XPR_TRUE : XPR_FALSE);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.go_path.title")));
-    SetDlgItemText(IDC_GO_PATH_LABEL_INPUT, theApp.loadString(XPR_STRING_LITERAL("popup.go_path.label.input")));
-    SetDlgItemText(IDC_GO_PATH_EXP1_PATH,   theApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_1_folder")));
-    SetDlgItemText(IDC_GO_PATH_EXP2_PATH,   theApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_2_folder")));
-    SetDlgItemText(IDC_GO_PATH_URL,         theApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.internet_address_compatible")));
-    SetDlgItemText(IDOK,                    theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.go_path.title")));
+    SetDlgItemText(IDC_GO_PATH_LABEL_INPUT, gApp.loadString(XPR_STRING_LITERAL("popup.go_path.label.input")));
+    SetDlgItemText(IDC_GO_PATH_EXP1_PATH,   gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_1_folder")));
+    SetDlgItemText(IDC_GO_PATH_EXP2_PATH,   gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_2_folder")));
+    SetDlgItemText(IDC_GO_PATH_URL,         gApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.internet_address_compatible")));
+    SetDlgItemText(IDOK,                    gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -150,7 +150,7 @@ void GoPathDlg::OnGoPathBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.go_path.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.go_path.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 

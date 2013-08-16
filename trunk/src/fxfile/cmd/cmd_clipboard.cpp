@@ -494,7 +494,7 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
             ContextMenu::invokeCommand(sTvItemData->mShellFolder, (LPCITEMIDLIST *)&sTvItemData->mPidl, 1, CMID_VERB_PASTE, sFolderCtrl->GetSafeHwnd());
         else
         {
-            const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+            const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
             DoPaste(sFolderCtrl->GetSafeHwnd(), sClipFormat.mShellIDList, sClipFormat.mDropEffect, sTargetDir, sLinkSuffix);
         }
@@ -726,7 +726,7 @@ void ClipboardFilePasteLinkCommand::execute(CommandContext &aContext)
         xpr_tchar_t sTarget[XPR_MAX_PATH + 1] = {0};
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sTarget);
 
-        const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+        const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
         DoPaste(sFolderCtrl->GetSafeHwnd(), sClipFormat.mShellIDList, DROPEFFECT_LINK, sTarget, sLinkSuffix);
     }
@@ -787,43 +787,43 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
         COlePasteSpecialDialog sDlg;
 
         //sFormatEtc.cfFormat = CF_METAFILEPICT; sFormatEtc.tymed = TYMED_MFPICT;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_DIB; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_BITMAP; sFormatEtc.tymed = TYMED_GDI;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_TEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_UNICODETEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mInetUrl; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mFileContents; sFormatEtc.tymed = TYMED_ISTREAM | TYMED_ISTORAGE;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mShellIDList; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         //sFormatEtc.cfFormat = sClipFormat.mFileName; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         //sFormatEtc.cfFormat = sClipFormat.mFileNameW; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         if (sDlg.DoModal() != IDOK)
@@ -842,7 +842,7 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
                 ContextMenu::invokeCommand(sTvItemData->mShellFolder, (LPCITEMIDLIST *)&sTvItemData->mPidl, 1, CMID_VERB_PASTE, sFolderCtrl->GetSafeHwnd());
             else
             {
-                const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+                const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
                 DoPaste(sFolderCtrl->GetSafeHwnd(), sClipFormat.mShellIDList, sClipFormat.mDropEffect, sTargetDir, sLinkSuffix);
             }
@@ -901,43 +901,43 @@ void ClipboardFileSpecialPasteCommand::execute(CommandContext &aContext)
         COlePasteSpecialDialog sDlg;
 
         //sFormatEtc.cfFormat = CF_METAFILEPICT; sFormatEtc.tymed = TYMED_MFPICT;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.meta_file"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_DIB; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.dib_bitmap"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_BITMAP; sFormatEtc.tymed = TYMED_GDI;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.bitmap"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_TEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.text"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = CF_UNICODETEXT; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_text"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mInetUrl; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.url"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mFileContents; sFormatEtc.tymed = TYMED_ISTREAM | TYMED_ISTORAGE;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_contents"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         sFormatEtc.cfFormat = sClipFormat.mShellIDList; sFormatEtc.tymed = TYMED_HGLOBAL;
-        sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
+        sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.shell_idlist"));
         sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         //sFormatEtc.cfFormat = sClipFormat.mFileName; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.file_name"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         //sFormatEtc.cfFormat = sClipFormat.mFileNameW; sFormatEtc.tymed = TYMED_FILE | TYMED_HGLOBAL;
-        //sFormatText = theApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
+        //sFormatText = gApp.loadString(XPR_STRING_LITERAL("popup.paste_special.format.unicode_file_name"));
         //sDlg.AddFormat(sFormatEtc, (xpr_tchar_t *)sFormatText, (xpr_tchar_t *)sFormatText, OLEUIPASTE_PASTEONLY);
 
         if (sDlg.DoModal() != IDOK)
@@ -1788,12 +1788,12 @@ xpr_sint_t pasteNewTextFile(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aDir
     HICON sIcon = GetFileExtIcon(XPR_STRING_LITERAL(".txt"), XPR_TRUE);
 
     CreateItemDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.title")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.title")));
     sDlg.setDir(aDir);
     sDlg.setExt(XPR_STRING_LITERAL("txt"));
-    sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.msg.exist")));
-    sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.msg.empty")));
-    sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.label.top_desc")));
+    sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.msg.exist")));
+    sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.msg.empty")));
+    sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_text_file.label.top_desc")));
     sDlg.setDescIcon(sIcon, XPR_TRUE);
 
     xpr_sintptr_t sId = sDlg.DoModal();
@@ -1836,12 +1836,12 @@ xpr_sint_t pasteNewBitmapFile(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aD
     aExplorerCtrl.getCurPath(sCurDir);
 
     CreateItemDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.title")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.title")));
     sDlg.setDir(aDir);
     sDlg.setExt(XPR_STRING_LITERAL("bmp"));
-    sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.msg.exist")));
-    sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.msg.empty")));
-    sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.label.top_desc")));
+    sDlg.setMsg(CreateItemDlg::MSG_ID_EXIST, gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.msg.exist")));
+    sDlg.setMsg(CreateItemDlg::MSG_ID_EMPTY, gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.msg.empty")));
+    sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.paste_into_new_bitmap_file.label.top_desc")));
     sDlg.setDescIcon(sIcon, XPR_TRUE);
 
     xpr_sintptr_t sId = sDlg.DoModal();

@@ -48,29 +48,29 @@ xpr_bool_t ShortcutDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_CREATE_SHORTCUT_SHOWCMD);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.default")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.minimize")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.maximize")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.default")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.minimize")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.show.maximize")));
 
     ((CEdit *)GetDlgItem(IDC_CREATE_SHORTCUT_NAME   ))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_CREATE_SHORTCUT_TARGET ))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_CREATE_SHORTCUT_STARTUP))->LimitText(XPR_MAX_PATH);
     ((CEdit *)GetDlgItem(IDC_CREATE_SHORTCUT_DESC   ))->LimitText(MAX_SHORTCUT_DESC);
 
-    setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.top_desc")));
+    setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.top_desc")));
     setDescIcon(IDI_SHORTCUT, XPR_TRUE);
     WORD sInvalidComb = HKCOMB_A | HKCOMB_C | HKCOMB_NONE | HKCOMB_S | HKCOMB_SA | HKCOMB_SC | HKCOMB_SCA;
     ((CHotKeyCtrl *)GetDlgItem(IDC_CREATE_SHORTCUT_HOTKEY))->SetRules(sInvalidComb, HOTKEYF_CONTROL | HOTKEYF_ALT);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.title")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_NAME,     theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.name")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_TARGET,   theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.target")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_TARGET_BROWSE,  theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.button.target_browse")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_GROUP_ADVANCED, theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.group.advanced")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_STARTUP,  theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.startup")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_HOTKEY,   theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.hotkey")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_SHOWCMD,  theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.show")));
-    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_DESC,     theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.desc")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.title")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_NAME,     gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.name")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_TARGET,   gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.target")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_TARGET_BROWSE,  gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.button.target_browse")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_GROUP_ADVANCED, gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.group.advanced")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_STARTUP,  gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.startup")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_HOTKEY,   gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.hotkey")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_SHOWCMD,  gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.show")));
+    SetDlgItemText(IDC_CREATE_SHORTCUT_LABEL_DESC,     gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.label.desc")));
 
     return XPR_TRUE;
 }
@@ -99,14 +99,14 @@ void ShortcutDlg::OnOK(void)
 
     if (_tcslen(sName) <= 0 || _tcslen(sTarget) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.input"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.input"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
     if (VerifyFileName(sName) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -132,7 +132,7 @@ void ShortcutDlg::OnTargetBrowse(void)
 {
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.folder_browse.title"));
     sBrowseInfo.ulFlags   = BIF_BROWSEINCLUDEFILES | BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
     if (XPR_IS_NULL(sFullPidl))

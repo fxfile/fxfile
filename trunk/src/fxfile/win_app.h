@@ -32,7 +32,7 @@ class Option;
 class WinApp;
 class MainFrame;
 
-extern WinApp    theApp;
+extern WinApp    gApp;
 extern MainFrame *gFrame;
 extern Option    *gOpt;
 

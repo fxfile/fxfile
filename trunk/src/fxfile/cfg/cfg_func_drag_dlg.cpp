@@ -40,10 +40,10 @@ xpr_bool_t CfgFuncDragDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_DRAG_DROP_DEFAULT_OPERATION);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.default")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.move")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.copy")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.shortcut")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.default")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.move")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.copy")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.default_file_operation.shortcut")));
 
     CSpinButtonCtrl *sSpinCtrl;
     sSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_CFG_DRAG_DROP_DIST_DRAG_SPIN);
@@ -54,29 +54,29 @@ xpr_bool_t CfgFuncDragDlg::OnInitDialog(void)
     sSpinCtrl->SetRange(MIN_DRAG_SCROLL_MSEC, MAX_DRAG_SCROLL_MSEC);
 
     xpr_tchar_t sText[0xff] = {0};
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.drag_distance_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_DIST_DRAG, MAX_DIST_DRAG, DEF_DIST_DRAG);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.drag_distance_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_DIST_DRAG, MAX_DIST_DRAG, DEF_DIST_DRAG);
     SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_DIST_DRAG_RANGE, sText);
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_folder_expand_time_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_EXPAND_FOLDER_MSEC, MAX_EXPAND_FOLDER_MSEC, DEF_EXPAND_FOLDER_MSEC);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_folder_expand_time_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_EXPAND_FOLDER_MSEC, MAX_EXPAND_FOLDER_MSEC, DEF_EXPAND_FOLDER_MSEC);
     SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_EXPAND_FOLDER_TIME_RANGE, sText);
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_scroll_time_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_DRAG_SCROLL_MSEC, MAX_DRAG_SCROLL_MSEC, DEF_DRAG_SCROLL_MSEC);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_scroll_time_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_DRAG_SCROLL_MSEC, MAX_DRAG_SCROLL_MSEC, DEF_DRAG_SCROLL_MSEC);
     SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_SCROLL_TIME_RANGE, sText);
 
-    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DRAG_START,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.drag_start")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_NO_DRAG,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_none")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_DEFAULT_DRAG,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_default")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_CTRL_DRAG,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_CTRL")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_DIST_DRAG,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_distance")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DRAGGING,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.dragging")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_FOLDER_EXPAND_TIME, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_folder_expand_time")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_SCROLL_TIME,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_scroll_time")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_DRAGGING_NO_CONTENTS,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.check.dragging_no_contents")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DROP,               theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.drop")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_NO_DROP,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drop_none")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_DEFAULT_DROP,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drop_default")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_ETC,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.etc")));
-    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_DEFAULT_OPERATION,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.default_file_operation")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DRAG_START,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.drag_start")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_NO_DRAG,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_none")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_DEFAULT_DRAG,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_default")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_CTRL_DRAG,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_CTRL")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_DIST_DRAG,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drag_distance")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DRAGGING,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.dragging")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_FOLDER_EXPAND_TIME, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_folder_expand_time")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_SCROLL_TIME,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.dragging_scroll_time")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_DRAGGING_NO_CONTENTS,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.check.dragging_no_contents")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_DROP,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.drop")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_NO_DROP,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drop_none")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_DEFAULT_DROP,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.radio.drop_default")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_GROUP_ETC,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.group.etc")));
+    SetDlgItemText(IDC_CFG_DRAG_DROP_LABEL_DEFAULT_OPERATION,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.drag_drop.label.default_file_operation")));
 
     return XPR_TRUE;
 }

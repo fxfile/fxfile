@@ -57,10 +57,10 @@ xpr_bool_t SizeFormatDlg::OnInitDialog(void)
     sExtendedStyle |= LVS_EX_FULLROWSELECT;
     mListCtrl.SetExtendedStyle(sExtendedStyle);
 
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.no")),        LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.condition")), LVCFMT_LEFT,  100, -1);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.unit")),      LVCFMT_RIGHT,  70, -1);
-    mListCtrl.InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.display")),   LVCFMT_LEFT,  100, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.no")),        LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.condition")), LVCFMT_LEFT,  100, -1);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.unit")),      LVCFMT_RIGHT,  70, -1);
+    mListCtrl.InsertColumn(3, gApp.loadString(XPR_STRING_LITERAL("popup.size_format.list.column.display")),   LVCFMT_LEFT,  100, -1);
 
     ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_UNIT_SIZE))->LimitText(100);
     ((CEdit *)GetDlgItem(IDC_SIZE_FORMAT_UNIT_DISP))->LimitText(MAX_SIZE_FORMAT_DISP);
@@ -102,21 +102,21 @@ xpr_bool_t SizeFormatDlg::OnInitDialog(void)
     if (mListCtrl.GetItemCount() > 0)
         selectItem(0);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.size_format.title")));
-    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_LIST,             theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.list")));
-    SetDlgItemText(IDC_SIZE_FORMAT_ADD,                    theApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.add")));
-    SetDlgItemText(IDC_SIZE_FORMAT_MODIFY,                 theApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.modify")));
-    SetDlgItemText(IDC_SIZE_FORMAT_DELETE,                 theApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.delete")));
-    SetDlgItemText(IDC_SIZE_FORMAT_CONDITION,              theApp.loadString(XPR_STRING_LITERAL("popup.size_format.group.condition")));
-    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_UNIT,             theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.unit")));
-    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_MORE,             theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.more")));
-    SetDlgItemText(IDC_SIZE_FORMAT_SIZE_DISP,              theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.display")));
-    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_DECIMAL_PLACE,    theApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.decimal_place")));
-    SetDlgItemText(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE,  theApp.loadString(XPR_STRING_LITERAL("popup.size_format.default_decimal_place")));
-    SetDlgItemText(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_PLACE,   theApp.loadString(XPR_STRING_LITERAL("popup.size_format.custom_decimal_place")));
-    SetDlgItemText(IDC_SIZE_FORMAT_ROUND_OFF,              theApp.loadString(XPR_STRING_LITERAL("popup.size_format.round_off")));
-    SetDlgItemText(IDOK,                                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                               theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.size_format.title")));
+    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_LIST,             gApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.list")));
+    SetDlgItemText(IDC_SIZE_FORMAT_ADD,                    gApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.add")));
+    SetDlgItemText(IDC_SIZE_FORMAT_MODIFY,                 gApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.modify")));
+    SetDlgItemText(IDC_SIZE_FORMAT_DELETE,                 gApp.loadString(XPR_STRING_LITERAL("popup.size_format.button.delete")));
+    SetDlgItemText(IDC_SIZE_FORMAT_CONDITION,              gApp.loadString(XPR_STRING_LITERAL("popup.size_format.group.condition")));
+    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_UNIT,             gApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.unit")));
+    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_MORE,             gApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.more")));
+    SetDlgItemText(IDC_SIZE_FORMAT_SIZE_DISP,              gApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.display")));
+    SetDlgItemText(IDC_SIZE_FORMAT_LABEL_DECIMAL_PLACE,    gApp.loadString(XPR_STRING_LITERAL("popup.size_format.label.decimal_place")));
+    SetDlgItemText(IDC_SIZE_FORMAT_DEFAULT_DECIMAL_PLACE,  gApp.loadString(XPR_STRING_LITERAL("popup.size_format.default_decimal_place")));
+    SetDlgItemText(IDC_SIZE_FORMAT_CUSTOM_DECIMAL_PLACE,   gApp.loadString(XPR_STRING_LITERAL("popup.size_format.custom_decimal_place")));
+    SetDlgItemText(IDC_SIZE_FORMAT_ROUND_OFF,              gApp.loadString(XPR_STRING_LITERAL("popup.size_format.round_off")));
+    SetDlgItemText(IDOK,                                   gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                               gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -290,7 +290,7 @@ void SizeFormatDlg::OnAdd(void)
     if (mListCtrl.GetItemCount() >= MAX_SIZE_FORMAT)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.size_format.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SIZE_FORMAT);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.size_format.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SIZE_FORMAT);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -307,7 +307,7 @@ void SizeFormatDlg::OnAdd(void)
     xpr_sint_t sCurSel = mUnitComboBox.GetCurSel();
     if (sCurSel == CB_ERR)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.select_unit"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.select_unit"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         mUnitComboBox.SetFocus();
         return;
@@ -341,7 +341,7 @@ void SizeFormatDlg::OnModify(void)
     xpr_sint_t sCurSel = mUnitComboBox.GetCurSel();
     if (sCurSel == CB_ERR)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.select_unit"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.select_unit"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         mUnitComboBox.SetFocus();
         return;
@@ -375,7 +375,7 @@ void SizeFormatDlg::OnDelete(void)
     if (sIndex < 0)
         return;
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.confirm_delete"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.size_format.msg.confirm_delete"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
     if (sMsgId == IDNO)
         return;

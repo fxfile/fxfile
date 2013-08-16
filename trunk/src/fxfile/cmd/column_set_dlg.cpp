@@ -94,8 +94,8 @@ xpr_bool_t ColumnSetDlg::OnInitDialog(void)
     sExtendedStyle |= LVS_EX_CHECKBOXES;
     mListCtrl.SetExtendedStyle(sExtendedStyle);
 
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.column_set.list.column.name")),  LVCFMT_LEFT,  170, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.column_set.list.column.width")), LVCFMT_RIGHT,  70, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.column_set.list.column.name")),  LVCFMT_LEFT,  170, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.column_set.list.column.width")), LVCFMT_RIGHT,  70, -1);
 
     if (mShellFolder2 != XPR_NULL)
     {
@@ -159,18 +159,18 @@ xpr_bool_t ColumnSetDlg::OnInitDialog(void)
 
     mListMap.clear();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.column_set.title")));
-    SetDlgItemText(IDC_COLUMN_LABEL_DESC,    theApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.desc")));
-    SetDlgItemText(IDC_COLUMN_LABEL_LIST,    theApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.list")));
-    SetDlgItemText(IDC_COLUMN_LABEL_WIDTH,   theApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.width")));
-    SetDlgItemText(IDC_COLUMN_ITEM_UP,       theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.move_up")));
-    SetDlgItemText(IDC_COLUMN_ITEM_DOWN,     theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.move_down")));
-    SetDlgItemText(IDC_COLUMN_ITEM_SHOW,     theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.show")));
-    SetDlgItemText(IDC_COLUMN_ITEM_HIDE,     theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.hide")));
-    SetDlgItemText(IDC_COLUMN_ITEM_SHOW_ALL, theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.show_all")));
-    SetDlgItemText(IDC_COLUMN_ITEM_HIDE_ALL, theApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.hide_all")));
-    SetDlgItemText(IDOK,                     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                 theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.column_set.title")));
+    SetDlgItemText(IDC_COLUMN_LABEL_DESC,    gApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.desc")));
+    SetDlgItemText(IDC_COLUMN_LABEL_LIST,    gApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.list")));
+    SetDlgItemText(IDC_COLUMN_LABEL_WIDTH,   gApp.loadString(XPR_STRING_LITERAL("popup.column_set.label.width")));
+    SetDlgItemText(IDC_COLUMN_ITEM_UP,       gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.move_up")));
+    SetDlgItemText(IDC_COLUMN_ITEM_DOWN,     gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.move_down")));
+    SetDlgItemText(IDC_COLUMN_ITEM_SHOW,     gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.show")));
+    SetDlgItemText(IDC_COLUMN_ITEM_HIDE,     gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.hide")));
+    SetDlgItemText(IDC_COLUMN_ITEM_SHOW_ALL, gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.show_all")));
+    SetDlgItemText(IDC_COLUMN_ITEM_HIDE_ALL, gApp.loadString(XPR_STRING_LITERAL("popup.column_set.button.hide_all")));
+    SetDlgItemText(IDOK,                     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                 gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }

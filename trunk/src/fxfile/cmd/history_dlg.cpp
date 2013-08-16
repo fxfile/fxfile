@@ -76,7 +76,7 @@ xpr_bool_t HistoryDlg::OnInitDialog(void)
     SetIcon(mIcon, XPR_TRUE);
 
     HICON sIconHandle;
-    sIconHandle = theApp.LoadIcon(MAKEINTRESOURCE(IDI_NOT));
+    sIconHandle = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_NOT));
     mTreeImgList.Create(16, 16, ILC_COLOR32 | ILC_MASK, -1, -1);
     mTreeImgList.Add(sIconHandle);
     ::DestroyIcon(sIconHandle);
@@ -112,7 +112,7 @@ xpr_bool_t HistoryDlg::OnInitDialog(void)
     sTbButton.iBitmap = 0;
     sTbButton.fsState = TBSTATE_ENABLED;
     sTbButton.fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | BTNS_SHOWTEXT;
-    sTbButton.iString = mToolBar.GetToolBarCtrl().AddStrings(theApp.loadString(XPR_STRING_LITERAL("popup.history.toolbar.refresh")));
+    sTbButton.iString = mToolBar.GetToolBarCtrl().AddStrings(gApp.loadString(XPR_STRING_LITERAL("popup.history.toolbar.refresh")));
 
     mToolBar.GetToolBarCtrl().AddButtons(1, &sTbButton);
 

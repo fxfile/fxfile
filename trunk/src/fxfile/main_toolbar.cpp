@@ -171,7 +171,7 @@ void MainToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)
     if (XPR_IS_NULL(sStringId))
         return;
 
-    aText = theApp.loadString(sStringId);
+    aText = gApp.loadString(sStringId);
 }
 
 void MainToolBar::OnContextMenu(CWnd* pWnd, CPoint pt)

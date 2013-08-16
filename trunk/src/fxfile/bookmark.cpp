@@ -164,15 +164,15 @@ void BookmarkItem::getTooltip(xpr_tchar_t *aTooltip, xpr_bool_t aWithName, xpr_b
     aTooltip[0] = XPR_STRING_LITERAL('\0');
 
     if (aWithPending == XPR_TRUE && mPending == XPR_TRUE)
-        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s\n\n"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.icon_pending")));
+        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s\n\n"), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.icon_pending")));
 
     if (XPR_IS_TRUE(aWithName))
-        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.name")), mName.c_str());
+        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n"), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.name")), mName.c_str());
 
     if (mHotKey > 0)
-        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n%s Ctrl+%c"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mPath.c_str(), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), mHotKey);
+        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n%s Ctrl+%c"), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mPath.c_str(), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), mHotKey);
     else
-        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n%s %s"), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mPath.c_str(), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey.none")));
+        _stprintf(aTooltip+_tcslen(aTooltip), XPR_STRING_LITERAL("%s: \"%s\"\n%s %s"), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mPath.c_str(), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey.none")));
 }
 
 BookmarkMgr::BookmarkMgr(void)

@@ -39,10 +39,10 @@ xpr_bool_t CfgAppearanceDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_APPEARANCE_MENU_ANIMATION,                    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.menu_animation")));
-    SetDlgItemText(IDC_CFG_APPEARANCE_STANDARD_MENU_STYLE,               theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.standard_style_menu")));
-    SetDlgItemText(IDC_CFG_APPEARANCE_SINGLE_VIEW_SPLIT_AS_ACTIVED_VIEW, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.single_view_split_as_actived_view")));
-    SetDlgItemText(IDC_CFG_APPEARANCE_VIEW_SPLIT_REOPEN_LAST_FOLDER,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.reopen_last_folder_when_changing_view_split")));
+    SetDlgItemText(IDC_CFG_APPEARANCE_MENU_ANIMATION,                    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.menu_animation")));
+    SetDlgItemText(IDC_CFG_APPEARANCE_STANDARD_MENU_STYLE,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.standard_style_menu")));
+    SetDlgItemText(IDC_CFG_APPEARANCE_SINGLE_VIEW_SPLIT_AS_ACTIVED_VIEW, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.single_view_split_as_actived_view")));
+    SetDlgItemText(IDC_CFG_APPEARANCE_VIEW_SPLIT_REOPEN_LAST_FOLDER,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.check.reopen_last_folder_when_changing_view_split")));
 
     return XPR_TRUE;
 }

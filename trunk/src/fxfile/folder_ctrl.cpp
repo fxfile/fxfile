@@ -3209,7 +3209,7 @@ void FolderCtrl::OnDrop(COleDataObject *pOleDataObject, DROPEFFECT aDropEffect, 
 
     if (mDropTarget.isRightDrag() == XPR_FALSE && _tcslen(sTargetDir) > 0 && XPR_IS_FALSE(sExternalCopyFileOp) && XPR_IS_FALSE(sExternalMoveFileOp))///* && !aOleDataObject->IsDataAvailable(CF_HDROP)*/)
     {
-        const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+        const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
         sTargetDir[_tcslen(sTargetDir) + 1] = XPR_STRING_LITERAL('\0');
         DoPaste(GetSafeHwnd(), pOleDataObject, XPR_TRUE, sClipFormat.mShellIDList, aDropEffect, sTargetDir, sLinkSuffix);
@@ -3479,7 +3479,7 @@ void FolderCtrl::expandAll(HTREEITEM aTreeItem)
     if (hasChildItem(aTreeItem) == XPR_FALSE)
         return;
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("folder_tree.msg.confirm_expand"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("folder_tree.msg.confirm_expand"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId == IDNO)
         return;

@@ -112,14 +112,14 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
 
         mMenu.GetMenuString(i, sCategory->mText, 0xfe, MF_BYPOSITION);
 
-        _tcscpy(sCategory->mText, theApp.loadString(sCategory->mText));
+        _tcscpy(sCategory->mText, gApp.loadString(sCategory->mText));
 
         xpr_tchar_t *sEnd = _tcsrchr(sCategory->mText, '(');
         if (sEnd != XPR_NULL)
             *sEnd = '\0';
 
         _tcscat(sCategory->mText, XPR_STRING_LITERAL(" "));
-        _tcscat(sCategory->mText, theApp.loadString(XPR_STRING_LITERAL("popup.accel.menu")));
+        _tcscat(sCategory->mText, gApp.loadString(XPR_STRING_LITERAL("popup.accel.menu")));
 
         mCategoryWnd.AddString(sCategory->mText);
         mCategoryWnd.SetItemData(i, (DWORD_PTR)sCategory);
@@ -129,7 +129,7 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
     sCategory = new Category;
     sCategory->mMenu = &mMenu;
     sCategory->mSubMenu = -1;
-    _tcscpy(sCategory->mText, theApp.loadString(XPR_STRING_LITERAL("popup.accel.all_menu")));
+    _tcscpy(sCategory->mText, gApp.loadString(XPR_STRING_LITERAL("popup.accel.all_menu")));
     sIndex = mCategoryWnd.AddString(sCategory->mText);
     mCategoryWnd.SetItemData(sIndex, (DWORD_PTR)sCategory);
 
@@ -137,14 +137,14 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
     sCategory = new Category;
     sCategory->mMenu = XPR_NULL;
     sCategory->mSubMenu = -1;
-    _tcscpy(sCategory->mText, theApp.loadString(XPR_STRING_LITERAL("popup.accel.working_folder")));
+    _tcscpy(sCategory->mText, gApp.loadString(XPR_STRING_LITERAL("popup.accel.working_folder")));
 
     for (i = 0; i < MAX_WORKING_FOLDER; ++i)
     {
         sCommand = new Command;
         sCommand->mId = ID_GO_WORKING_FOLDER_FIRST + i;
         sCommand->mDesc = XPR_FALSE;
-        _stprintf(sCommand->mText, XPR_STRING_LITERAL("%s %d"), theApp.loadString(XPR_STRING_LITERAL("popup.accel.working_folder")), i + 1);
+        _stprintf(sCommand->mText, XPR_STRING_LITERAL("%s %d"), gApp.loadString(XPR_STRING_LITERAL("popup.accel.working_folder")), i + 1);
         sCategory->mCommandList.push_back(sCommand);
     }
 
@@ -158,7 +158,7 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
 
     mCommandWnd.SetHorizontalExtent(350);
 
-    SetDlgItemText(IDC_ACCEL_ASSIGNED_TO, theApp.loadString(XPR_STRING_LITERAL("popup.accel.none")));
+    SetDlgItemText(IDC_ACCEL_ASSIGNED_TO, gApp.loadString(XPR_STRING_LITERAL("popup.accel.none")));
 
     struct
     {
@@ -263,18 +263,18 @@ xpr_bool_t AccelTableDlg::OnInitDialog(void)
         mVirtualWnd.SetItemData(sIndex, (DWORD_PTR)sKey);
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.accel.title")));
-    SetDlgItemText(IDC_ACCEL_LABEL_CATEGORY,         theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.category")));
-    SetDlgItemText(IDC_ACCEL_LABEL_COMMANDS,         theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.commands")));
-    SetDlgItemText(IDC_ACCEL_LABEL_CUR_KEYS,         theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.current_keys")));
-    SetDlgItemText(IDC_ACCEL_LABEL_NEW_SHORTCUT_KEY, theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.new_shortcut_key")));
-    SetDlgItemText(IDC_ACCEL_LABEL_ASSIGNED_TO,      theApp.loadString(XPR_STRING_LITERAL("popup.accel.label.assigned_to")));
-    SetDlgItemText(IDC_ACCEL_BUTTON_ASSIGN,          theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.assign")));
-    SetDlgItemText(IDC_ACCEL_BUTTON_REMOVE,          theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.remove")));
-    SetDlgItemText(IDC_ACCEL_BUTTON_RESET,           theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.reset")));
-    SetDlgItemText(IDC_ACCEL_BUTTON_RESET_ALL,       theApp.loadString(XPR_STRING_LITERAL("popup.accel.button.reset_all")));
-    SetDlgItemText(IDOK,                             theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                         theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.accel.title")));
+    SetDlgItemText(IDC_ACCEL_LABEL_CATEGORY,         gApp.loadString(XPR_STRING_LITERAL("popup.accel.label.category")));
+    SetDlgItemText(IDC_ACCEL_LABEL_COMMANDS,         gApp.loadString(XPR_STRING_LITERAL("popup.accel.label.commands")));
+    SetDlgItemText(IDC_ACCEL_LABEL_CUR_KEYS,         gApp.loadString(XPR_STRING_LITERAL("popup.accel.label.current_keys")));
+    SetDlgItemText(IDC_ACCEL_LABEL_NEW_SHORTCUT_KEY, gApp.loadString(XPR_STRING_LITERAL("popup.accel.label.new_shortcut_key")));
+    SetDlgItemText(IDC_ACCEL_LABEL_ASSIGNED_TO,      gApp.loadString(XPR_STRING_LITERAL("popup.accel.label.assigned_to")));
+    SetDlgItemText(IDC_ACCEL_BUTTON_ASSIGN,          gApp.loadString(XPR_STRING_LITERAL("popup.accel.button.assign")));
+    SetDlgItemText(IDC_ACCEL_BUTTON_REMOVE,          gApp.loadString(XPR_STRING_LITERAL("popup.accel.button.remove")));
+    SetDlgItemText(IDC_ACCEL_BUTTON_RESET,           gApp.loadString(XPR_STRING_LITERAL("popup.accel.button.reset")));
+    SetDlgItemText(IDC_ACCEL_BUTTON_RESET_ALL,       gApp.loadString(XPR_STRING_LITERAL("popup.accel.button.reset_all")));
+    SetDlgItemText(IDOK,                             gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                         gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -391,7 +391,7 @@ void AccelTableDlg::fillRecursiveCategory(CommandList &aCommandList, CMenu *aMen
         {
             if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
             {
-                _tcscpy(sText, theApp.loadString(sText));
+                _tcscpy(sText, gApp.loadString(sText));
             }
         }
         else
@@ -399,7 +399,7 @@ void AccelTableDlg::fillRecursiveCategory(CommandList &aCommandList, CMenu *aMen
             sStringId = sCommandStringTable.loadString(sId);
             if (sStringId != XPR_NULL)
             {
-                _tcscpy(sText, theApp.loadString(sStringId));
+                _tcscpy(sText, gApp.loadString(sStringId));
             }
         }
 
@@ -524,7 +524,7 @@ void AccelTableDlg::OnEnChangeHotKey(void)
     }
 
     if (sNone == XPR_TRUE)
-        SetDlgItemText(IDC_ACCEL_ASSIGNED_TO, theApp.loadString(XPR_STRING_LITERAL("popup.accel.none")));
+        SetDlgItemText(IDC_ACCEL_ASSIGNED_TO, gApp.loadString(XPR_STRING_LITERAL("popup.accel.none")));
 
     ((CButton *)GetDlgItem(IDC_ACCEL_CTRL ))->SetCheck(XPR_TEST_BITS(sModifier, HOTKEYF_CONTROL));
     ((CButton *)GetDlgItem(IDC_ACCEL_SHIFT))->SetCheck(XPR_TEST_BITS(sModifier, HOTKEYF_SHIFT));
@@ -579,7 +579,7 @@ xpr_bool_t AccelTableDlg::getRecursiveTextToId(CMenu *aMenu, xpr_uint_t aId, xpr
         {
             if (aMenu->GetMenuString(i, sText, 0xfe, MF_BYPOSITION) > 0)
             {
-                _tcscpy(sText, theApp.loadString(sText));
+                _tcscpy(sText, gApp.loadString(sText));
             }
         }
         else
@@ -587,7 +587,7 @@ xpr_bool_t AccelTableDlg::getRecursiveTextToId(CMenu *aMenu, xpr_uint_t aId, xpr
             sStringId = sCommandStringTable.loadString(sId);
             if (sStringId != XPR_NULL)
             {
-                _tcscpy(sText, theApp.loadString(sStringId));
+                _tcscpy(sText, gApp.loadString(sStringId));
             }
         }
 
@@ -642,7 +642,7 @@ void AccelTableDlg::OnAssign(void)
     mHotKeyCtrl.GetHotKey(sVirtualKeyCode, sModifier);
     if (sModifier == HOTKEYF_CONTROL && '0' <= sVirtualKeyCode && sVirtualKeyCode <= '9')
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.only_for_bookmark"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.only_for_bookmark"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -708,7 +708,7 @@ void AccelTableDlg::OnRemove(void)
 
 void AccelTableDlg::OnReset(void) 
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.question_reset"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.question_reset"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONWARNING);
     if (sMsgId == IDNO)
         return;
@@ -742,7 +742,7 @@ void AccelTableDlg::OnReset(void)
 
     memset(sAccel, 0, sizeof(ACCEL) * MAX_ACCEL);
 
-    HACCEL sAccelHandle = ::LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(mResourceId));
+    HACCEL sAccelHandle = ::LoadAccelerators(gApp.m_hInstance, MAKEINTRESOURCE(mResourceId));
     sCount = ::CopyAcceleratorTable(sAccelHandle, sAccel, MAX_ACCEL);
     ::DestroyAcceleratorTable(sAccelHandle);
 
@@ -762,14 +762,14 @@ void AccelTableDlg::OnReset(void)
 
 void AccelTableDlg::OnResetAll(void) 
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.question_reset_all"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.accel.msg.question_reset_all"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONWARNING);
     if (sMsgId == IDNO)
         return;
 
     memset(mAccel, 0, sizeof(ACCEL)*MAX_ACCEL);
 
-    HACCEL sAccelHandle = ::LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(mResourceId));
+    HACCEL sAccelHandle = ::LoadAccelerators(gApp.m_hInstance, MAKEINTRESOURCE(mResourceId));
     mCount = ::CopyAcceleratorTable(sAccelHandle, mAccel, MAX_ACCEL);
     ::DestroyAcceleratorTable(sAccelHandle);
 

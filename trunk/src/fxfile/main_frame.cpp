@@ -132,7 +132,7 @@ xpr_bool_t MainFrame::PreCreateWindow(CREATESTRUCT &aCreateStruct)
 
     CBrush sBrush(::GetSysColor(COLOR_WINDOWFRAME));
     HCURSOR sCursor = ::LoadCursor(XPR_NULL, IDC_ARROW);
-    HICON sIcon = ::LoadIcon(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+    HICON sIcon = ::LoadIcon(gApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
     aCreateStruct.lpszClass = AfxRegisterWndClass(CS_DBLCLKS, sCursor, sBrush, sIcon);
     DESTROY_CURSOR(sCursor);
     DESTROY_ICON(sIcon);
@@ -208,7 +208,7 @@ xpr_bool_t MainFrame::PreCreateWindow(CREATESTRUCT &aCreateStruct)
     aCreateStruct.cx = sWindowRect.Width();
     aCreateStruct.cy = sWindowRect.Height();
 
-    theApp.m_nCmdShow = sCmdShow;
+    gApp.m_nCmdShow = sCmdShow;
 
     return XPR_TRUE;
 }
@@ -290,7 +290,7 @@ xpr_sint_t MainFrame::OnCreate(LPCREATESTRUCT aCreateStruct)
 
     if (mDropTarget.Register(this) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("main_frame.msg.warning_not_supported_drag_drop_clipboard"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("main_frame.msg.warning_not_supported_drag_drop_clipboard"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
     }
 
@@ -491,7 +491,7 @@ void MainFrame::OnDestroy(void)
 // when exited windows by called ExitWindow or ExitWindowEx function
 void MainFrame::OnEndSession(xpr_bool_t aEnding)
 {
-    theApp.saveAllOptions();
+    gApp.saveAllOptions();
 
     destroy();
 }
@@ -516,7 +516,7 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
         if (sRefCount > 0)
         {
             xpr_tchar_t sMsg[0xff] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("main_frame.msg.exit_file_operation_in_progress"), XPR_STRING_LITERAL("%d")), sRefCount);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("main_frame.msg.exit_file_operation_in_progress"), XPR_STRING_LITERAL("%d")), sRefCount);
             xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_ICONWARNING | MB_YESNO);
             if (sMsgId != IDYES)
                 return XPR_FALSE;
@@ -525,7 +525,7 @@ xpr_bool_t MainFrame::confirmToClose(xpr_bool_t aForce)
         // Confirm Exit
         if (XPR_IS_TRUE(gOpt->mConfig.mConfirmExit))
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("main_frame.msg.confirm_exit"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("main_frame.msg.confirm_exit"));
             xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_SYSTEMMODAL | MB_ICONQUESTION | MB_YESNO);
             if (sMsgId != IDYES)
                 return XPR_FALSE;
@@ -1087,7 +1087,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -1095,7 +1095,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -1134,11 +1134,11 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                 const xpr_tchar_t *sText = XPR_NULL;
                 switch (sUndoMode)
                 {
-                case MODE_COPY:   sText = theApp.loadString(XPR_STRING_LITERAL("cmd.undo.copy"));   break;
-                case MODE_MOVE:   sText = theApp.loadString(XPR_STRING_LITERAL("cmd.undo.move"));   break;
-                case MODE_RENAME: sText = theApp.loadString(XPR_STRING_LITERAL("cmd.undo.rename")); break;
-                case MODE_TRASH:  sText = theApp.loadString(XPR_STRING_LITERAL("cmd.undo.trash"));  break;
-                default:          sText = theApp.loadString(XPR_STRING_LITERAL("cmd.undo.none"));   break;
+                case MODE_COPY:   sText = gApp.loadString(XPR_STRING_LITERAL("cmd.undo.copy"));   break;
+                case MODE_MOVE:   sText = gApp.loadString(XPR_STRING_LITERAL("cmd.undo.move"));   break;
+                case MODE_RENAME: sText = gApp.loadString(XPR_STRING_LITERAL("cmd.undo.rename")); break;
+                case MODE_TRASH:  sText = gApp.loadString(XPR_STRING_LITERAL("cmd.undo.trash"));  break;
+                default:          sText = gApp.loadString(XPR_STRING_LITERAL("cmd.undo.none"));   break;
                 }
 
                 if (sText != XPR_NULL)
@@ -1752,7 +1752,7 @@ xpr_sint_t MainFrame::insertGoWorkingFolderPopupMenu(BCMenu *aPopupMenu, xpr_sin
     sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
-        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.go"), XPR_STRING_LITERAL("%d,%d")), i+1, i+1);
+        _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.go"), XPR_STRING_LITERAL("%d,%d")), i+1, i+1);
         aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_FIRST+i, sText, &sToolBarImgList, 44+i);
     }
 
@@ -1770,7 +1770,7 @@ xpr_sint_t MainFrame::insertGoWorkingFolderSetPopupMenu(BCMenu *aPopupMenu, xpr_
     sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
-        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.set"), XPR_STRING_LITERAL("%d")), i+1);
+        _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.set"), XPR_STRING_LITERAL("%d")), i+1);
         aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_SET_FIRST+i, sText);
     }
 
@@ -1788,7 +1788,7 @@ xpr_sint_t MainFrame::insertGoWorkingFolderResetPopupMenu(BCMenu *aPopupMenu, xp
     sCount = MAX_WORKING_FOLDER;
     for (i = 0; i < sCount; ++i)
     {
-        _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.reset"), XPR_STRING_LITERAL("%d")), i+1);
+        _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("cmd.working_folder.reset"), XPR_STRING_LITERAL("%d")), i+1);
         aPopupMenu->InsertMenu(aInsert++, MF_STRING | MF_BYPOSITION, ID_GO_WORKING_FOLDER_RESET_FIRST+i, sText);
     }
 
@@ -1802,7 +1802,7 @@ xpr_sint_t MainFrame::insertRecentFileListPopupMenu(BCMenu *aPopupMenu, xpr_sint
 
     if (XPR_IS_FALSE(gOpt->mConfig.mRecentFile))
     {
-        const xpr_tchar_t *sText = theApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.not_used"));
+        const xpr_tchar_t *sText = gApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.not_used"));
 
         aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_DYNAMIC_MENU, (xpr_tchar_t *)sText);
         aPopupMenu->EnableMenuItem(aInsert, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
@@ -1814,7 +1814,7 @@ xpr_sint_t MainFrame::insertRecentFileListPopupMenu(BCMenu *aPopupMenu, xpr_sint
     xpr_size_t sCount = sRecentFileList.getFileCount();
     if (sCount == 0)
     {
-        const xpr_tchar_t *sText = theApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.none"));
+        const xpr_tchar_t *sText = gApp.loadString(XPR_STRING_LITERAL("cmd.recent_files.popup.none"));
 
         aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_FILE_RECENT_DYNAMIC_MENU, (xpr_tchar_t *)sText);
         aPopupMenu->EnableMenuItem(aInsert, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
@@ -2035,7 +2035,7 @@ SysTray *MainFrame::createTray(void)
         return mSysTray;
 
     xpr_uint_t sIconId = (xpr::getOsVer() <= xpr::kOsVerWin2000) ? IDI_TRAY : IDI_TRAY_XP;
-    HICON sIcon = (HICON)::LoadImage(theApp.m_hInstance, MAKEINTRESOURCE(sIconId), IMAGE_ICON, 0, 0, 0);
+    HICON sIcon = (HICON)::LoadImage(gApp.m_hInstance, MAKEINTRESOURCE(sIconId), IMAGE_ICON, 0, 0, 0);
 
     mSysTray = new SysTray;
     if (mSysTray->createTray(GetSafeHwnd(), WM_TRAY_MESSAGE, IDS_TRAY_NOTIFY, FXFILE_PROGRAM_NAME, sIcon) == XPR_FALSE)
@@ -2175,11 +2175,11 @@ void MainFrame::GetMessageString(xpr_uint_t aId, CString &aMessage) const
         xpr_tchar_t sDriveChar = (aId - ID_DRIVE_FIRST) + XPR_STRING_LITERAL('A');
         const xpr_tchar_t *sDriveLastPath = getDrivePath(sViewIndex, aId);
 
-        _stprintf(sMessage, theApp.loadFormatString(XPR_STRING_LITERAL("drive.status.desc"), XPR_STRING_LITERAL("%c")), sDriveChar);
+        _stprintf(sMessage, gApp.loadFormatString(XPR_STRING_LITERAL("drive.status.desc"), XPR_STRING_LITERAL("%c")), sDriveChar);
 
         if (XPR_IS_NOT_NULL(sDriveLastPath) && sDriveLastPath[0] != 0)
         {
-            _stprintf(sMessage + _tcslen(sMessage), theApp.loadFormatString(XPR_STRING_LITERAL("drive.status.memorized_last_folder"), XPR_STRING_LITERAL("%s")), sDriveLastPath );
+            _stprintf(sMessage + _tcslen(sMessage), gApp.loadFormatString(XPR_STRING_LITERAL("drive.status.memorized_last_folder"), XPR_STRING_LITERAL("%s")), sDriveLastPath );
         }
 
         aMessage = sMessage;
@@ -2866,7 +2866,7 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
             GetFullPath(aFullPidl, sFullPath);
 
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3 + 1] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_real_path"), XPR_STRING_LITERAL("%s,%s")), sPath.c_str(), sFullPath.c_str());
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_real_path"), XPR_STRING_LITERAL("%s,%s")), sPath.c_str(), sFullPath.c_str());
             xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNOCANCEL | MB_ICONQUESTION);
             if (sMsgId == IDCANCEL)
                 return XPR_FALSE;
@@ -2884,7 +2884,7 @@ void MainFrame::resetWorkingFolder(xpr_size_t aIndex)
         return;
 
     xpr_tchar_t sMsg[0xff] = {0};
-    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_initialize"), XPR_STRING_LITERAL("%d")), aIndex + 1);
+    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("working_folder.msg.question_initialize"), XPR_STRING_LITERAL("%d")), aIndex + 1);
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -2894,7 +2894,7 @@ void MainFrame::resetWorkingFolder(xpr_size_t aIndex)
 
 void MainFrame::resetWorkingFolder(void)
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("working_folder.msg.question_initialize_all"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("working_folder.msg.question_initialize_all"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -2915,7 +2915,7 @@ xpr_sint_t MainFrame::insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aIn
 
     sShellNew.clear();
     sShellNew.setBaseCommandId(ID_FILE_NEW_FIRST);
-    sShellNew.setText(theApp.loadString(XPR_STRING_LITERAL("cmd.new.shell_item_prefix")), theApp.loadString(XPR_STRING_LITERAL("cmd.new.shell_item_suffix")));
+    sShellNew.setText(gApp.loadString(XPR_STRING_LITERAL("cmd.new.shell_item_prefix")), gApp.loadString(XPR_STRING_LITERAL("cmd.new.shell_item_suffix")));
     sShellNew.getRegShellNew();
 
     xpr_sint_t i, sCount;
@@ -3734,7 +3734,7 @@ void MainFrame::gotoBookmark(xpr_sint_t aBookmarkIndex)
     if (XPR_IS_FALSE(sResult))
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH * 2 + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.msg.wrong_path"), XPR_STRING_LITERAL("%s")), sBookmarkPath);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.msg.wrong_path"), XPR_STRING_LITERAL("%s")), sBookmarkPath);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 }
@@ -3829,7 +3829,7 @@ xpr_sint_t MainFrame::addBookmark(LPITEMIDLIST aFullPidl, xpr_sint_t aInsert)
     if (BookmarkMgr::instance().getCount() > MAX_BOOKMARK)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("bookmark.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return -1;
     }
@@ -4099,7 +4099,7 @@ void MainFrame::loadAccelTable(void)
     // default accelerator loading
     if (sSucceeded == XPR_FALSE)
     {
-        HACCEL sAccelHandle = ::LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+        HACCEL sAccelHandle = ::LoadAccelerators(gApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
         if (XPR_IS_NOT_NULL(sAccelHandle))
         {
             if (XPR_IS_NOT_NULL(m_hAccelTable))
@@ -4160,7 +4160,7 @@ void MainFrame::setMainTitle(xpr_tchar_t *aTitle)
     HRESULT sHResult = IsUACElevated(&sElevated);
     if (SUCCEEDED(sHResult) && XPR_IS_TRUE(sElevated))
     {
-        _tcscat(sTitle, theApp.loadString(XPR_STRING_LITERAL("main_frame.title.admin_mode")));
+        _tcscat(sTitle, gApp.loadString(XPR_STRING_LITERAL("main_frame.title.admin_mode")));
         _tcscat(sTitle, XPR_STRING_LITERAL(": "));
     }
 
@@ -4262,7 +4262,7 @@ void MainFrame::compareWindow(void)
     if (sExplorerCtrl1->isFileSystemFolder() == XPR_FALSE ||
         sExplorerCtrl2->isFileSystemFolder() == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.msg.stop_not_file_system_folder"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.msg.stop_not_file_system_folder"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -4290,7 +4290,7 @@ void MainFrame::compareWindow(void)
 
     mCompareDirs->scanCompare();
 
-    WaitDlg::instance().setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.title")));
+    WaitDlg::instance().setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.title")));
     if (WaitDlg::instance().DoModal() == IDCANCEL)
     {
         if (XPR_IS_NOT_NULL(mCompareDirs))
@@ -4318,7 +4318,7 @@ LRESULT MainFrame::OnCompareDirsStatus(WPARAM wParam, LPARAM lParam)
 
     if (mCompareDirs->getDiffCount() == 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.msg.equaled_folder"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.folder_compare.msg.equaled_folder"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
     }
     else

@@ -57,13 +57,13 @@ xpr_bool_t SearchLocEditDlg::OnInitDialog(void)
 
     OnIncludeExclude();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.title")));
-    SetDlgItemText(IDC_SEARCH_LOC_EDIT_INCLUDE,    theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.include")));
-    SetDlgItemText(IDC_SEARCH_LOC_EDIT_EXCLUDE,    theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.exclude")));
-    SetDlgItemText(IDC_SEARCH_LOC_EDIT_LABEL_PATH, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.label.exclude_path")));
-    SetDlgItemText(IDC_SEARCH_LOC_EDIT_SUBFOLDER,  theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.exclude_sub-folder")));
-    SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.title")));
+    SetDlgItemText(IDC_SEARCH_LOC_EDIT_INCLUDE,    gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.include")));
+    SetDlgItemText(IDC_SEARCH_LOC_EDIT_EXCLUDE,    gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.exclude")));
+    SetDlgItemText(IDC_SEARCH_LOC_EDIT_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.label.exclude_path")));
+    SetDlgItemText(IDC_SEARCH_LOC_EDIT_SUBFOLDER,  gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.check.exclude_sub-folder")));
+    SetDlgItemText(IDOK,                           gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -84,7 +84,7 @@ void SearchLocEditDlg::OnOK(void)
 
         if (mSearchUserLocPathSet->find(sPathUpper) != mSearchUserLocPathSet->end())
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.msg.duplicated_path"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.msg.duplicated_path"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
             GetDlgItem(IDC_SEARCH_LOC_EDIT_PATH)->SetFocus();
@@ -176,7 +176,7 @@ void SearchLocEditDlg::OnPathBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.exclude_path_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location_edit.exclude_path_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
 

@@ -258,7 +258,7 @@ void SearchResultPane::onUpdatedResultInfo(SearchResultCtrl &aSearchResultCtrl)
 
     _stprintf(
         mStatusText0,
-        theApp.loadFormatString(XPR_STRING_LITERAL("search_result.status.pane1.file_folder"),
+        gApp.loadFormatString(XPR_STRING_LITERAL("search_result.status.pane1.file_folder"),
         XPR_STRING_LITERAL("%s,%s,%s")),
         sResultTotalCountText,
         sResultDirCountText,

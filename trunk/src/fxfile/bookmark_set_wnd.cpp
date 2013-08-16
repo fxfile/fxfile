@@ -211,7 +211,7 @@ void BookmarkSetWnd::updateBookmark(void)
 
         const xpr_tchar_t *sText = sBookmarkItem->mName.c_str();
         if (sText == XPR_NULL || _tcslen(sText) == 0)
-            sText = theApp.loadString(XPR_STRING_LITERAL("bookmark.no_name"));
+            sText = gApp.loadString(XPR_STRING_LITERAL("bookmark.no_name"));
 
         mBookmarkWnd[j].setBookmark(i, sBookmarkItem);
         mBookmarkWnd[j].Create(sText, WS_CHILD | WS_VISIBLE | SS_LEFT, sRect, this, CTRL_ID_BOOKMARK_WND + j);

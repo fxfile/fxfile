@@ -149,9 +149,9 @@ xpr_bool_t ProcSharedFileDlg::OnInitDialog(void)
     SetDlgItemText(IDC_SHARED_PROC_PATH, mPath);
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.no")),      LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.pid")),     LVCFMT_RIGHT,  50, -1);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.process")), LVCFMT_LEFT,  200, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.no")),      LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.pid")),     LVCFMT_RIGHT,  50, -1);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.list.column.process")), LVCFMT_LEFT,  200, -1);
 
     xpr_tchar_t sStatusText[0xff] = {0};
     if (xpr::getOsVer() >= xpr::kOsVerWinNT)
@@ -159,25 +159,25 @@ xpr_bool_t ProcSharedFileDlg::OnInitDialog(void)
         xpr_sint_t nCount = setPath(mPath);
         if (nCount > 0)
         {
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.shared_process.status.count"), XPR_STRING_LITERAL("%d")), nCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.shared_process.status.count"), XPR_STRING_LITERAL("%d")), nCount);
         }
         else
         {
-            _stprintf(sStatusText, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.status.none")));
+            _stprintf(sStatusText, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.status.none")));
         }
     }
     else
     {
-        _stprintf(sStatusText, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.status.not_support_os_platform")));
+        _stprintf(sStatusText, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.status.not_support_os_platform")));
     }
 
     setStatus(sStatusText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.title")));
-    SetDlgItemText(IDC_SHARED_PROC_LABEL_PATH, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.label.path")));
-    SetDlgItemText(IDC_SHARED_PROC_LABEL_LIST, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.label.list")));
-    SetDlgItemText(IDC_SHARED_PROC_PROPERTIES, theApp.loadString(XPR_STRING_LITERAL("popup.shared_process.button.properties")));
-    SetDlgItemText(IDOK,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.title")));
+    SetDlgItemText(IDC_SHARED_PROC_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.label.path")));
+    SetDlgItemText(IDC_SHARED_PROC_LABEL_LIST, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.label.list")));
+    SetDlgItemText(IDC_SHARED_PROC_PROPERTIES, gApp.loadString(XPR_STRING_LITERAL("popup.shared_process.button.properties")));
+    SetDlgItemText(IDOK,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("ProcSharedFile"));
     if (XPR_IS_NOT_NULL(mDlgState))

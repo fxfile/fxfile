@@ -48,21 +48,21 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
     addIgnoreApply(IDC_CFG_ADV_OPTION);
     addIgnoreApply(IDC_CFG_ADV_REMOVE_RECENT_FILELIST);
 
-    SetDlgItemText(IDC_CFG_ADV_SINGLE_PROCESS,                       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.single_process")));
-    SetDlgItemText(IDC_CFG_ADV_CONFIRM_TO_EXIT,                      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.confirm_to_exit")));
-    SetDlgItemText(IDC_CFG_ADV_RECENT_FILE_LIST,                     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.use_recent_file_list")));
-    SetDlgItemText(IDC_CFG_ADV_SHELL_CONTEXT_MENU,                   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.register_to_shell_context_menu")));
-    SetDlgItemText(IDC_CFG_ADV_GROUP_TRAY,                           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.group.system_tray")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_NONE,                            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_none")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW,                            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_show")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT,                    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_hide_on_exit")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_show_tray_when_minimizing")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring")));
-    SetDlgItemText(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_restore_on_one_click")));
-    SetDlgItemText(IDC_CFG_ADV_UPDATE_ENABLE,                        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_enable")));
-    SetDlgItemText(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_check_minor_version_up")));
-    SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST,               theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
-    SetDlgItemText(IDC_CFG_ADV_DEFAULT,                              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
+    SetDlgItemText(IDC_CFG_ADV_SINGLE_PROCESS,                       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.single_process")));
+    SetDlgItemText(IDC_CFG_ADV_CONFIRM_TO_EXIT,                      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.confirm_to_exit")));
+    SetDlgItemText(IDC_CFG_ADV_RECENT_FILE_LIST,                     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.use_recent_file_list")));
+    SetDlgItemText(IDC_CFG_ADV_SHELL_CONTEXT_MENU,                   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.register_to_shell_context_menu")));
+    SetDlgItemText(IDC_CFG_ADV_GROUP_TRAY,                           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.group.system_tray")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_NONE,                            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_none")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW,                            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.radio.system_tray_show")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_HIDE_ON_EXIT,                    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_hide_on_exit")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_SHOW_WHEN_MINIMIZING,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_show_tray_when_minimizing")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring")));
+    SetDlgItemText(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_restore_on_one_click")));
+    SetDlgItemText(IDC_CFG_ADV_UPDATE_ENABLE,                        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_enable")));
+    SetDlgItemText(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_check_minor_version_up")));
+    SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
+    SetDlgItemText(IDC_CFG_ADV_DEFAULT,                              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
 
     return XPR_TRUE;
 }
@@ -128,7 +128,7 @@ void CfgAdvDlg::OnDefault(void)
 
 void CfgAdvDlg::OnRemoveRecentFileList(void) 
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.msg.confirm_remove_recent_file_list"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.msg.confirm_remove_recent_file_list"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;

@@ -122,13 +122,13 @@ xpr_bool_t FileSplitDlg::OnInitDialog(void)
     FXP_ADD_SPLIT_SIZE_PRESET(XPR_STRING_LITERAL("500 MB"),          500*1024*1024);
     FXP_ADD_SPLIT_SIZE_PRESET(XPR_STRING_LITERAL("650 MB (CD-R)"),   650*1024*1024);
     FXP_ADD_SPLIT_SIZE_PRESET(XPR_STRING_LITERAL("700 MB (CD-R)"),   700*1024*1024);
-    FXP_ADD_SPLIT_SIZE_PRESET(theApp.loadString(XPR_STRING_LITERAL("popup.file_split.size_preset.user_defined")), 0);
+    FXP_ADD_SPLIT_SIZE_PRESET(gApp.loadString(XPR_STRING_LITERAL("popup.file_split.size_preset.user_defined")), 0);
     mSplitSizePreset.SetCurSel(2);
 
 #define FXP_ADD_SPLIT_SIZE_UNIT(text, unit) \
     sIndex = mSplitSizeUnit.AddString(text); mSplitSizeUnit.SetItemData(sIndex, unit)
 
-    FXP_ADD_SPLIT_SIZE_UNIT(theApp.loadString(XPR_STRING_LITERAL("common.size.byte")), 1);
+    FXP_ADD_SPLIT_SIZE_UNIT(gApp.loadString(XPR_STRING_LITERAL("common.size.byte")), 1);
     FXP_ADD_SPLIT_SIZE_UNIT(XPR_STRING_LITERAL("KB"), 1*1024);
     FXP_ADD_SPLIT_SIZE_UNIT(XPR_STRING_LITERAL("MB"), 1*1024*1024);
     FXP_ADD_SPLIT_SIZE_UNIT(XPR_STRING_LITERAL("GB"), 1*1024*1024*1024);
@@ -140,20 +140,20 @@ xpr_bool_t FileSplitDlg::OnInitDialog(void)
     ((CButton *)GetDlgItem(IDC_FILE_SPLIT_OPTION_SPLIT_SIZE))->SetCheck(XPR_TRUE);
     ((CButton *)GetDlgItem(IDC_FILE_SPLIT_OPTION_SPLIT_COUNT))->SetCheck(XPR_FALSE);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.file_split.title")));
-    SetDlgItemText(IDC_FILE_SPLIT_LABEL_PATH,         theApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.path")));
-    SetDlgItemText(IDC_FILE_SPLIT_LABEL_DEST_DIR,     theApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.dest_dir")));
-    SetDlgItemText(IDC_FILE_SPLIT_GROUP_OPTION,       theApp.loadString(XPR_STRING_LITERAL("popup.file_split.group.option")));
-    SetDlgItemText(IDC_FILE_SPLIT_OPTION_SPLIT_SIZE,  theApp.loadString(XPR_STRING_LITERAL("popup.file_split.radio.split_size")));
-    SetDlgItemText(IDC_FILE_SPLIT_OPTION_SPLIT_COUNT, theApp.loadString(XPR_STRING_LITERAL("popup.file_split.radio.split_count")));
-    SetDlgItemText(IDC_FILE_SPLIT_WITH_CRC,           theApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.with_crc")));
-    SetDlgItemText(IDC_FILE_SPLIT_DELETE_ORG,         theApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.delete_orignal_file")));
-    SetDlgItemText(IDC_FILE_SPLIT_CREATE_BATCH_FILE,  theApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.create_batch_file")));
-    SetDlgItemText(IDOK,                              theApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.split")));
-    SetDlgItemText(IDCANCEL,                          theApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.file_split.title")));
+    SetDlgItemText(IDC_FILE_SPLIT_LABEL_PATH,         gApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.path")));
+    SetDlgItemText(IDC_FILE_SPLIT_LABEL_DEST_DIR,     gApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.dest_dir")));
+    SetDlgItemText(IDC_FILE_SPLIT_GROUP_OPTION,       gApp.loadString(XPR_STRING_LITERAL("popup.file_split.group.option")));
+    SetDlgItemText(IDC_FILE_SPLIT_OPTION_SPLIT_SIZE,  gApp.loadString(XPR_STRING_LITERAL("popup.file_split.radio.split_size")));
+    SetDlgItemText(IDC_FILE_SPLIT_OPTION_SPLIT_COUNT, gApp.loadString(XPR_STRING_LITERAL("popup.file_split.radio.split_count")));
+    SetDlgItemText(IDC_FILE_SPLIT_WITH_CRC,           gApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.with_crc")));
+    SetDlgItemText(IDC_FILE_SPLIT_DELETE_ORG,         gApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.delete_orignal_file")));
+    SetDlgItemText(IDC_FILE_SPLIT_CREATE_BATCH_FILE,  gApp.loadString(XPR_STRING_LITERAL("popup.file_split.check.create_batch_file")));
+    SetDlgItemText(IDOK,                              gApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.split")));
+    SetDlgItemText(IDCANCEL,                          gApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.close")));
 
     setFileSizeText();
-    setStatus(theApp.loadString(XPR_STRING_LITERAL("popup.file_split.status.ready")));
+    setStatus(gApp.loadString(XPR_STRING_LITERAL("popup.file_split.status.ready")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("FileSplit"));
@@ -209,7 +209,7 @@ void FileSplitDlg::setStatus(const xpr_tchar_t *aStatus)
 
 void FileSplitDlg::enableWindow(xpr_bool_t aEnable)
 {
-    SetDlgItemText(IDOK, (aEnable == XPR_TRUE) ? theApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.split")) : theApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.stop")));
+    SetDlgItemText(IDOK, (aEnable == XPR_TRUE) ? gApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.split")) : gApp.loadString(XPR_STRING_LITERAL("popup.file_split.button.stop")));
 
     GetDlgItem(IDC_FILE_SPLIT_PATH)->EnableWindow(aEnable);
     GetDlgItem(IDC_FILE_SPLIT_PATH_BROWSE)->EnableWindow(aEnable);
@@ -251,7 +251,7 @@ static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM
 void FileSplitDlg::OnPathBrowse(void)
 {
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.*"), XPR_NULL, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
         return;
@@ -273,7 +273,7 @@ void FileSplitDlg::OnDestDirBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;//BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -319,7 +319,7 @@ void FileSplitDlg::setFileSizeText(void)
     SizeFormat::getFormatedNumber(sFileSize, sFormatedFileSize, 0xfe);
 
     xpr_tchar_t sFileSizeText[0xff] = {0};
-    _stprintf(sFileSizeText, XPR_STRING_LITERAL("%s: %s %s"), theApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.file_size")), sFormatedFileSize, theApp.loadString(XPR_STRING_LITERAL("common.size.byte")));
+    _stprintf(sFileSizeText, XPR_STRING_LITERAL("%s: %s %s"), gApp.loadString(XPR_STRING_LITERAL("popup.file_split.label.file_size")), sFormatedFileSize, gApp.loadString(XPR_STRING_LITERAL("common.size.byte")));
     SetDlgItemText(IDC_FILE_SPLIT_LABEL_FILE_SIZE, sFileSizeText);
 }
 
@@ -365,7 +365,7 @@ void FileSplitDlg::OnOK(void)
 
     if (IsExistFile(sPath) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_exist"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_exist"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FILE_SPLIT_PATH)->SetFocus();
@@ -374,7 +374,7 @@ void FileSplitDlg::OnOK(void)
 
     if (IsExistFile(sDestDir) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.dest_dir_not_exist"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.dest_dir_not_exist"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FILE_SPLIT_DEST_DIR)->SetFocus();
@@ -395,7 +395,7 @@ void FileSplitDlg::OnOK(void)
     if (IsExistFile(sDestPath) == XPR_TRUE)
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH * 2] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestPath);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestPath);
         if (MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION) == IDNO)
             return;
     }
@@ -433,7 +433,7 @@ void FileSplitDlg::OnOK(void)
         {
         case FileSplit::StatusFileNotExist:
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_exist"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_exist"));
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 GetDlgItem(IDC_FILE_SPLIT_PATH)->SetFocus();
@@ -442,7 +442,7 @@ void FileSplitDlg::OnOK(void)
 
         case FileSplit::StatusDestDirNotExist:
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.dest_dir_not_exist"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.dest_dir_not_exist"));
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 GetDlgItem(IDC_FILE_SPLIT_DEST_DIR)->SetFocus();
@@ -460,7 +460,7 @@ void FileSplitDlg::OnTimer(UINT_PTR nIDEvent)
         mFileSplit->getStatus(&sSplitedCount);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.in_progress"), XPR_STRING_LITERAL("%d")), sSplitedCount);
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.in_progress"), XPR_STRING_LITERAL("%d")), sSplitedCount);
         setStatus(sStatusText);
 
         mProgressCtrl.SetPos((xpr_sint_t)sSplitedCount);
@@ -486,14 +486,14 @@ LRESULT FileSplitDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case FileSplit::StatusNotReadable:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.read_failed"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.read_failed"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
 
     case FileSplit::StatusNotWritable:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_create"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_split.msg.not_create"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
@@ -501,7 +501,7 @@ LRESULT FileSplitDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileSplit::StatusSplitCompleted:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.completed"), XPR_STRING_LITERAL("%d")), sSplitedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.completed"), XPR_STRING_LITERAL("%d")), sSplitedCount);
             setStatus(sStatusText);
             break;
         }
@@ -509,7 +509,7 @@ LRESULT FileSplitDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileSplit::StatusStopped:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.stoped"), XPR_STRING_LITERAL("%d")), sSplitedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_split.status.stoped"), XPR_STRING_LITERAL("%d")), sSplitedCount);
             setStatus(sStatusText);
             break;
         }

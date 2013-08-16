@@ -53,9 +53,9 @@ xpr_bool_t CfgAppearanceThumbnailDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_THUMBNAIL_PRIORITY);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.low")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.normal")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.high")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.low")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.normal")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.priority.high")));
 
     CSpinButtonCtrl *sSpinCtrl;
     sSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_CFG_THUMBNAIL_WIDTH_SPIN);
@@ -92,21 +92,21 @@ xpr_bool_t CfgAppearanceThumbnailDlg::OnInitDialog(void)
         mImageFormatComboBox.AddString(sText);
     }
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.limit_size"), XPR_STRING_LITERAL("%d,%d")), MIN_THUMB_SIZE, MAX_THUMB_SIZE);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.limit_size"), XPR_STRING_LITERAL("%d,%d")), MIN_THUMB_SIZE, MAX_THUMB_SIZE);
     SetDlgItemText(IDC_CFG_THUMBNAIL_LIMIT_SIZE, sText);
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.supported_image_count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.supported_image_count"), XPR_STRING_LITERAL("%d")), sCount);
     SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_SUPPORTED_IMAGE_COUNT, sText);
 
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_WIDTH,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.width")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_HEIGHT,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.height")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_PRIORITY,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.priority")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_CAUTION,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.caution")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_SUPPORTED_IMAGE, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.supported_image")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_LOAD_BY_EXT,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.check.load_by_extension")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE,                 theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.check.cache")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE_CLEAN,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.button.cache_clean")));
-    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE_INIT,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.button.cache_initalization")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_WIDTH,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.width")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_HEIGHT,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.height")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_PRIORITY,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.priority")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_CAUTION,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.caution")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LABEL_SUPPORTED_IMAGE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.label.supported_image")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_LOAD_BY_EXT,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.check.load_by_extension")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE,                 gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.check.cache")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE_CLEAN,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.button.cache_clean")));
+    SetDlgItemText(IDC_CFG_THUMBNAIL_CACHE_INIT,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.button.cache_initalization")));
 
     return XPR_TRUE;
 }
@@ -140,7 +140,7 @@ void CfgAppearanceThumbnailDlg::OnCacheClean(void)
 
     Thumbnail::instance().verifyThumb();
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.completed_clean"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.completed_clean"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
 }
 
@@ -148,7 +148,7 @@ void CfgAppearanceThumbnailDlg::OnCacheInit(void)
 {
     const xpr_tchar_t *sMsg;
 
-    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.warning_initialize"));
+    sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.warning_initialize"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -157,7 +157,7 @@ void CfgAppearanceThumbnailDlg::OnCacheInit(void)
 
     Thumbnail::instance().initThumb();
 
-    sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.completed_initialize"));
+    sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearnace.thumbnail.msg.completed_initialize"));
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
 }
 } // namespace cfg

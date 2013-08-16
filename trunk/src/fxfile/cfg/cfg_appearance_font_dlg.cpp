@@ -56,9 +56,9 @@ xpr_bool_t CfgAppearanceFontDlg::OnInitDialog(void)
     sSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_CFG_FONT_FOLDER_TREE_ITEM_HEIGHT_SIZE_SPIN);
     sSpinCtrl->SetRange(MIN_FOLDER_TREE_HEIGHT, MAX_FOLDER_TREE_HEIGHT);
 
-    SetDlgItemText(IDC_CFG_FONT_CUSTOM_FONT,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.custom_font")));
-    SetDlgItemText(IDC_CFG_FONT_FOLDER_TREE_CUSTOM_FONT, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.folder_tree_custom_font")));
-    SetDlgItemText(IDC_CFG_FONT_FOLDER_TREE_ITEM_HEIGHT, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.folder_tree_item_height")));
+    SetDlgItemText(IDC_CFG_FONT_CUSTOM_FONT,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.custom_font")));
+    SetDlgItemText(IDC_CFG_FONT_FOLDER_TREE_CUSTOM_FONT, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.folder_tree_custom_font")));
+    SetDlgItemText(IDC_CFG_FONT_FOLDER_TREE_ITEM_HEIGHT, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.font.check.folder_tree_item_height")));
 
     return XPR_TRUE;
 }

@@ -64,7 +64,7 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
     super::OnInitDialog();
 
     HICON sIcon = GetFileExtIcon(XPR_STRING_LITERAL(".txt"), XPR_TRUE);
-    setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.file_list.label.top_desc")));
+    setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.file_list.label.top_desc")));
     setDescIcon(sIcon, XPR_TRUE);
 
     ((CButton *)GetDlgItem(IDC_FILE_LIST_BY_LINE))->SetCheck(XPR_TRUE);
@@ -78,16 +78,16 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_FILE_LIST_SEPARATOR_TEXT))->LimitText(MAX_DIV_TEXT);
     ((CEdit *)GetDlgItem(IDC_FILE_LIST_PATH))->LimitText(XPR_MAX_PATH);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.file_list.title")));
-    SetDlgItemText(IDC_FILE_LIST_LABEL_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.file_list.label.path")));
-    SetDlgItemText(IDC_FILE_LIST_PATH_BROWSE,   theApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.path_browse")));
-    SetDlgItemText(IDC_FILE_LIST_GROUP_OPTION,  theApp.loadString(XPR_STRING_LITERAL("popup.file_list.group.option")));
-    SetDlgItemText(IDC_FILE_LIST_ONLY_FILE,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.only_file")));
-    SetDlgItemText(IDC_FILE_LIST_BY_LINE,       theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.by_line")));
-    SetDlgItemText(IDC_FILE_LIST_WITH_EXT,      theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_extension")));
-    SetDlgItemText(IDC_FILE_LIST_WITH_INFO,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_info")));
-    SetDlgItemText(IDC_FILE_LIST_WITH_DIR,      theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_dir")));
-    SetDlgItemText(IDC_FILE_LIST_SEPARATOR,     theApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.separator")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.file_list.title")));
+    SetDlgItemText(IDC_FILE_LIST_LABEL_PATH,    gApp.loadString(XPR_STRING_LITERAL("popup.file_list.label.path")));
+    SetDlgItemText(IDC_FILE_LIST_PATH_BROWSE,   gApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.path_browse")));
+    SetDlgItemText(IDC_FILE_LIST_GROUP_OPTION,  gApp.loadString(XPR_STRING_LITERAL("popup.file_list.group.option")));
+    SetDlgItemText(IDC_FILE_LIST_ONLY_FILE,     gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.only_file")));
+    SetDlgItemText(IDC_FILE_LIST_BY_LINE,       gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.by_line")));
+    SetDlgItemText(IDC_FILE_LIST_WITH_EXT,      gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_extension")));
+    SetDlgItemText(IDC_FILE_LIST_WITH_INFO,     gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_info")));
+    SetDlgItemText(IDC_FILE_LIST_WITH_DIR,      gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.with_dir")));
+    SetDlgItemText(IDC_FILE_LIST_SEPARATOR,     gApp.loadString(XPR_STRING_LITERAL("popup.file_list.check.separator")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("FileList"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -135,7 +135,7 @@ void FileListDlg::addPath(const xpr_tchar_t *aPath)
 void FileListDlg::OnPathBrowse(void) 
 {
     xpr_tchar_t sFileType[0xff] = {0};
-    _stprintf(sFileType, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.file_list.file_dialog.filter.text_file")));
+    _stprintf(sFileType, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.file_list.file_dialog.filter.text_file")));
 
     CFileDialogST sFileDialog(XPR_FALSE, XPR_STRING_LITERAL("*.txt"), XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFileType, this);
     if (sFileDialog.DoModal() == IDOK)
@@ -167,7 +167,7 @@ void FileListDlg::enableWindow(xpr_bool_t aEnable)
             sWnd->EnableWindow(aEnable);
     }
 
-    GetDlgItem(IDOK)->SetWindowText((aEnable == XPR_TRUE) ? theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : theApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.stop")));
+    GetDlgItem(IDOK)->SetWindowText((aEnable == XPR_TRUE) ? gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : gApp.loadString(XPR_STRING_LITERAL("popup.file_list.button.stop")));
 }
 
 void FileListDlg::OnOK(void) 
@@ -234,7 +234,7 @@ LRESULT FileListDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case FileList::StatusFailed:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_list.msg.not_created"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_list.msg.not_created"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }

@@ -38,8 +38,8 @@ xpr_bool_t CfgFuncRefreshDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_REFRESH_NO_REFRESH, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.no_refresh")));
-    SetDlgItemText(IDC_CFG_REFRESH_AUTO_SORT,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.automatic_sort")));
+    SetDlgItemText(IDC_CFG_REFRESH_NO_REFRESH, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.no_refresh")));
+    SetDlgItemText(IDC_CFG_REFRESH_AUTO_SORT,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.automatic_sort")));
 
     return XPR_TRUE;
 }

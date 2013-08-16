@@ -89,26 +89,26 @@ xpr_bool_t BatchRenameTabFormatDlg::OnInitDialog(void)
     CWnd *sWnd = GetDlgItem(IDC_BATCH_RENAME_FORMAT);
     sWnd->GetClientRect(&sRect);
 
-    const xpr_tchar_t *sTooltipTitle    = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.tooltip.title"));
-    const xpr_tchar_t *sTooltipContents = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.tooltip.contents"));
+    const xpr_tchar_t *sTooltipTitle    = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.tooltip.title"));
+    const xpr_tchar_t *sTooltipContents = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.tooltip.contents"));
 
     mToolTipCtrl.Create(this, TTS_BALLOON);
     mToolTipCtrl.AddTool(sWnd, sTooltipContents, sRect, 1);
     mToolTipCtrl.SetMaxTipWidth(1000);
     mToolTipCtrl.SendMessage(TTM_SETTITLE, (WPARAM)1, (LPARAM)sTooltipTitle);
 
-    SetDlgItemText(IDC_BATCH_RENAME_LABEL_FORMAT,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.format")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_NUMBER,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.start")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_LENGTH,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.length")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_INCREASE, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.increase")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.check.zero_filled")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_AUTO_NUM,       theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.number_digit")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NAME,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.filename")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_EXT,            theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.extension")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DATE,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.date")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_TIME,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.time")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DESC,           theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.format_tip")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_APPLY,          theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.apply")));
+    SetDlgItemText(IDC_BATCH_RENAME_LABEL_FORMAT,          gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.format")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_NUMBER,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.start")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_LENGTH,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.length")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_INCREASE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.increase")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.check.zero_filled")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_AUTO_NUM,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.number_digit")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NAME,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.filename")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_EXT,            gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.extension")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DATE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.date")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_TIME,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.time")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DESC,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.format_tip")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_APPLY,          gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.apply")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename1"));
@@ -216,7 +216,7 @@ void BatchRenameTabFormatDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nInd
                     // if nId(xpr_uint_t) is -1, it's sub-menu.
                     pBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     pBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -224,7 +224,7 @@ void BatchRenameTabFormatDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nInd
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         pBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -387,7 +387,7 @@ xpr_bool_t BatchRenameTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
         xpr_sint_t sLength = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_LENGTH);
         if (!XPR_IS_RANGE(1, sLength, 9))
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.msg.wrong_number_digit"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.msg.wrong_number_digit"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
 
             GetDlgItem(IDC_BATCH_RENAME_FORMAT_LENGTH)->SetFocus();

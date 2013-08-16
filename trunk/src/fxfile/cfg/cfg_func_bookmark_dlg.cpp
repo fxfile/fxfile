@@ -38,10 +38,10 @@ xpr_bool_t CfgFuncBookmarkDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_BOOKMARK_EXPAND_FOLDER, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.go_and_expand_folder")));
-    SetDlgItemText(IDC_CFG_BOOKMARK_REAL_PATH,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.set_real_path")));
-    SetDlgItemText(IDC_CFG_BOOKMARK_SHOW_TOOLTIP,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.show_tooltip")));
-    SetDlgItemText(IDC_CFG_BOOKMARK_FAST_NET_ICON, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.display_fast_network_icon")));
+    SetDlgItemText(IDC_CFG_BOOKMARK_EXPAND_FOLDER, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.go_and_expand_folder")));
+    SetDlgItemText(IDC_CFG_BOOKMARK_REAL_PATH,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.set_real_path")));
+    SetDlgItemText(IDC_CFG_BOOKMARK_SHOW_TOOLTIP,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.show_tooltip")));
+    SetDlgItemText(IDC_CFG_BOOKMARK_FAST_NET_ICON, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.bookmark.check.display_fast_network_icon")));
 
     return XPR_TRUE;
 }
