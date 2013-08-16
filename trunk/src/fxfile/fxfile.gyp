@@ -579,6 +579,8 @@
                 './shell_new.h',
                 './shell_registry.cpp',
                 './shell_registry.h',
+                './singleton_manager.h',
+                './singleton_manager.cpp',
                 './size_format.cpp',
                 './size_format.h',
                 './splitter.cpp',

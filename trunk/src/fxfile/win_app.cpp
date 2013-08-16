@@ -32,6 +32,7 @@
 #include "shell_registry.h"
 #include "launcher_manager.h"
 #include "updater_manager.h"
+#include "singleton_manager.h"
 
 #include "gfl/libgfl.h"
 
@@ -45,6 +46,23 @@
 
 namespace fxfile
 {
+namespace
+{
+// reference: https://svn.boost.org/trac/boost/ticket/5582
+void freeTypeinfoMemory(void)
+{
+   __type_info_node *sNode     = __type_info_root_node.next;
+   __type_info_node *sTempNode = &__type_info_root_node;
+
+   for (; sNode != XPR_NULL; sNode = sTempNode)
+   {
+      sTempNode = sNode->next;
+      delete sNode->memPtr;
+      delete sNode;
+   }
+}
+} // anonymous namespace
+
 static const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
 static const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
 
@@ -78,6 +96,8 @@ WinApp::WinApp(void)
 
 WinApp::~WinApp(void)
 {
+    // clean RTTI memory leak
+    freeTypeinfoMemory();
 }
 
 BEGIN_MESSAGE_MAP(WinApp, super)
@@ -266,6 +286,9 @@ xpr_sint_t WinApp::ExitInstance(void)
     XPR_SAFE_DELETE(mLanguageTable);
 
     CLOSE_HANDLE(mSingleInstanceMutex);
+
+    // clean singleton manager
+    SingletonManager::clean();
 
     //
     // finalize XPR
