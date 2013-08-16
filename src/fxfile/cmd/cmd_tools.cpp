@@ -82,7 +82,7 @@ void EmptyRecycleBinCommand::execute(CommandContext &aContext)
 
     if (sCount <= 0i64)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.trash_empty.msg.already_empty"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.trash_empty.msg.already_empty"));
         sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
         return;
     }
@@ -95,7 +95,7 @@ void EmptyRecycleBinCommand::execute(CommandContext &aContext)
     SizeFormat::getSizeUnitFormat(sSize, SIZE_UNIT_AUTO, sSizeUnitText, 0xfe);
 
     xpr_tchar_t sMsg[0xff] = {0};
-    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.trash_empty.msg.confirm_empty"), XPR_STRING_LITERAL("%s,%s,%s")), sSizeUnitText, sSizeText, sCountText);
+    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.trash_empty.msg.confirm_empty"), XPR_STRING_LITERAL("%s,%s,%s")), sSizeUnitText, sSizeText, sCountText);
     xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -132,7 +132,7 @@ void EmptyRecycleBinCommand::execute(CommandContext &aContext)
 
         sWaitCursor.Restore();
 
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.trash_empty.msg.complete"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.trash_empty.msg.complete"));
         sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
     }
 }

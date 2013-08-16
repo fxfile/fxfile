@@ -815,7 +815,7 @@ void BookmarkToolBar::OnDropShortcut(STGMEDIUM *aStgMedium, xpr_sint_t aBookmark
         xpr::tstring sDir;
         xpr::tstring sName;
         xpr::tstring sBookmarkPath;
-        const xpr_tchar_t *sLinkSuffix = theApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
+        const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
         GetName(sFullPidl, SHGDN_FORPARSING, sDir);
 

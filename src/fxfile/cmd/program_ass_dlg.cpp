@@ -56,7 +56,7 @@ xpr_bool_t ProgramAssDlg::OnInitDialog(void)
     super::OnInitDialog();
 
     HICON sIconHandle;
-    sIconHandle = theApp.LoadIcon(MAKEINTRESOURCE(IDI_NOT));
+    sIconHandle = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_NOT));
     mImgList.Create(16, 16, ILC_COLOR32 | ILC_MASK, -1, -1);
     mImgList.Add(sIconHandle);
     ::DestroyIcon(sIconHandle);
@@ -139,8 +139,8 @@ xpr_bool_t ProgramAssDlg::OnInitDialog(void)
         mTreeCtrl.InsertItem(&sTvInsertStruct);
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.program_ass.title")));
-    SetDlgItemText(IDC_PROGRAM_ASS_LABEL_FILE, theApp.loadString(XPR_STRING_LITERAL("popup.program_ass.label.file")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.program_ass.title")));
+    SetDlgItemText(IDC_PROGRAM_ASS_LABEL_FILE, gApp.loadString(XPR_STRING_LITERAL("popup.program_ass.label.file")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("ProgramAss"));

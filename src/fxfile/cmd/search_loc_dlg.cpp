@@ -125,7 +125,7 @@ xpr_bool_t SearchLocDlg::OnInitDialog(void)
     HICON sIcon;
 
     mLocImgList.Create(16, 16, ILC_COLOR16 | ILC_MASK, -1, -1);
-    sIcon = theApp.LoadIcon(MAKEINTRESOURCE(IDI_SEARCH));
+    sIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_SEARCH));
     mLocImgList.Add(sIcon);
     ::DestroyIcon(sIcon);
 
@@ -140,7 +140,7 @@ xpr_bool_t SearchLocDlg::OnInitDialog(void)
     mListImgList.Create(16, 16, ILC_COLOR32 | ILC_MASK, -1, -1);
     for (i = 0; sIconIds[i]; ++i)
     {
-        sIcon = theApp.LoadIcon(MAKEINTRESOURCE(sIconIds[i]));
+        sIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(sIconIds[i]));
         mListImgList.Add(sIcon);
         ::DestroyIcon(sIcon);
     }
@@ -149,8 +149,8 @@ xpr_bool_t SearchLocDlg::OnInitDialog(void)
 
     mListCtrl.SetImageList(&mListImgList, LVSIL_SMALL);
 
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.location")),   LVCFMT_LEFT,   200);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.sub-folder")), LVCFMT_CENTER,  70);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.location")),   LVCFMT_LEFT,   200);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.item_list.column.sub-folder")), LVCFMT_CENTER,  70);
 
     mNewDropButton.LoadMenu(IDR_SEARCH_LOC, 0);
 
@@ -181,17 +181,17 @@ xpr_bool_t SearchLocDlg::OnInitDialog(void)
 
     updateStatus();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.title")));
-    SetDlgItemText(IDC_SEARCH_LOC_LABEL_LIST,      theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.label.list")));
-    SetDlgItemText(IDC_SEARCH_LOC_LIST_NEW,        theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.new_list")));
-    SetDlgItemText(IDC_SEARCH_LOC_LABEL_ITEM_LIST, theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.label.item_list")));
-    SetDlgItemText(IDC_SEARCH_LOC_ITEM_ADD,        theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.add")));
-    SetDlgItemText(IDC_SEARCH_LOC_ITEM_MODIFY,     theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.modify")));
-    SetDlgItemText(IDC_SEARCH_LOC_ITEM_DELETE,     theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.delete")));
-    SetDlgItemText(IDC_SEARCH_LOC_ITEM_UP,         theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.move_up")));
-    SetDlgItemText(IDC_SEARCH_LOC_ITEM_DOWN,       theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.move_down")));
-    SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.title")));
+    SetDlgItemText(IDC_SEARCH_LOC_LABEL_LIST,      gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.label.list")));
+    SetDlgItemText(IDC_SEARCH_LOC_LIST_NEW,        gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.new_list")));
+    SetDlgItemText(IDC_SEARCH_LOC_LABEL_ITEM_LIST, gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.label.item_list")));
+    SetDlgItemText(IDC_SEARCH_LOC_ITEM_ADD,        gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.add")));
+    SetDlgItemText(IDC_SEARCH_LOC_ITEM_MODIFY,     gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.modify")));
+    SetDlgItemText(IDC_SEARCH_LOC_ITEM_DELETE,     gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.delete")));
+    SetDlgItemText(IDC_SEARCH_LOC_ITEM_UP,         gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.move_up")));
+    SetDlgItemText(IDC_SEARCH_LOC_ITEM_DOWN,       gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.button.move_down")));
+    SetDlgItemText(IDOK,                           gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("SearchLoc"));
@@ -347,7 +347,7 @@ void SearchLocDlg::updateStatus(void)
     xpr_sint_t sCount = mListCtrl.GetItemCount();
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.status.count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.status.count"), XPR_STRING_LITERAL("%d")), sCount);
     SetDlgItemText(IDC_SEARCH_LOC_STATUS, sStatusText);
 }
 
@@ -462,7 +462,7 @@ void SearchLocDlg::OnItemAdd(void)
     if (sCount >= MAX_SEARCH_LOC)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -638,7 +638,7 @@ void SearchLocDlg::OnOK(void)
     if (mListCtrl.GetItemCount() >= MAX_SEARCH_LOC)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.search_user_location.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_SEARCH_LOC);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -824,8 +824,8 @@ void SearchLocDlg::OnCbenDeleteitemList(NMHDR *pNMHDR, LRESULT *pResult)
 void SearchLocDlg::OnListNew(void)
 {
     InputDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.new.title")));
-    sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.new.desc")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.new.title")));
+    sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.new.desc")));
     sDlg.setCheckEmpty();
 
     const xpr_tchar_t *sText = XPR_NULL;
@@ -840,7 +840,7 @@ void SearchLocDlg::OnListNew(void)
         if (findLocName(sText) == -1)
             break;
 
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.duplicated_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.duplicated_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 
@@ -873,8 +873,8 @@ void SearchLocDlg::OnListModify(void)
         return;
 
     InputDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.title")));
-    sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.desc")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.title")));
+    sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.list.modify.desc")));
     sDlg.setText(sSearchUserLoc->mName.c_str());
     sDlg.setCheckEmpty();
 
@@ -893,7 +893,7 @@ void SearchLocDlg::OnListModify(void)
         if (findLocName(sText) == -1)
             break;
 
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.duplicated_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.duplicated_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 
@@ -917,7 +917,7 @@ void SearchLocDlg::OnListDelete(void)
     if (sCurSel < 0)
         return;
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.question_delete"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.search_user_location.msg.question_delete"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -984,7 +984,7 @@ void SearchLocDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t aIndex, xpr_boo
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     pBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     pBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -992,7 +992,7 @@ void SearchLocDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t aIndex, xpr_boo
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         pBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }

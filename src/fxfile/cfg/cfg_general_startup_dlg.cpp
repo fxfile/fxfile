@@ -55,7 +55,7 @@ xpr_bool_t CfgGeneralStartupDlg::OnInitDialog(void)
         mViewDlg[i]->ShowWindow(SW_HIDE);
 
         sStringId.format(XPR_STRING_LITERAL("popup.cfg.body.general.startup.tab.view%d"), i + 1);
-        mTabCtrl.InsertItem(i, theApp.loadString(sStringId.c_str()));
+        mTabCtrl.InsertItem(i, gApp.loadString(sStringId.c_str()));
     }
 
     showTabDlg(0);

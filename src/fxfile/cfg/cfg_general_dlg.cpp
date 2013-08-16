@@ -41,24 +41,24 @@ xpr_bool_t CfgGeneralDlg::OnInitDialog(void)
     super::OnInitDialog();
 
     CComboBox *sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_GENERAL_EXTENSION);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.none")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.show_always")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.hide_known")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.none")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.show_always")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.extension.hide_known")));
 
-    SetDlgItemText(IDC_CFG_GENERAL_GROUP_MOUSE_CLICK,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.group.mouse_click")));
-    SetDlgItemText(IDC_CFG_GENERAL_ONE_CLICK,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.radio.one_click")));
-    SetDlgItemText(IDC_CFG_GENERAL_DOUBLE_CLICK,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.radio.double_click")));
-    SetDlgItemText(IDC_CFG_GENERAL_GROUP_GENERAL,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.group.general")));
-    SetDlgItemText(IDC_CFG_GENERAL_SHOW_HIDDEN_FILE,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_hidden_file")));
-    SetDlgItemText(IDC_CFG_GENERAL_SHOW_PROTECTED_FILE,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_protected_file")));
-    SetDlgItemText(IDC_CFG_GENERAL_TITLE_FULL_PATH,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.display_full_path_on_title")));
-    SetDlgItemText(IDC_CFG_GENERAL_ADDRESS_BAR_FULL_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.display_full_path_on_address_bar")));
-    SetDlgItemText(IDC_CFG_GENERAL_SHOW_TOOLTIP,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_tooltip")));
-    SetDlgItemText(IDC_CFG_GENERAL_SHOW_TOOLTIP_WITH_NAME,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_tooltip_with_name")));
-    SetDlgItemText(IDC_CFG_GENERAL_CREATE_BY_POPUP,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.create_by_popup")));
-    SetDlgItemText(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.go_up_and_select_the_child_item")));
-    SetDlgItemText(IDC_CFG_GENERAL_LABEL_EXTENSION,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.label.show_extension")));
-    SetDlgItemText(IDC_CFG_GENERAL_DEFAULT,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.button.default")));
+    SetDlgItemText(IDC_CFG_GENERAL_GROUP_MOUSE_CLICK,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.group.mouse_click")));
+    SetDlgItemText(IDC_CFG_GENERAL_ONE_CLICK,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.radio.one_click")));
+    SetDlgItemText(IDC_CFG_GENERAL_DOUBLE_CLICK,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.radio.double_click")));
+    SetDlgItemText(IDC_CFG_GENERAL_GROUP_GENERAL,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.group.general")));
+    SetDlgItemText(IDC_CFG_GENERAL_SHOW_HIDDEN_FILE,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_hidden_file")));
+    SetDlgItemText(IDC_CFG_GENERAL_SHOW_PROTECTED_FILE,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_protected_file")));
+    SetDlgItemText(IDC_CFG_GENERAL_TITLE_FULL_PATH,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.display_full_path_on_title")));
+    SetDlgItemText(IDC_CFG_GENERAL_ADDRESS_BAR_FULL_PATH,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.display_full_path_on_address_bar")));
+    SetDlgItemText(IDC_CFG_GENERAL_SHOW_TOOLTIP,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_tooltip")));
+    SetDlgItemText(IDC_CFG_GENERAL_SHOW_TOOLTIP_WITH_NAME,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.show_tooltip_with_name")));
+    SetDlgItemText(IDC_CFG_GENERAL_CREATE_BY_POPUP,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.create_by_popup")));
+    SetDlgItemText(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.check.go_up_and_select_the_child_item")));
+    SetDlgItemText(IDC_CFG_GENERAL_LABEL_EXTENSION,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.label.show_extension")));
+    SetDlgItemText(IDC_CFG_GENERAL_DEFAULT,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.general.button.default")));
 
     return XPR_TRUE;
 }

@@ -41,8 +41,8 @@ xpr_bool_t WaitDlg::OnInitDialog(void)
     super::OnInitDialog();
 
     SetWindowText(mTitle.c_str());
-    SetDlgItemText(IDC_WAIT_DESC, theApp.loadString(XPR_STRING_LITERAL("popup.wait.label.desc")));
-    SetDlgItemText(IDC_STOP,      theApp.loadString(XPR_STRING_LITERAL("popup.wait.button.stop")));
+    SetDlgItemText(IDC_WAIT_DESC, gApp.loadString(XPR_STRING_LITERAL("popup.wait.label.desc")));
+    SetDlgItemText(IDC_STOP,      gApp.loadString(XPR_STRING_LITERAL("popup.wait.button.stop")));
 
     return XPR_TRUE;
 }

@@ -117,19 +117,19 @@ xpr_bool_t ProgramAssSetDlg::OnInitDialog(void)
 
     OnAssType();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.title")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_NAME,    theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.name")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_GROUP_METHOD,  theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.group.method")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_METHOD_EXT,    theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.radio.method_extension")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_METHOD_FILTER, theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.radio.method_filter")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_GROUP_TYPE,    theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.group.type")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_TYPE_VIEWER,   theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.check.type_viewer")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_TYPE_EDITOR,   theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.check.type_editor")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_FILTER,  theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.filter")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_EXTS,    theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.extensions")));
-    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_PROGRAM, theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.program")));
-    SetDlgItemText(IDOK,                              theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                          theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.title")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_NAME,    gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.name")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_GROUP_METHOD,  gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.group.method")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_METHOD_EXT,    gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.radio.method_extension")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_METHOD_FILTER, gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.radio.method_filter")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_GROUP_TYPE,    gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.group.type")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_TYPE_VIEWER,   gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.check.type_viewer")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_TYPE_EDITOR,   gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.check.type_editor")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_FILTER,  gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.filter")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_EXTS,    gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.extensions")));
+    SetDlgItemText(IDC_PROGRAM_ASS_SET_LABEL_PROGRAM, gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.label.program")));
+    SetDlgItemText(IDOK,                              gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                          gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -169,7 +169,7 @@ void ProgramAssSetDlg::OnOK(void)
 
     if (_tcslen(sName) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_PROGRAM_ASS_SET_NAME)->SetFocus();
@@ -179,7 +179,7 @@ void ProgramAssSetDlg::OnOK(void)
     NameSet::iterator sIterator = mNameSet.find(sName);
     if (sIterator != mNameSet.end())
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.duplicated_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.duplicated_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_PROGRAM_ASS_SET_NAME)->SetFocus();
@@ -188,7 +188,7 @@ void ProgramAssSetDlg::OnOK(void)
 
     if (sType == ProgramAssTypeNone)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.select_type"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.select_type"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_PROGRAM_ASS_SET_TYPE_VIEWER)->SetFocus();
@@ -199,7 +199,7 @@ void ProgramAssSetDlg::OnOK(void)
     {
         if (sExts.GetLength() <= 0)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_extension"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_extension"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
             GetDlgItem(IDC_PROGRAM_ASS_SET_EXTS)->SetFocus();
@@ -211,7 +211,7 @@ void ProgramAssSetDlg::OnOK(void)
     {
         if (sFilterName.GetLength() <= 0)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.select_filter"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.select_filter"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
             GetDlgItem(IDC_PROGRAM_ASS_SET_FILTER)->SetFocus();
@@ -221,7 +221,7 @@ void ProgramAssSetDlg::OnOK(void)
 
     if (_tcslen(sPath) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_program"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.program_ass_set.msg.input_program"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_PROGRAM_ASS_SET_PROGRAM)->SetFocus();
@@ -298,7 +298,7 @@ void ProgramAssSetDlg::OnCbnSelchangeFilter(void)
 void ProgramAssSetDlg::OnProgramBrowse(void)
 {
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.exe)\0*.exe\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.program")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.exe)\0*.exe\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.program")));
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.exe"), XPR_NULL, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
         return;

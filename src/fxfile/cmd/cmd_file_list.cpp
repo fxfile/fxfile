@@ -45,7 +45,7 @@ void FileListCommand::execute(CommandContext &aContext)
     if (sExplorerCtrl != XPR_NULL)
     {
         xpr_tchar_t sFilter[0xff] = {0};
-        _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.text_files")));
+        _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.txt)\0*.txt\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.text_files")));
 
         CFileDialogST sFileDialog(XPR_FALSE, XPR_STRING_LITERAL("*.txt"), XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, sExplorerCtrl);
         if (gOpt->mConfig.mFileListCurDir == XPR_TRUE && sExplorerCtrl->isFileSystemFolder() == XPR_TRUE)

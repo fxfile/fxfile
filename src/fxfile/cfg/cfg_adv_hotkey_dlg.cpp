@@ -43,12 +43,12 @@ xpr_bool_t CfgAdvHotKeyDlg::OnInitDialog(void)
     WORD sInvalidComb = HKCOMB_A | HKCOMB_CA | HKCOMB_NONE | HKCOMB_S | HKCOMB_SA | HKCOMB_SC | HKCOMB_SCA | HKCOMB_C;
     mHotKeyCtrl.SetRules(sInvalidComb, 0);
 
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.enable")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_HOTKEY,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.hotkey")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_WINDOW_KEY,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.window_key")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_REF,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.ref")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_WIN_STARTUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.windows_startup")));
-    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_TRAY,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.show_tray")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.enable")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_HOTKEY,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.hotkey")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_WINDOW_KEY,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.window_key")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LABEL_REF,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.label.ref")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_WIN_STARTUP, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.windows_startup")));
+    SetDlgItemText(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_TRAY,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.global_hotkey.check.show_tray")));
 
     return XPR_TRUE;
 }

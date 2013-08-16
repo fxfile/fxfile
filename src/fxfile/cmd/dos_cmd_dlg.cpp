@@ -69,13 +69,13 @@ xpr_bool_t DosCmdDlg::OnInitDialog(void)
 
     mComboBox.LimitText(MAX_CMD);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.title")));
-    SetDlgItemText(IDC_DOS_LABEL_PATH,    theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.path")));
-    SetDlgItemText(IDC_DOS_LABEL_INPUT,   theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.input")));
-    SetDlgItemText(IDC_DOS_LABEL_COMMAND, theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.command")));
-    SetDlgItemText(IDC_DOS_NO_CLOSE,      theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.check.no_close")));
-    SetDlgItemText(IDOK,                  theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,              theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.title")));
+    SetDlgItemText(IDC_DOS_LABEL_PATH,    gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.path")));
+    SetDlgItemText(IDC_DOS_LABEL_INPUT,   gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.input")));
+    SetDlgItemText(IDC_DOS_LABEL_COMMAND, gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.label.command")));
+    SetDlgItemText(IDC_DOS_NO_CLOSE,      gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.check.no_close")));
+    SetDlgItemText(IDOK,                  gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,              gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -105,7 +105,7 @@ void DosCmdDlg::OnOK(void)
     mComboBox.GetWindowText(sCommand, MAX_CMD);
     if (_tcslen(sCommand) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.msg.input"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.dos_cmd.msg.input"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }

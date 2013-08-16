@@ -60,31 +60,31 @@ xpr_bool_t CfgAppearanceColorViewDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH))->LimitText(XPR_MAX_PATH);
 
     CComboBox *sFileListTextColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_TEXT_COLOR);
-    sFileListTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.default")));
-    sFileListTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.custom")));
-    sFileListTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.filtering")));
+    sFileListTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.default")));
+    sFileListTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.custom")));
+    sFileListTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_text_color.filtering")));
 
     CComboBox *sFileListBkgndColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_COLOR);
-    sFileListBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.default")));
-    sFileListBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.custom")));
-    sFileListBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.filtering")));
+    sFileListBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.default")));
+    sFileListBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.custom")));
+    sFileListBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.file_list_background_color.filtering")));
 
     CComboBox *sFolderTreeTextColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_TEXT_COLOR);
-    sFolderTreeTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.default")));
-    sFolderTreeTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.custom")));
-    sFolderTreeTextColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.filtering")));
+    sFolderTreeTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.default")));
+    sFolderTreeTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.custom")));
+    sFolderTreeTextColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_text_color.filtering")));
 
     CComboBox *sFolderTreeBkgndColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_BKGND_COLOR);
-    sFolderTreeBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.default")));
-    sFolderTreeBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.custom")));
-    sFolderTreeBkgndColorComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.filtering")));
+    sFolderTreeBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.default")));
+    sFolderTreeBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.custom")));
+    sFolderTreeBkgndColorComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.folder_tree_background_color.filtering")));
 
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_FILE_LIST_TEXT_COLOR,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.file_list_text_color")));
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_FILE_LIST_BKGND_COLOR,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.file_list_background_color")));
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_FOLDER_TREE_TEXT_COLOR,   theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.folder_tree_text_color")));
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_FOLDER_TREE_BKGND_COLOR,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.folder_tree_background_color")));
-    SetDlgItemText(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.check.file_list_background_image")));
-    SetDlgItemText(IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.check.folder_tree_inactive_highlight")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_FILE_LIST_TEXT_COLOR,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.file_list_text_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_FILE_LIST_BKGND_COLOR,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.file_list_background_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_FOLDER_TREE_TEXT_COLOR,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.folder_tree_text_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_FOLDER_TREE_BKGND_COLOR,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.label.folder_tree_background_color")));
+    SetDlgItemText(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.check.file_list_background_image")));
+    SetDlgItemText(IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view.check.folder_tree_inactive_highlight")));
 
     return XPR_TRUE;
 }
@@ -102,28 +102,28 @@ void CfgAppearanceColorViewDlg::onInit(Option::Config &aConfig)
     CComboBox *sFolderTreeTextColorComboBox  = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_TEXT_COLOR);
     CComboBox *sFolderTreeBkgndColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_BKGND_COLOR);
 
-    mFileListTextCustomColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mFileListTextCustomColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mFileListTextCustomColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mFileListTextCustomColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mFileListTextCustomColorCtrl.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
     mFileListTextCustomColorCtrl.SetColor(aConfig.mExplorerTextColor[mViewIndex]);
 
-    mFileListBkgndCustomColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mFileListBkgndCustomColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mFileListBkgndCustomColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mFileListBkgndCustomColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mFileListBkgndCustomColorCtrl.SetDefaultColor(::GetSysColor(COLOR_WINDOW));
     mFileListBkgndCustomColorCtrl.SetColor(aConfig.mExplorerBkgndColor[mViewIndex]);
 
-    mFolderTreeTextCustomColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mFolderTreeTextCustomColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mFolderTreeTextCustomColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mFolderTreeTextCustomColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mFolderTreeTextCustomColorCtrl.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
     mFolderTreeTextCustomColorCtrl.SetColor(aConfig.mFolderTreeTextColor[mViewIndex]);
 
-    mFolderTreeBkgndCustomColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mFolderTreeBkgndCustomColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mFolderTreeBkgndCustomColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mFolderTreeBkgndCustomColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mFolderTreeBkgndCustomColorCtrl.SetDefaultColor(::GetSysColor(COLOR_WINDOW));
     mFolderTreeBkgndCustomColorCtrl.SetColor(aConfig.mFolderTreeBkgndColor[mViewIndex]);
 
-    mFolderTreeInactiveHighlightColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mFolderTreeInactiveHighlightColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mFolderTreeInactiveHighlightColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mFolderTreeInactiveHighlightColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mFolderTreeInactiveHighlightColorCtrl.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
     mFolderTreeInactiveHighlightColorCtrl.SetColor(aConfig.mFolderTreeHighlightColor[mViewIndex]);
 
@@ -239,9 +239,9 @@ void CfgAppearanceColorViewDlg::OnFileListBkgndImageBrowse(void)
 {
     xpr_tchar_t sFilter[0x1ff] = {0};
     _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.bmp; *.jpg; *.gif)\0*.bmp; *.jpg; *.gif\0%s (*.bmp)\0*.bmp\0%s (*.jpg)\0*.jpg\0%s (*.gif)\0*.gif\0\0"),
-        theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all_formats")), 
-        theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.bitmap_files")), 
-        theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.jpeg_files")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all_formats")), 
+        gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.bitmap_files")), 
+        gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.jpeg_files")));
 
     CFileDialogST sFileDialog(XPR_TRUE, XPR_NULL, XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, this);
     if (sFileDialog.DoModal() == IDOK)

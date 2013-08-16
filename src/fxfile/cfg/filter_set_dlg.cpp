@@ -69,23 +69,23 @@ xpr_bool_t FilterSetDlg::OnInitDialog(void)
     SetDlgItemText(IDC_FILTER_SET_NAME, mFilterItem.mName.c_str());
     SetDlgItemText(IDC_FILTER_SET_EXTS, mFilterItem.mExts.c_str());
 
-    mColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mColorCtrl.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
     mColorCtrl.SetColor(mFilterItem.mColor);
 
     if (mFilterItem.mExts == XPR_STRING_LITERAL("*") || mFilterItem.mExts == XPR_STRING_LITERAL("*.*"))
         GetDlgItem(IDC_FILTER_SET_EXTS)->EnableWindow(XPR_FALSE);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.title")));
-    SetDlgItemText(IDC_FILTER_SET_LABEL_NAME,       theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.name")));
-    SetDlgItemText(IDC_FILTER_SET_LABEL_EXTS,       theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.extensions")));
-    SetDlgItemText(IDC_FILTER_SET_LABEL_COLOR,      theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.color")));
-    SetDlgItemText(IDC_FILTER_SET_LABEL_COLOR_CODE, theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.color_code")));
-    SetDlgItemText(IDC_FILTER_SET_APPLY_COLOR_CODE, theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.button.apply_color_code")));
-    SetDlgItemText(IDC_FILTER_SET_LABEL_ICON,       theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.icon")));
-    SetDlgItemText(IDOK,                            theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                        theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.title")));
+    SetDlgItemText(IDC_FILTER_SET_LABEL_NAME,       gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.name")));
+    SetDlgItemText(IDC_FILTER_SET_LABEL_EXTS,       gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.extensions")));
+    SetDlgItemText(IDC_FILTER_SET_LABEL_COLOR,      gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.color")));
+    SetDlgItemText(IDC_FILTER_SET_LABEL_COLOR_CODE, gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.color_code")));
+    SetDlgItemText(IDC_FILTER_SET_APPLY_COLOR_CODE, gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.button.apply_color_code")));
+    SetDlgItemText(IDC_FILTER_SET_LABEL_ICON,       gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.label.icon")));
+    SetDlgItemText(IDOK,                            gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                        gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -138,7 +138,7 @@ void FilterSetDlg::OnOK(void)
 
     if (_tcslen(sName) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.input_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.input_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FILTER_SET_NAME)->SetFocus();
@@ -148,7 +148,7 @@ void FilterSetDlg::OnOK(void)
     NameSet::iterator sIterator = mNameSet.find(sName);
     if (sIterator != mNameSet.end())
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.duplicated_name"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.duplicated_name"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FILTER_SET_NAME)->SetFocus();
@@ -157,7 +157,7 @@ void FilterSetDlg::OnOK(void)
 
     if (_tcslen(sExts) <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.input_extension"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.filter_set.msg.input_extension"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_FILTER_SET_EXTS)->SetFocus();

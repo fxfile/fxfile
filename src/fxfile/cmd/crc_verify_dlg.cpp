@@ -99,11 +99,11 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CRCVERIFY_PATH, mDir.c_str());
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.no")),             LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.file")),           LVCFMT_LEFT,  150, -1);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.file_to_verify")), LVCFMT_LEFT,  150, -1);
-    mListCtrl.InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.crc_code")),       LVCFMT_LEFT,   90, -1);
-    mListCtrl.InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.result")),         LVCFMT_LEFT,   50, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.no")),             LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.file")),           LVCFMT_LEFT,  150, -1);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.file_to_verify")), LVCFMT_LEFT,  150, -1);
+    mListCtrl.InsertColumn(3, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.crc_code")),       LVCFMT_LEFT,   90, -1);
+    mListCtrl.InsertColumn(4, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.column.result")),         LVCFMT_LEFT,   50, -1);
 
     FileDeque::iterator sIterator = mFileDeque.begin();
     for (; sIterator != mFileDeque.end(); ++sIterator)
@@ -192,14 +192,14 @@ xpr_bool_t CrcVerifyDlg::OnInitDialog(void)
     mProgressCtrl.SetPos(0);
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.count"), XPR_STRING_LITERAL("%d")), sCount);
     setStatus(sStatusText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.title")));
-    SetDlgItemText(IDC_CRCVERIFY_LABEL_PATH, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.label.path")));
-    SetDlgItemText(IDC_CRCVERIFY_LABEL_LIST, theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.label.list")));
-    SetDlgItemText(IDOK,                     theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.verify")));
-    SetDlgItemText(IDCANCEL,                 theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.title")));
+    SetDlgItemText(IDC_CRCVERIFY_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.label.path")));
+    SetDlgItemText(IDC_CRCVERIFY_LABEL_LIST, gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.label.list")));
+    SetDlgItemText(IDOK,                     gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.verify")));
+    SetDlgItemText(IDCANCEL,                 gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("CrcVerify"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -229,7 +229,7 @@ void CrcVerifyDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK,
         (aEnable == XPR_TRUE) ?
-        theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.verify")) : theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.stop")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.verify")) : gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.button.stop")));
 
     GetDlgItem(IDC_CRCVERIFY_LIST)->EnableWindow(aEnable);
     GetDlgItem(IDCANCEL)->EnableWindow(aEnable);
@@ -272,7 +272,7 @@ void CrcVerifyDlg::OnOK(void)
     xpr_sint_t sCount = mListCtrl.GetItemCount();
     if (sCount <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.msg.none"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.msg.none"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -309,9 +309,9 @@ LRESULT CrcVerifyDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 
             switch (sVerifyFile->mResult)
             {
-            case CrcVerify::VerifyResultFailed:     sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_read_failed")); break;
-            case CrcVerify::VerifyResultNotEqualed: sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_not_matched")); break;
-            case CrcVerify::VerifyResultEqualed:    sText = theApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_success"));     break;
+            case CrcVerify::VerifyResultFailed:     sText = gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_read_failed")); break;
+            case CrcVerify::VerifyResultNotEqualed: sText = gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_not_matched")); break;
+            case CrcVerify::VerifyResultEqualed:    sText = gApp.loadString(XPR_STRING_LITERAL("popup.crc_verify.list.result_success"));     break;
             }
 
             if (sText != XPR_NULL)
@@ -336,7 +336,7 @@ LRESULT CrcVerifyDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case CrcVerify::StatusVerifyCompleted:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.completed"), XPR_STRING_LITERAL("%d,%d,%d,%d")), sCount, sCount - (sFailedCount + sNotEqualedCount), sNotEqualedCount, sFailedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.completed"), XPR_STRING_LITERAL("%d,%d,%d,%d")), sCount, sCount - (sFailedCount + sNotEqualedCount), sNotEqualedCount, sFailedCount);
             setStatus(sStatusText);
 
             GetDlgItem(IDOK)->EnableWindow(XPR_FALSE);
@@ -346,7 +346,7 @@ LRESULT CrcVerifyDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case CrcVerify::StatusStopped:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.stoped"), XPR_STRING_LITERAL("%d,%d,%d,%d")), sProcessedCount, sProcessedCount - (sFailedCount + sNotEqualedCount), sNotEqualedCount, sFailedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.stoped"), XPR_STRING_LITERAL("%d,%d,%d,%d")), sProcessedCount, sProcessedCount - (sFailedCount + sNotEqualedCount), sNotEqualedCount, sFailedCount);
             setStatus(sStatusText);
             break;
         }
@@ -375,7 +375,7 @@ void CrcVerifyDlg::OnTimer(UINT_PTR nIDEvent)
         mProgressCtrl.SetPos((xpr_sint_t)sProcessedCount);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sProcessedCount, sCount, (xpr_sint_t)((xpr_float_t)sProcessedCount / (xpr_float_t)sCount * 100.0));
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.crc_verify.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sProcessedCount, sCount, (xpr_sint_t)((xpr_float_t)sProcessedCount / (xpr_float_t)sCount * 100.0));
         setStatus(sStatusText);
     }
 

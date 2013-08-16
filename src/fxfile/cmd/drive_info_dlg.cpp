@@ -59,8 +59,8 @@ xpr_bool_t DriveInfoDlg::OnInitDialog(void)
 
     setDriveCount(sCount);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.title")));
-    SetDlgItemText(IDOK, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.title")));
+    SetDlgItemText(IDOK, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
 
     return XPR_TRUE;
 }
@@ -96,7 +96,7 @@ void DriveInfoDlg::setDriveCount(xpr_sint_t aCount)
         _stprintf(sText, XPR_STRING_LITERAL("%c:\\"), mDrives[i]);
         SHGetFileInfo(sText, 0, &sShFileInfo, sizeof(SHFILEINFO), SHGFI_SYSICONINDEX);
 
-        _stprintf(sText, XPR_STRING_LITERAL("%c %s"), mDrives[i], theApp.loadString(XPR_STRING_LITERAL("popup.drive_info.drive")));
+        _stprintf(sText, XPR_STRING_LITERAL("%c %s"), mDrives[i], gApp.loadString(XPR_STRING_LITERAL("popup.drive_info.drive")));
         mTreeItems[i] = mTreeCtrl.InsertItem(sText, sShFileInfo.iIcon, sShFileInfo.iIcon);
 
         ++sRealCount;

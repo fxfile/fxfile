@@ -71,8 +71,8 @@ xpr_bool_t TitleDlg::OnInitDialog(void)
     if (mTitle.empty() == XPR_FALSE)
         SetWindowText(mTitle.c_str());
 
-    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDOK,     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }

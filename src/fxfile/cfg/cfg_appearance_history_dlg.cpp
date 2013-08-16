@@ -39,20 +39,20 @@ xpr_bool_t CfgAppearanceHistoryDlg::OnInitDialog(void)
     super::OnInitDialog();
 
     xpr_tchar_t sText[0xff] = {0};
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_HISTORY, MAX_HISTORY, DEF_HISTORY);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_HISTORY, MAX_HISTORY, DEF_HISTORY);
     SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_COUNT_RANGE, sText);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_BACKWARD, MAX_BACKWARD, DEF_BACKWARD);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_BACKWARD, MAX_BACKWARD, DEF_BACKWARD);
     SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_COUNT_RANGE, sText);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_menu_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_HISTORY_MENU, MAX_HISTORY_MENU, DEF_HISTORY_MENU);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_menu_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_HISTORY_MENU, MAX_HISTORY_MENU, DEF_HISTORY_MENU);
     SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_MENU_COUNT_RANGE, sText);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_menu_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_BACKWARD_MENU, MAX_BACKWARD_MENU, DEF_BACKWARD_MENU);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_menu_count_range"), XPR_STRING_LITERAL("%d,%d,%d")), MIN_BACKWARD_MENU, MAX_BACKWARD_MENU, DEF_BACKWARD_MENU);
     SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_MENU_COUNT_RANGE, sText);
 
-    SetDlgItemText(IDC_CFG_HISTORY_SAVE_HISTROY,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.check.save_history")));
-    SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_COUNT,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_count")));
-    SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_COUNT,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_count")));
-    SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_MENU_COUNT,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_menu_count")));
-    SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_MENU_COUNT, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_menu_count")));
+    SetDlgItemText(IDC_CFG_HISTORY_SAVE_HISTROY,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.check.save_history")));
+    SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_COUNT,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_count")));
+    SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_COUNT,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_count")));
+    SetDlgItemText(IDC_CFG_HISTORY_LABEL_HISTORY_MENU_COUNT,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.history_menu_count")));
+    SetDlgItemText(IDC_CFG_HISTORY_LABEL_BACKWARD_MENU_COUNT, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.history.label.backward_menu_count")));
 
     return XPR_TRUE;
 }

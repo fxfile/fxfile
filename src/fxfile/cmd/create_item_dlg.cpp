@@ -116,7 +116,7 @@ void CreateItemDlg::OnOK(void)
 
     if (VerifyFileName(sNewName) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }

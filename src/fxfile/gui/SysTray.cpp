@@ -74,7 +74,7 @@ xpr_bool_t SysTray::recreateTray(void)
 {
     NOTIFYICONDATA sNotifyIconData;
     memcpy(&sNotifyIconData, mNotifyIconData, sizeof(NOTIFYICONDATA));
-    sNotifyIconData.hIcon = ::DuplicateIcon(fxfile::theApp.m_hInstance, mNotifyIconData->hIcon);
+    sNotifyIconData.hIcon = ::DuplicateIcon(fxfile::gApp.m_hInstance, mNotifyIconData->hIcon);
 
     destroyTray();
 

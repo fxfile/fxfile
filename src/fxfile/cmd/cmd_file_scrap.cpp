@@ -239,7 +239,7 @@ XPR_INLINE xpr_bool_t browse(FileScrapPane *aFileScrapPane, xpr_tchar_t *aTarget
 
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = aFileScrapPane->GetSafeHwnd();
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("file_scrap.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("file_scrap.folder_browse.title"));
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sFullPidl;
@@ -264,7 +264,7 @@ XPR_INLINE xpr_bool_t operate(MainFrame *aMainFrame, FileScrapPane *aFileScrapPa
 
     if (sFileScrap.isItemEmpty(sGroup->mGroupId) == XPR_TRUE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.no_file"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.no_file"));
         aMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return XPR_FALSE;
     }
@@ -274,7 +274,7 @@ XPR_INLINE xpr_bool_t operate(MainFrame *aMainFrame, FileScrapPane *aFileScrapPa
     CWaitCursor sWaitCursor;
     if (aFunc == FO_DELETE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
         xpr_sint_t sMsgId = aMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2);
         if (sMsgId != IDCANCEL)
         {
@@ -378,19 +378,19 @@ void FileScrapValidateCommand::execute(CommandContext &aContext)
             return;
 
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.msg.some_invalidated"), XPR_STRING_LITERAL("%d")), sNotExistItemCount);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.msg.some_invalidated"), XPR_STRING_LITERAL("%d")), sNotExistItemCount);
         xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
         if (sMsgId == IDYES)
         {
             xpr_size_t sRemoveItemCount = sFileScrap.removeItemNotExist(sGroup->mGroupId);
             if (sRemoveItemCount == 0)
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.validated"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.validated"));
                 sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
                 return;
             }
 
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.removed_invalidated_items"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.removed_invalidated_items"));
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
         }
     }
@@ -429,7 +429,7 @@ void FileScrapDeleteCommand::execute(CommandContext &aContext)
 
         xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
 
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
         xpr_sint_t sMsgId = AfxGetMainWnd()->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2);
 
         if (sMsgId == IDYES)
@@ -474,7 +474,7 @@ void FileScrapRemoveListCommand::execute(CommandContext &aContext)
 
         if (sIdSet.empty() == false)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear"));
             xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNO | MB_ICONQUESTION);
             if (sMsgId == IDYES)
             {
@@ -517,7 +517,7 @@ void FileScrapRemoveAllListCommand::execute(CommandContext &aContext)
 
         if (sFileScrap.isItemEmpty(sGroup->mGroupId) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear_all"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear_all"));
             xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNO | MB_ICONQUESTION);
             if (sMsgId == IDYES)
             {
@@ -533,7 +533,7 @@ void FileScrapRemoveAllListCommand::execute(CommandContext &aContext)
 
         if (sFileScrap.isItemEmpty(sGroupId) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear_all"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_clear_all"));
             xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
             if (sMsgId == IDYES)
             {
@@ -599,14 +599,14 @@ void FileScrapGroupAddCommand::execute(CommandContext &aContext)
         if (sFileScrap.getGroupCount() >= MAX_FILE_SCRAP_GROUP)
         {
             xpr_tchar_t sMsg[0xff] = {0};
-            _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.msg.limit_group_count"), XPR_STRING_LITERAL("%d")), MAX_FILE_SCRAP_GROUP);
+            _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.msg.limit_group_count"), XPR_STRING_LITERAL("%d")), MAX_FILE_SCRAP_GROUP);
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return;
         }
 
         InputDlg sDlg;
-        sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("file_scrap.new_group.title")));
-        sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("file_scrap.new_group.desc")));
+        sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("file_scrap.new_group.title")));
+        sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("file_scrap.new_group.desc")));
         sDlg.setCheckEmpty();
         sDlg.setLimitText(MAX_FILE_SCRAP_GROUP_NAME);
 
@@ -622,7 +622,7 @@ void FileScrapGroupAddCommand::execute(CommandContext &aContext)
 
             if (VerifyFileName(sText) == XPR_FALSE)
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.wrong_group_name"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.wrong_group_name"));
                 sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                 continue;
             }
@@ -631,7 +631,7 @@ void FileScrapGroupAddCommand::execute(CommandContext &aContext)
             if (sGroupId != FileScrap::InvalidGroupId)
                 break;
 
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.duplicated_group_name"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.duplicated_group_name"));
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         }
     }
@@ -669,8 +669,8 @@ void FileScrapGroupRenameCommand::execute(CommandContext &aContext)
         FileScrap &sFileScrap = FileScrap::instance();
 
         InputDlg sDlg;
-        sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("file_scrap.group_rename.title")));
-        sDlg.setDesc(theApp.loadString(XPR_STRING_LITERAL("file_scrap.group_rename.desc")));
+        sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("file_scrap.group_rename.title")));
+        sDlg.setDesc(gApp.loadString(XPR_STRING_LITERAL("file_scrap.group_rename.desc")));
         sDlg.setText(sGroup->mGroupName.c_str());
         sDlg.setCheckEmpty();
         sDlg.setLimitText(MAX_FILE_SCRAP_GROUP_NAME);
@@ -687,7 +687,7 @@ void FileScrapGroupRenameCommand::execute(CommandContext &aContext)
 
             if (VerifyFileName(sText) == XPR_FALSE)
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.wrong_group_name"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.wrong_group_name"));
                 sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                 continue;
             }
@@ -698,7 +698,7 @@ void FileScrapGroupRenameCommand::execute(CommandContext &aContext)
             if (sFileScrap.findGroup(sText) == XPR_NULL)
                 break;
 
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.duplicated_group_name"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.duplicated_group_name"));
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         }
 
@@ -735,7 +735,7 @@ void FileScrapGroupDeleteCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sGroup))
             return;
 
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete"));
         xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
         if (sMsgId != IDYES)
             return;
@@ -754,7 +754,7 @@ xpr_sint_t FileScrapGroupDefaultCommand::canExecute(CommandContext &aContext)
 void FileScrapGroupDefaultCommand::execute(CommandContext &aContext)
 {
     FileScrapGroupDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_default_group_set.title")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_default_group_set.title")));
     if (sDlg.DoModal() != IDOK)
         return;
 

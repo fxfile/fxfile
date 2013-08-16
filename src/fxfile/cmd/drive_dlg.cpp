@@ -90,7 +90,7 @@ xpr_bool_t DriveDlg::OnInitDialog(void)
     sTbButton.iBitmap = 0;
     sTbButton.fsState = TBSTATE_ENABLED;
     sTbButton.fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE | BTNS_SHOWTEXT;
-    sTbButton.iString = mToolBar.GetToolBarCtrl().AddStrings(theApp.loadString(XPR_STRING_LITERAL("popup.drive.toolbar.refresh")));
+    sTbButton.iString = mToolBar.GetToolBarCtrl().AddStrings(gApp.loadString(XPR_STRING_LITERAL("popup.drive.toolbar.refresh")));
 
     mToolBar.GetToolBarCtrl().AddButtons(1, &sTbButton);
 
@@ -134,7 +134,7 @@ xpr_bool_t DriveDlg::OnInitDialog(void)
 
     OnRefresh();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.drive.title")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.drive.title")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Drive"));
     if (XPR_IS_NOT_NULL(mDlgState))

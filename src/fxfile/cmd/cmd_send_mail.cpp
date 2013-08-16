@@ -96,7 +96,7 @@ void SendMailCommand::execute(CommandContext &aContext)
         }
         else
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.send_mail.msg.wrong_select"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.send_mail.msg.wrong_select"));
             sSearchResultCtrl->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         }
 
@@ -160,7 +160,7 @@ void SendMailCommand::execute(CommandContext &aContext)
         }
         else
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.send_mail.msg.wrong_select"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.send_mail.msg.wrong_select"));
             sExplorerCtrl->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         }
 

@@ -136,7 +136,7 @@ xpr_bool_t InputDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_INPUT_EDIT))->LimitText(mLimitText);
 
     if (mDesc.empty())
-        mDesc = theApp.loadString(XPR_STRING_LITERAL("popup.input.label.desc"));
+        mDesc = gApp.loadString(XPR_STRING_LITERAL("popup.input.label.desc"));
 
     SetWindowText(mTitle.c_str());
     SetDlgItemText(IDC_INPUT_LABEL_DESC, mDesc.c_str());
@@ -153,8 +153,8 @@ xpr_bool_t InputDlg::OnInitDialog(void)
         }
     }
 
-    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDOK,     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -167,7 +167,7 @@ void InputDlg::OnOK(void)
     {
         if (VerifyFileName(mText) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.input.msg.wrong_filename"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.input.msg.wrong_filename"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return;
         }
@@ -177,7 +177,7 @@ void InputDlg::OnOK(void)
     {
         if (_tcslen(mText) <= 0)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.input.msg.empty_re-input"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.input.msg.empty_re-input"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
             return;
         }

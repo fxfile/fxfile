@@ -38,8 +38,8 @@ xpr_bool_t CfgFuncFileScrapDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_FILE_SCRAP_SHOW_POPUP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.show_on_shell_popup_menu")));
-    SetDlgItemText(IDC_CFG_FILE_SCRAP_SAVE_SCRAP, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.save_file_scrap")));
+    SetDlgItemText(IDC_CFG_FILE_SCRAP_SHOW_POPUP, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.show_on_shell_popup_menu")));
+    SetDlgItemText(IDC_CFG_FILE_SCRAP_SAVE_SCRAP, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_scrap.save_file_scrap")));
 
     return XPR_TRUE;
 }

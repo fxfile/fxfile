@@ -67,7 +67,7 @@ void freeTypeinfoMemory(void)
 static const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
 static const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
 
-WinApp theApp;
+WinApp gApp;
 Option *gOpt;
 
 WinApp::WinApp(void)
@@ -354,24 +354,24 @@ xpr_bool_t WinApp::loadLanguage(const xpr_tchar_t *aLanguage)
     mFormatStringTable = mLanguageTable->getFormatStringTable();
 
     Filter::setString(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.folder")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.general_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.executable_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.compressed_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.document_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.image_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.sound_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.movie_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.web_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.programming_file")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.temporary_file")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.folder")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.general_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.executable_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.compressed_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.document_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.image_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.sound_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.movie_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.web_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.programming_file")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.temporary_file")));
 
     SizeFormat::setText(
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.none")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.automatic")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.default")),
-        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.custom")),
-        theApp.loadString(XPR_STRING_LITERAL("common.size.byte")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.none")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.automatic")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.default")),
+        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.unit.custom")),
+        gApp.loadString(XPR_STRING_LITERAL("common.size.byte")));
 
     return XPR_TRUE;
 }
@@ -406,7 +406,7 @@ void WinApp::onChangedConfig(Option &aOption)
     const fxfile::base::LanguagePack::Desc *sLoadedLanguagePackDesc = mLanguageTable->getLanguageDesc();
     if (_tcsicmp(sLoadedLanguagePackDesc->mLanguage, aOption.mConfig.mLanguage) != 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.apply_language_on_next_loading_time"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.apply_language_on_next_loading_time"));
         AfxMessageBox(sMsg, MB_OK | MB_ICONWARNING);
     }
 

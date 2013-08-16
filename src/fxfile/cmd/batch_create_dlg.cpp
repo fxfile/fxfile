@@ -94,17 +94,17 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
     AddControl(IDCANCEL,            sizeRepos,  sizeRepos,  XPR_FALSE);
     //------------------------------------------------------------
 
-    addDialog(new BatchCreateTabFormatDlg, theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format")));
-    addDialog(new BatchCreateTabTextDlg,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.text")));
+    addDialog(new BatchCreateTabFormatDlg, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format")));
+    addDialog(new BatchCreateTabTextDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.text")));
 
     SetDlgItemText(IDC_CREATE_PATH, mPath.c_str());
 
     xpr_sint_t sIndex;
-    sIndex = mTypeWnd.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_folder")));
+    sIndex = mTypeWnd.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_folder")));
     mTypeWnd.SetItemData(sIndex, BatchCreate::CreateTypeFolder);
-    sIndex = mTypeWnd.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_file")));
+    sIndex = mTypeWnd.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_file")));
     mTypeWnd.SetItemData(sIndex, BatchCreate::CreateTypeFile);
-    sIndex = mTypeWnd.AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_text_file")));
+    sIndex = mTypeWnd.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_text_file")));
     mTypeWnd.SetItemData(sIndex, BatchCreate::CreateTypeTextFile);
     setCreateType(BatchCreate::CreateTypeFolder);
 
@@ -129,11 +129,11 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
 
     showDialog(sActiveTab);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.title")));
-    SetDlgItemText(IDC_CREATE_LABEL_PATH, theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.path")));
-    SetDlgItemText(IDC_CREATE_LABEL_TYPE, theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.type")));
-    SetDlgItemText(IDOK,                  theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,              theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.title")));
+    SetDlgItemText(IDC_CREATE_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.path")));
+    SetDlgItemText(IDC_CREATE_LABEL_TYPE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.type")));
+    SetDlgItemText(IDOK,                  gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,              gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -309,7 +309,7 @@ void BatchCreateDlg::showDialog(xpr_sint_t aIndex)
 
 void BatchCreateDlg::setEnableWindow(xpr_bool_t aEnable)
 {
-    GetDlgItem(IDOK)->SetWindowText((aEnable == XPR_TRUE) ? theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.button.stop")));
+    GetDlgItem(IDOK)->SetWindowText((aEnable == XPR_TRUE) ? gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")) : gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.button.stop")));
 
     CWnd *sChildWnd;
     TabDeque::iterator sIterator;
@@ -370,7 +370,7 @@ void BatchCreateDlg::OnOK(void)
 
     if (sCreateType == BatchCreate::CreateTypeNone)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.select_type"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.select_type"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         mTypeWnd.SetFocus();
@@ -398,7 +398,7 @@ void BatchCreateDlg::OnOK(void)
 
             if (sStart > sEnd)
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_number_range"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_number_range"));
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                 return;
             }
@@ -416,14 +416,14 @@ void BatchCreateDlg::OnOK(void)
             case BatchCreate::ResultExcessMaxCount:
                 {
                     xpr_tchar_t sMsg[0xff] = {0};
-                    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
+                    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
 
             case BatchCreate::ResultInvalidFormat:
                 {
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.invalid_format"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.invalid_format"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
@@ -431,7 +431,7 @@ void BatchCreateDlg::OnOK(void)
             case BatchCreate::ResultExcessPathLength:
                 {
                     xpr_tchar_t sMsg[0xff] = {0};
-                    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_path_length"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
+                    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_path_length"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
@@ -463,7 +463,7 @@ void BatchCreateDlg::OnOK(void)
                 sPath = sFileName;
                 if (VerifyFileName(sPath) == XPR_FALSE)
                 {
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
@@ -483,7 +483,7 @@ void BatchCreateDlg::OnOK(void)
                 case BatchCreate::ResultExcessMaxCount:
                     {
                         xpr_tchar_t sMsg[0xff] = {0};
-                        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
+                        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
                         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                         return;
                     }
@@ -491,7 +491,7 @@ void BatchCreateDlg::OnOK(void)
                 case BatchCreate::ResultExcessPathLength:
                     {
                         xpr_tchar_t sMsg[0xff] = {0};
-                        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_path_length"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
+                        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_path_length"), XPR_STRING_LITERAL("%d")), XPR_MAX_PATH);
                         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                         return;
                     }
@@ -505,7 +505,7 @@ void BatchCreateDlg::OnOK(void)
     xpr_size_t sCount = mBatchCreate->getCount();
     if (sCount == 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.none"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.none"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -544,7 +544,7 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case BatchCreate::StatusCreateCompleted:
         {
-            const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.completed"));
+            const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.completed"));
             setStatus(sStatusText);
 
             super::OnOK();
@@ -554,7 +554,7 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case BatchCreate::StatusStopped:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.stoped"), XPR_STRING_LITERAL("%d,%d")), sCreated, sCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.stoped"), XPR_STRING_LITERAL("%d,%d")), sCreated, sCount);
             setStatus(sStatusText);
 
             setEnableWindow(XPR_TRUE);
@@ -569,10 +569,10 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
             {
             case BatchCreate::ResultInvalidName:
                 {
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
-                    const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.re-fill"));
+                    const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.re-fill"));
                     setStatus(sStatusText);
                     break;
                 }
@@ -581,10 +581,10 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
             case BatchCreate::ResultEmptiedName:
             case BatchCreate::ResultEqualedName:
                 {
-                    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.re-fill"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.re-fill"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
-                    const xpr_tchar_t *sStatusText = theApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.re-fill"));
+                    const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.re-fill"));
                     setStatus(sStatusText);
                     break;
                 }
@@ -614,14 +614,14 @@ void BatchCreateDlg::OnTimer(UINT_PTR nIDEvent)
         {
         case BatchCreate::StatusPreparing:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.preparing"), XPR_STRING_LITERAL("%d,%d,%d")), sPreparedCount, sCount, (xpr_sint_t)((xpr_float_t)sPreparedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.preparing"), XPR_STRING_LITERAL("%d,%d,%d")), sPreparedCount, sCount, (xpr_sint_t)((xpr_float_t)sPreparedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
                 break;
             }
 
         case BatchCreate::StatusVerifying:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.verifying"), XPR_STRING_LITERAL("%d,%d,%d")), sValidatedCount, sCount, (xpr_sint_t)((xpr_float_t)sValidatedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.verifying"), XPR_STRING_LITERAL("%d,%d,%d")), sValidatedCount, sCount, (xpr_sint_t)((xpr_float_t)sValidatedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
 
                 mProgressCtrl.SetPos((xpr_sint_t)sValidatedCount);
@@ -630,7 +630,7 @@ void BatchCreateDlg::OnTimer(UINT_PTR nIDEvent)
 
         case BatchCreate::StatusCreating:
             {
-                _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.creating"), XPR_STRING_LITERAL("%d,%d,%d")), sRenamedCount, sCount, (xpr_sint_t)((xpr_float_t)sRenamedCount / (xpr_float_t)sCount * 100));
+                _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.status.creating"), XPR_STRING_LITERAL("%d,%d,%d")), sRenamedCount, sCount, (xpr_sint_t)((xpr_float_t)sRenamedCount / (xpr_float_t)sCount * 100));
                 setStatus(sStatusText);
 
                 mProgressCtrl.SetPos((xpr_sint_t)sRenamedCount);

@@ -164,7 +164,7 @@ void CFrameWndBase::OnMenuSelect( UINT nItemID, UINT nFlags, HMENU hSysMenu )
 
 void CFrameWndBase::OnLoadString( int nIndex, CString &strText )
 {
-    strText = fxfile::theApp.loadString( strText.GetBuffer() );
+    strText = fxfile::gApp.loadString( strText.GetBuffer() );
 }
 
 /////////////////////////////////////////////////////////////////////////////

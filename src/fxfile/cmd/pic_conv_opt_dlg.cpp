@@ -268,20 +268,20 @@ xpr_bool_t PicConvOptDlg::OnInitDialog(void)
     SetWindowPos(XPR_NULL, 0, 0, sRect2.Width(), sHeight, SWP_NOMOVE | SWP_NOZORDER);
     CenterWindow();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.title")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_INTERLACED,          theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.interlaced")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_PALLETE_TRANSPARENT, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.pallete_transparent")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_PROGRESSIVE,         theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.progressive")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_LOSSLESS,            theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.lossless")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_QUALITY,             theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.quality")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_COMPRESS,            theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.compress")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_COMPRESS_LEVEL,      theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.compress_level")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_RLE,                 theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.rle")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_OFFSET,              theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.offset")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_CHANNEL_ORDER,       theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.channel_order")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_CHANNEL_TYPE,        theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.channel_type")));
-    SetDlgItemText(IDOK,                                          theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                                      theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.title")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_INTERLACED,          gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.interlaced")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_PALLETE_TRANSPARENT, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.pallete_transparent")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_PROGRESSIVE,         gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.progressive")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_LOSSLESS,            gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.lossless")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_QUALITY,             gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.quality")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_COMPRESS,            gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.compress")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_COMPRESS_LEVEL,      gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.compress_level")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_CHECK_RLE,                 gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.check.rle")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_OFFSET,              gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.offset")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_CHANNEL_ORDER,       gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.channel_order")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION_LABEL_CHANNEL_TYPE,        gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_option.label.channel_type")));
+    SetDlgItemText(IDOK,                                          gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                                      gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }

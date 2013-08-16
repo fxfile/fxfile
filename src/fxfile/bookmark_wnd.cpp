@@ -254,11 +254,11 @@ void BookmarkWnd::setTooltip(xpr_bool_t aPopup)
         GetClientRect(&sRect);
 
         xpr_tchar_t sTip[XPR_MAX_PATH + 50];
-        _stprintf(sTip, XPR_STRING_LITERAL("%s: \"%s\""), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mBookmarkItem->mPath.c_str());
+        _stprintf(sTip, XPR_STRING_LITERAL("%s: \"%s\""), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.path")), mBookmarkItem->mPath.c_str());
         if (mBookmarkItem->mHotKey > 0)
-            _stprintf(sTip, XPR_STRING_LITERAL("%s\r\n%s: Ctrl+%c"), sTip, theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), LOWORD(mBookmarkItem->mHotKey));
+            _stprintf(sTip, XPR_STRING_LITERAL("%s\r\n%s: Ctrl+%c"), sTip, gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), LOWORD(mBookmarkItem->mHotKey));
         else
-            _stprintf(sTip, XPR_STRING_LITERAL("%s\r\n%s: %s"), sTip, theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), theApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey.none")));
+            _stprintf(sTip, XPR_STRING_LITERAL("%s\r\n%s: %s"), sTip, gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey")), gApp.loadString(XPR_STRING_LITERAL("bookmark.tooltip.hotkey.none")));
 
         mToolTipCtrl.AddTool(this, sTip, sRect, TOOLTIP_ID);
         mToolTipCtrl.SetMaxTipWidth(500);

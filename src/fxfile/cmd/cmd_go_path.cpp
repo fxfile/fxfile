@@ -653,7 +653,7 @@ void GoUpBoxCommand::execute(CommandContext &aContext)
         COM_FREE(sFullPidl);
 
         HistoryDlg sDlg;
-        sDlg.addHistory(theApp.loadString(XPR_STRING_LITERAL("popup.up.title")), theApp.loadString(XPR_STRING_LITERAL("popup.up.tab")), &sUpDeque);
+        sDlg.addHistory(gApp.loadString(XPR_STRING_LITERAL("popup.up.title")), gApp.loadString(XPR_STRING_LITERAL("popup.up.tab")), &sUpDeque);
 
         xpr_sintptr_t sId = sDlg.DoModal();
         if (sId == IDOK)

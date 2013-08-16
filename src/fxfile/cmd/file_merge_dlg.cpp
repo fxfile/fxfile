@@ -100,8 +100,8 @@ xpr_bool_t FileMergeDlg::OnInitDialog(void)
     SetDlgItemText(IDC_MERGE_DEST_FILE, mDestPath.c_str());
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.list.column.no")),   LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.list.column.file")), LVCFMT_LEFT,  305, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.list.column.no")),   LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.list.column.file")), LVCFMT_LEFT,  305, -1);
 
     xpr_sint_t i;
     PathDeque::iterator sIterator;
@@ -121,15 +121,15 @@ xpr_bool_t FileMergeDlg::OnInitDialog(void)
     }
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.count"), XPR_STRING_LITERAL("%d")), mPathDeque.size());
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.count"), XPR_STRING_LITERAL("%d")), mPathDeque.size());
     setStatus(sStatusText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.title")));
-    SetDlgItemText(IDC_MERGE_LABEL_PATH,      theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.path")));
-    SetDlgItemText(IDC_MERGE_LABEL_FILES,     theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.files_to_merge_in_order")));
-    SetDlgItemText(IDC_MERGE_LABEL_DEST_FILE, theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.dest_file")));
-    SetDlgItemText(IDOK,                      theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.merge")));
-    SetDlgItemText(IDCANCEL,                  theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.title")));
+    SetDlgItemText(IDC_MERGE_LABEL_PATH,      gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.path")));
+    SetDlgItemText(IDC_MERGE_LABEL_FILES,     gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.files_to_merge_in_order")));
+    SetDlgItemText(IDC_MERGE_LABEL_DEST_FILE, gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.label.dest_file")));
+    SetDlgItemText(IDOK,                      gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.merge")));
+    SetDlgItemText(IDCANCEL,                  gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("FileMerge"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -230,7 +230,7 @@ void FileMergeDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK,
         (aEnable == XPR_TRUE) ?
-        theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.merge")) : theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.stop")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.merge")) : gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.button.stop")));
 
     GetDlgItem(IDC_MERGE_PATH)->EnableWindow(aEnable);
     GetDlgItem(IDC_MERGE_LIST)->EnableWindow(aEnable);
@@ -257,7 +257,7 @@ void FileMergeDlg::OnDestFileBrowse(void)
     GetDlgItemText(IDC_MERGE_DEST_FILE, sPath, XPR_MAX_PATH);
 
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
 
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.*"), sPath, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
@@ -284,7 +284,7 @@ void FileMergeDlg::OnOK(void)
     {
         if (IsFileSystemFolder(sDestFile) == XPR_TRUE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.input"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.input"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
             GetDlgItem(IDC_MERGE_DEST_FILE)->SetFocus();
@@ -292,7 +292,7 @@ void FileMergeDlg::OnOK(void)
         }
 
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestFile);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestFile);
         if (MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION) == IDNO)
         {
             GetDlgItem(IDC_MERGE_DEST_FILE)->SetFocus();
@@ -326,7 +326,7 @@ void FileMergeDlg::OnOK(void)
         case FileMerge::StatusDestDirNotExist:
             {
                 xpr_tchar_t sMsg[0xff] = {0};
-                _stprintf(sMsg, theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.dest_file_not_exist")), sDestFile);
+                _stprintf(sMsg, gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.dest_file_not_exist")), sDestFile);
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 GetDlgItem(IDC_MERGE_DEST_FILE)->SetFocus();
@@ -346,7 +346,7 @@ void FileMergeDlg::OnTimer(UINT_PTR nIDEvent)
         mFileMerge->getStatus(&sMergedCount);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sMergedCount, sCount, (xpr_sint_t)((xpr_float_t)sMergedCount / (xpr_float_t)sCount * 100.0));
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sMergedCount, sCount, (xpr_sint_t)((xpr_float_t)sMergedCount / (xpr_float_t)sCount * 100.0));
         setStatus(sStatusText);
 
         mProgressCtrl.SetPos((xpr_sint_t)sMergedCount);
@@ -372,7 +372,7 @@ LRESULT FileMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case FileMerge::StatusNotWritable:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.not_created"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.not_created"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
@@ -380,7 +380,7 @@ LRESULT FileMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileMerge::StatusMergeCompleted:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.completed"), XPR_STRING_LITERAL("%d")), sMergedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.completed"), XPR_STRING_LITERAL("%d")), sMergedCount);
             setStatus(sStatusText);
             break;
         }
@@ -388,7 +388,7 @@ LRESULT FileMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileMerge::StatusStopped:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.stoped"), XPR_STRING_LITERAL("%d")), sMergedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_merge.status.stoped"), XPR_STRING_LITERAL("%d")), sMergedCount);
             setStatus(sStatusText);
             break;
         }

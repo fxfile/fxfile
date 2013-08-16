@@ -237,7 +237,7 @@ void FileScrapDropDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     pBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     pBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -245,7 +245,7 @@ void FileScrapDropDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         pBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -594,7 +594,7 @@ void FileScrapDropDlg::OnFileScrapDelete(void)
 
     xpr_uint_t sGroupId = sFileScrap.getCurGroupId();
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("file_scrap.msg.confirm_delete_or_trash"));
     xpr_sint_t sMsgId = AfxGetMainWnd()->MessageBox(sMsg, XPR_NULL, MB_OK | MB_YESNOCANCEL | MB_ICONQUESTION | MB_DEFBUTTON2);
 
     if (sMsgId == IDYES)
@@ -683,7 +683,7 @@ xpr_bool_t FileScrapDropDlg::browse(xpr_tchar_t *aTarget)
 
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_drop.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_drop.folder_browse.title"));
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sFullPidl;
@@ -780,7 +780,7 @@ void FileScrapDropDlg::OnRButtonDblClk(xpr_uint_t nFlags, CPoint point)
 void FileScrapDropDlg::OnFileScrapGroupDefault(void) 
 {
     cmd::FileScrapGroupDlg sDlg;
-    sDlg.setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_default_group_set.title")));
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_default_group_set.title")));
     if (sDlg.DoModal() != IDOK)
         return;
 

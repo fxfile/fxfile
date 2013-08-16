@@ -65,12 +65,12 @@ xpr_bool_t FileScrapGroupDlg::OnInitDialog(void)
 
         sText = sGroup->mGroupName;
         if (sText == kFileScrapNoGroupName)
-            sText = theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.no_group"));
+            sText = gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.no_group"));
 
         if (sGroup->mGroupId == sFileScrap.getCurGroupId())
         {
             sText += XPR_STRING_LITERAL(" (");
-            sText += theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.default"));
+            sText += gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.default"));
             sText += XPR_STRING_LITERAL(")");
         }
 
@@ -81,7 +81,7 @@ xpr_bool_t FileScrapGroupDlg::OnInitDialog(void)
             mListBox.SetCurSel(sIndex);
     }
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.title")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.file_scrap_group.title")));
 
     return XPR_TRUE;
 }

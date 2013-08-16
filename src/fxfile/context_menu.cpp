@@ -155,7 +155,7 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aFirstId, xpr_uint_t aQ
         nInsert -= 2;
 
         ::InsertMenu(aMenu->m_hMenu, nInsert,   MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
-        ::InsertMenu(aMenu->m_hMenu, nInsert+1, MF_BYPOSITION, aFirstId + CMID_FILE_SCRAP, theApp.loadString(XPR_STRING_LITERAL("cmd.shell.add_to_scrap")));
+        ::InsertMenu(aMenu->m_hMenu, nInsert+1, MF_BYPOSITION, aFirstId + CMID_FILE_SCRAP, gApp.loadString(XPR_STRING_LITERAL("cmd.shell.add_to_scrap")));
     }
 
     return XPR_TRUE;

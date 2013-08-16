@@ -128,7 +128,7 @@ void FileScrapToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)
     if (XPR_IS_NULL(sStringId))
         return;
 
-    aText = theApp.loadString(sStringId);
+    aText = gApp.loadString(sStringId);
 }
 
 void FileScrapToolBar::getToolBarSize(xpr_sint_t *aWidth, xpr_sint_t *aHeight)

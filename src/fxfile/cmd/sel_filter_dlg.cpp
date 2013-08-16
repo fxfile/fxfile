@@ -49,20 +49,20 @@ xpr_bool_t SelFilterDlg::OnInitDialog(void)
 
     if (mSelect == XPR_TRUE)
     {
-        SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.title")));
-        SetDlgItemText(IDC_SEL_FILTER_DESC,     theApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.label.desc")));
-        SetDlgItemText(IDC_SEL_FILTER_SEL_ONLY, theApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.check.select_only")));
+        SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.title")));
+        SetDlgItemText(IDC_SEL_FILTER_DESC,     gApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.label.desc")));
+        SetDlgItemText(IDC_SEL_FILTER_SEL_ONLY, gApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.check.select_only")));
     }
     else
     {
         GetDlgItem(IDC_SEL_FILTER_SEL_ONLY)->ShowWindow(SW_HIDE);
 
-        SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.title")));
-        SetDlgItemText(IDC_SEL_FILTER_DESC, theApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.label.desc")));
+        SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.title")));
+        SetDlgItemText(IDC_SEL_FILTER_DESC, gApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.label.desc")));
     }
 
-    SetDlgItemText(IDOK,     theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL, theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDOK,     gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL, gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     // dialog state
     const xpr_tchar_t *sSection = (mSelect == XPR_TRUE) ? XPR_STRING_LITERAL("SelFilter") : XPR_STRING_LITERAL("UnSelFilter"); 
@@ -130,9 +130,9 @@ void SelFilterDlg::OnOK(void)
     {
         const xpr_tchar_t *sMsg = XPR_NULL;
         if (mSelect == XPR_TRUE)
-            sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.msg.select"));
+            sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.select_by_filter.msg.select"));
         else
-            sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.msg.select"));
+            sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.deselect_by_filter.msg.select"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         mComboBox.SetFocus();
         return;

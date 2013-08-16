@@ -44,23 +44,23 @@ xpr_bool_t CfgAppearanceLayoutDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_LAYOUT_VIEW_SPLIT_RESIZE_BY_RATIO,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.view_split_resize_by_ratio")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_ADDRESS_BAR,               theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_address_bar")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_PATH_BAR,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_path_bar")));
-    SetDlgItemText(IDC_CFG_LAYOUT_PATH_BAR_ICON,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.path_bar_icon")));
-    SetDlgItemText(IDC_CFG_LAYOUT_PATH_BAR_REAL_PATH,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.path_bar_real_path")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_EACH_DRIVE_BAR,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_each_drive_bar")));
-    SetDlgItemText(IDC_CFG_LAYOUT_DRIVE_BAR_LEFT_SIDE,            theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.drive_bar_left_side")));
-    SetDlgItemText(IDC_CFG_LAYOUT_DRIVE_BAR_SHORT_TEXT,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.drive_bar_short_text")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_ACTIVATE_BAR,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_activate_bar")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_INFO_BAR,                  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_info_bar")));
-    SetDlgItemText(IDC_CFG_LAYOUT_GROUP_INFO_BAR_STYLE_OPTION,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.group.info_bar_style")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE,        theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_standard_style")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_BASIC_STYLE,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_basic_style")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_no_display_detailed_info")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_bookmark")));
-    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_arhs_attribute_style")));
-    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_STATUS_BAR,                theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_status_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_VIEW_SPLIT_RESIZE_BY_RATIO,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.view_split_resize_by_ratio")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_ADDRESS_BAR,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_address_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_PATH_BAR,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_path_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_PATH_BAR_ICON,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.path_bar_icon")));
+    SetDlgItemText(IDC_CFG_LAYOUT_PATH_BAR_REAL_PATH,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.path_bar_real_path")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_EACH_DRIVE_BAR,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_each_drive_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_DRIVE_BAR_LEFT_SIDE,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.drive_bar_left_side")));
+    SetDlgItemText(IDC_CFG_LAYOUT_DRIVE_BAR_SHORT_TEXT,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.drive_bar_short_text")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_ACTIVATE_BAR,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_activate_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_INFO_BAR,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_info_bar")));
+    SetDlgItemText(IDC_CFG_LAYOUT_GROUP_INFO_BAR_STYLE_OPTION,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.group.info_bar_style")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_STANDARD_STYLE,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_standard_style")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_BASIC_STYLE,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.radio.info_bar_basic_style")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_NO_DISP_DETAILED_INFO, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_no_display_detailed_info")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_BOOKMARK,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_bookmark")));
+    SetDlgItemText(IDC_CFG_LAYOUT_INFO_BAR_SHOW_ATTR_ARHS_STYLE,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.info_bar_show_arhs_attribute_style")));
+    SetDlgItemText(IDC_CFG_LAYOUT_SHOW_STATUS_BAR,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.layout.check.show_status_bar")));
 
     return XPR_TRUE;
 }

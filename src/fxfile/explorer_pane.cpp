@@ -1448,7 +1448,7 @@ void ExplorerPane::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *a
     if (XPR_IS_NOT_NULL(aPath))
     {
         xpr_tchar_t sMsg[XPR_MAX_PATH * 2 + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 }
@@ -1670,7 +1670,7 @@ void ExplorerPane::OnExpSelSingleItem(void)
 
     if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
     {
-        _tcscpy(sExplorerCtrlData->mStatusPane0, theApp.loadString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected")));
+        _tcscpy(sExplorerCtrlData->mStatusPane0, gApp.loadString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected")));
         _tcscpy(sExplorerCtrlData->mStatusPane1, XPR_STRING_LITERAL(""));
 
         if (XPR_IS_TRUE(sVisibleStatusBar))
@@ -1678,7 +1678,7 @@ void ExplorerPane::OnExpSelSingleItem(void)
     }
     else
     {
-        _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected_file"), XPR_STRING_LITERAL("%s,%s,%s")), sType, sDate, sAttr);
+        _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.single_selected_file"), XPR_STRING_LITERAL("%s,%s,%s")), sType, sDate, sAttr);
         _tcscpy(sExplorerCtrlData->mStatusPane1, sSize);
 
         if (XPR_IS_TRUE(sVisibleStatusBar))
@@ -1771,15 +1771,15 @@ void ExplorerPane::OnExpSelMultiItem(void)
         switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFileCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFileCountText);
             break;
 
         default:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sRealSelCountText, sRealSelFolderCountText, sRealSelFileCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sRealSelCountText, sRealSelFolderCountText, sRealSelFileCountText);
             break;
         }
     }
@@ -1788,15 +1788,15 @@ void ExplorerPane::OnExpSelMultiItem(void)
         switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFileCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_file"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFileCount);
             break;
 
         default:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sRealSelCount, sRealSelFolderCount, sRealSelFileCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sRealSelCount, sRealSelFolderCount, sRealSelFileCount);
             break;
         }
     }
@@ -1846,15 +1846,15 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
         switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFileCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFileCountText);
             break;
 
         default:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sCountText, sFolderCountText, sFileCountText);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.file_folder"), XPR_STRING_LITERAL("%s,%s,%s")), sCountText, sFolderCountText, sFileCountText);
             break;
         }
 
@@ -1883,15 +1883,15 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
         switch (gOpt->mConfig.mExplorerListType)
         {
         case LIST_TYPE_FOLDER:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
             break;
 
         case LIST_TYPE_FILE:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.etc"), XPR_STRING_LITERAL("%d,%d")), sCount, sFileCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.etc"), XPR_STRING_LITERAL("%d,%d")), sCount, sFileCount);
             break;
 
         default:
-            _stprintf(sExplorerCtrlData->mStatusPane0, theApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sFolderCount, sFileCount);
+            _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder_etc"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sFolderCount, sFileCount);
             break;
         }
 
@@ -1922,7 +1922,7 @@ void ExplorerPane::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint
             _stprintf(
                 sText,
                 XPR_STRING_LITERAL("%s: \'%s\'"),
-                (aDropEffect == DROPEFFECT_MOVE) ? theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_move")) : theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_copy")),
+                (aDropEffect == DROPEFFECT_MOVE) ? gApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_move")) : gApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_copy")),
                 sBookmarkItem->mPath.c_str());
         }
         else
@@ -1930,19 +1930,19 @@ void ExplorerPane::setStatusPaneBookmarkText(xpr_sint_t aBookmarkIndex, xpr_sint
             if (aDropEffect == DROPEFFECT_LINK)
             {
                 if (IsFileSystemFolder(sBookmarkItem->mPath.c_str()) == XPR_TRUE)
-                    _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_shortcut")), sBookmarkItem->mPath.c_str());
+                    _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), gApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_shortcut")), sBookmarkItem->mPath.c_str());
             }
 
             if (sText[0] == XPR_STRING_LITERAL('\0'))
-                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("bookmark.status.program_ass")), sBookmarkItem->mPath.c_str());
+                _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), gApp.loadString(XPR_STRING_LITERAL("bookmark.status.program_ass")), sBookmarkItem->mPath.c_str());
         }
     }
     else
     {
         if (aInsert == -1 || aInsert >= BookmarkMgr::instance().getCount())
-            _stprintf(sText, theApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_last_insert")));
+            _stprintf(sText, gApp.loadString(XPR_STRING_LITERAL("bookmark.status.drag_last_insert")));
         else
-            _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.drag_specific_insert"), XPR_STRING_LITERAL("%d")), aInsert);
+            _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("bookmark.status.drag_specific_insert"), XPR_STRING_LITERAL("%d")), aInsert);
     }
 
     mStatusBar->setPaneText(0, sText);
@@ -1969,9 +1969,9 @@ void ExplorerPane::setStatusPaneDriveText(xpr_tchar_t aDriveChar, DROPEFFECT aDr
 
                 switch (aDropEffect)
                 {
-                case DROPEFFECT_MOVE: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_move")),     sName); break;
-                case DROPEFFECT_COPY: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_copy")),     sName); break;
-                case DROPEFFECT_LINK: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), theApp.loadString(XPR_STRING_LITERAL("drive.status.drag_shortcut")), sName); break;
+                case DROPEFFECT_MOVE: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), gApp.loadString(XPR_STRING_LITERAL("drive.status.drag_move")),     sName); break;
+                case DROPEFFECT_COPY: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), gApp.loadString(XPR_STRING_LITERAL("drive.status.drag_copy")),     sName); break;
+                case DROPEFFECT_LINK: _stprintf(sText, XPR_STRING_LITERAL("%s: \'%s\'"), gApp.loadString(XPR_STRING_LITERAL("drive.status.drag_shortcut")), sName); break;
                 }
             }
 

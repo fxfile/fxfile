@@ -57,10 +57,10 @@ xpr_bool_t BatchRenameTabInsertDlg::OnInitDialog()
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_BATCH_RENAME_INSERT_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.head")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.tail")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_begin")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_end")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.head")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.tail")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_begin")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_end")));
 
     CSpinButtonCtrl *sSpinCtrl;
     sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_INSERT_POS_SPIN);
@@ -68,10 +68,10 @@ xpr_bool_t BatchRenameTabInsertDlg::OnInitDialog()
 
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_INSERT_TYPE))->SetCurSel(2);
 
-    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_TYPE,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.type")));
-    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_POS,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.position")));
-    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_STRING, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.string")));
-    SetDlgItemText(IDC_BATCH_RENAME_INSERT_APPLY,        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.button.apply")));
+    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_TYPE,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.type")));
+    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_POS,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.position")));
+    SetDlgItemText(IDC_BATCH_RENAME_INSERT_LABEL_STRING, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.label.string")));
+    SetDlgItemText(IDC_BATCH_RENAME_INSERT_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.button.apply")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename3"));

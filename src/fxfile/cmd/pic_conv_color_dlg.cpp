@@ -100,14 +100,14 @@ xpr_bool_t PicConvColorDlg::OnInitDialog(void)
         ((CComboBox *)GetDlgItem(sIds[mIndex]))->SetCurSel(mCurSel);
     enableWindow(mIndex);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.title")));
-    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_BINARY,    theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.binary")));
-    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_GRAYSCALE, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.grayscale")));
-    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_COLOR,     theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.color")));
-    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_TRUECOLOR, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.true_color")));
-    SetDlgItemText(IDC_PIC_CONV_COLOR_APPLY_ALL,       theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.apply_all")));
-    SetDlgItemText(IDOK,                               theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.apply")));
-    SetDlgItemText(IDCANCEL,                           theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.title")));
+    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_BINARY,    gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.binary")));
+    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_GRAYSCALE, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.grayscale")));
+    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_COLOR,     gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.color")));
+    SetDlgItemText(IDC_PIC_CONV_COLOR_RADIO_TRUECOLOR, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.radio.true_color")));
+    SetDlgItemText(IDC_PIC_CONV_COLOR_APPLY_ALL,       gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.apply_all")));
+    SetDlgItemText(IDOK,                               gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.apply")));
+    SetDlgItemText(IDCANCEL,                           gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv_color.button.cancel")));
 
     return XPR_TRUE;
 }

@@ -38,14 +38,14 @@ xpr_bool_t CfgFuncDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_FUNC_DRIVE_LAST_FOLDER,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.last_folder_for_each_drive")));
-    SetDlgItemText(IDC_CFG_FUNC_DRIVE_SHIFT_KEY,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.go_drive_with_shift_key")));
-    SetDlgItemText(IDC_CFG_FUNC_INET_ADDR_COMPATIBLE,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.internet_address_compatible_on_address_bar")));
-    SetDlgItemText(IDC_CFG_FUNC_SHELL_NEW,                 theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.new_items_such_as_windows_explorer")));
-    SetDlgItemText(IDC_CFG_FUNC_FILELIST_CUR_DIR,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.default_current_dir_for_file_list")));
-    SetDlgItemText(IDC_CFG_FUNC_WORKING_FOLDER_REAL_PATH,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.real_path_on_working_folder")));
-    SetDlgItemText(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.edit_after_creating_text_file")));
-    SetDlgItemText(IDC_CFG_FUNC_LABEL_NAME_COPY_SEPARATOR, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.label.separator_on_name_copy")));
+    SetDlgItemText(IDC_CFG_FUNC_DRIVE_LAST_FOLDER,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.last_folder_for_each_drive")));
+    SetDlgItemText(IDC_CFG_FUNC_DRIVE_SHIFT_KEY,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.go_drive_with_shift_key")));
+    SetDlgItemText(IDC_CFG_FUNC_INET_ADDR_COMPATIBLE,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.internet_address_compatible_on_address_bar")));
+    SetDlgItemText(IDC_CFG_FUNC_SHELL_NEW,                 gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.new_items_such_as_windows_explorer")));
+    SetDlgItemText(IDC_CFG_FUNC_FILELIST_CUR_DIR,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.default_current_dir_for_file_list")));
+    SetDlgItemText(IDC_CFG_FUNC_WORKING_FOLDER_REAL_PATH,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.real_path_on_working_folder")));
+    SetDlgItemText(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.check.edit_after_creating_text_file")));
+    SetDlgItemText(IDC_CFG_FUNC_LABEL_NAME_COPY_SEPARATOR, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.label.separator_on_name_copy")));
 
     return XPR_TRUE;
 }

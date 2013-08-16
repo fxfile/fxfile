@@ -104,9 +104,9 @@ xpr_bool_t BookmarkEditDlg::OnInitDialog(void)
     mImgList.Create(16, 16, ILC_COLOR16 | ILC_MASK, -1, -1);
     mListCtrl.SetImageList(&mImgList, LVSIL_SMALL);
 
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.name")),        LVCFMT_LEFT,  80, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.file_folder")), LVCFMT_LEFT, 197, -1);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.hotkey")),      LVCFMT_LEFT,  50, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.name")),        LVCFMT_LEFT,  80, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.file_folder")), LVCFMT_LEFT, 197, -1);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.list.column.hotkey")),      LVCFMT_LEFT,  50, -1);
 
     BookmarkMgr &theBookmarkMgr = BookmarkMgr::instance();
     theBookmarkMgr.regAsyncIcon(*this, WM_BOOKMARK_ASYNC_ICON);
@@ -132,17 +132,17 @@ xpr_bool_t BookmarkEditDlg::OnInitDialog(void)
 
     updateStatus();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.title")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_LABEL_LIST,   theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.label.list")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_ADD,     theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.add")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_MODIFY,  theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.modify")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_DELETE,  theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.delete")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_UP,      theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.move_up")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_DOWN,    theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.move_down")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_QUICK_LAUNCH, theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.quick_launch")));
-    SetDlgItemText(IDC_BOOKMARK_EDIT_DEFAULT,      theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.default")));
-    SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.title")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_LABEL_LIST,   gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.label.list")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_ADD,     gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.add")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_MODIFY,  gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.modify")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_DELETE,  gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.delete")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_UP,      gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.move_up")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_ITEM_DOWN,    gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.move_down")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_QUICK_LAUNCH, gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.quick_launch")));
+    SetDlgItemText(IDC_BOOKMARK_EDIT_DEFAULT,      gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.button.default")));
+    SetDlgItemText(IDOK,                           gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BookmarkEdit"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -285,7 +285,7 @@ void BookmarkEditDlg::updateStatus(void)
     xpr_sint_t sCount = mListCtrl.GetItemCount();
 
     xpr_tchar_t sStatusText[0xff] = {0};
-    _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.status.count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.status.count"), XPR_STRING_LITERAL("%d")), sCount);
     SetDlgItemText(IDC_BOOKMARK_EDIT_STATUS, sStatusText);
 }
 
@@ -337,7 +337,7 @@ void BookmarkEditDlg::OnItemAdd(void)
     if (mListCtrl.GetItemCount() > MAX_BOOKMARK)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -473,7 +473,7 @@ void BookmarkEditDlg::OnOK(void)
     if (mListCtrl.GetItemCount() > MAX_BOOKMARK)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_BOOKMARK);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -520,7 +520,7 @@ void BookmarkEditDlg::setItemFocus(xpr_sint_t aIndex)
 
 void BookmarkEditDlg::OnQuickLaunch(void) 
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.question_quick_launch"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.question_quick_launch"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId == IDNO)
         return;
@@ -598,7 +598,7 @@ void BookmarkEditDlg::OnQuickLaunch(void)
 
 void BookmarkEditDlg::OnDefault(void)
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.question_default"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.bookmark_edit.msg.question_default"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId == IDNO)
         return;

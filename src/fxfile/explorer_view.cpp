@@ -1279,7 +1279,7 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
             sTabData->mTabPane   = sTabPane;
             sTabData->mTabPaneId = sTabPaneId;
 
-            const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("search_result.title"));
+            const xpr_tchar_t *sTitle = gApp.loadString(XPR_STRING_LITERAL("search_result.title"));
 
             sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
         }
@@ -1319,7 +1319,7 @@ xpr_sint_t ExplorerView::newFileScrapTab(void)
             sTabData->mTabPane   = sTabPane;
             sTabData->mTabPaneId = sTabPaneId;
 
-            const xpr_tchar_t *sTitle = theApp.loadString(XPR_STRING_LITERAL("file_scrap.title"));
+            const xpr_tchar_t *sTitle = gApp.loadString(XPR_STRING_LITERAL("file_scrap.title"));
 
             sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
         }

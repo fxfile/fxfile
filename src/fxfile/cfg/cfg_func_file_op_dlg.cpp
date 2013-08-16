@@ -39,11 +39,11 @@ xpr_bool_t CfgFuncFileOpDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SetDlgItemText(IDC_CFG_FILE_OP_GROUP_EXTERNAL_PROGRAM,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.group.external_program")));
-    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_COPY,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_copy")));
-    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_MOVE,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_move")));
-    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_DELETE,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_delete")));
-    SetDlgItemText(IDC_CFG_FILE_OP_COMPLETED_FLASH_TASKBAR, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.flash_taskbar_when_completed")));
+    SetDlgItemText(IDC_CFG_FILE_OP_GROUP_EXTERNAL_PROGRAM,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.group.external_program")));
+    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_COPY,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_copy")));
+    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_MOVE,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_move")));
+    SetDlgItemText(IDC_CFG_FILE_OP_EXTERNAL_DELETE,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.external_delete")));
+    SetDlgItemText(IDC_CFG_FILE_OP_COMPLETED_FLASH_TASKBAR, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.file_operation.check.flash_taskbar_when_completed")));
 
     return XPR_TRUE;
 }

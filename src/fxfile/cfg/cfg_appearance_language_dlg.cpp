@@ -47,7 +47,7 @@ xpr_bool_t CfgAppearanceLanguageDlg::OnInitDialog(void)
 
     xpr_size_t i, sLanguageCount;
     const fxfile::base::LanguagePack::Desc *sLanguagePackDesc;
-    const fxfile::base::LanguageTable *sLanguageTable = theApp.getLanguageTable();
+    const fxfile::base::LanguageTable *sLanguageTable = gApp.getLanguageTable();
 
     sLanguageCount = sLanguageTable->getLanguageCount();
     for (i = 0; i < sLanguageCount; ++i)
@@ -58,14 +58,14 @@ xpr_bool_t CfgAppearanceLanguageDlg::OnInitDialog(void)
         sLanguagePackComboBox->AddString(sLanguagePackDesc->mLanguage);
     }
 
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_CHOOSE,         theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.choose_language_pack")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_GROUP_DESC,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.group.description")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_LANGUAGE,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.language")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_FILE_PATH, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.file_path")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_AUTHOR,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.author")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_HOMEPAGE,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.homepage")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_EMAIL,     theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.e-mail")));
-    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_DESC,      theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.description")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_CHOOSE,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.choose_language_pack")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_GROUP_DESC,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.group.description")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_LANGUAGE,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.language")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_FILE_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.file_path")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_AUTHOR,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.author")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_HOMEPAGE,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.homepage")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_EMAIL,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.e-mail")));
+    SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_DESC_DESC,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.description.description")));
 
     return XPR_TRUE;
 }
@@ -139,7 +139,7 @@ void CfgAppearanceLanguageDlg::chooseLanguagePack(const xpr_tchar_t *aLanguage)
     {
         sLanguagePackComboBox->SetCurSel(i);
 
-        const fxfile::base::LanguageTable *sLanguageTable = theApp.getLanguageTable();
+        const fxfile::base::LanguageTable *sLanguageTable = gApp.getLanguageTable();
 
         sLanguagePackDesc = sLanguageTable->getLanguageDesc(aLanguage);
     }

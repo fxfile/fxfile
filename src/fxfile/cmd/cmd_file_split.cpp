@@ -48,7 +48,7 @@ void FileCombineCommand::execute(CommandContext &aContext)
     {
         if (sExplorerCtrl->GetSelectedCount() != 1)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.select"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.select"));
             sExplorerCtrl->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
             return;
         }
@@ -75,7 +75,7 @@ void FileCombineCommand::execute(CommandContext &aContext)
 
         if (nStartNumber == -1)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.unsuitable"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.unsuitable"));
             sExplorerCtrl->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return;
         }
@@ -186,7 +186,7 @@ void FileMergeCommand::execute(CommandContext &aContext)
 
         if (sExplorerCtrl->GetSelectedCount() <= 1)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.select_multiple"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_merge.msg.select_multiple"));
             sExplorerCtrl->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return;
         }

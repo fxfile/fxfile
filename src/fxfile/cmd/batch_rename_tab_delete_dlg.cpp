@@ -56,10 +56,10 @@ xpr_bool_t BatchRenameTabDeleteDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_BATCH_RENAME_DELETE_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.head")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.tail")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_begin")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_end")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.head")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.tail")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_begin")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_end")));
 
     CSpinButtonCtrl *sSpinCtrl;
     sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_DELETE_POS_SPIN);
@@ -71,10 +71,10 @@ xpr_bool_t BatchRenameTabDeleteDlg::OnInitDialog(void)
 
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_DELETE_TYPE))->SetCurSel(2);
 
-    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_TYPE,   theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.type")));
-    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_POS,    theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.position")));
-    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_LENGTH, theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.length")));
-    SetDlgItemText(IDC_BATCH_RENAME_DELETE_APPLY,        theApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.button.apply")));
+    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_TYPE,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.type")));
+    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_POS,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.position")));
+    SetDlgItemText(IDC_BATCH_RENAME_DELETE_LABEL_LENGTH, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.label.length")));
+    SetDlgItemText(IDC_BATCH_RENAME_DELETE_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.button.apply")));
 
     // Load Dialog State
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename4"));

@@ -143,11 +143,11 @@ xpr_sint_t SearchResultCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
     // enable vista enhanced control
     enableVistaEnhanced(XPR_TRUE);
 
-    InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  170);
-    InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("search_result.column.location")), LVCFMT_LEFT,  200);
-    InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT,  80);
-    InsertColumn(3, theApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  150);
-    InsertColumn(4, theApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  140);
+    InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("search_result.column.name")),     LVCFMT_LEFT,  170);
+    InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("search_result.column.location")), LVCFMT_LEFT,  200);
+    InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("search_result.column.size")),     LVCFMT_RIGHT,  80);
+    InsertColumn(3, gApp.loadString(XPR_STRING_LITERAL("search_result.column.type")),     LVCFMT_LEFT,  150);
+    InsertColumn(4, gApp.loadString(XPR_STRING_LITERAL("search_result.column.date")),     LVCFMT_LEFT,  140);
     mHeaderCtrl->setSortImage(-1, XPR_TRUE);
 
     if (XPR_IS_NULL(mShellIcon))
@@ -574,7 +574,7 @@ void SearchResultCtrl::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -582,7 +582,7 @@ void SearchResultCtrl::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -912,7 +912,7 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             ContextMenu sContextMenu(GetSafeHwnd());
             if (sContextMenu.init(sShellFolder, (LPCITEMIDLIST *)sPidls, sCount) == XPR_TRUE && sContextMenu.getMenu(&sMenu) == XPR_TRUE)
             {
-                ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getFirstId() + CMID_OPEN_PARENT_FOLDER, theApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
+                ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getFirstId() + CMID_OPEN_PARENT_FOLDER, gApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
                 ::InsertMenu(sMenu.m_hMenu, 1, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
                 //::SetMenuDefaultItem(sMenu.m_hMenu, 0, XPR_TRUE);
 
@@ -1241,7 +1241,7 @@ void SearchResultCtrl::doExecuteError(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
 void SearchResultCtrl::doExecuteError(const xpr_tchar_t *aPath)
 {
     xpr_tchar_t sMsg[XPR_MAX_PATH * 2] = {0};
-    _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("search_result.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
+    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("search_result.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 }
 

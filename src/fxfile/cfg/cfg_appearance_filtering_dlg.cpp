@@ -62,20 +62,20 @@ xpr_bool_t CfgAppearanceFilteringDlg::OnInitDialog(void)
     addIgnoreApply(IDC_CFG_FILTER_DEFAULT);
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.name")),      LVCFMT_LEFT, 100, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.extension")), LVCFMT_LEFT, 245, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.name")),      LVCFMT_LEFT, 100, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.extension")), LVCFMT_LEFT, 245, -1);
 
     mListCtrl.SetImageList(&SysImgListMgr::instance().mCusImgList16, LVSIL_SMALL);
 
     xpr_tchar_t sText[0xff] = {0};
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.label.max_filter"), XPR_STRING_LITERAL("%d")), MAX_FILTER);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.label.max_filter"), XPR_STRING_LITERAL("%d")), MAX_FILTER);
     SetDlgItemText(IDC_CFG_FILTER_LABEL_MAX_FILTER, sText);
 
-    SetDlgItemText(IDC_CFG_FILTER_LABEL_LIST,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.label.list")));
-    SetDlgItemText(IDC_CFG_FILTER_DEFAULT,          theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.default")));
-    SetDlgItemText(IDC_CFG_FILTER_ADD,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.add")));
-    SetDlgItemText(IDC_CFG_FILTER_MODIFY,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.modify")));
-    SetDlgItemText(IDC_CFG_FILTER_DELETE,           theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.delete")));
+    SetDlgItemText(IDC_CFG_FILTER_LABEL_LIST,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.label.list")));
+    SetDlgItemText(IDC_CFG_FILTER_DEFAULT,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.default")));
+    SetDlgItemText(IDC_CFG_FILTER_ADD,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.add")));
+    SetDlgItemText(IDC_CFG_FILTER_MODIFY,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.modify")));
+    SetDlgItemText(IDC_CFG_FILTER_DELETE,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.button.delete")));
 
     return XPR_TRUE;
 }
@@ -198,7 +198,7 @@ void CfgAppearanceFilteringDlg::OnListAdd(void)
     if (sCount > MAX_FILTER)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_FILTER);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), MAX_FILTER);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -281,7 +281,7 @@ void CfgAppearanceFilteringDlg::OnListDelete(void)
     if (sIndex == 0 || sIndex == 1)
         return;
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.confirm_delete"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.confirm_delete"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2);
     if (sMsgId == IDNO)
         return;
@@ -439,7 +439,7 @@ xpr_bool_t CfgAppearanceFilteringDlg::PreTranslateMessage(MSG* pMsg)
 
 void CfgAppearanceFilteringDlg::OnDefault(void)
 {
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.confirm_init"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.msg.confirm_init"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId == IDNO)
         return;

@@ -55,10 +55,10 @@ xpr_sint_t PrintPreviewViewEx::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     mPrevButton.SetAlign(mPrevButton.GetAlign() + 2);
 
-    mPrintButton.SetWindowText(theApp.loadString(XPR_STRING_LITERAL("print_preview.button.print")));
-    mPrevButton .SetWindowText(theApp.loadString(XPR_STRING_LITERAL("print_preview.button.previous_page")));
-    mNextButton .SetWindowText(theApp.loadString(XPR_STRING_LITERAL("print_preview.button.next_page")));
-    mCloseButton.SetWindowText(theApp.loadString(XPR_STRING_LITERAL("print_preview.button.close")));
+    mPrintButton.SetWindowText(gApp.loadString(XPR_STRING_LITERAL("print_preview.button.print")));
+    mPrevButton .SetWindowText(gApp.loadString(XPR_STRING_LITERAL("print_preview.button.previous_page")));
+    mNextButton .SetWindowText(gApp.loadString(XPR_STRING_LITERAL("print_preview.button.next_page")));
+    mCloseButton.SetWindowText(gApp.loadString(XPR_STRING_LITERAL("print_preview.button.close")));
 
     return 0;
 }

@@ -60,9 +60,9 @@ xpr_bool_t SingleRenameDlg::OnInitDialog(void)
     HICON sIcon = SysImgListMgr::instance().mSysImgList32.ExtractIcon(sIconIndex);
 
     xpr_tchar_t sDesc[XPR_MAX_PATH * 2] = {0};
-    _stprintf(sDesc, theApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.label.top_desc"), XPR_STRING_LITERAL("%s")), sEditName);
+    _stprintf(sDesc, gApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.label.top_desc"), XPR_STRING_LITERAL("%s")), sEditName);
 
-    setTitle(theApp.loadString(XPR_STRING_LITERAL("popup.rename.title")));
+    setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.rename.title")));
     setDesc(sDesc);
     setDescIcon(sIcon, XPR_TRUE);
 

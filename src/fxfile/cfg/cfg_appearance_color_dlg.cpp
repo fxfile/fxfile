@@ -64,14 +64,14 @@ xpr_bool_t CfgAppearanceColorDlg::OnInitDialog(void)
         mViewDlg[i]->ShowWindow(SW_HIDE);
 
         sStringId.format(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.tab.view%d"), i + 1);
-        mTabCtrl.InsertItem(i, theApp.loadString(sStringId.c_str()));
+        mTabCtrl.InsertItem(i, gApp.loadString(sStringId.c_str()));
     }
 
     showTabDlg(0);
 
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_ACTIVED_VIEW_COLOR,       theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.label.actived_view_color")));
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_INFO_BAR_BOOKMARK_COLOR,  theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.label.info_bar_bookmark_color")));
-    SetDlgItemText(IDC_CFG_COLOR_LABEL_PATH_BAR_HIGHLIGHT_COLOR, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.check.path_bar_highlight_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_ACTIVED_VIEW_COLOR,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.label.actived_view_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_INFO_BAR_BOOKMARK_COLOR,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.label.info_bar_bookmark_color")));
+    SetDlgItemText(IDC_CFG_COLOR_LABEL_PATH_BAR_HIGHLIGHT_COLOR, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.check.path_bar_highlight_color")));
 
     return XPR_TRUE;
 }
@@ -90,18 +90,18 @@ void CfgAppearanceColorDlg::OnDestroy(void)
 
 void CfgAppearanceColorDlg::onInit(Option::Config &aConfig)
 {
-    mActivedViewColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mActivedViewColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mActivedViewColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mActivedViewColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mActivedViewColorCtrl.SetDefaultColor(DEF_ACTIVED_VIEW_COLOR);
     mActivedViewColorCtrl.SetColor(aConfig.mActiveViewColor);
 
-    mInfoBarBookmarkColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mInfoBarBookmarkColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mInfoBarBookmarkColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mInfoBarBookmarkColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mInfoBarBookmarkColorCtrl.SetDefaultColor(DEF_INFO_BAR_BOOKMARK_COLOR);
     mInfoBarBookmarkColorCtrl.SetColor(aConfig.mContentsBookmarkColor);
 
-    mPathBarHighlightColorCtrl.SetDefaultText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
-    mPathBarHighlightColorCtrl.SetCustomText(theApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
+    mPathBarHighlightColorCtrl.SetDefaultText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.automatic")));
+    mPathBarHighlightColorCtrl.SetCustomText(gApp.loadString(XPR_STRING_LITERAL("popup.common.color_ctrl.other_color")));
     mPathBarHighlightColorCtrl.SetDefaultColor(DEF_PATH_BAR_HIGHLIGHT_COLOR);
     mPathBarHighlightColorCtrl.SetColor(aConfig.mPathBarHighlightColor);
 

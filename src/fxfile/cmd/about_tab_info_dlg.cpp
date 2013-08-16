@@ -85,12 +85,12 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
         LOWORD(sUserEnv.mOSVerInfo.dwBuildNumber));
     SetDlgItemText(IDC_ABOUT_WINDOWS, sWindows);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.title")));
-    SetDlgItemText(IDC_ABOUT_LABEL_ACCEPT, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.accept")));
-    SetDlgItemText(IDOK,                   theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDC_ABOUT_SYSTEM,       theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.system_info")));
-    SetDlgItemText(IDC_ABOUT_REPORT,       theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.report")));
-    SetDlgItemText(IDC_ABOUT_UPDATE,       theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.update")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.title")));
+    SetDlgItemText(IDC_ABOUT_LABEL_ACCEPT, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.accept")));
+    SetDlgItemText(IDOK,                   gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDC_ABOUT_SYSTEM,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.system_info")));
+    SetDlgItemText(IDC_ABOUT_REPORT,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.report")));
+    SetDlgItemText(IDC_ABOUT_UPDATE,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.update")));
 
     // disable update button
     GetDlgItem(IDC_ABOUT_UPDATE)->EnableWindow(XPR_FALSE);
@@ -149,24 +149,24 @@ void AboutTabInfoDlg::OnTimer(xpr_uint_t aIdEvent)
                 switch (sUpdateInfo.mStatus)
                 {
                 case kUpdateStatusCheckInProgress:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checking")));
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checking")));
                     break;
 
                 case kUpdateStatusCheckFailed:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, theApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.check_failed")));
+                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.check_failed")));
                     break;
 
                 case kUpdateStatusExistNewVer:
                     UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
 
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checked"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checked"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
                     SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
                     break;
 
                 case kUpdateStatusLastestVer:
                     UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
 
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.latest_version"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.latest_version"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
                     SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
 
                     KillTimer(aIdEvent);
@@ -175,14 +175,14 @@ void AboutTabInfoDlg::OnTimer(xpr_uint_t aIdEvent)
                 case kUpdateStatusDownloading:
                     UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
 
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloading"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloading"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
                     SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
                     break;
 
                 case kUpdateStatusDownloaded:
                     UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
 
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloaded"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloaded"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
                     SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
                     GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_SHOW);
 
@@ -192,7 +192,7 @@ void AboutTabInfoDlg::OnTimer(xpr_uint_t aIdEvent)
                 case kUpdateStatusDownloadFailed:
                     UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
 
-                    _stprintf(sStatus, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.download_failed"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
+                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.download_failed"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
                     SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
                     break;
                 }
@@ -280,7 +280,7 @@ void AboutTabInfoDlg::OnUpdate(void)
                 xpr_sint_t sErrorCode = (xpr_sint_t)(xpr_sintptr_t)sInstance;
 
                 xpr_tchar_t sMsg[0xff] = {0};
-                _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.msg.installer_execute_error"), XPR_STRING_LITERAL("%d")), sErrorCode);
+                _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.msg.installer_execute_error"), XPR_STRING_LITERAL("%d")), sErrorCode);
                 ::MessageBox(XPR_NULL, sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))

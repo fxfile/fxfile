@@ -98,14 +98,14 @@ xpr_bool_t FileCombineDlg::OnInitDialog(void)
     SetDlgItemText(IDC_COMBINE_DEST_DIR, mDestDir.c_str());
     setCrcFile();
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.title")));
-    SetDlgItemText(IDC_COMBINE_LABEL_PATH,     theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.path")));
-    SetDlgItemText(IDC_COMBINE_LABEL_CRC_FILE, theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.crc_file")));
-    SetDlgItemText(IDC_COMBINE_LABEL_DEST_DIR, theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.dest_dir")));
-    SetDlgItemText(IDOK,                       theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.combine")));
-    SetDlgItemText(IDCANCEL,                   theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.title")));
+    SetDlgItemText(IDC_COMBINE_LABEL_PATH,     gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.path")));
+    SetDlgItemText(IDC_COMBINE_LABEL_CRC_FILE, gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.crc_file")));
+    SetDlgItemText(IDC_COMBINE_LABEL_DEST_DIR, gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.label.dest_dir")));
+    SetDlgItemText(IDOK,                       gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.combine")));
+    SetDlgItemText(IDCANCEL,                   gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.close")));
 
-    setStatus(theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.ready")));
+    setStatus(gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.ready")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("FileCombine"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -153,7 +153,7 @@ void FileCombineDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK,
         (aEnable == XPR_TRUE) ?
-        theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.combine")) : theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.stop")));
+        gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.combine")) : gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.button.stop")));
 
     GetDlgItem(IDC_COMBINE_PATH)->EnableWindow(aEnable);
     GetDlgItem(IDC_COMBINE_PATH_BROWSE)->EnableWindow(aEnable);
@@ -187,7 +187,7 @@ void FileCombineDlg::OnPathBrowse(void)
     GetDlgItemText(IDC_COMBINE_PATH, sPath, XPR_MAX_PATH);
 
     xpr_tchar_t sFilter[0xff] = {0};
-    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), theApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
+    _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.*)\0*.*\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
 
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.*"), sPath, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
@@ -233,7 +233,7 @@ void FileCombineDlg::OnDestDirBrowse(void)
     BROWSEINFO sBrowseInfo = {0};
     sBrowseInfo.hwndOwner = GetSafeHwnd();
     sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;//BIF_USENEWUI;
-    sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.folder_browse.title"));
+    sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.folder_browse.title"));
     sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
     sBrowseInfo.lParam    = (LPARAM)sOldFullPidl;
     LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -268,7 +268,7 @@ void FileCombineDlg::OnOK(void)
 
     if (IsExistFile(sPath) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.not_exist"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.not_exist"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_COMBINE_PATH)->SetFocus();
@@ -277,7 +277,7 @@ void FileCombineDlg::OnOK(void)
 
     if (IsExistFile(sDestDir) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.dest_dir_not_exist"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.dest_dir_not_exist"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_COMBINE_DEST_DIR)->SetFocus();
@@ -305,7 +305,7 @@ void FileCombineDlg::OnOK(void)
 
     if (sIndex == -1)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.no_combine"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.no_combine"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_COMBINE_PATH)->SetFocus();
@@ -315,7 +315,7 @@ void FileCombineDlg::OnOK(void)
     if (IsExistFile(sDestPath) == XPR_TRUE)
     {
         xpr_tchar_t sMsg[0xff] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestPath);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.msg.question_overwrite"), XPR_STRING_LITERAL("%s")), sDestPath);
         if (MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION) == IDNO)
             return;
     }
@@ -366,7 +366,7 @@ void FileCombineDlg::OnOK(void)
         {
         case FileCombine::StatusFileNotExist:
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.not_exist"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.not_exist"));
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 GetDlgItem(IDC_COMBINE_PATH)->SetFocus();
@@ -375,7 +375,7 @@ void FileCombineDlg::OnOK(void)
 
         case FileCombine::StatusDestDirNotExist:
             {
-                const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.dest_dir_not_exist"));
+                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.status.dest_dir_not_exist"));
                 MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                 GetDlgItem(IDC_COMBINE_DEST_DIR)->SetFocus();
@@ -393,7 +393,7 @@ void FileCombineDlg::OnTimer(UINT_PTR nIDEvent)
         mFileCombine->GetStatus(&sCombined);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.in_progress"), XPR_STRING_LITERAL("%d")), sCombined);
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.in_progress"), XPR_STRING_LITERAL("%d")), sCombined);
         setStatus(sStatusText);
 
         mProgressCtrl.SetPos((xpr_sint_t)sCombined);
@@ -419,14 +419,14 @@ LRESULT FileCombineDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     {
     case FileCombine::StatusNotCombine:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.no_combine"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.no_combine"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
 
     case FileCombine::StatusNotWritable:
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.not_created"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.file_combine.msg.not_created"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             break;
         }
@@ -434,7 +434,7 @@ LRESULT FileCombineDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileCombine::StatusCombineCompleted:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.completed"), XPR_STRING_LITERAL("%d")), sCombined);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.completed"), XPR_STRING_LITERAL("%d")), sCombined);
             setStatus(sStatusText);
             break;
         }
@@ -442,7 +442,7 @@ LRESULT FileCombineDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileCombine::StatusStopped:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.stoped"), XPR_STRING_LITERAL("%d")), sCombined);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.stoped"), XPR_STRING_LITERAL("%d")), sCombined);
             setStatus(sStatusText);
             break;
         }
@@ -450,7 +450,7 @@ LRESULT FileCombineDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
     case FileCombine::StatusInvalidCrcCode:
         {
             xpr_tchar_t sStatusText[0xff] = {0};
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.invalid_crc_code"), XPR_STRING_LITERAL("%d")), sCombined);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.file_combine.status.invalid_crc_code"), XPR_STRING_LITERAL("%d")), sCombined);
             setStatus(sStatusText);
             break;
         }

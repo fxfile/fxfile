@@ -49,9 +49,9 @@ xpr_bool_t CfgAppearanceSizeFormatDlg::OnInitDialog(void)
     // disable apply button event
     addIgnoreApply(IDC_CFG_SIZE_FORMAT_CUSTOM_FORMAT);
 
-    SetDlgItemText(IDC_CFG_SIZE_FORMAT_LABEL_SINGLE_ITEM_UNIT,    theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.label.single_item_unit")));
-    SetDlgItemText(IDC_CFG_SIZE_FORMAT_LABEL_MULTIPLE_ITEMS_UNIT, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.label.multiple_items_unit")));
-    SetDlgItemText(IDC_CFG_SIZE_FORMAT_CUSTOM_FORMAT,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.button.custom_format")));
+    SetDlgItemText(IDC_CFG_SIZE_FORMAT_LABEL_SINGLE_ITEM_UNIT,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.label.single_item_unit")));
+    SetDlgItemText(IDC_CFG_SIZE_FORMAT_LABEL_MULTIPLE_ITEMS_UNIT, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.label.multiple_items_unit")));
+    SetDlgItemText(IDC_CFG_SIZE_FORMAT_CUSTOM_FORMAT,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.size_format.button.custom_format")));
 
     return XPR_TRUE;
 }

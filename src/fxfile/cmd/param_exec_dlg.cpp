@@ -66,12 +66,12 @@ xpr_bool_t ParamExecDlg::OnInitDialog(void)
     SetDlgItemText(IDC_PARAM_EXEC_PATH, mPath);
     ((CEdit *)GetDlgItem(IDC_PARAM_EXEC_PATH))->LimitText(XPR_MAX_ARG);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.title")));
-    SetDlgItemText(IDC_PARAM_EXEC_LABEL_PATH,      theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.path")));
-    SetDlgItemText(IDC_PARAM_EXEC_LABEL_INPUT,     theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.input")));
-    SetDlgItemText(IDC_PARAM_EXEC_LABEL_PARAMETER, theApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.parameter")));
-    SetDlgItemText(IDOK,                           theApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,                       theApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.param_exec.title")));
+    SetDlgItemText(IDC_PARAM_EXEC_LABEL_PATH,      gApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.path")));
+    SetDlgItemText(IDC_PARAM_EXEC_LABEL_INPUT,     gApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.input")));
+    SetDlgItemText(IDC_PARAM_EXEC_LABEL_PARAMETER, gApp.loadString(XPR_STRING_LITERAL("popup.param_exec.label.parameter")));
+    SetDlgItemText(IDOK,                           gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                       gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }

@@ -46,13 +46,13 @@ xpr_bool_t CfgAppearanceFolderTreeDlg::OnInitDialog(void)
 
     xpr_tchar_t sText[0xff] = {0};
     _stprintf(sText,
-        theApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.label.explore_delay_time_range"), XPR_STRING_LITERAL("%d,%d,%d")),
+        gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.label.explore_delay_time_range"), XPR_STRING_LITERAL("%d,%d,%d")),
         MIN_FLD_SEL_DELAY_MSEC, MAX_FLD_SEL_DELAY_MSEC, DEF_FLD_SEL_DELAY_MSEC);
     SetDlgItemText(IDC_CFG_FOLDER_TREE_LABEL_EXPLORE_DELAY_TIME_RANGE, sText);
 
-    SetDlgItemText(IDC_CFG_FOLDER_TREE_INIT_NO_EXPAND,             theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.init_no_expand")));
-    SetDlgItemText(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY,              theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.explore_delay")));
-    SetDlgItemText(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE, theApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage")));
+    SetDlgItemText(IDC_CFG_FOLDER_TREE_INIT_NO_EXPAND,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.init_no_expand")));
+    SetDlgItemText(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.explore_delay")));
+    SetDlgItemText(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage")));
 
     return XPR_TRUE;
 }

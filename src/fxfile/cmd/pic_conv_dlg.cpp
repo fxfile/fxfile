@@ -154,8 +154,8 @@ xpr_bool_t PicConvDlg::OnInitDialog(void)
 
     // image file list
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.list.column.no")),   LVCFMT_RIGHT,  35);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.list.column.name")), LVCFMT_LEFT,  500);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.list.column.no")),   LVCFMT_RIGHT,  35);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.list.column.name")), LVCFMT_LEFT,  500);
 
     i = 0;
     LVITEM sLvItem = {0};
@@ -184,19 +184,19 @@ xpr_bool_t PicConvDlg::OnInitDialog(void)
     // status
     sCount = mListCtrl.GetItemCount();
     mProgressCtrl.SetRange32(0, sCount);
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.count"), XPR_STRING_LITERAL("%d")), sCount);
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.count"), XPR_STRING_LITERAL("%d")), sCount);
     setStatus(sText);
 
     mGflSaveParams = new GFL_SAVE_PARAMS;
     gflGetDefaultSaveParams(mGflSaveParams);
     mGflSaveParams->Offset = 0;
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.title")));
-    SetDlgItemText(IDC_PIC_CONV_LABEL_FORMAT, theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.label.format")));
-    SetDlgItemText(IDC_PIC_CONV_KEEP_ORG,     theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.check.keep_original")));
-    SetDlgItemText(IDC_PIC_CONV_OPTION,       theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.option")));
-    SetDlgItemText(IDOK,                      theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.convert")));
-    SetDlgItemText(IDCANCEL,                  theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.title")));
+    SetDlgItemText(IDC_PIC_CONV_LABEL_FORMAT, gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.label.format")));
+    SetDlgItemText(IDC_PIC_CONV_KEEP_ORG,     gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.check.keep_original")));
+    SetDlgItemText(IDC_PIC_CONV_OPTION,       gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.option")));
+    SetDlgItemText(IDOK,                      gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.convert")));
+    SetDlgItemText(IDCANCEL,                  gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("PicConv"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -283,7 +283,7 @@ void PicConvDlg::OnOption(void)
 void PicConvDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK,
-        (aEnable == XPR_TRUE) ? theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.convert")) : theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.stop")));
+        (aEnable == XPR_TRUE) ? gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.convert")) : gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.button.stop")));
 
     GetDlgItem(IDC_PIC_CONV_FORMAT)->EnableWindow(aEnable);
     GetDlgItem(IDC_PIC_CONV_OPTION)->EnableWindow(aEnable);
@@ -319,14 +319,14 @@ void PicConvDlg::OnOK(void)
 
     if (mListCtrl.GetItemCount() <= 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.msg.none"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.msg.none"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
     if (mFormatComboBox.GetCurSel() < 0)
     {
-        const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.msg.select_format"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.pic_conv.msg.select_format"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
@@ -389,7 +389,7 @@ LRESULT PicConvDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
         {
             xpr_size_t sCount = mPicConv->getCount();
 
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.completed"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sSucceededCount, sCount-sSucceededCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.completed"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sSucceededCount, sCount-sSucceededCount);
             setStatus(sStatusText);
 
             super::OnOK();
@@ -398,7 +398,7 @@ LRESULT PicConvDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 
     case PicConv::StatusStopped:
         {
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.stoped"), XPR_STRING_LITERAL("%d")), sProcessedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.stoped"), XPR_STRING_LITERAL("%d")), sProcessedCount);
             setStatus(sStatusText);
             break;
         }
@@ -475,7 +475,7 @@ void PicConvDlg::OnTimer(UINT_PTR nIDEvent)
         mPicConv->getStatus(&sProcessedCount);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sProcessedCount, sCount, (xpr_sint_t)((xpr_float_t)sProcessedCount / (xpr_float_t)(sCount) * 100 + 0.5));
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.pic_conv.status.in_progress"), XPR_STRING_LITERAL("%d,%d,%d")), sProcessedCount, sCount, (xpr_sint_t)((xpr_float_t)sProcessedCount / (xpr_float_t)(sCount) * 100 + 0.5));
 
         SetDlgItemText(IDC_ATTR_STATUS, sStatusText);
         mProgressCtrl.SetPos((xpr_sint_t)sProcessedCount);

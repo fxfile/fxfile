@@ -469,7 +469,7 @@ void FolderCopyCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sFolderCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
 
         LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -520,7 +520,7 @@ void FolderCopyCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sSearchResultCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
         LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
 
@@ -552,7 +552,7 @@ void FolderCopyCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sExplorerCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.copy_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
         sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
         sBrowseInfo.lParam    = (LPARAM)sOldPidl;
@@ -616,7 +616,7 @@ void FolderMoveCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sFolderCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
 
         LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
@@ -667,7 +667,7 @@ void FolderMoveCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sSearchResultCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;// | BIF_USENEWUI;
         LPITEMIDLIST sFullPidl = ::SHBrowseForFolder(&sBrowseInfo);
 
@@ -699,7 +699,7 @@ void FolderMoveCommand::execute(CommandContext &aContext)
 
         BROWSEINFO sBrowseInfo = {0};
         sBrowseInfo.hwndOwner = sExplorerCtrl->GetSafeHwnd();
-        sBrowseInfo.lpszTitle = theApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
+        sBrowseInfo.lpszTitle = gApp.loadString(XPR_STRING_LITERAL("popup.move_to_folder.folder_browse.title"));
         sBrowseInfo.ulFlags   = BIF_RETURNONLYFSDIRS;
         sBrowseInfo.lpfn      = (BFFCALLBACK)BrowseCallbackProc;
         sBrowseInfo.lParam    = (LPARAM)sOldPidl;

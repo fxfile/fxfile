@@ -61,7 +61,7 @@ void GoWorkingFolderCommand::execute(CommandContext &aContext)
     {
         if (sMainFrame->goWorkingFolder(sIndex) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("working_folder.msg.not_set"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("working_folder.msg.not_set"));
             sMainFrame->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONINFORMATION);
         }
     }

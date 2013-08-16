@@ -882,7 +882,7 @@ xpr_bool_t AddressBar::execute(const xpr_tchar_t *aPath)
     if (XPR_IS_FALSE(sResult))
     {
         xpr_tchar_t sMsg[0xff + XPR_MAX_PATH + 1] = {0};
-        _stprintf(sMsg, theApp.loadFormatString(XPR_STRING_LITERAL("bar.address.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("bar.address.msg.wrong_path"), XPR_STRING_LITERAL("%s")), aPath);
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
     }
 

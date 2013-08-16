@@ -121,7 +121,7 @@ xpr_sint_t FileScrapPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
         if (mGroupComboBox->Create(sStyle, CRect(0,0,0,100), this, CTRL_ID_GROUP_COMBOBOX) == XPR_TRUE)
         {
             mGroupImgList.Create(16, 16, ILC_COLOR16 | ILC_MASK, -1, -1);
-            HICON sIcon = theApp.LoadIcon(MAKEINTRESOURCE(IDI_FILE_SCRAP));
+            HICON sIcon = AfxGetApp()->LoadIcon(MAKEINTRESOURCE(IDI_FILE_SCRAP));
             mGroupImgList.Add(sIcon);
             ::DestroyIcon(sIcon);
 
@@ -177,7 +177,7 @@ xpr_sint_t FileScrapPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    mGroupLabelText = theApp.loadString(XPR_STRING_LITERAL("file_scrap.label.group"));
+    mGroupLabelText = gApp.loadString(XPR_STRING_LITERAL("file_scrap.label.group"));
 
     updateGroup();
 
@@ -417,7 +417,7 @@ void FileScrapPane::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = theApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText.GetBuffer());
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -425,7 +425,7 @@ void FileScrapPane::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
                     sStringId = sCommandStringTable.loadString(sId);
                     if (sStringId != XPR_NULL)
                     {
-                        sString = theApp.loadString(sStringId);
+                        sString = gApp.loadString(sStringId);
 
                         sBCPopupMenu->SetMenuText(sId, (xpr_tchar_t *)sString, MF_BYCOMMAND);
                     }
@@ -728,7 +728,7 @@ void FileScrapPane::updateStatus(void)
 
     _stprintf(
         mStatusText0,
-        theApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.status.count"),
+        gApp.loadFormatString(XPR_STRING_LITERAL("file_scrap.status.count"),
         XPR_STRING_LITERAL("%s,%s,%s")),
         sTotalCountText,
         sDirCountText,
@@ -775,7 +775,7 @@ xpr_sint_t FileScrapPane::addGroup(FileScrap::Group *aGroup, xpr_sint_t aIndex)
 
     xpr::tstring sGroupName(aGroup->mGroupName);
     if (sGroupName == kFileScrapNoGroupName)
-        sGroupName = theApp.loadString(XPR_STRING_LITERAL("file_scrap.group.no_group"));
+        sGroupName = gApp.loadString(XPR_STRING_LITERAL("file_scrap.group.no_group"));
 
     COMBOBOXEXITEM sComboBoxExItem = {0};
     sComboBoxExItem.mask           = CBEIF_TEXT | CBEIF_IMAGE | CBEIF_SELECTEDIMAGE | CBEIF_LPARAM;
@@ -937,10 +937,10 @@ void FileScrapPane::updateDefGroup(void)
 
         sGroupName = sGroup->mGroupName;
         if (sGroupName == kFileScrapNoGroupName)
-            sGroupName = theApp.loadString(XPR_STRING_LITERAL("file_scrap.group.no_group"));
+            sGroupName = gApp.loadString(XPR_STRING_LITERAL("file_scrap.group.no_group"));
 
         if (sGroup->mGroupId == sFileScrap.getCurGroupId())
-            sGroupName += theApp.loadString(XPR_STRING_LITERAL("file_scrap.group.default"));
+            sGroupName += gApp.loadString(XPR_STRING_LITERAL("file_scrap.group.default"));
 
         COMBOBOXEXITEM sComboBoxExItem = {0};
         sComboBoxExItem.mask    = CBEIF_TEXT;

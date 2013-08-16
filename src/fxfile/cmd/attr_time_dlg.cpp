@@ -115,18 +115,18 @@ xpr_bool_t AttrTimeDlg::OnInitDialog(void)
 
     CComboBox *sComboBox;
     sComboBox = (CComboBox *)GetDlgItem(IDC_ATTR_TYPE);
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_file")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_folder")));
-    sComboBox->AddString(theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_file_and_folder")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_file")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_folder")));
+    sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.combo.type_file_and_folder")));
 
     SetDlgItemText(IDC_ATTR_PATH,
                    (mDir.empty() == XPR_TRUE && mDir[0] == '\0') ?
-                   theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.multiple_folders")) : mDir.c_str());
+                   gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.multiple_folders")) : mDir.c_str());
 
     mListCtrl.SetExtendedStyle(mListCtrl.GetExtendedStyle() | LVS_EX_FULLROWSELECT);
-    mListCtrl.InsertColumn(0, theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.no")),         LVCFMT_RIGHT,  35, -1);
-    mListCtrl.InsertColumn(1, theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.file")),       LVCFMT_LEFT,  340, -1);
-    mListCtrl.InsertColumn(2, theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.attributes")), LVCFMT_LEFT,   50, -1);
+    mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.no")),         LVCFMT_RIGHT,  35, -1);
+    mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.file")),       LVCFMT_LEFT,  340, -1);
+    mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.list.column.attributes")), LVCFMT_LEFT,   50, -1);
 
     LVITEM sLvItem = {0};
     DWORD sTotalAttrs = 0;
@@ -189,25 +189,25 @@ xpr_bool_t AttrTimeDlg::OnInitDialog(void)
 
     ((CComboBox *)GetDlgItem(IDC_ATTR_TYPE))->SetCurSel(0);
 
-    _stprintf(sText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.count"), XPR_STRING_LITERAL("%d")), mList.size());
+    _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.count"), XPR_STRING_LITERAL("%d")), mList.size());
     setStatus(sText);
 
-    SetWindowText(theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.title")));
-    SetDlgItemText(IDC_ATTR_LABEL_PATH,  theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.path")));
-    SetDlgItemText(IDC_ATTR_ATTRIBUTE,   theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.attribute")));
-    SetDlgItemText(IDC_ATTR_ARCHIVE,     theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.archive")));
-    SetDlgItemText(IDC_ATTR_HIDDEN,      theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.hidden")));
-    SetDlgItemText(IDC_ATTR_READONLY,    theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.read_only")));
-    SetDlgItemText(IDC_ATTR_SYSTEM,      theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.system")));
-    SetDlgItemText(IDC_ATTR_TIME,        theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.time")));
-    SetDlgItemText(IDC_ATTR_CREATION,    theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.created_time")));
-    SetDlgItemText(IDC_ATTR_MODIFIED,    theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.modified_time")));
-    SetDlgItemText(IDC_ATTR_ACCESS,      theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.access_time")));
-    SetDlgItemText(IDC_ATTR_SUBFOLDER,   theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.sub_folder")));
-    SetDlgItemText(IDC_ATTR_LABEL_DEPTH, theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.depth")));
-    SetDlgItemText(IDC_ATTR_LABEL_TYPE,  theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.type")));
-    SetDlgItemText(IDOK,                 theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.apply")));
-    SetDlgItemText(IDCANCEL,             theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.close")));
+    SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.title")));
+    SetDlgItemText(IDC_ATTR_LABEL_PATH,  gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.path")));
+    SetDlgItemText(IDC_ATTR_ATTRIBUTE,   gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.attribute")));
+    SetDlgItemText(IDC_ATTR_ARCHIVE,     gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.archive")));
+    SetDlgItemText(IDC_ATTR_HIDDEN,      gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.hidden")));
+    SetDlgItemText(IDC_ATTR_READONLY,    gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.read_only")));
+    SetDlgItemText(IDC_ATTR_SYSTEM,      gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.system")));
+    SetDlgItemText(IDC_ATTR_TIME,        gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.time")));
+    SetDlgItemText(IDC_ATTR_CREATION,    gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.created_time")));
+    SetDlgItemText(IDC_ATTR_MODIFIED,    gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.modified_time")));
+    SetDlgItemText(IDC_ATTR_ACCESS,      gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.access_time")));
+    SetDlgItemText(IDC_ATTR_SUBFOLDER,   gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.check.sub_folder")));
+    SetDlgItemText(IDC_ATTR_LABEL_DEPTH, gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.depth")));
+    SetDlgItemText(IDC_ATTR_LABEL_TYPE,  gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.label.type")));
+    SetDlgItemText(IDOK,                 gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.apply")));
+    SetDlgItemText(IDCANCEL,             gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.close")));
 
     mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("AttrTime"));
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -302,8 +302,8 @@ void AttrTimeDlg::enableWindow(xpr_bool_t aEnable)
 {
     SetDlgItemText(IDOK,
                    (aEnable == XPR_TRUE) ?
-                   theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.apply")) :
-                   theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.stop")));
+                   gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.apply")) :
+                   gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.button.stop")));
 
     GetDlgItem(IDC_ATTR_ATTRIBUTE)->EnableWindow(aEnable);
     OnAttribute();
@@ -345,7 +345,7 @@ void AttrTimeDlg::OnOK(void)
         }
     }
 
-    const xpr_tchar_t *sMsg = theApp.loadString(XPR_STRING_LITERAL("popup.attr_time.msg.question_apply"));
+    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.attr_time.msg.question_apply"));
     xpr_sint_t sMsgId = MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
     if (sMsgId != IDYES)
         return;
@@ -456,7 +456,7 @@ LRESULT AttrTimeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
         {
             xpr_size_t sCount = mAttrTime->getCount();
 
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.completed"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sSucceededCount, sCount - sSucceededCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.completed"), XPR_STRING_LITERAL("%d,%d,%d")), sCount, sSucceededCount, sCount - sSucceededCount);
             setStatus(sStatusText);
 
             super::OnOK();
@@ -465,7 +465,7 @@ LRESULT AttrTimeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 
     case AttrTime::StatusStopped:
         {
-            _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.stoped"), XPR_STRING_LITERAL("%d")), sProcessedCount);
+            _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.stoped"), XPR_STRING_LITERAL("%d")), sProcessedCount);
             setStatus(sStatusText);
             break;
         }
@@ -485,7 +485,7 @@ void AttrTimeDlg::OnTimer(UINT_PTR nIDEvent)
         mAttrTime->getStatus(&sProcessed);
 
         xpr_tchar_t sStatusText[0xff] = {0};
-        _stprintf(sStatusText, theApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.in_progress"), XPR_STRING_LITERAL("%d,%d")), sProcessed, sCount);
+        _stprintf(sStatusText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.attr_time.status.in_progress"), XPR_STRING_LITERAL("%d,%d")), sProcessed, sCount);
 
         setStatus(sStatusText);
         mProgressCtrl.SetPos((xpr_sint_t)sProcessed);
