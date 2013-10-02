@@ -8,7 +8,6 @@
 #include "xpr_file_sys.h"
 #include "xpr_debug.h"
 #include "xpr_uri.h"
-#include "xpr_stack.h"
 #include "xpr_memory.h"
 
 /**
