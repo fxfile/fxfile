@@ -152,7 +152,7 @@ void DlgToolBar::setToolBarButtons(TBBUTTON *aTbButtons, xpr_sint_t aCount)
     GetToolBarCtrl().AddButtons(aCount, aTbButtons);
 }
 
-void DlgToolBar::OnTimer(xpr_uint_t aIdEvent)
+void DlgToolBar::OnTimer(UINT_PTR aIdEvent)
 {
     if (aIdEvent == TimerIdIdle)
         SendMessage(WM_IDLEUPDATECMDUI, XPR_TRUE);

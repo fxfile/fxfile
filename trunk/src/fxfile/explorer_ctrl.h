@@ -515,7 +515,7 @@ protected:
     afx_msg void OnKillFocus(CWnd *aNewWnd);
     afx_msg void OnSysColorChange(void);
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg xpr_bool_t OnEraseBkgnd(CDC *aDC);
     afx_msg xpr_sint_t  OnMouseActivate(CWnd *aDesktopWnd, xpr_uint_t aHitTest, xpr_uint_t aMessage);
     afx_msg void OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint);

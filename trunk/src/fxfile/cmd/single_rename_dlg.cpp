@@ -101,7 +101,7 @@ const xpr_tchar_t *SingleRenameDlg::getNewName(void)
     return mRenameHelper->getNewName();
 }
 
-void SingleRenameDlg::OnTimer(xpr_uint_t nIDEvent) 
+void SingleRenameDlg::OnTimer(UINT_PTR nIDEvent) 
 {
     if (nIDEvent == TM_ID_SELITEM)
     {

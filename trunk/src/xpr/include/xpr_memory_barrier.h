@@ -13,7 +13,7 @@ namespace xpr
 #if defined(XPR_CFG_OS_WINDOWS)
     #if defined(XPR_CFG_CPU_ARCH_IA64)
 #define XPR_MEMORY_BARRIER() __mf()
-    #elif defined(XPR_CFG_CPU_ARCH_X86)
+    #elif defined(XPR_CFG_CPU_ARCH_X86) || defined(XPR_CFG_CPU_ARCH_X86_64)
         #if defined(XPR_CFG_COMPILER_64BIT)
 #define XPR_MEMORY_BARRIER() __faststorefence()
         #else

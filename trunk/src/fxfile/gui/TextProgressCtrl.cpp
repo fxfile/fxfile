@@ -47,7 +47,7 @@ xpr_sint_t TextProgressCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 
     setBoldFont(mBoldFont);
 
-    DWORD sClassStyle = ::GetClassLongPtr(m_hWnd, GCL_STYLE);
+    ULONG_PTR sClassStyle = ::GetClassLongPtr(m_hWnd, GCL_STYLE);
     ::SetClassLongPtr(m_hWnd, GCL_STYLE, sClassStyle | CS_DBLCLKS);
 
     return 0;

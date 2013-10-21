@@ -88,7 +88,7 @@ protected:
 
 protected:
     DECLARE_MESSAGE_MAP()
-    afx_msg void OnTimer(xpr_uint_t nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnClose(void);
     afx_msg LRESULT OnPostEnd(WPARAM, LPARAM);
 };

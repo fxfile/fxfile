@@ -1732,7 +1732,7 @@ void SearchResultCtrl::OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
     }
 }
 
-void SearchResultCtrl::OnTimer(xpr_uint_t aIdEvent)
+void SearchResultCtrl::OnTimer(UINT_PTR aIdEvent)
 {
     if (aIdEvent == TM_ID_RENAME_VISTA)
     {

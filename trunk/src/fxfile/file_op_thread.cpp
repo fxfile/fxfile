@@ -241,7 +241,7 @@ LRESULT FileOpThread::OnPostEnd(WPARAM, LPARAM)
     return 0;
 }
 
-void FileOpThread::OnTimer(xpr_uint_t nIDEvent) 
+void FileOpThread::OnTimer(UINT_PTR nIDEvent) 
 {
     if (nIDEvent == TM_ID_THREAD_END)
     {

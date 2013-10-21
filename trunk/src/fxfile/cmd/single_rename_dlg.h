@@ -44,7 +44,7 @@ protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
     virtual void OnOK(void);
-    afx_msg void OnTimer(xpr_uint_t nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 } // namespace cmd
 } // namespace fxfile

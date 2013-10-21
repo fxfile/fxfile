@@ -526,7 +526,7 @@ void CWindowScroller::OnPaint()
 //
 /////////////////////////////////////////////////////////////////////////////
 
-void CWindowScroller::OnTimer(UINT nIDEvent) 
+void CWindowScroller::OnTimer(UINT_PTR nIDEvent) 
 {
     CPoint pt;
     GetCursorPos(&pt);

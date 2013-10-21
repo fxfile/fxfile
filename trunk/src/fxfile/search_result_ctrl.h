@@ -182,7 +182,7 @@ protected:
     afx_msg void OnSetFocus(CWnd *aOldWnd);
     afx_msg void OnKeyDown(xpr_uint_t aChar, xpr_uint_t aRepCnt, xpr_uint_t aFlags);
     afx_msg void OnLvnKeyDown(NMHDR *aNmHdr, LRESULT *aResult);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg LRESULT OnShellChangeNotify(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnShellAsyncIcon(WPARAM wParam, LPARAM lParam);
 };

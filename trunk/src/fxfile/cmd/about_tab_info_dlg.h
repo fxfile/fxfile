@@ -42,7 +42,7 @@ protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg void OnReport(void);
     afx_msg void OnSystem(void);
     afx_msg void OnUpdate(void);

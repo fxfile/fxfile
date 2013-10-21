@@ -173,7 +173,7 @@ unsigned FileSplit::OnEntryProc(void)
                     break;
 
                 sSize = sRead - sWritedBuffer;
-                if (sSize > mUnitSize)
+                if ((xpr_sint64_t)sSize > mUnitSize)
                     sSize = (xpr_size_t)mUnitSize;
 
                 sCount = (xpr_sint64_t)sSize / mUnitSize;
@@ -182,7 +182,7 @@ unsigned FileSplit::OnEntryProc(void)
 
                 for (i = 0; i < sCount; ++i)
                 {
-                    if ((mUnitSize - sWritedFileSize) < sSize)
+                    if ((mUnitSize - sWritedFileSize) < (xpr_sint64_t)sSize)
                         sSize = (xpr_size_t)(mUnitSize - sWritedFileSize);
 
                     sRcode = sTargetFileIo.write(sBuffer + sWritedBuffer, sSize, &sWrite);

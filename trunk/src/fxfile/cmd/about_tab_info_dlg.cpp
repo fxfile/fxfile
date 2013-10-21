@@ -112,7 +112,7 @@ void AboutTabInfoDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void AboutTabInfoDlg::OnTimer(xpr_uint_t aIdEvent)
+void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
 {
     if (aIdEvent == kTimerIdUpdateCheckFirst ||
         aIdEvent == kTimerIdUpdateCheck)

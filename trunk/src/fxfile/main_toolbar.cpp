@@ -89,7 +89,7 @@ MainToolBar::MainToolBar(void)
     mDragDropIds.push_back(ID_FILE_VIEW);
     mDragDropIds.push_back(ID_FILE_EDIT);
 
-    xpr_size_t sId;
+    xpr_uint_t sId;
     for (sId = ID_GO_WORKING_FOLDER_FIRST; sId <= ID_GO_WORKING_FOLDER_LAST; ++sId)
         mDragDropIds.push_back(sId);
 }

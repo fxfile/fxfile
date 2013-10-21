@@ -143,9 +143,16 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aFirstId, xpr_uint_t aQ
 
     if (XPR_IS_NOT_NULL(mContextMenu2))
     {
+        int nIndex = 
+#if defined(XPR_CFG_COMPILER_64BIT)
+            GWLP_WNDPROC;
+#else
+            GWL_WNDPROC;
+#endif
+
         mSubclassData = new SUBCLASSDATA;
         mSubclassData->mContextMenu2 = mContextMenu2;
-        mSubclassData->mOldWndProc   = (WNDPROC)::SetWindowLongPtr(mHwnd, GWL_WNDPROC, (LONG_PTR)subclassWndProc);
+        mSubclassData->mOldWndProc   = (WNDPROC)::SetWindowLongPtr(mHwnd, nIndex, (LONG_PTR)subclassWndProc);
         ::SetProp(mHwnd, PROP_CONTEXT_MENU, (HANDLE)mSubclassData);
     }
 
@@ -266,7 +273,14 @@ void ContextMenu::destroySubclass(void)
 {
     if (XPR_IS_NOT_NULL(mSubclassData))
     {
-        ::SetWindowLongPtr(mHwnd, GWL_WNDPROC, (LONG_PTR)mSubclassData->mOldWndProc);
+        int nIndex = 
+#if defined(XPR_CFG_COMPILER_64BIT)
+            GWLP_WNDPROC;
+#else
+            GWL_WNDPROC;
+#endif
+
+        ::SetWindowLongPtr(mHwnd, nIndex, (LONG_PTR)mSubclassData->mOldWndProc);
         ::RemoveProp(mHwnd, PROP_CONTEXT_MENU);
         XPR_SAFE_DELETE(mSubclassData);
     }

@@ -1006,7 +1006,7 @@ void CMenuBar::OnUpdateCmdUI( CFrameWnd* pTarget, BOOL bDisableIfNoHndler )
     CToolBar::OnUpdateCmdUI( pTarget, bDisableIfNoHndler );
 }
 
-int CMenuBar::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
+INT_PTR CMenuBar::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
 {
     UINT nTipID = ( UINT )-1;
 
@@ -1531,7 +1531,11 @@ void CMenuBar::OnCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
 
             if ( ( UINT )nmcd.dwItemSpec == IDBUTTON_SYSMENU )  // draw sys-menu button
             {
+#if defined(_WIN64)
+                HICON hIcon = ( HICON )(intptr_t)::GetClassLong( m_hWndMDIChild, GCLP_HICONSM );
+#else
                 HICON hIcon = ( HICON )(intptr_t)::GetClassLong( m_hWndMDIChild, GCL_HICONSM );
+#endif
                 if ( hIcon != 0 )
                 {
                     // Icon has 2 pixel border on left, 1 pixel on top/bottom, 0 right
