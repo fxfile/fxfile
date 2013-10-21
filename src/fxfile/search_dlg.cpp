@@ -1591,7 +1591,7 @@ void SearchDlg::stopAnimation(void)
     UpdateWindow();
 }
 
-void SearchDlg::OnTimer(xpr_uint_t aIdEvent) 
+void SearchDlg::OnTimer(UINT_PTR aIdEvent) 
 {
     if (aIdEvent == TM_ID_ANIMATION)
     {

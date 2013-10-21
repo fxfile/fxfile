@@ -295,7 +295,7 @@ protected:
     afx_msg void OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t aSysMenu);
     afx_msg void OnParentNotify(xpr_uint_t aMessage, LPARAM lParam);
     afx_msg void OnGetMinMaxInfo(MINMAXINFO *aMinMaxInfo);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg void OnActivateApp(xpr_bool_t aActive, DWORD aThreadId);
     afx_msg void OnEndSession(xpr_bool_t aEnding);
     afx_msg LRESULT OnTrayNotify(WPARAM wParam, LPARAM lParam);

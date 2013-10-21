@@ -33,7 +33,7 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP aBitmap)
     PBITMAPINFO sBitmapInfo = XPR_NULL;
 
     if (sColorBits != 24)
-        sBitmapInfo = (PBITMAPINFO) LocalAlloc(LPTR, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * (1 << sColorBits));
+        sBitmapInfo = (PBITMAPINFO) LocalAlloc(LPTR, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * ((xpr_sint_t)1 << (xpr_sint_t)sColorBits));
     else
         sBitmapInfo = (PBITMAPINFO) LocalAlloc(LPTR, sizeof(BITMAPINFOHEADER));
 

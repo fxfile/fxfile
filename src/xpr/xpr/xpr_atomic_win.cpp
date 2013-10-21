@@ -9,6 +9,8 @@
 
 namespace xpr
 {
+#if defined(XPR_CFG_COMPILER_32BIT)
+
 XPR_INLINE xpr_sint16_t AtomicFetchAdd16(volatile void *aAddr, volatile xpr_sint16_t aValue)
 {
     __asm
@@ -28,6 +30,8 @@ XPR_INLINE xpr_sint32_t AtomicFetchAdd32(volatile void *aAddr, volatile xpr_sint
         lock xadd [ebx], eax;
     }
 }
+
+#endif // XPR_CFG_COMPILER_32BIT
 
 XPR_DL_API xpr_sint16_t AtomicRead16(volatile void *aAddr)
 {
@@ -284,7 +288,7 @@ XPR_DL_API xpr_sint64_t AtomicCas64(volatile void *aAddr, volatile xpr_sint64_t 
 
 #else
 
-    return (xpr_sint64_t)InterlockedCompareExchangePointer((PVOID volatile *)aAddr, (PVOID)aNewValue, (PVOID)sOldValue);
+    return (xpr_sint64_t)InterlockedCompareExchangePointer((PVOID volatile *)aAddr, (PVOID)aNewValue, (PVOID)aOldValue);
 
 #endif
 }

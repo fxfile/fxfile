@@ -3261,7 +3261,7 @@ void FolderCtrl::OnDrop(COleDataObject *pOleDataObject, DROPEFFECT aDropEffect, 
     }
 }
 
-void FolderCtrl::OnTimer(xpr_uint_t nIDEvent) 
+void FolderCtrl::OnTimer(UINT_PTR nIDEvent) 
 {
     if (XPR_IS_RANGE(TM_ID_DRAG_SCROLL_BEGIN, nIDEvent, TM_ID_DRAG_SCROLL_END))
     {

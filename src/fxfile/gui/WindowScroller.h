@@ -109,7 +109,7 @@ protected:
     afx_msg void OnPaint();
     afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
-    afx_msg void OnTimer(UINT nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     //}}AFX_MSG
     afx_msg LRESULT OnXButtonDown(WPARAM wp, LPARAM lp);
     afx_msg LRESULT OnXButtonUp(WPARAM wp, LPARAM lp);

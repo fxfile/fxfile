@@ -43,7 +43,7 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP()
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg LRESULT OnIdleUpdateCmdUI(WPARAM wParam, LPARAM lParam);
 };
 

@@ -159,7 +159,7 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
                                     'AdditionalLibraryDirectories':
                                     [
-                                        '../../lib/gfl/libW',
+                                        '../../lib/gfl/lib64W',
                                         '../../lib/vld/lib/Win64',
                                     ],
                                     'AdditionalDependencies':
@@ -187,7 +187,7 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName).exe',
                                     'AdditionalLibraryDirectories':
                                     [
-                                        '../../lib/gfl/libW',
+                                        '../../lib/gfl/lib64W',
                                     ],
                                     'AdditionalDependencies':
                                     [
@@ -214,7 +214,7 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
                                     'AdditionalLibraryDirectories':
                                     [
-                                        '../../lib/gfl/lib',
+                                        '../../lib/gfl/lib64',
                                         '../../lib/vld/lib/Win64',
                                     ],
                                     'AdditionalDependencies':
@@ -242,7 +242,7 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName).exe',
                                     'AdditionalLibraryDirectories':
                                     [
-                                        '../../lib/gfl/lib',
+                                        '../../lib/gfl/lib64',
                                     ],
                                     'AdditionalDependencies':
                                     [

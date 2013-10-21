@@ -247,7 +247,7 @@ protected:
     afx_msg void OnEndlabeledit(NMHDR *aNmHdr, LRESULT *aResult);
     afx_msg void OnSysColorChange(void);
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnPaint(void);
     afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
     afx_msg void OnKeydown(NMHDR *aNmHdr, LRESULT *aResult);

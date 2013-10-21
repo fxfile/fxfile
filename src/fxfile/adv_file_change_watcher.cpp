@@ -257,7 +257,7 @@ public:
     LPOVERLAPPED getQueuedCompletionStatus(DWORD aMilliseconds)
     {
         DWORD sNumberOfBytes;
-        DWORD sCompletionKey;
+        ULONG_PTR sCompletionKey;
         LPOVERLAPPED sOverlapped;
 
         xpr_bool_t sResult = ::GetQueuedCompletionStatus(

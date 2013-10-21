@@ -4140,7 +4140,7 @@ void MainFrame::OnGetMinMaxInfo(MINMAXINFO *aMinMaxInfo)
     super::OnGetMinMaxInfo(aMinMaxInfo);
 }
 
-void MainFrame::OnTimer(xpr_uint_t aIdEvent)
+void MainFrame::OnTimer(UINT_PTR aIdEvent)
 {
 
     super::OnTimer(aIdEvent);

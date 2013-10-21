@@ -5308,7 +5308,7 @@ void ExplorerCtrl::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEffect
     }
 }
 
-void ExplorerCtrl::OnTimer(xpr_uint_t aIdEvent) 
+void ExplorerCtrl::OnTimer(UINT_PTR aIdEvent) 
 {
     if (XPR_IS_RANGE(TM_ID_DRAG_SCROLL_BEGIN, aIdEvent, TM_ID_DRAG_SCROLL_END))
     {

@@ -109,7 +109,7 @@ protected:
     afx_msg void OnClose(void);
     afx_msg void OnDeleteitemLocation(NMHDR* pNMHDR, LRESULT* pResult);
     afx_msg void OnPaint(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg void OnFileSearch(void);
     afx_msg void OnCurLocation(void);
     afx_msg LRESULT OnFinalize(WPARAM wParam, LPARAM lParam);
