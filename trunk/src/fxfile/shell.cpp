@@ -26,7 +26,7 @@
 
 namespace fxfile
 {
-static const xpr_wchar_t kSpecialFolderLibariesGuidString[] = XPR_WIDE_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
+static const xpr_tchar_t kSpecialFolderLibariesGuidString[] = XPR_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
 
 typedef WINSHELLAPI HRESULT (WINAPI *SHCreateItemFromIDListFunc)(LPCITEMIDLIST, REFIID, void **);
 typedef WINSHELLAPI HRESULT (WINAPI *SHGetIDListFromObjectFunc)(IUnknown *, LPITEMIDLIST *);
