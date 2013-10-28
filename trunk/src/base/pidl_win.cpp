@@ -802,7 +802,7 @@ static void filterAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xp
     xpr_tchar_t     sPath[XPR_MAX_PATH + 1] = {0};
     WIN32_FIND_DATA sWin32FindData = {0};
 
-    sComResult = GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
+    sComResult = Pidl::getName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath, XPR_MAX_PATH);
     if (FAILED(sComResult))
     {
         return;

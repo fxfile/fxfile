@@ -105,7 +105,7 @@ xpr_rcode_t CharSetConverter::convert(const void *aInput,  xpr_size_t *aInputByt
     xpr_size_t sOutputBytesLeft = *aOutputBytes;
 
     xpr_size_t sResult = ::iconv(sIconv,
-                                 (xpr_char_t **)&aInput,
+                                 (const xpr_char_t **)&aInput,
                                  &sInputBytesLeft,
                                  (xpr_char_t **)&aOutput,
                                  &sOutputBytesLeft);
