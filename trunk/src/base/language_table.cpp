@@ -97,7 +97,7 @@ xpr_bool_t LanguageTable::loadLanguage(const xpr_tchar_t *aLanguage)
     LanguageMap::iterator sIterator = mLanguageMap.find(aLanguage);
     if (sIterator == mLanguageMap.end())
     {
-#if defined(XPR_CFG_BUILD_DEBUG)
+        // not exist and just one languague pack
         if (mLanguageMap.size() == 1)
         {
             sIterator = mLanguageMap.begin();
@@ -106,9 +106,6 @@ xpr_bool_t LanguageTable::loadLanguage(const xpr_tchar_t *aLanguage)
         {
             return XPR_FALSE;
         }
-#else // XPR_CFG_BUILD_DEBUG
-        return XPR_FALSE;
-#endif
     }
 
     mLoadedLanaguage = sIterator->second;
