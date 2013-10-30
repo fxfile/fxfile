@@ -455,7 +455,7 @@ String& String::assign(xpr_size_t aNumber, xpr_char_t aChar)
 String& String::assign(Iterator aFirst, Iterator aLast)
 {
     xpr_char_t *sString = &(*aFirst);
-    xpr_size_t  sLength = aLast - aFirst;
+    xpr_size_t  sLength = aLast.mString - aFirst.mString;
 
     return assign(sString, sLength);
 }
@@ -1305,12 +1305,12 @@ xpr_size_t String::copy(xpr_char_t *aString, xpr_size_t aLength, xpr_size_t aPos
 
 xpr_size_t String::find(const String &aString, xpr_size_t aPos) const
 {
-    return find(aString.mString, aPos, mLength);
+    return find(aString.mString, aPos, aString.mLength);
 }
 
 xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
-    if (XPR_IS_NULL(aString) || aPos == npos || aPos >= mLength)
+    if (XPR_IS_NULL(aString) || aPos == npos || (aPos + aLength) > mLength)
     {
         return npos;
     }
@@ -1322,9 +1322,7 @@ xpr_size_t String::find(const xpr_char_t *aString, xpr_size_t aPos, xpr_size_t a
 
     if ((sSubStrChar = *sSearch++) != '\0')
     {
-        sLength = strlen(sSearch);
-        if (sLength > aLength)
-            sLength = aLength;
+        sLength = aLength - 1;
 
         do
         {

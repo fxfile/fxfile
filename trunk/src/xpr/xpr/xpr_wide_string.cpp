@@ -455,7 +455,7 @@ WideString& WideString::assign(xpr_size_t aNumber, xpr_wchar_t aChar)
 WideString& WideString::assign(Iterator aFirst, Iterator aLast)
 {
     xpr_wchar_t *sString = &(*aFirst);
-    xpr_size_t  sLength = aLast - aFirst;
+    xpr_size_t  sLength = aLast.mString - aFirst.mString;
 
     return assign(sString, sLength);
 }
@@ -1305,12 +1305,12 @@ xpr_size_t WideString::copy(xpr_wchar_t *aString, xpr_size_t aLength, xpr_size_t
 
 xpr_size_t WideString::find(const WideString &aString, xpr_size_t aPos) const
 {
-    return find(aString.mString, aPos, mLength);
+    return find(aString.mString, aPos, aString.mLength);
 }
 
 xpr_size_t WideString::find(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_size_t aLength) const
 {
-    if (XPR_IS_NULL(aString) || aPos == npos || aPos >= mLength)
+    if (XPR_IS_NULL(aString) || aPos == npos || (aPos + aLength) > mLength)
     {
         return npos;
     }
@@ -1318,13 +1318,11 @@ xpr_size_t WideString::find(const xpr_wchar_t *aString, xpr_size_t aPos, xpr_siz
     const xpr_wchar_t *sString = mString + aPos;
     const xpr_wchar_t *sSearch = aString;
     xpr_wchar_t sSubStrChar, sChar;
-    xpr_size_t sLength;
+    xpr_size_t sLength = aLength;
 
     if ((sSubStrChar = *sSearch++) != '\0')
     {
-        sLength = wcslen(sSearch);
-        if (sLength > aLength)
-            sLength = aLength;
+        --sLength;
 
         do
         {
