@@ -26,8 +26,8 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kUpdaterProgramDebug          [] = XPR_STRING_LITERAL("fxfile-updater_dbg.exe");
-static const xpr_tchar_t kUpdaterProgram               [] = XPR_STRING_LITERAL("fxfile-updater.exe");
+static const xpr_tchar_t kUpdaterProgramDebug          [] = XPR_STRING_LITERAL("updater\\fxfile-updater_dbg.exe");
+static const xpr_tchar_t kUpdaterProgram               [] = XPR_STRING_LITERAL("updater\\fxfile-updater.exe");
 static const xpr_tchar_t kUpdaterSection               [] = XPR_STRING_LITERAL("config");
 static const xpr_tchar_t kUpdaterRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
 static const xpr_tchar_t kUpdaterRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-updater");

@@ -95,8 +95,16 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
     // disable update button
     GetDlgItem(IDC_ABOUT_UPDATE)->EnableWindow(XPR_FALSE);
 
-    // start update check timer
-    SetTimer(kTimerIdUpdateCheckFirst, 0, XPR_NULL);
+    if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))
+    {
+        // start update check timer
+        SetTimer(kTimerIdUpdateCheckFirst, 0, XPR_NULL);
+    }
+    else
+    {
+        GetDlgItem(IDC_ABOUT_UPDATE_INFO)->ShowWindow(SW_HIDE);
+        GetDlgItem(IDC_ABOUT_UPDATE     )->ShowWindow(SW_HIDE);
+    }
 
     return XPR_TRUE;
 }
@@ -123,20 +131,28 @@ void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
             SetTimer(kTimerIdUpdateCheck, 300, XPR_NULL);
         }
 
-        xpr_rcode_t sRcode;
-        xpr_tchar_t sStatus[0xff];
-        xpr_tchar_t sCheckedVersion[0xff];
-        UpdateInfo  sUpdateInfo = {0};
+        xpr_rcode_t  sRcode;
+        xpr_tchar_t  sStatus[0xff];
+        xpr_tchar_t  sCheckedVersion[0xff];
+        UpdateInfo   sUpdateInfo = {0};
+        xpr::tstring sUpdateHomeDir;
 
         if (XPR_IS_NULL(mUpdateInfoManager))
         {
+            if (UpdateInfoManager::getDefaultUpdateHomeDir(sUpdateHomeDir) == XPR_FALSE)
+            {
+                return;
+            }
+
             mUpdateInfoManager = new UpdateInfoManager;
-            mUpdateInfoManager->setUpdateHomeDir(XPR_STRING_LITERAL("C:\\Users\\flychk\\AppData\\Roaming\\fxfile\\update"));
+            mUpdateInfoManager->setUpdateHomeDir(sUpdateHomeDir);
 
             sRcode = mUpdateInfoManager->openUpdateInfo();
             if (XPR_RCODE_IS_ERROR(sRcode))
             {
                 XPR_SAFE_DELETE(mUpdateInfoManager);
+
+                UpdaterManager::checkNow();
                 return;
             }
         }

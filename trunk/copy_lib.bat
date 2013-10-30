@@ -40,24 +40,6 @@ xcopy "lib\libxml2\bin\zlib1.dll" "bin\x86-unicode" /c /e /r /y
 xcopy "lib\libxml2\bin64\zlib1.dll" "bin\x64" /c /e /r /y
 
 xcopy "lib\libcurl\bin\libcurl.dll" "bin" /c /e /r /y
-xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-ansicode" /c /e /r /y
-xcopy "lib\libcurl\bin\libcurl.dll" "bin\x86-unicode" /c /e /r /y
-xcopy "lib\libcurl\bin64\libcurl.dll" "bin\x64" /c /e /r /y
-
-xcopy "lib\libcurl\bin\libeay32.dll" "bin" /c /e /r /y
-xcopy "lib\libcurl\bin\libeay32.dll" "bin\x86-ansicode" /c /e /r /y
-xcopy "lib\libcurl\bin\libeay32.dll" "bin\x86-unicode" /c /e /r /y
-xcopy "lib\libcurl\bin64\libeay32.dll" "bin\x64" /c /e /r /y
-
-xcopy "lib\libcurl\bin\libssh2.dll" "bin" /c /e /r /y
-xcopy "lib\libcurl\bin\libssh2.dll" "bin\x86-ansicode" /c /e /r /y
-xcopy "lib\libcurl\bin\libssh2.dll" "bin\x86-unicode" /c /e /r /y
-xcopy "lib\libcurl\bin64\libssh2.dll" "bin\x64" /c /e /r /y
-
-xcopy "lib\libcurl\bin\ssleay32.dll" "bin" /c /e /r /y
-xcopy "lib\libcurl\bin\ssleay32.dll" "bin\x86-ansicode" /c /e /r /y
-xcopy "lib\libcurl\bin\ssleay32.dll" "bin\x86-unicode" /c /e /r /y
-xcopy "lib\libcurl\bin64\ssleay32.dll" "bin\x64" /c /e /r /y
 
 xcopy "lib\vld\bin\Win32\vld_x86.dll" "bin" /c /e /r /y
 xcopy "lib\vld\bin\Win32\dbghelp.dll" "bin" /c /e /r /y

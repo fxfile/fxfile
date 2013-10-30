@@ -45,8 +45,6 @@
                         'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
                         'AdditionalLibraryDirectories':
                         [
-							'../../bin',
-							'../../lib/libcurl/lib',
                         ],
                         'AdditionalDependencies':
                         [
@@ -54,10 +52,7 @@
                         ],
                     },
                 },
-
-            'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
-			},
+            },
             
             'Release-x86':
             {
@@ -76,8 +71,6 @@
                         'OutputFile': '$(OutDir)\$(ProjectName).exe',
                         'AdditionalLibraryDirectories':
                         [
-							'../../bin',
-							'../../lib/libcurl/lib',
                         ],
                         'AdditionalDependencies':
                         [
@@ -85,73 +78,7 @@
                         ],
                     },
                 },
- 
-            'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
            },
-
-            'conditions':
-            [
-                [ 'target_arch!="x86"',
-                    {
-                        'Debug-x64':
-                        {
-                            'inherit_from': ['Debug-x64-MFC-Unicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64',
-                                'IntermediateDirectory': '../../obj/fxfile-updater/dbg-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-										'../../bin/x64',
-										'../../lib/libcurl/lib64',
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'libxpr_dbg.lib',
-                                    ],
-                                },
-                            },
-                        },
-
-                        'Release-x64':
-                        {
-                            'inherit_from': ['Release-x64-MFC-Unicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64',
-                                'IntermediateDirectory': '../../obj/fxfile-updater/rel-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName).exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-										'../../bin/x64',
-										'../../lib/libcurl/lib64',
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'libxpr_dbg.lib',
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                ],
-            ],
         },
     },
 
@@ -185,10 +112,22 @@
                 {
                     'AdditionalLibraryDirectories':
                     [
+                        '../../bin',
+                        '../../lib/libcurl/lib',
                     ]
                 },
             },
-            
+
+            'msvs_postbuild': 'mkdir $(TargetDir)x86-unicode\updater\r\n'
+                              'mkdir $(TargetDir)x86-ansicode\updater\r\n'
+                              'mkdir $(TargetDir)x64\updater\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-unicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-ansicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x64\updater /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-unicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x64\updater /c /r /y\r\n',
+
             'msvs_precompiled_header': 'stdafx.h',
             'msvs_precompiled_source': 'stdafx.cpp',
             

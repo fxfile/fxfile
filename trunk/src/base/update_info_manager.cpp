@@ -14,6 +14,11 @@ namespace fxfile
 {
 namespace base
 {
+static const xpr_tchar_t kEnvAppDataName[] = XPR_STRING_LITERAL("APPDATA");
+
+static const xpr_tchar_t kProgramDir    [] = XPR_STRING_LITERAL("fxfile");
+static const xpr_tchar_t kUpdateDir     [] = XPR_STRING_LITERAL("update");
+
 UpdateInfoManager::UpdateInfoManager(void)
     : mInitialized(XPR_FALSE)
     , mProcessMutexKey(0)
@@ -39,10 +44,53 @@ void UpdateInfoManager::close(void)
     mShmAttachedAddr = XPR_NULL;
 }
 
-void UpdateInfoManager::setUpdateHomeDir(const xpr_tchar_t *aDir)
+xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::tstring &aDir)
 {
     XPR_ASSERT(aDir != XPR_NULL);
 
+    xpr_bool_t  sResult = XPR_FALSE;
+    xpr_tchar_t sUpdateHomeDir[XPR_MAX_PATH + 1];
+    xpr_rcode_t sRcode;
+
+    sRcode = xpr::getEnv(kEnvAppDataName, sUpdateHomeDir, XPR_MAX_PATH);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
+    {
+        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
+        _tcscat(sUpdateHomeDir, kProgramDir);
+        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
+        _tcscat(sUpdateHomeDir, kUpdateDir);
+
+        sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        {
+            aDir = sUpdateHomeDir;
+
+            return XPR_TRUE;
+        }
+    }
+
+    sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir, XPR_MAX_PATH);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
+    {
+        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
+        _tcscat(sUpdateHomeDir, kProgramDir);
+        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
+        _tcscat(sUpdateHomeDir, kUpdateDir);
+
+        sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
+        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        {
+            aDir = sUpdateHomeDir;
+
+            return XPR_TRUE;
+        }
+    }
+
+    return XPR_FALSE;
+}
+
+void UpdateInfoManager::setUpdateHomeDir(const xpr::tstring &aDir)
+{
     mUpdateHomeDir = aDir;
 }
 
