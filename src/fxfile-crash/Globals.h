@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Global variables definitions.
@@ -24,14 +24,28 @@
 #include "LogLink.h"
 #include "VersionInfo.h"
 
-#ifdef _MANAGED
- #define BUGTRAP_TITLE   _T("BugTrap for .NET")
+#if defined _MANAGED
+ #if defined _M_IX86
+  #define BUGTRAP_PLATFORM   _T(".NET-x86")
+ #elif defined _M_X64
+  #define BUGTRAP_PLATFORM   _T(".NET-x64")
+ #else
+  #error CPU architecture is not supported.
+ #endif
 #else
- #define BUGTRAP_TITLE   _T("BugTrap for Win32")
+ #if defined _M_IX86
+  #define BUGTRAP_PLATFORM   _T("Win32-x86")
+ #elif defined _M_X64
+  #define BUGTRAP_PLATFORM   _T("Win64-x64")
+ #else
+  #error CPU architecture is not supported.
+ #endif
 #endif
 
-#define _TOSTR(value)   _T(#value)
-#define TOSTR(value)    _TOSTR(value)
+#define BUGTRAP_TITLE   _T("BugTrap for ") BUGTRAP_PLATFORM
+
+#define _TOSTR(value)    _T(#value)
+#define TOSTR(value)     _TOSTR(value)
 
 /// Maximum size of memory buffer (100K).
 const DWORD g_dwMaxBufferSize = 100 * 1024;
@@ -40,12 +54,12 @@ const DWORD g_dwProtocolSignature = (('B' << 0) | ('T' << 8) | ('0' << 16) | ('1
 
 /// BugTrap module handle.
 extern HINSTANCE g_hInstance;
+/// Module of interest handle
+extern HINSTANCE g_hModule;
 /// Application name.
 extern TCHAR g_szAppName[MAX_PATH];
 /// Application version number.
 extern TCHAR g_szAppVersion[MAX_PATH];
-extern HICON g_hAppIcon16;
-extern HICON g_hAppIcon32;
 /// Web address of product support site.
 extern TCHAR g_szSupportURL[MAX_PATH];
 /// E-mail address of product support.
@@ -70,6 +84,8 @@ extern TCHAR g_szInternalReportFilePath[MAX_PATH];
 extern DWORD g_dwFlags;
 /// Type of action which is performed in response to the error.
 extern BUGTRAP_ACTIVITY g_eActivityType;
+/// Application terminaation mode.
+extern BUGTRAP_EXITMODE g_eExitMode;
 /// Type of produced mini-dump. See @a MINIDUMP_TYPE for details.
 extern MINIDUMP_TYPE g_eDumpType;
 /// Format of error report.

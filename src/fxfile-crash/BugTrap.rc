@@ -32,42 +32,193 @@ IDI_BUG                 ICON                    "res\\Bug.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+
+IDB_CHECKMARK           BITMAP                  "res\\Checkmark.bmp"
+IDB_SORTARROWS          BITMAP                  "res\\SortArrows.bmp"
+IDB_IMAGETOOLBAR        BITMAP                  "res\\ImageToolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AVI
+//
+
+IDR_UPLOAD_ANIMATION    AVI                     "res\\Upload.avi"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Dialog
 //
 
-IDD_SEND_MAIL_DLG DIALOGEX 0, 0, 316, 170
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU
-CAPTION "메일 보내기"
+IDD_TRANSFERPROGRESS_DLG DIALOGEX 0, 0, 198, 86
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP
+EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ | WS_GROUP,0,34,318,1
-    LTEXT           "",IDC_INTRO_BKGND,0,0,317,34,SS_NOPREFIX
-    LTEXT           "제목 (&S):",IDC_STATIC,15,44,31,8
-    EDITTEXT        IDC_SUBJECT,51,41,258,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_BODY,15,68,294,76,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
-    DEFPUSHBUTTON   "보내기",IDOK,186,149,60,14,WS_GROUP
-    PUSHBUTTON      "닫기",IDCANCEL,249,149,60,14
-    LTEXT           "flyExplorer 개발자에게 오류 보고서 외에 추가적으로 전달하고자 하는 내용을 적어주십시오.",IDC_INTRO1,15,7,294,18
-    LTEXT           "내용 (&C):",IDC_STATIC,15,57,32,8
 END
 
-IDD_SIMPLE_DLG DIALOGEX 0, 0, 330, 135
+IDD_MAIN_DLG DIALOGEX 0, 0, 354, 298
 STYLE DS_SETFONT | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Crash Handler"
+CAPTION "BugTrap"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "",IDC_INTRO_BKGND,0,-2,330,34,SS_NOPREFIX
-    LTEXT           "flyExplorer 프로그램에 문제가 있어서 프로그램을 종료해야 합니다. 불편을 드려서 죄송합니다.",IDC_INTRO1,17,7,306,18
-    LTEXT           "어떤 작업 중이었다면, 작업 중이던 정보를 잃게 될 수도 있습니다.",IDC_INTRO2,17,41,232,8,SS_NOPREFIX
-    CONTROL         "",-1,"Static",SS_ETCHEDHORZ | WS_GROUP,0,32,335,1
-    DEFPUSHBUTTON   "오류 보고 보냄(&S)",IDC_SUBMIT_BUG,7,114,86,14,WS_GROUP
-    PUSHBUTTON      "보내지 않음(&D)",IDCANCEL,234,114,89,14
-    PUSHBUTTON      "보고서 저장(&R)",IDC_SAVE_REPORT,96,114,85,14
-    LTEXT           "Homepage :",IDC_URL_PREFIX,17,88,40,8
-    LTEXT           "",IDC_URL,58,88,228,10,WS_TABSTOP
-    LTEXT           "이 문제에 대해 오류 보고서가 작성되어 졌으며, flyExplorer 개발자에게 이 오류 보고서를 전달하고자 합니다. 전달된 오류 보고서는 flyExplorer의 품질을 향상시키는 데 도움이 됩니다. 보고서 내용은 기밀로 간주되며 익명으로 처리됩니다.",IDC_INTRO3,17,58,306,26,SS_NOPREFIX
-    LTEXT           "E-mail :",IDC_EMAIL_PREFIX,17,97,24,8
-    LTEXT           "",IDC_EMAIL,58,97,229,10,WS_TABSTOP
+    LTEXT           "",IDC_INTRO_BKGND,0,0,354,59,SS_NOPREFIX
+    CONTROL         112,IDC_DIALOG_ICON,"Static",SS_BITMAP | WS_GROUP,7,7,15,13
+    LTEXT           "A crash has been detected by BugTrap",IDC_INTRO1,35,7,312,8
+    LTEXT           "To help the development process, this program will try and gather the information about the crash, and the state of your machine at the time of the crash. This data can then be submitted to product support or saved to a file.",IDC_INTRO2,35,19,312,28,SS_NOPREFIX
+    LTEXT           "Product support site:",IDC_URL_PREFIX,35,47,71,8
+    LTEXT           "",IDC_URL,106,47,241,10,WS_TABSTOP
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ | WS_GROUP,0,59,354,1
+    GROUPBOX        "Exception Reason",IDC_STATIC,7,62,281,64,WS_GROUP
+    EDITTEXT        IDC_EXCEPTION,14,71,268,49,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Registers",IDC_STATIC,7,128,281,58,WS_GROUP
+    EDITTEXT        IDC_REGISTER,14,138,268,43,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Stack Trace",IDC_STATIC,7,188,281,103,WS_GROUP
+    CONTROL         "",IDC_STACKTRACE,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,14,199,268,87
+    PUSHBUTTON      "Close",IDCANCEL,295,66,52,14,WS_GROUP
+    DEFPUSHBUTTON   "Submit Bug",IDC_SUBMIT_BUG,295,96,52,14
+    PUSHBUTTON      "Mail To...",IDC_MAILTO,295,116,52,14
+    PUSHBUTTON      "Preview...",IDC_PREVIEW_REPORT,295,146,52,14
+    PUSHBUTTON      "Save...",IDC_SAVE_REPORT,295,166,52,14
+    PUSHBUTTON      "Information...",IDC_MACHINE_INFO,295,196,52,14
+    PUSHBUTTON      "State...",IDC_MACHINE_STATE,295,216,52,14
+END
+
+IDD_ABOUT_BUGTRAP_DLG DIALOGEX 0, 0, 242, 76
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About BugTrap"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    ICON            IDI_BUG,IDC_STATIC,7,7,20,20,WS_GROUP
+    LTEXT           "BugTrap - software error reporting tool\nVersion 1.2",IDC_VERSION_STRING,34,7,128,16
+    LTEXT           "Copyright ⓒ 2005-2009 IntelleSoft",IDC_STATIC,7,32,113,8
+    LTEXT           "http://www.intellesoft.net",IDC_URL,7,42,72,10,WS_TABSTOP
+    LTEXT           " GUI design based on Jim Crafton's BlackBox library",IDC_PORTIONS_COPYRIGHT,7,59,228,10,SS_NOPREFIX | SS_SUNKEN
+    DEFPUSHBUTTON   "Close",IDCANCEL,195,7,40,14,WS_GROUP
+END
+
+IDD_MACHINE_INFO_DLG DIALOGEX 0, 0, 340, 260
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Machine Information"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Operating System",IDC_STATIC,7,7,269,43,WS_GROUP
+    EDITTEXT        IDC_OS_TEXT,12,16,259,30,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "CPU",IDC_STATIC,7,50,269,52,WS_GROUP
+    EDITTEXT        IDC_CPU_TEXT,12,58,259,40,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Memory",IDC_STATIC,7,103,269,62,WS_GROUP
+    EDITTEXT        IDC_MEM_TEXT,12,112,259,48,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Environment Variables",IDC_STATIC,7,165,269,88,WS_GROUP
+    EDITTEXT        IDC_ENVIRONMENT,12,174,259,75,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP,WS_EX_STATICEDGE
+    DEFPUSHBUTTON   "Close",IDCANCEL,283,10,50,14,WS_GROUP
+END
+
+IDD_MACHINE_STATE_DLG DIALOGEX 0, 0, 322, 222
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Machine State"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Running Processes at Crash",IDC_PROCESS_LIST_FRAME,7,7,250,97,WS_GROUP,WS_EX_TRANSPARENT
+    CONTROL         "",IDC_PROCESS_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,12,17,239,80
+    GROUPBOX        "Modules Loaded by Selected Process",IDC_PROCESS_MODULES_LIST_FRAME,7,107,250,108,WS_GROUP,WS_EX_TRANSPARENT
+    CONTROL         "",IDC_PROCESS_MODULES_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,12,117,239,92
+    DEFPUSHBUTTON   "Close",IDCANCEL,264,11,51,14,WS_GROUP
+END
+
+IDD_WAIT_DLG DIALOGEX 0, 0, 83, 26
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP
+EXSTYLE WS_EX_TOPMOST | WS_EX_TOOLWINDOW
+FONT 10, "MS Shell Dlg", 400, 0, 0xCC
+BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,1,1,81,17
+    LTEXT           "Please Wait...",IDC_STATIC,18,5,46,8
+    CONTROL         "",IDC_PROGRESS_BAR,"Static",SS_GRAYRECT | WS_GROUP | WS_TABSTOP,1,19,81,7,WS_EX_STATICEDGE
+END
+
+IDD_SEND_MAIL_DLG DIALOGEX 0, 0, 316, 196
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "오류 보고 보내기"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "받는 사람(&R):",IDC_STATIC,7,8,48,8
+    EDITTEXT        IDC_RECIPIENT,63,7,246,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP,WS_EX_STATICEDGE
+    LTEXT           "첨부 파일(&A):",IDC_STATIC,7,24,48,8
+    EDITTEXT        IDC_ATTACHMENT,63,23,246,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP,WS_EX_STATICEDGE
+    LTEXT           "제목(&S):",IDC_STATIC,7,41,29,8
+    EDITTEXT        IDC_SUBJECT,63,39,246,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_BODY,7,57,302,109,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    DEFPUSHBUTTON   "전송(&S)",IDOK,171,173,67,16,WS_GROUP
+    PUSHBUTTON      "닫기(&C)",IDCANCEL,242,173,67,16
+END
+
+IDD_SIMPLE_DLG DIALOGEX 0, 0, 330, 145
+STYLE DS_SETFONT | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "BugTrap"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "",IDC_INTRO_BKGND,0,0,330,34,SS_NOPREFIX
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ | WS_GROUP,0,34,336,1
+    LTEXT           "Website:",IDC_URL_PREFIX,18,93,43,8
+    LTEXT           "",IDC_URL,64,93,259,10,WS_TABSTOP
+    DEFPUSHBUTTON   "오류 보고 보냄(&S)",IDC_SUBMIT_BUG,18,122,83,16,WS_GROUP
+    LTEXT           "",IDC_MAILTO,198,126,8,12,NOT WS_GROUP | WS_TABSTOP
+    PUSHBUTTON      "보고서 저장(&R)",IDC_SAVE_REPORT,104,122,83,16
+    PUSHBUTTON      "닫기 (&C)",IDCANCEL,240,122,83,16
+    LTEXT           "fxfile 프로그램에 문제가 있어서 프로그램을 종료해야 합니다. 불편을 드려서 죄송합니다.",IDC_INTRO2,18,8,305,18,SS_NOPREFIX
+    LTEXT           "어떤 작업 중이었다면, 작업 중이던 정보를 잃게 될 수도 있습니다.",IDC_URL_PREFIX2,18,42,305,8
+    LTEXT           "E-mail:",IDC_EMAIL_PREFIX,18,104,43,8
+    LTEXT           "",IDC_EMAIL,64,104,259,10,WS_TABSTOP
+    LTEXT           "이 문제에 대해 오류 보고서가 작성되어 졌으며, fxfile 개발자에게 이 오류 보고서를 전달하고자 합니다. 전달된 오류 보고서는 fxfile의 품질을 향상시키는 데 도움이 됩니다. 보고서 내용은 기밀로 간주되며 익명으로 처리됩니다.",IDC_URL_PREFIX3,18,57,305,28
+END
+
+IDD_PREVIEW_DLG DIALOGEX 0, 0, 342, 213
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Preview Report Files"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_SPLITTER,"Static",SS_BLACKRECT | WS_GROUP,3,3,336,182
+    CONTROL         "",IDC_FILESLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_ALIGNLEFT | WS_BORDER | WS_GROUP | WS_TABSTOP,3,3,336,55
+    CONTROL         "",IDC_FILEVIEW,"Static",SS_GRAYRECT | WS_BORDER | WS_GROUP | WS_TABSTOP,3,61,336,125
+    CONTROL         "",IDC_FILEFORMAT_FRAME,"Static",SS_ETCHEDFRAME | NOT WS_VISIBLE | WS_GROUP,3,190,122,18,WS_EX_TRANSPARENT
+    CONTROL         "&Text View",IDC_TEXTVIEW,"Button",BS_AUTORADIOBUTTON | NOT WS_VISIBLE | WS_GROUP | WS_TABSTOP,13,194,47,10
+    CONTROL         "&Hex View",IDC_HEXVIEW,"Button",BS_AUTORADIOBUTTON | NOT WS_VISIBLE,68,194,45,10
+    CONTROL         "",IDC_IMAGE_COMMANDS,"ToolbarWindow32",NOT WS_VISIBLE | 0x4c,3,191,121,16
+    DEFPUSHBUTTON   "Close",IDCANCEL,284,192,50,14,WS_GROUP
+END
+
+IDD_TRANSFERPROGRESS_PANE DIALOGEX 0, 0, 184, 72
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_UPLOAD_ANIMATION,"SysAnimate32",ACS_TRANSPARENT | WS_GROUP,7,7,62,17
+    CONTROL         "",IDC_CONNECTINGTOSERVER_CMARK,"Static",SS_BITMAP | NOT WS_VISIBLE | WS_GROUP,80,9,15,13
+    LTEXT           "Connecting to the server",IDC_CONNECTINGTOSERVER_LBL,90,7,81,8
+    CONTROL         "",IDC_SENDINGREPORT_CMARK,"Static",SS_BITMAP | NOT WS_VISIBLE | WS_GROUP,80,22,15,13
+    LTEXT           "Sending error report",IDC_SENDINGREPORT_LBL,90,20,66,8
+    CONTROL         "",IDC_CHECKINGERRORSTATUS_CMARK,"Static",SS_BITMAP | NOT WS_VISIBLE | WS_GROUP,80,35,15,13
+    LTEXT           "Checking error status",IDC_CHECKINGERRORSTATUS_LBL,90,33,70,8
+    DEFPUSHBUTTON   "Cancel",IDCANCEL,127,51,50,14
+END
+
+IDD_TRANSFERSTATUS_PANE DIALOGEX 0, 0, 184, 72
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    ICON            "",IDC_STATUSICON,10,13,20,20,NOT WS_VISIBLE | WS_GROUP
+    LTEXT           "",IDC_STATUSMESSAGE,40,7,137,36,NOT WS_VISIBLE
+    DEFPUSHBUTTON   "Close",IDCANCEL,127,51,50,14
+END
+
+IDD_DESCRIBE_ERROR_DLG DIALOGEX 0, 0, 316, 196
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Describe Error"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Please feel free to describe the nature of the problem and if possible the steps taken to reproduce it:",-1,7,7,302,22
+    EDITTEXT        IDC_DETAILS,7,29,302,137,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    DEFPUSHBUTTON   "Send",IDOK,203,175,50,14,WS_GROUP
+    PUSHBUTTON      "Close",IDCANCEL,259,175,50,14
 END
 
 
@@ -79,29 +230,218 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO 
 BEGIN
+    IDD_TRANSFERPROGRESS_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 191
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 79
+    END
+
+    IDD_MAIN_DLG, DIALOG
+    BEGIN
+        VERTGUIDE, 7
+        VERTGUIDE, 14
+        VERTGUIDE, 35
+        VERTGUIDE, 106
+        VERTGUIDE, 282
+        VERTGUIDE, 288
+        VERTGUIDE, 347
+        BOTTOMMARGIN, 291
+        HORZGUIDE, 7
+        HORZGUIDE, 19
+        HORZGUIDE, 47
+        HORZGUIDE, 59
+        HORZGUIDE, 66
+    END
+
+    IDD_ABOUT_BUGTRAP_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 235
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 69
+        HORZGUIDE, 59
+        HORZGUIDE, 69
+    END
+
+    IDD_MACHINE_INFO_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 333
+        VERTGUIDE, 12
+        VERTGUIDE, 271
+        VERTGUIDE, 276
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 253
+    END
+
+    IDD_MACHINE_STATE_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 315
+        VERTGUIDE, 12
+        VERTGUIDE, 251
+        VERTGUIDE, 257
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 215
+        HORZGUIDE, 17
+        HORZGUIDE, 97
+        HORZGUIDE, 117
+        HORZGUIDE, 209
+    END
+
+    IDD_WAIT_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 80
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 23
+    END
+
     IDD_SEND_MAIL_DLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 309
-        VERTGUIDE, 15
+        VERTGUIDE, 63
         TOPMARGIN, 7
-        BOTTOMMARGIN, 163
-        HORZGUIDE, 34
+        BOTTOMMARGIN, 189
+        HORZGUIDE, 23
+        HORZGUIDE, 39
+        HORZGUIDE, 166
     END
 
     IDD_SIMPLE_DLG, DIALOG
     BEGIN
         VERTGUIDE, 7
-        VERTGUIDE, 17
+        VERTGUIDE, 18
         VERTGUIDE, 323
-        BOTTOMMARGIN, 128
+        BOTTOMMARGIN, 138
         HORZGUIDE, 7
-        HORZGUIDE, 25
-        HORZGUIDE, 32
+        HORZGUIDE, 19
+        HORZGUIDE, 34
+    END
+
+    IDD_PREVIEW_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 3
+        RIGHTMARGIN, 339
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 210
+    END
+
+    IDD_TRANSFERPROGRESS_PANE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 177
+        VERTGUIDE, 80
+        VERTGUIDE, 90
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+        HORZGUIDE, 20
+        HORZGUIDE, 33
+    END
+
+    IDD_TRANSFERSTATUS_PANE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 177
+        VERTGUIDE, 40
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+        HORZGUIDE, 43
+    END
+
+    IDD_DESCRIBE_ERROR_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        VERTGUIDE, 63
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+        HORZGUIDE, 29
+        HORZGUIDE, 166
     END
 END
 #endif    // APSTUDIO_INVOKED
 
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// German (Neutral) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_BUGTRAP_NAME        "BugTrap"
+    IDS_CLOSE_TIP           "Beende die unterbrochene anwendung."
+    IDS_PREVIEW_REPORT_TIP  "Vorschau der reportdateien."
+    IDS_SAVE_REPORT_TIP     "Fehlerinformationen in eine datei speichern."
+    IDS_MAILTO_TIP          "Eine email an den produktsupport versenden."
+    IDS_SUBMIT_BUG_TIP      "Einen automatisch generierten report an den produktsupport versenden."
+    IDS_MACHINE_INFO_TIP    "Informationen ?er das betriebssystem anzeigen."
+    IDS_MACHINE_STATE_TIP   "Alle laufenden prozesse und geladenen module anzeigen."
+    IDS_PLEASE_WAIT         "Bitte warten..."
+    IDS_ZOOMIN              "Zoom vergr秤ern"
+    IDS_MORE_TIP            "Fehlerinformationen anzeigen."
+    IDS_COLUMN_ASSEMBLY     "Assembly"
+    IDS_COLUMN_METHOD       "Methode"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_STATUS_REPORTSENT   "Vielen dank f? ihre geduld!\nFehlerbericht fertig."
+    IDS_ERROR_TRANSFERFAILED 
+                            "Fehler: konnte den report nicht an den server versenden"
+    IDS_COLUMN_FUNCTION     "Funktion"
+    IDS_UNDEFINED_ERROR_EX  "Unbekannter fehler (0x%08lX)"
+    IDS_ADDITIONAL_INFORMATION "\nZusatzinformation:\n"
+    IDS_COLUMN_ADDRESS      "Addresse"
+    IDS_COLUMN_FILE         "Datei"
+    IDS_COLUMN_LINE         "Zeile"
+    IDS_COLUMN_MODULE       "Modul"
+    IDS_COLUMN_PID          "PID"
+    IDS_COLUMN_PROCESS      "Prozess"
+    IDS_COLUMN_VERSION      "Version"
+    IDS_COLUMN_BASE         "Basis"
+    IDS_COLUMN_TYPE         "Typ"
+    IDS_COLUMN_SIZE         "Gr秤e"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUT_ITEM          "?er BugTrap..."
+    IDS_ERROR_NOT_AVAILABLE "N/A (fehler)"
+    IDS_ZOOMOUT             "Zoom verkleinern"
+    IDS_RESETSIZE           "Gr秤e zur?ksetzen"
+    IDS_FITIMAGE            "Bild einpassen"
+    IDS_UNDEFINED_ERROR     "Unbekannter fehler"
+END
+
+#endif    // German (Neutral) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -109,8 +449,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION 1,3,3718,38316
+ PRODUCTVERSION 1,3,3718,38316
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,64 +463,37 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "000004b0"
+        BLOCK "000704b0"
         BEGIN
-            VALUE "Comments", "Crash Handler"
-            VALUE "CompanyName", "flychk"
-            VALUE "FileDescription", "Crash Handler"
-            VALUE "FileVersion", "1.0"
-            VALUE "InternalName", "fxcrash"
-            VALUE "LegalCopyright", "Copyright (C) 2007 Chae-Kwang Lee. All rights reserved."
-            VALUE "OriginalFilename", "fxcrash.dll"
-            VALUE "ProductName", "fxcrash"
-            VALUE "ProductVersion", "1.0"
+            VALUE "Comments", "BugTrap - softwarefehler berichterstattung"
+            VALUE "CompanyName", "IntelleSoft"
+            VALUE "FileDescription", "BugTrap dynamic link library"
+            VALUE "FileVersion", "1.3.3718.38316"
+            VALUE "InternalName", "BugTrap"
+            VALUE "LegalCopyright", "Copyright ?2005-2009 IntelleSoft"
+            VALUE "OriginalFilename", "BugTrap.dll"
+            VALUE "ProductName", "BugTrap"
+            VALUE "ProductVersion", "1.3.3718.38316"
+        END
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "BugTrap - software error reporting tool"
+            VALUE "CompanyName", "IntelleSoft"
+            VALUE "FileDescription", "BugTrap dynamic link library"
+            VALUE "FileVersion", "1.3.3718.38316"
+            VALUE "InternalName", "BugTrap"
+            VALUE "LegalCopyright", "Copyright ?2005-2009 IntelleSoft"
+            VALUE "OriginalFilename", "BugTrap.dll"
+            VALUE "ProductName", "BugTrap"
+            VALUE "ProductVersion", "1.3.3718.38316"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x0, 1200
+        VALUE "Translation", 0x7, 1200, 0x409, 1200
     END
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// String Table
-//
-
-STRINGTABLE 
-BEGIN
-    IDS_BUGTRAP_NAME        "flyExplorer"
-    IDS_EMAIL_LOGIN_FAILED  "메일 서버 접속에 실패하여 오류 보고서를 보낼 수 없습니다.\n오류 보고서를 파일로 저장하여 개발자에게 전달해 주십시오."
-    IDS_SAVE_REPORT_TIP     "오류 보고서를 파일로 저장합니다. 이 파일을 메일로 보내주시거나 홈페이지 올려 주시면 더욱더 품질 높은 S/W를 제공해 드릴 것입니다."
-    IDS_SUBMIT_BUG_TIP      "오류 보고서를 메일로 전송합니다."
-    IDS_PLEASE_WAIT         "Please wait..."
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_ERROR_TRANSFERFAILED "오류 보고서를 전송하는 데에 실패하였습니다."
-    IDS_ADDITIONAL_INFORMATION "\nAdditional information:\n"
-END
-
-STRINGTABLE 
-BEGIN
-    IDS_ERROR_NOT_AVAILABLE "N/A (error)"
-    IDS_UNDEFINED_ERROR     "Undefined error"
-END
-
-#endif    // Neutral resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -206,6 +519,58 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_BUGTRAP_NAME        "BugTrap"
+    IDS_CLOSE_TIP           "Terminate interrupted application."
+    IDS_PREVIEW_REPORT_TIP  "Preview contents of report files."
+    IDS_SAVE_REPORT_TIP     "Save detailed error information to file."
+    IDS_MAILTO_TIP          "Send custom e-mail message to product support."
+    IDS_SUBMIT_BUG_TIP      "Send automatically generated bug report to product support."
+    IDS_MACHINE_INFO_TIP    "Display information about operating system."
+    IDS_MACHINE_STATE_TIP   "List running processes and loaded modules."
+    IDS_PLEASE_WAIT         "Please wait..."
+    IDS_ZOOMIN              "Zoom In"
+    IDS_MORE_TIP            "Display detailed error information."
+    IDS_COLUMN_ASSEMBLY     "Assembly"
+    IDS_COLUMN_METHOD       "Method"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_STATUS_REPORTSENT   "Thank you for your patience!\nError report complete."
+    IDS_ERROR_TRANSFERFAILED "Error: can't send error report to the server"
+    IDS_COLUMN_FUNCTION     "Function"
+    IDS_UNDEFINED_ERROR_EX  "Undefined error (0x%08lX)"
+    IDS_ADDITIONAL_INFORMATION "\nAdditional information:\n"
+    IDS_COLUMN_ADDRESS      "Address"
+    IDS_COLUMN_FILE         "File"
+    IDS_COLUMN_LINE         "Line"
+    IDS_COLUMN_MODULE       "Module"
+    IDS_COLUMN_PID          "PID"
+    IDS_COLUMN_PROCESS      "Process"
+    IDS_COLUMN_VERSION      "Version"
+    IDS_COLUMN_BASE         "Base"
+    IDS_COLUMN_TYPE         "Type"
+    IDS_COLUMN_SIZE         "Size"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUT_ITEM          "About BugTrap..."
+    IDS_ERROR_NOT_AVAILABLE "N/A (error)"
+    IDS_ZOOMOUT             "Zoom Out"
+    IDS_RESETSIZE           "Reset Size"
+    IDS_FITIMAGE            "Fit Image"
+    IDS_UNDEFINED_ERROR     "Undefined error"
+END
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////

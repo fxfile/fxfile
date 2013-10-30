@@ -133,8 +133,8 @@
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin/x64-unicode',
-                                'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x64-unicode',
+                                'OutputDirectory':       '../../bin/x64',
+                                'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x64',
                             },
                             
                             'msvs_settings':
@@ -158,58 +158,8 @@
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin/x64-unicode',
-                                'IntermediateDirectory': '../../obj/fxfile-crash/rel-x64-unicode',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName).dll',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                    ],
-                                },
-                            },
-                        },
-                        
-                        'Debug-x64-Ansicode':
-                        {
-                            'inherit_from': ['Debug-x64-Ansicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64-ansicode',
-                                'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x64-ansicode',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName)_dbg.dll',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                    ],
-                                },
-                            },
-                        },
-
-                        'Release-x64-Ansicode':
-                        {
-                            'inherit_from': ['Release-x64-Ansicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64-ansicode',
-                                'IntermediateDirectory': '../../obj/fxfile-crash/rel-x64-ansicode',
+                                'OutputDirectory':       '../../bin/x64',
+                                'IntermediateDirectory': '../../obj/fxfile-crash/rel-x64',
                             },
                             
                             'msvs_settings':
@@ -287,6 +237,29 @@
                 './Array.h',
                 './ColHelper.h',
                 './Hash.h',
+                './InMemLogFile.cpp',
+                './InMemLogFile.h',
+                './LogStream.cpp',
+                './LogStream.h',
+                './ModuleImportTable.cpp',
+                './ModuleImportTable.h',
+
+                './TransferProgressDlg.cpp',
+                './TransferProgressDlg.h',
+                './DescribeErrorDlg.cpp',
+                './DescribeErrorDlg.h',
+                './WaitDlg.cpp',
+                './WaitDlg.h',
+                './MainDlg.cpp',
+                './MainDlg.h',
+
+                './PreviewDlg.cpp',
+                './PreviewDlg.h',
+                './MachineInfoDlg.cpp',
+                './MachineInfoDlg.h',
+                './MachineStateDlg.cpp',
+                './MachineStateDlg.h',
+				
                 './InPlaceNew.h',
                 './InterfacePtr.h',
                 './List.h',

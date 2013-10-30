@@ -219,6 +219,7 @@ void AboutDlg::showTabDialog(xpr_sint_t aIndex)
     sNewDlg->SetFocus();
     UpdateWindow();
 
+    mTabCtrl.SetFocus();
     mTabCtrl.SetCurSel(aIndex);
     mOldShowDlg = aIndex;
 }

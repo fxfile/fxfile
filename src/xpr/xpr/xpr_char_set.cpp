@@ -8,8 +8,8 @@
 #include "xpr_rcode.h"
 #include "xpr_math.h"
 #include "xpr_memory.h"
-
-#include <iconv.h>
+#include "xpr_debug.h"
+#include "xpr_lazy_library_load.h"
 
 namespace xpr
 {
@@ -27,6 +27,7 @@ CharSetConverter::CharSetConverter(void)
     : mHandle(XPR_NULL)
     , mInputCharSet(CharSetNone), mOutputCharSet(CharSetNone)
 {
+    XPR_ASSERT(gLazyIconvLibrary.mDlHandle != XPR_NULL);
 }
 
 CharSetConverter::~CharSetConverter(void)
@@ -46,7 +47,7 @@ xpr_rcode_t CharSetConverter::open(CharSet aInputCharSet, CharSet aOutputCharSet
     const xpr_char_t *sInputEncoding = kCharSets[aInputCharSet];
     const xpr_char_t *sOutputEncoding = kCharSets[aOutputCharSet];
 
-    iconv_t sHandle = ::iconv_open(sOutputEncoding, sInputEncoding);
+    iconv_t sHandle = gLazyIconvLibrary.mIconOpenFunc(sOutputEncoding, sInputEncoding);
     if (sHandle == (iconv_t)-1)
         return XPR_RCODE_ENOTSUP;
 
@@ -104,11 +105,11 @@ xpr_rcode_t CharSetConverter::convert(const void *aInput,  xpr_size_t *aInputByt
     xpr_size_t sInputBytesLeft = *aInputBytes;
     xpr_size_t sOutputBytesLeft = *aOutputBytes;
 
-    xpr_size_t sResult = ::iconv(sIconv,
-                                 (const xpr_char_t **)&aInput,
-                                 &sInputBytesLeft,
-                                 (xpr_char_t **)&aOutput,
-                                 &sOutputBytesLeft);
+    xpr_size_t sResult = gLazyIconvLibrary.mIconFunc(sIconv,
+                                                     (xpr_char_t **)&aInput,
+                                                     &sInputBytesLeft,
+                                                     (xpr_char_t **)&aOutput,
+                                                     &sOutputBytesLeft);
 
     xpr_rcode_t sRcode = XPR_RCODE_SUCCESS;
     if (sResult == (xpr_size_t)-1)
@@ -138,7 +139,7 @@ void CharSetConverter::close(void)
     {
         iconv_t sIconv = (iconv_t)mHandle;
 
-        ::iconv_close(sIconv);
+        gLazyIconvLibrary.mIconCloseFunc(sIconv);
 
         mHandle = XPR_NULL;
     }

@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Global variables definitions.
@@ -28,17 +28,17 @@ static BOOL IsNT(void)
 	OSVERSIONINFO osvi;
 	osvi.dwOSVersionInfoSize = sizeof(osvi);
 	GetVersionEx(&osvi);
-	return (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT);
+	return (osvi.dwPlatformId >= VER_PLATFORM_WIN32_NT);
 }
 
 /// BugTrap module handle.
 HINSTANCE g_hInstance = NULL;
+/// Module of interest handle
+extern HINSTANCE g_hModule = NULL;
 /// Application name.
 TCHAR g_szAppName[MAX_PATH] = _T("");
 /// Application version number.
 TCHAR g_szAppVersion[MAX_PATH] = _T("");
-HICON g_hAppIcon16 = NULL;
-HICON g_hAppIcon32 = NULL;
 /// Web address of product support site.
 TCHAR g_szSupportURL[MAX_PATH] = _T("");
 /// E-mail address of product support.
@@ -63,6 +63,8 @@ TCHAR g_szInternalReportFilePath[MAX_PATH] = _T("");
 DWORD g_dwFlags = BTF_NONE;
 /// Type of action which is performed in response to the error.
 BUGTRAP_ACTIVITY g_eActivityType = BTA_SHOWUI;
+/// Application terminaation mode.
+BUGTRAP_EXITMODE g_eExitMode = BTEM_TERMINATEAPP;
 /// Type of produced mini-dump. See @a MINIDUMP_TYPE for details.
 MINIDUMP_TYPE g_eDumpType = MiniDumpWithDataSegs;
 /// Format of error report.

@@ -148,8 +148,8 @@
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin/x64-unicode',
-                                'IntermediateDirectory': '../../obj/xpr/dbg-x64-unicode',
+                                'OutputDirectory':       '../../bin/x64',
+                                'IntermediateDirectory': '../../obj/xpr/dbg-x64',
                             },
                             
                             'msvs_settings':
@@ -176,8 +176,8 @@
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin/x64-unicode',
-                                'IntermediateDirectory': '../../obj/xpr/rel-x64-unicode',
+                                'OutputDirectory':       '../../bin/x64',
+                                'IntermediateDirectory': '../../obj/xpr/rel-x64',
                             },
                             
                             'msvs_settings':
@@ -192,61 +192,6 @@
                                     'AdditionalDependencies':
                                     [
                                         'libxpr.lib',
-                                    ],
-                                },
-                            },
-                        },
-                        
-                        'Debug-x64-Ansicode':
-                        {
-                            'inherit_from': ['Debug-x64-MFC-Ansicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64-ansicode',
-                                'IntermediateDirectory': '../../obj/xpr/dbg-x64-ansicode',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                        '../../lib/gfl/lib64',
-                                        '../../lib/vld/lib/Win64',
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'libxpr_dbg.lib',
-                                    ],
-                                },
-                            },
-                        },
-
-                        'Release-x64-Ansicode':
-                        {
-                            'inherit_from': ['Release-x64-MFC-Ansicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin/x64-ansicode',
-                                'IntermediateDirectory': '../../obj/xpr/rel-x64-ansicode',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName).exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                        '../../lib/gfl/lib64',
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'libxpr_dbg.lib',
                                     ],
                                 },
                             },

@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Send Mail dialog.
@@ -29,6 +29,20 @@
  * @addtogroup BugTrapUI BugTrap Graphical User Interface
  * @{
  */
+
+/// Control layouts for Send Mail dialog.
+static LAYOUT_INFO g_arrSendMailLayout[] =
+{
+	LAYOUT_INFO(IDC_RECIPIENT,  ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_ATTACHMENT, ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_SUBJECT,    ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_TOP),
+	LAYOUT_INFO(IDC_BODY,       ALIGN_LEFT,  ALIGN_TOP,    ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDOK,           ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM),
+	LAYOUT_INFO(IDCANCEL,       ALIGN_RIGHT, ALIGN_BOTTOM, ALIGN_RIGHT, ALIGN_BOTTOM)
+};
+
+/// Dialog layout manager.
+static CLayoutManager g_LayoutMgr;
 
 /**
  * @brief WM_COMMAND handler of Send Mail dialog.
@@ -102,17 +116,18 @@ static BOOL SendMailDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	if (g_pResManager->m_hSmallAppIcon)
 		SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)g_pResManager->m_hSmallAppIcon);
 	CenterWindow(hwnd, GetParent(hwnd));
+	g_LayoutMgr.InitLayout(hwnd, g_arrSendMailLayout, countof(g_arrSendMailLayout));
 
 	if (g_dwFlags & BTF_ATTACHREPORT)
 	{
 		TCHAR szFileName[MAX_PATH];
 		g_pSymEngine->GetReportFileName(szFileName, countof(szFileName));
 		hwndCtl = GetDlgItem(hwnd, IDC_ATTACHMENT);
-		//SetWindowText(hwndCtl, szFileName);
+		SetWindowText(hwndCtl, szFileName);
 	}
 
 	hwndCtl = GetDlgItem(hwnd, IDC_RECIPIENT);
-	//SetWindowText(hwndCtl, g_szSupportEMail);
+	SetWindowText(hwndCtl, g_szSupportEMail);
 
 	TCHAR szSubject[MAX_PATH];
 	GetDefaultMailSubject(szSubject, countof(szSubject));
@@ -134,6 +149,7 @@ static BOOL SendMailDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 static void SendMailDlg_OnSize(HWND hwnd, UINT state, int cx, int cy)
 {
 	hwnd; cx; cy; state;
+	g_LayoutMgr.ApplyLayout();
 }
 
 /**
@@ -143,24 +159,8 @@ static void SendMailDlg_OnSize(HWND hwnd, UINT state, int cx, int cy)
  */
 static void SendMailDlg_OnGetMinMaxInfo(HWND hwnd, PMINMAXINFO pMinMaxInfo)
 {
-	hwnd; pMinMaxInfo;
-}
-
-static HBRUSH SendMailDlg_OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
-{
 	hwnd;
-	if (type == CTLCOLOR_STATIC)
-	{
-		int nChildID = GetDlgCtrlID(hwndChild);
-		if (nChildID == IDC_INTRO_BKGND ||
-			nChildID == IDC_INTRO1)
-		{
-			_ASSERTE(g_pResManager != NULL);
-			SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
-			return g_pResManager->m_hbrWindowBrush;
-		}
-	}
-	return NULL;
+	pMinMaxInfo->ptMinTrackSize = g_LayoutMgr.GetMinTrackSize();
 }
 
 /**
@@ -178,7 +178,6 @@ INT_PTR CALLBACK SendMailDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM 
 	HANDLE_MSG(hwndDlg, WM_INITDIALOG, SendMailDlg_OnInitDialog);
 	HANDLE_MSG(hwndDlg, WM_COMMAND, SendMailDlg_OnCommand);
 	HANDLE_MSG(hwndDlg, WM_SIZE, SendMailDlg_OnSize);
-	HANDLE_MSG(hwndDlg, WM_CTLCOLORSTATIC, SendMailDlg_OnCtlColor);
 	HANDLE_MSG(hwndDlg, WM_GETMINMAXINFO, SendMailDlg_OnGetMinMaxInfo);
 	default: return FALSE;
 	}

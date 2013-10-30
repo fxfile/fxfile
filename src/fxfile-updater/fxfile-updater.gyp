@@ -45,6 +45,8 @@
                         'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
                         'AdditionalLibraryDirectories':
                         [
+							'../../bin',
+							'../../lib/libcurl/lib',
                         ],
                         'AdditionalDependencies':
                         [
@@ -52,7 +54,10 @@
                         ],
                     },
                 },
-            },
+
+            'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
+			},
             
             'Release-x86':
             {
@@ -71,6 +76,8 @@
                         'OutputFile': '$(OutDir)\$(ProjectName).exe',
                         'AdditionalLibraryDirectories':
                         [
+							'../../bin',
+							'../../lib/libcurl/lib',
                         ],
                         'AdditionalDependencies':
                         [
@@ -78,7 +85,10 @@
                         ],
                     },
                 },
-            },
+ 
+            'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
+           },
 
             'conditions':
             [
@@ -86,11 +96,11 @@
                     {
                         'Debug-x64':
                         {
-                            'inherit_from': ['Debug-x64-MFC-Ansicode_Base'],
+                            'inherit_from': ['Debug-x64-MFC-Unicode_Base'],
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin',
+                                'OutputDirectory':       '../../bin/x64',
                                 'IntermediateDirectory': '../../obj/fxfile-updater/dbg-x64',
                             },
                             
@@ -101,6 +111,8 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
                                     'AdditionalLibraryDirectories':
                                     [
+										'../../bin/x64',
+										'../../lib/libcurl/lib64',
                                     ],
                                     'AdditionalDependencies':
                                     [
@@ -112,11 +124,11 @@
 
                         'Release-x64':
                         {
-                            'inherit_from': ['Release-x64-MFC-Ansicode_Base'],
+                            'inherit_from': ['Release-x64-MFC-Unicode_Base'],
                             
                             'msvs_configuration_attributes':
                             {
-                                'OutputDirectory':       '../../bin',
+                                'OutputDirectory':       '../../bin/x64',
                                 'IntermediateDirectory': '../../obj/fxfile-updater/rel-x64',
                             },
                             
@@ -127,6 +139,8 @@
                                     'OutputFile': '$(OutDir)\$(ProjectName).exe',
                                     'AdditionalLibraryDirectories':
                                     [
+										'../../bin/x64',
+										'../../lib/libcurl/lib64',
                                     ],
                                     'AdditionalDependencies':
                                     [
@@ -171,17 +185,12 @@
                 {
                     'AdditionalLibraryDirectories':
                     [
-                        '../../bin',
-                        '../../lib/libcurl/lib',
                     ]
                 },
             },
             
             'msvs_precompiled_header': 'stdafx.h',
             'msvs_precompiled_source': 'stdafx.cpp',
-            
-            'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
             
             'sources':
             [

@@ -208,7 +208,7 @@ xpr_bool_t MainWindow::getUpdateHomeDir(xpr::tstring &aUpdateHomeDir) const
     return XPR_FALSE;
 }
 
-void MainWindow::OnTimer(xpr_uint_t aIdEvent)
+void MainWindow::OnTimer(UINT_PTR aIdEvent)
 {
     if (aIdEvent == kTimerIdCheckFirst ||
         aIdEvent == kTimerIdCheck)
@@ -419,7 +419,7 @@ xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::tstring &aConfPath,
             const xpr_tchar_t *sValue = sConfFile.getValueS(sSection, kRootConfFileKeyConfHome, XPR_NULL);
             if (XPR_IS_NOT_NULL(sValue))
             {
-                xpr::string sDir = sValue;
+                xpr::tstring sDir = sValue;
 
                 fxfile::base::EnvPath::instance().resolve(sDir, aDir);
 

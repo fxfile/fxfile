@@ -168,7 +168,8 @@
             'msvs_precompiled_source': 'stdafx.cpp',
             
             'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n',
+                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n'
+							  'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
             
             'sources':
             [
