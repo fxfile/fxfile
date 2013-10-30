@@ -26,7 +26,8 @@ public:
     ~UpdateInfoManager(void);
 
 public:
-    void setUpdateHomeDir(const xpr_tchar_t *aDir);
+    static xpr_bool_t getDefaultUpdateHomeDir(xpr::tstring &aDir);
+    void setUpdateHomeDir(const xpr::tstring &aDir);
 
 public:
     void close(void);
