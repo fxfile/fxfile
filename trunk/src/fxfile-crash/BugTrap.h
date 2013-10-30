@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Definitions of external functions.
@@ -19,16 +19,8 @@
 
 #if defined _MANAGED && ! defined _UNICODE
  #error Managed version of BugTrap requires Unicode character set
-#endif // _MANAGED && _UNICODE
+#endif // _MANAGED && ! _UNICODE
 
-/*
- * The following ifdef block is the standard way of creating macros which make exporting
- * from a DLL simpler. All files within this DLL are compiled with the BUGTRAP_EXPORTS
- * symbol defined on the command line. this symbol should not be defined on any project
- * that uses this DLL. This way any other project whose source files include this file see
- * BUGTRAP_API functions as being imported from a DLL, whereas this DLL sees symbols
- * defined with this macro as being exported.
- */
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -73,19 +65,19 @@ typedef enum BUGTRAP_FLAGS_tag
 	/**
 	 * @brief Equivalent of no options.
 	 */
-	BTF_NONE           = 0x00,
+	BTF_NONE           = 0x000,
 	/**
 	 * @brief In detailed mode BugTrap generates mini-dump and
 	 * packs custom log files within the report.
 	 */
-	BTF_DETAILEDMODE   = 0x01,
+	BTF_DETAILEDMODE   = 0x001,
 	/**
 	 * @brief BugTrap may open its own editor for e-mail messages
 	 * instead of the editor used by the system. Use this
 	 * option if you aren't aware of the type of e-mail
 	 * client installed on user computers.
 	 */
-	BTF_EDITMAIL       = 0x02,
+	BTF_EDITMAIL       = 0x002,
 	/**
 	 * @brief Specify this option to attach bug report to e-mail
 	 * messages. Be careful with this option. It's potentially
@@ -94,37 +86,82 @@ typedef enum BUGTRAP_FLAGS_tag
 	 * maximum size of e-mail message supported by Internet
 	 * provider.
 	 */
-	BTF_ATTACHREPORT   = 0x04,
+	BTF_ATTACHREPORT   = 0x004,
 	/**
 	 * @brief Set this flag to add list of all processes and loaded
 	 * modules to the report. Disable this option to speedup report
 	 * generation.
 	 */
-	BTF_LISTPROCESSES  = 0x08,
+	BTF_LISTPROCESSES  = 0x008,
 	/**
 	 * @brief By default BugTrap displays simplified dialog on the
 	 * screen allowing user to perform only common actions. Enable
 	 * this flag to immediately display dialog with advanced error
 	 * information.
 	 */
-	BTF_SHOWADVANCEDUI = 0x10,
+	BTF_SHOWADVANCEDUI = 0x010,
 	/**
 	 * @brief Bug report in detailed error mode may also include a
 	 * screen shot automatically captured by BugTrap. By default this
 	 * option is disabled to minimize report size, but it may be useful
 	 * if you want to know which dialogs were shown on the screen.
 	 */
-	BTF_SCREENCAPTURE  = 0x20,
+	BTF_SCREENCAPTURE  = 0x020,
 #ifdef _MANAGED
 	/**
 	 * @brief Generate native stack trace and modules information along
 	 * with managed exception information. Disable this option to speedup
 	 * report generation.
 	 */
-	 BTF_NATIVEINFO    = 0x40
+	 BTF_NATIVEINFO    = 0x040,
 #endif // _MANAGED
+	 /**
+	  * @brief When enabled, BugTrap injects fake SetUnhandledExceptionFilter()
+	  * to handle the most severe C runtime errors. Usually such errors
+	  * are not being reported to custom unhandled exception filters. This
+	  * flag vanishes any attempts of C runtime library to override
+	  * unhandled exception filter defined in BugTrap. This option should
+	  * be used with caution, because such technique may be incompatible
+	  * with future Windows versions.
+	  */
+	 BTF_INTERCEPTSUEF = 0x080,
+	 /**
+	  * @brief When report is being sent over TCP/HTTP protocol, BugTrap could
+	  * ask user to provide verbal description of the problem if this option is
+	  * enabled. BugTrap always prompts user to describe error for reports
+	  * transmitted over email regardless this option.
+	  */
+	 BTF_DESCRIBEERROR = 0x100,
+	 /**
+	  * @brief Automatically restart the application after the crash has been
+	  * handled.
+	  */
+	 BTF_RESTARTAPP    = 0x200
 }
 BUGTRAP_FLAGS;
+
+/**
+ * @brief These flags control application termination mode:
+ * whatever the application needs to be terminated after error handling,
+ * control should passed to another exception handler.
+ */
+typedef enum BUGTRAP_EXITMODE_tag
+{
+	/**
+	 * @brief BugTrap executes desirable action (usually displays the dialog).
+	 * The application is being terminated when user closes the dialog. This is default action.
+	 */
+	BTEM_TERMINATEAPP,
+	/**
+	 * @brief BugTrap executes desirable action and continues to search up the stack for a handler.
+	 */
+	BTEM_CONTINUESEARCH,
+	/**
+	 * @brief BugTrap executes desirable action and transfers control to the exception handlers.
+	 */
+	BTEM_EXECUTEHANDLER
+}
+BUGTRAP_EXITMODE;
 
 /**
  * @brief Set of available log levels.
@@ -230,12 +267,22 @@ typedef enum BUGTRAP_LOGFORMAT_tag
 {
 	/**
 	 * @brief Log stored in structured XML format.
+	 * Log data is entirely stored in memory until application exists or crashes.
+	 * It is designed for fast IO and it cannot handle large logs.
 	 */
-	BTLF_XML  = 1,
+	BTLF_XML    = 1,
 	/**
 	 * @brief Log stored in plain text format.
+	 * Log data is entirely stored in memory until application exists or crashes.
+	 * It is designed for fast IO and it cannot handle large logs.
 	 */
-	BTLF_TEXT = 2
+	BTLF_TEXT   = 2,
+	/**
+	 * @brief Log stored in plain text format.
+	 * Unlike @a BTLF_XML and @a BTLF_TEXT log data is not cached in memory.
+	 * This type of log is optimized for large logs.
+	 */
+	BTLF_STREAM = 3
 }
 BUGTRAP_LOGFORMAT;
 
@@ -332,7 +379,23 @@ void APIENTRY BT_SetAppVersion(LPCTSTR pszAppVersion);
  * @note @a hModule can be set to NULL for the main executable.
  */
 BOOL APIENTRY BT_ReadVersionInfo(HMODULE hModule);
+/** @} */
 
+/**
+ * @defgroup ModuleOfInterest Module of interest
+ * Only exceptions that contain the module of interest at the stack trace will
+ * be processed. If no module of interest set, all exceptions will be processed.
+ * @{
+ */
+
+/**
+ * @brief Get module of interest
+ */
+HMODULE APIENTRY BT_GetModule();
+/**
+ * @brief Set module of interest
+ */
+void APIENTRY BT_SetModule(HMODULE hModule);
 /** @} */
 
 /**
@@ -481,6 +544,14 @@ BUGTRAP_ACTIVITY APIENTRY BT_GetActivityType(void);
  */
 void APIENTRY BT_SetActivityType(BUGTRAP_ACTIVITY eActivityType);
 /**
+ * @brief Get application termination mode.
+ */
+BUGTRAP_EXITMODE APIENTRY BT_GetExitMode(void);
+/**
+ * @brief Set application termination mode.
+ */
+void APIENTRY BT_SetExitMode(BUGTRAP_EXITMODE eExitMode);
+/**
  * @brief Get the path of error report.
  */
 LPCTSTR APIENTRY BT_GetReportFilePath(void);
@@ -575,12 +646,12 @@ INT_PTR APIENTRY BT_OpenLogFile(LPCTSTR pszLogFileName, BUGTRAP_LOGFORMAT eLogFo
 /**
  * @brief Close custom log file. This function is thread safe.
  */
-void APIENTRY BT_CloseLogFile(INT_PTR iHandle);
+BOOL APIENTRY BT_CloseLogFile(INT_PTR iHandle);
 /**
  * @brief Flush contents of the log file.
  * @note This function is optional and not required in normal conditions.
  */
-void APIENTRY BT_FlushLogFile(INT_PTR iHandle);
+BOOL APIENTRY BT_FlushLogFile(INT_PTR iHandle);
 /**
  * @brief Get custom log file name. This function is thread safe.
  */
@@ -592,7 +663,7 @@ DWORD APIENTRY BT_GetLogSizeInEntries(INT_PTR iHandle);
 /**
  * @brief Set maximum log file size in records. This function is thread safe.
  */
-void APIENTRY BT_SetLogSizeInEntries(INT_PTR iHandle, DWORD dwLogSizeInEntries);
+BOOL APIENTRY BT_SetLogSizeInEntries(INT_PTR iHandle, DWORD dwLogSizeInEntries);
 /**
  * @brief Get maximum log file size in bytes. This function is thread safe.
  */
@@ -600,7 +671,7 @@ DWORD APIENTRY BT_GetLogSizeInBytes(INT_PTR iHandle);
 /**
  * @brief Set maximum log file size in bytes. This function is thread safe.
  */
-void APIENTRY BT_SetLogSizeInBytes(INT_PTR iHandle, DWORD dwLogSizeInEntries);
+BOOL APIENTRY BT_SetLogSizeInBytes(INT_PTR iHandle, DWORD dwLogSizeInEntries);
 /**
  * @brief Return true if time stamp is added to every log entry.
  */
@@ -608,7 +679,7 @@ DWORD APIENTRY BT_GetLogFlags(INT_PTR iHandle);
 /**
  * @brief Set true if time stamp is added to every log entry.
  */
-void APIENTRY BT_SetLogFlags(INT_PTR iHandle, DWORD dwLogFlags);
+BOOL APIENTRY BT_SetLogFlags(INT_PTR iHandle, DWORD dwLogFlags);
 /**
  * @brief Return minimal log level accepted by tracing functions.
  */
@@ -616,7 +687,7 @@ BUGTRAP_LOGLEVEL APIENTRY BT_GetLogLevel(INT_PTR iHandle);
 /**
  * @brief Set minimal log level accepted by tracing functions.
  */
-void APIENTRY BT_SetLogLevel(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel);
+BOOL APIENTRY BT_SetLogLevel(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel);
 /**
  * @brief Get echo mode.
  */
@@ -624,35 +695,35 @@ DWORD APIENTRY BT_GetLogEchoMode(INT_PTR iHandle);
 /**
  * @brief Set echo mode.
  */
-void APIENTRY BT_SetLogEchoMode(INT_PTR iHandle, DWORD dwLogEchoMode);
+BOOL APIENTRY BT_SetLogEchoMode(INT_PTR iHandle, DWORD dwLogEchoMode);
 /**
  * @brief Clear log file. This function is thread safe.
  */
-void APIENTRY BT_ClearLog(INT_PTR iHandle);
+BOOL APIENTRY BT_ClearLog(INT_PTR iHandle);
 /**
  * @brief Insert entry into the beginning of custom log file. This function is thread safe.
  */
-void CDECL BT_InsLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...);
+BOOL CDECL BT_InsLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...);
 /**
  * @brief Append entry to the end of custom log file. This function is thread safe.
  */
-void CDECL BT_AppLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...);
+BOOL CDECL BT_AppLogEntryF(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, ...);
 /**
  * @brief Insert entry into the beginning of custom log file. This function is thread safe.
  */
-void APIENTRY BT_InsLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList);
+BOOL APIENTRY BT_InsLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList);
 /**
  * @brief Append entry to the end of custom log file. This function is thread safe.
  */
-void APIENTRY BT_AppLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList);
+BOOL APIENTRY BT_AppLogEntryV(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszFormat, va_list argList);
 /**
  * @brief Insert entry into the beginning of custom log file. This function is thread safe.
  */
-void APIENTRY BT_InsLogEntry(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry);
+BOOL APIENTRY BT_InsLogEntry(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry);
 /**
  * @brief Append entry to the end of custom log file. This function is thread safe.
  */
-void APIENTRY BT_AppLogEntry(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry);
+BOOL APIENTRY BT_AppLogEntry(INT_PTR iHandle, BUGTRAP_LOGLEVEL eLogLevel, LPCTSTR pszEntry);
 
 /** @} */
 
@@ -672,17 +743,34 @@ LPTOP_LEVEL_EXCEPTION_FILTER APIENTRY BT_InstallSehFilter(void);
  */
 void APIENTRY BT_UninstallSehFilter(void);
 /**
+ * @brief Explicitly intercepts SetUnhandledExceptionFilter() in a module.
+ * This function could be useful for dynamically loaded modules.
+ */
+void BT_InterceptSUEF(HMODULE hModule, BOOL bOverride);
+/**
  * @brief Take a snapshot of program memory and save it to a file.
  */
 BOOL APIENTRY BT_SaveSnapshot(PCTSTR pszFileName);
+/**
+ * @brief Take a snapshot of program memory and save it to a file.
+ */
+BOOL APIENTRY BT_SaveSnapshotEx(PEXCEPTION_POINTERS pExceptionPointers, PCTSTR pszFileName);
 /**
  * @brief Take a snapshot of program memory and send over network.
  */
 BOOL APIENTRY BT_SendSnapshot(void);
 /**
+ * @brief Take a snapshot of program memory and send over network.
+ */
+BOOL APIENTRY BT_SendSnapshotEx(PEXCEPTION_POINTERS pExceptionPointers);
+/**
  * @brief Take a snapshot of program memory and e-mail it.
  */
 BOOL APIENTRY BT_MailSnapshot(void);
+/**
+ * @brief Take a snapshot of program memory and e-mail it.
+ */
+BOOL APIENTRY BT_MailSnapshotEx(PEXCEPTION_POINTERS pExceptionPointers);
 /**
  * @brief Executes structured exception filter.
  * @note Don't call this function directly in your code.

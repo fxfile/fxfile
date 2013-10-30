@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: .NET interface to BugTrap.
@@ -91,13 +91,11 @@ namespace IntelleSoft
 			}
 		}
 
-#ifdef _DEBUG
 		void ExceptionHandler::HandleException(System::Exception^ exception)
 		{
 			UnhandledExceptionEventArgs^ args = gcnew UnhandledExceptionEventArgs(exception, ExceptionType::DomainException);
 			HandleException(exception, nullptr, args);
 		}
-#endif
 
 		void ExceptionHandler::ReadVersionInfo(AssemblyName^ assemblyName)
 		{
@@ -171,7 +169,7 @@ namespace IntelleSoft
 		{
 			if (this->handle != IntPtr::Zero)
 			{
-				BT_CloseLogFile((INT_PTR)this->handle);
+				ValidateIoResult(BT_CloseLogFile((INT_PTR)this->handle));
 				Detach();
 			}
 		}
@@ -185,7 +183,7 @@ namespace IntelleSoft
 		void LogFile::Flush(void)
 		{
 			ValidateHandle();
-			BT_FlushLogFile((INT_PTR)this->handle);
+			ValidateIoResult(BT_FlushLogFile((INT_PTR)this->handle));
 		}
 
 		String^ LogFile::FileName::get(void)
@@ -203,7 +201,7 @@ namespace IntelleSoft
 		void LogFile::LogSizeInEntries::set(int value)
 		{
 			ValidateHandle();
-			BT_SetLogSizeInEntries((INT_PTR)this->handle, value);
+			ValidateIoResult(BT_SetLogSizeInEntries((INT_PTR)this->handle, value));
 		}
 
 		int LogFile::LogSizeInBytes::get(void)
@@ -215,7 +213,7 @@ namespace IntelleSoft
 		void LogFile::LogSizeInBytes::set(int value)
 		{
 			ValidateHandle();
-			BT_SetLogSizeInBytes((INT_PTR)this->handle, value);
+			ValidateIoResult(BT_SetLogSizeInBytes((INT_PTR)this->handle, value));
 		}
 
 		LogFlagsType LogFile::LogFlags::get(void)
@@ -227,7 +225,7 @@ namespace IntelleSoft
 		void LogFile::LogFlags::set(LogFlagsType value)
 		{
 			ValidateHandle();
-			return BT_SetLogFlags((INT_PTR)this->handle, (DWORD)value);
+			ValidateIoResult(BT_SetLogFlags((INT_PTR)this->handle, (DWORD)value));
 		}
 
 		LogLevelType LogFile::LogLevel::get(void)
@@ -239,7 +237,7 @@ namespace IntelleSoft
 		void LogFile::LogLevel::set(LogLevelType value)
 		{
 			ValidateHandle();
-			BT_SetLogLevel((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)value);
+			ValidateIoResult(BT_SetLogLevel((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)value));
 		}
 
 		LogEchoType LogFile::LogEchoMode::get(void)
@@ -251,20 +249,20 @@ namespace IntelleSoft
 		void LogFile::LogEchoMode::set(LogEchoType value)
 		{
 			ValidateHandle();
-			BT_SetLogEchoMode((INT_PTR)this->handle, (DWORD)value);
+			ValidateIoResult(BT_SetLogEchoMode((INT_PTR)this->handle, (DWORD)value));
 		}
 
 		void LogFile::Clear(void)
 		{
 			ValidateHandle();
-			BT_ClearLog((INT_PTR)this->handle);
+			ValidateIoResult(BT_ClearLog((INT_PTR)this->handle));
 		}
 
 		void LogFile::Insert(LogLevelType logLevel, String^ entry)
 		{
 			ValidateHandle();
 			pin_ptr<const wchar_t> wstrEntry(PtrToStringChars(entry));
-			BT_InsLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry);
+			ValidateIoResult(BT_InsLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry));
 		}
 
 		void LogFile::Insert(LogLevelType logLevel, String^ format, ... array<Object^>^ args)
@@ -273,14 +271,14 @@ namespace IntelleSoft
 			StringBuilder^ entry = gcnew StringBuilder();
 			entry->AppendFormat(format, args);
 			pin_ptr<const wchar_t> wstrEntry(PtrToStringChars(entry->ToString()));
-			BT_InsLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry);
+			ValidateIoResult(BT_InsLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry));
 		}
 
 		void LogFile::Append(LogLevelType logLevel, String^ entry)
 		{
 			ValidateHandle();
 			pin_ptr<const wchar_t> wstrEntry(PtrToStringChars(entry));
-			BT_AppLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry);
+			ValidateIoResult(BT_AppLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry));
 		}
 
 		void LogFile::Append(LogLevelType logLevel, String^ format, ... array<Object^>^ args)
@@ -289,7 +287,7 @@ namespace IntelleSoft
 			StringBuilder^ entry = gcnew StringBuilder();
 			entry->AppendFormat(format, args);
 			pin_ptr<const wchar_t> wstrEntry(PtrToStringChars(entry->ToString()));
-			BT_AppLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry);
+			ValidateIoResult(BT_AppLogEntry((INT_PTR)this->handle, (BUGTRAP_LOGLEVEL)logLevel, wstrEntry));
 		}
 	}
 }

@@ -63,7 +63,7 @@ protected:
     DECLARE_MESSAGE_MAP()
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnDestroy(void);
-    afx_msg void OnTimer(xpr_uint_t aIdEvent);
+    afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg LRESULT OnCommandReloadConf(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnCommandCheckNow(WPARAM wParam, LPARAM lParam);
     afx_msg LRESULT OnCommandExit(WPARAM wParam, LPARAM lParam);

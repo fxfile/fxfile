@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: About dialog.
@@ -17,7 +17,6 @@
 #include "AboutDlg.h"
 #include "BugTrapUI.h"
 #include "BugTrapUtils.h"
-#include "Globals.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

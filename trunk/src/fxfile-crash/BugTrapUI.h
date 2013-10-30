@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Common BugTrap UI routines.
@@ -190,11 +190,8 @@ DWORD CloseTransferThread(HANDLE hTransferThread);
 
 #define IDM_ABOUTBOX 0x0010
 
-class CWaitCursor;
-
 void GetDefaultMailSubject(PTSTR pszSubject, DWORD dwSubjectSize);
 void GetDefaultMailURL(PTSTR pszURLString, DWORD dwURLSize);
-BOOL LoginEMail(HWND hwndParent, CWaitCursor *pWaitCursor);
 BOOL SendEMail(HWND hwndParent, PCTSTR pszSubject, PCTSTR pszMessage);
 BOOL MailTempReportEx(HWND hwndParent);
 BOOL SendTempReport(HWND hwndParent);
@@ -202,7 +199,7 @@ BOOL SubmitTempReport(HWND hwndParent);
 BOOL SendReport(void);
 BOOL MailReport(void);
 BOOL SaveReport(PCTSTR pszFileName);
-void InitIntro(HWND hwnd, CHyperLink& hlURL, CHyperLink& hlEmail);
+void InitIntro(HWND hwnd, CHyperLink& hlURL);
 void InitAbout(HWND hwnd);
 void StartHandlerThread(void);
 LONG InternalFilter(PEXCEPTION_POINTERS pExceptionPointers);

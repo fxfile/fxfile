@@ -34,15 +34,21 @@ xpr_bool_t WinApp::InitInstance(void)
     sInitCtrls.dwICC  = ICC_WIN95_CLASSES;
     InitCommonControlsEx(&sInitCtrls);
 
-    CWinApp::InitInstance();
+    super::InitInstance();
 
     if (AfxSocketInit() == XPR_FALSE)
     {
-        AfxMessageBox("Windows sockets initialization failed.");
+        AfxMessageBox(_T("Windows sockets initialization failed."));
         return XPR_FALSE;
     }
 
     AfxEnableControlContainer();
+
+    //
+    // initialize XPR
+    //
+    xpr_bool_t sResult = xpr::initialize();
+    XPR_ASSERT(sResult == XPR_TRUE);
 
     SetRegistryKey(_T("fxUpdate"));
 
@@ -54,4 +60,14 @@ xpr_bool_t WinApp::InitInstance(void)
     m_pMainWnd = &mMainWindow;
 
     return XPR_TRUE;
+}
+
+xpr_sint_t WinApp::ExitInstance(void) 
+{
+    //
+    // finalize XPR
+    //
+    xpr::finalize();
+
+    return super::ExitInstance();
 }

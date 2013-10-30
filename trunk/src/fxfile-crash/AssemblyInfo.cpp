@@ -16,7 +16,7 @@ using namespace System::Runtime::InteropServices;
 [assembly: AssemblyConfiguration("")];
 [assembly: AssemblyCompany("IntelleSoft")];
 [assembly: AssemblyProduct("BugTrap")];
-[assembly: AssemblyCopyright("Copyright © 2005-2007 IntelleSoft")];
+[assembly: AssemblyCopyright("Copyright © 2005-2009 IntelleSoft")];
 [assembly: AssemblyTrademark("")];
 [assembly: AssemblyCulture("")];
 
@@ -35,8 +35,8 @@ using namespace System::Runtime::InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.2718.17595")];
-[assembly: AssemblyFileVersion("1.0.2718.17595")];
+[assembly: AssemblyVersion("1.3.3718.38316")];
+[assembly: AssemblyFileVersion("1.3.3718.38316")];
 
 using namespace System::Security::Permissions;
 

@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Custom resources manager.
@@ -47,7 +47,7 @@ CResManager::CResManager(HWND hwndParent)
 	lf.lfWeight = FW_NORMAL;
 	lf.lfCharSet = ANSI_CHARSET;
 	lf.lfPitchAndFamily = FIXED_PITCH | FF_MODERN;
-	_tcscpy_s(lf.lfFaceName, countof(lf.lfFaceName), _T("Courier"));
+	_tcscpy_s(lf.lfFaceName, countof(lf.lfFaceName), _T("Courier New"));
 	m_hFixedFont = CreateFontIndirect(&lf);
 
 	ZeroMemory(&lf, sizeof(lf));
@@ -100,12 +100,19 @@ CResManager::CResManager(HWND hwndParent)
 	if (hwndParent != NULL)
 	{
 		__try {
-			m_hBigAppIcon = (HICON)SendMessage(hwndParent, WM_GETICON, ICON_BIG, 0l);
+			DWORD_PTR dwResult;
+			if (SendMessageTimeout(hwndParent, WM_GETICON, ICON_BIG, 0l, SMTO_ABORTIFHUNG, SEND_MSG_TIMEOUT, &dwResult))
+				m_hBigAppIcon = (HICON)dwResult;
+			else
+				m_hBigAppIcon = NULL;
 			if (m_hBigAppIcon == NULL)
-				m_hBigAppIcon = (HICON)GetClassLong(hwndParent, GCL_HICON);
-			m_hSmallAppIcon = (HICON)SendMessage(hwndParent, WM_GETICON, ICON_SMALL, 0l);
+				m_hBigAppIcon = (HICON)GetClassLongPtr(hwndParent, GCLP_HICON);
+			if (SendMessageTimeout(hwndParent, WM_GETICON, ICON_SMALL, 0l, SMTO_ABORTIFHUNG, SEND_MSG_TIMEOUT, &dwResult))
+				m_hSmallAppIcon = (HICON)dwResult;
+			else
+				m_hSmallAppIcon = NULL;
 			if (m_hSmallAppIcon == NULL)
-				m_hSmallAppIcon = (HICON)GetClassLong(hwndParent, GCL_HICONSM);
+				m_hSmallAppIcon = (HICON)GetClassLongPtr(hwndParent, GCLP_HICONSM);
 		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			// ignore any exception in broken app...
 			m_hBigAppIcon = NULL;
@@ -144,6 +151,8 @@ CResManager::CResManager(HWND hwndParent)
 			}
 		}
 	}
+	m_hCheckMark = (HBITMAP)LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_CHECKMARK), IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS);
+	m_hSortArrows = ImageList_LoadImage(g_hInstance, MAKEINTRESOURCE(IDB_SORTARROWS), 7, 0, RGB(0xFF, 0x00, 0xFF), IMAGE_BITMAP, LR_LOADMAP3DCOLORS);
 
 	DeleteDC(hDisplayDC);
 }

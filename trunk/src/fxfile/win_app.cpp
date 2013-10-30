@@ -117,7 +117,8 @@ xpr_bool_t WinApp::InitInstance(void)
     //
     // initialize XPR
     //
-    xpr::initialize();
+    xpr_bool_t sResult = xpr::initialize();
+    XPR_ASSERT(sResult == XPR_TRUE);
 
     // Html Help File Name
     xpr_tchar_t *sDot = (xpr_tchar_t *)_tcsrchr(m_pszHelpFilePath, '.');

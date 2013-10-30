@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Common BugTrap UI routines.
@@ -22,6 +22,7 @@
 #include "MainDlg.h"
 #include "SimpleDlg.h"
 #include "SendMailDlg.h"
+#include "DescribeErrorDlg.h"
 #include "Globals.h"
 #include "Encoding.h"
 #include "MemStream.h"
@@ -46,9 +47,9 @@ static BOOL g_bShowUI = FALSE;
 void GetDefaultMailSubject(PTSTR pszSubject, DWORD dwSubjectSize)
 {
 	if (*g_szAppName)
-		_stprintf_s(pszSubject, dwSubjectSize, _T("%s v%s 오류 보고서입니다."), g_szAppName, g_szAppVersion);
+		_stprintf_s(pszSubject, dwSubjectSize, _T("\"%s\" Error Report"), g_szAppName);
 	else
-		_tcscpy_s(pszSubject, dwSubjectSize, _T("오류 보고서입니다."));
+		_tcscpy_s(pszSubject, dwSubjectSize, _T("Error Report"));
 }
 
 /**
@@ -65,15 +66,37 @@ void GetDefaultMailURL(PTSTR pszURLString, DWORD dwURLSize)
 }
 
 /**
+ * @brief Return true if standard MAPI message editor should be shown.
+ * @return true if standard MAPI message editor should be shown.
+ */
+static inline BOOL ShowMapiMessageEditor(void)
+{
+	return (g_bShowUI && (g_dwFlags & BTF_EDITMAIL) == 0);
+}
+
+/**
+ * @brief Return true if custom BugTrap message editor should be shown.
+ * @return true if custom BugTrap message editor should be shown.
+ */
+static inline BOOL ShowBtMessageEditor(void)
+{
+	return (g_bShowUI && (g_dwFlags & BTF_EDITMAIL) != 0);
+}
+
+/**
  * @brief Send e-mail message through Simple MPI facilities.
  * @param hwndParent - parent window handle (valid if user interface is enabled).
  * @param pszSubject - subject text.
  * @param pszMessage - message text.
  * @return true for successfully completed operation.
  */
-
-BOOL LoginEMail(HWND hwndParent, CWaitCursor *pWaitCursor)
+BOOL SendEMail(HWND hwndParent, PCTSTR pszSubject, PCTSTR pszMessage)
 {
+	if (*g_szSupportEMail == _T('\0'))
+		return FALSE;
+	CWaitCursor wait;
+	if (g_bShowUI)
+		wait.BeginWait();
 	if (g_pMapiSession == NULL)
 	{
 		g_pMapiSession = new CMapiSession;
@@ -89,14 +112,10 @@ BOOL LoginEMail(HWND hwndParent, CWaitCursor *pWaitCursor)
 		}
 		else if (g_bShowUI)
 		{
-			if (pWaitCursor)
-				pWaitCursor->EndWait();
-			
+			wait.EndWait();
 			if (! g_pMapiSession->Logon(hwndParent))
 				return FALSE;
-			
-			if (pWaitCursor)
-				pWaitCursor->BeginWait();
+			wait.BeginWait();
 		}
 		else
 		{
@@ -104,21 +123,6 @@ BOOL LoginEMail(HWND hwndParent, CWaitCursor *pWaitCursor)
 				return FALSE;
 		}
 	}
-
-	return TRUE;
-}
-
-BOOL SendEMail(HWND hwndParent, PCTSTR pszSubject, PCTSTR pszMessage)
-{
-	if (*g_szSupportEMail == _T('\0'))
-		return FALSE;
-
-	CWaitCursor wait;
-	if (g_bShowUI)
-		wait.BeginWait();
-
-	if (!LoginEMail(hwndParent, &wait))
-		return FALSE;
 
 	CMapiMessage message;
 	message.GetTo().AddItem(g_szSupportEMail);
@@ -129,8 +133,7 @@ BOOL SendEMail(HWND hwndParent, PCTSTR pszSubject, PCTSTR pszMessage)
 		message.GetAttachments().AddItem(g_szInternalReportFilePath);
 		message.GetAttachmentTitles().AddItem(PathFindFileName(g_szInternalReportFilePath));
 	}
-	BOOL bShowMessageEditor = g_bShowUI && (g_dwFlags & BTF_EDITMAIL) == 0;
-	return g_pMapiSession->Send(message, bShowMessageEditor, hwndParent);
+	return g_pMapiSession->Send(message, ShowMapiMessageEditor(), hwndParent);
 }
 
 /**
@@ -157,24 +160,9 @@ BOOL MailTempReportEx(HWND hwndParent)
 	if (*g_szSupportEMail == _T('\0'))
 		return FALSE;
 	BOOL bResult;
-	if (/*g_bShowUI && */(g_dwFlags & BTF_EDITMAIL) != 0)
+	if (ShowBtMessageEditor())
 	{
-		bResult = LoginEMail(hwndParent, NULL);
-		if (bResult)
-		{
-			bResult = DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_SEND_MAIL_DLG), hwndParent, SendMailDlgProc) == IDOK;
-		}
-		else
-		{
-			TCHAR szProjectName[32], szMessageText[128];
-			LoadString(g_hInstance, IDS_BUGTRAP_NAME, szProjectName, countof(szProjectName));
-
-			SetForegroundWindow(hwndParent);
-			LoadString(g_hInstance, IDS_EMAIL_LOGIN_FAILED, szMessageText, countof(szMessageText));
-			::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONERROR | MB_OK);
-
-			bResult = FALSE;
-		}
+		bResult = DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_SEND_MAIL_DLG), hwndParent, SendMailDlgProc) == IDOK;
 	}
 	else if (g_dwFlags & BTF_ATTACHREPORT)
 	{
@@ -189,35 +177,24 @@ BOOL MailTempReportEx(HWND hwndParent)
 		GetDefaultMailURL(szURLString, countof(szURLString));
 		bResult = ShellExecute(NULL, _T("open"), szURLString, NULL, NULL, SW_SHOWDEFAULT) == ERROR_SUCCESS;
 	}
-
-	if (!bResult && ((g_dwFlags & BTF_EDITMAIL) != BTF_EDITMAIL))
+	if (g_bShowUI)
 	{
 		TCHAR szProjectName[32], szMessageText[128];
 		LoadString(g_hInstance, IDS_BUGTRAP_NAME, szProjectName, countof(szProjectName));
-	
-		SetForegroundWindow(hwndParent);
-		LoadString(g_hInstance, IDS_ERROR_TRANSFERFAILED, szMessageText, countof(szMessageText));
-		::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONERROR | MB_OK);
+		if (bResult)
+		{
+			SetForegroundWindow(hwndParent);
+			LoadString(g_hInstance, IDS_STATUS_REPORTSENT, szMessageText, countof(szMessageText));
+			::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONINFORMATION | MB_OK);
+			EndDialog(hwndParent, FALSE);
+		}
+		else if ((g_dwFlags & BTF_EDITMAIL) == 0)
+		{
+			SetForegroundWindow(hwndParent);
+			LoadString(g_hInstance, IDS_ERROR_TRANSFERFAILED, szMessageText, countof(szMessageText));
+			::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONERROR | MB_OK);
+		}
 	}
-
-	//if (g_bShowUI)
-	//{
-	//	TCHAR szProjectName[32], szMessageText[128];
-	//	LoadString(g_hInstance, IDS_BUGTRAP_NAME, szProjectName, countof(szProjectName));
-	//	if (bResult)
-	//	{
-	//		SetForegroundWindow(hwndParent);
-	//		LoadString(g_hInstance, IDS_STATUS_REPORTSENT, szMessageText, countof(szMessageText));
-	//		::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONINFORMATION | MB_OK);
-	//		EndDialog(hwndParent, FALSE);
-	//	}
-	//	else if ((g_dwFlags & BTF_EDITMAIL) == 0)
-	//	{
-	//		SetForegroundWindow(hwndParent);
-	//		LoadString(g_hInstance, IDS_ERROR_TRANSFERFAILED, szMessageText, countof(szMessageText));
-	//		::MessageBox(hwndParent, szMessageText, szProjectName, MB_ICONERROR | MB_OK);
-	//	}
-	//}
 	return bResult;
 }
 
@@ -324,24 +301,23 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 	HANDLE hFile = CreateFile(g_szInternalReportFilePath, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
-		const int nAppNameSize = sizeof(DWORD) + countof(g_szAppName) * sizeof(DWORD);
-		const int nAppVersionSize = sizeof(DWORD) + countof(g_szAppVersion) * sizeof(DWORD);
-		const int nReportFileExtensionSize = sizeof(DWORD) + 8 * sizeof(DWORD);
-		const int nNotificationEMailSize = sizeof(DWORD) + countof(g_szNotificationEMail) * sizeof(DWORD);
-		const int nMaxHeaderSize =
+		const DWORD dwAppNameSize = sizeof(DWORD) + countof(g_szAppName) * sizeof(DWORD);
+		const DWORD dwAppVersionSize = sizeof(DWORD) + countof(g_szAppVersion) * sizeof(DWORD);
+		const DWORD dwReportFileExtensionSize = sizeof(DWORD) + 8 * sizeof(DWORD);
+		const DWORD dwNotificationEMailSize = sizeof(DWORD) + countof(g_szNotificationEMail) * sizeof(DWORD);
+		const DWORD dwMaxHeaderSize =
 						sizeof(DWORD) +            // Protocol signature
 						sizeof(DWORD) +            // Data size
 						sizeof(BYTE) +             // Message type
 						sizeof(DWORD) +            // Message flags
-						nAppNameSize +             // Application name
-						nAppVersionSize +          // Application version
-						nReportFileExtensionSize + // Report file extension
-						nNotificationEMailSize +   // Notification e-mail
-						sizeof(BYTE);              // Report data type
+						dwAppNameSize +             // Application name
+						dwAppVersionSize +          // Application version
+						dwReportFileExtensionSize + // Report file extension
+						dwNotificationEMailSize;    // Notification e-mail
 
 		DWORD dwFileSize = GetFileSize(hFile, NULL);
-		int nBufferSize = max(nMaxHeaderSize, min(dwFileSize, g_dwMaxBufferSize));
-		PBYTE pBuffer = new BYTE[nBufferSize];
+		DWORD dwBufferSize = max(dwMaxHeaderSize, min(dwFileSize, g_dwMaxBufferSize));
+		PBYTE pBuffer = new BYTE[dwBufferSize];
 		if (pBuffer)
 		{
 			WSADATA wd;
@@ -416,7 +392,7 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 							goto end; // Internal error.
 						}
 
-						int nHeaderPosition = 0;
+						size_t nHeaderPosition = 0;
 
 						// Protocol signature.
 						*(PDWORD)(pBuffer + nHeaderPosition) = g_dwProtocolSignature;
@@ -435,14 +411,14 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 						nHeaderPosition += sizeof(DWORD);
 
 						// Application name.
-						if (! WriteBinaryString(EncStream, g_szAppName, pBuffer, nHeaderPosition, nBufferSize))
+						if (! WriteBinaryString(EncStream, g_szAppName, pBuffer, nHeaderPosition, dwBufferSize))
 						{
 							dwErrorCode = ERROR_INTERNAL_ERROR;
 							goto end; // Internal error.
 						}
 
 						// Application version.
-						if (! WriteBinaryString(EncStream, g_szAppVersion, pBuffer, nHeaderPosition, nBufferSize))
+						if (! WriteBinaryString(EncStream, g_szAppVersion, pBuffer, nHeaderPosition, dwBufferSize))
 						{
 							dwErrorCode = ERROR_INTERNAL_ERROR;
 							goto end; // Internal error.
@@ -450,28 +426,28 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 
 						// Report file extension.
 						PCTSTR pszReportFileExtension = CSymEngine::GetReportFileExtension();
-						if (! WriteBinaryString(EncStream, pszReportFileExtension, pBuffer, nHeaderPosition, nBufferSize))
+						if (! WriteBinaryString(EncStream, pszReportFileExtension, pBuffer, nHeaderPosition, dwBufferSize))
 						{
 							dwErrorCode = ERROR_INTERNAL_ERROR;
 							goto end; // Internal error.
 						}
 
 						// Notification e-mail.
-						if (! WriteBinaryString(EncStream, g_szNotificationEMail, pBuffer, nHeaderPosition, nBufferSize))
+						if (! WriteBinaryString(EncStream, g_szNotificationEMail, pBuffer, nHeaderPosition, dwBufferSize))
 						{
 							dwErrorCode = ERROR_INTERNAL_ERROR;
 							goto end; // Internal error.
 						}
 
-						_ASSERTE(nHeaderPosition <= nBufferSize);
+						_ASSERTE((DWORD)nHeaderPosition <= dwBufferSize);
 						// Store real data size.
-						((PDWORD)pBuffer)[1] = nHeaderPosition + dwFileSize;
+						((PDWORD)pBuffer)[1] = (DWORD)nHeaderPosition + dwFileSize;
 
 						WSAOVERLAPPED ov;
 						ZeroMemory(&ov, sizeof(ov));
 						ov.hEvent = hCompletionEvent;
 
-						DWORD dwPacketSize = nHeaderPosition;
+						DWORD dwPacketSize = (DWORD)nHeaderPosition;
 						for (;;)
 						{
 							WSABUF buf;
@@ -495,7 +471,7 @@ static DWORD WSASendReport(PCTSTR pszHostName, CTransferThreadParams* pTransferT
 								buf.buf += dwProcessedNumber;
 								buf.len -= dwProcessedNumber;
 							}
-							if (! ReadFile(hFile, pBuffer, nBufferSize, &dwPacketSize, NULL) || dwPacketSize == 0)
+							if (! ReadFile(hFile, pBuffer, dwBufferSize, &dwPacketSize, NULL) || dwPacketSize == 0)
 							{
 								if (hwndSink)
 									PostMessage(hwndSink, UM_CHECKINGERRORSTATUS, 0, 0);
@@ -776,8 +752,8 @@ static DWORD HTTPSendReport(PCTSTR pszSupportUrl, CTransferThreadParams* pTransf
 		if (hFile != INVALID_HANDLE_VALUE)
 		{
 			DWORD dwFileSize = GetFileSize(hFile, NULL);
-			DWORD nBufferSize = min(dwFileSize, g_dwMaxBufferSize);
-			PBYTE pBuffer = new BYTE[nBufferSize];
+			DWORD dwBufferSize = min(dwFileSize, g_dwMaxBufferSize);
+			PBYTE pBuffer = new BYTE[dwBufferSize];
 			if (pBuffer != NULL)
 			{
 				TCHAR szUserName[INTERNET_MAX_USER_NAME_LENGTH],
@@ -869,7 +845,7 @@ static DWORD HTTPSendReport(PCTSTR pszSupportUrl, CTransferThreadParams* pTransf
 									const BYTE* pFormData = MemStream.GetBuffer();
 									if (pFormData != NULL)
 									{
-										DWORD dwFormDataLength = MemStream.GetLength();
+										DWORD dwFormDataLength = (DWORD)MemStream.GetLength();
 										_ASSERTE(dwFormDataLength > 0);
 
 										INTERNET_BUFFERS InetBuf;
@@ -923,7 +899,7 @@ static DWORD HTTPSendReport(PCTSTR pszSupportUrl, CTransferThreadParams* pTransf
 												if (bDataEnd)
 													break;
 												DWORD dwBytesRead = 0;
-												if (! ReadFile(hFile, pBuffer, nBufferSize, &dwBytesRead, NULL) || dwBytesRead == 0)
+												if (! ReadFile(hFile, pBuffer, dwBufferSize, &dwBytesRead, NULL) || dwBytesRead == 0)
 												{
 													bDataEnd = TRUE;
 													pBytes = (const BYTE*)szTrailer;
@@ -1067,7 +1043,7 @@ static UINT CALLBACK TransferThreadProc(PVOID pParam)
 		if (dwErrorCode == ERROR_SUCCESS)
 		{
 			static const TCHAR szHttpPrefix[] = _T("http://");
-			static const int nHttpPrefixLength = countof(szHttpPrefix) - 1;
+			static const size_t nHttpPrefixLength = countof(szHttpPrefix) - 1;
 			if (_tcsnicmp(g_szSupportHost, szHttpPrefix, nHttpPrefixLength) == 0)
 				dwErrorCode = HTTPSendReport(g_szSupportHost, pTransferThreadParams);
 			else
@@ -1117,14 +1093,27 @@ DWORD CloseTransferThread(HANDLE hTransferThread)
  */
 BOOL SendTempReport(HWND hwndParent)
 {
-	BOOL bResult = FALSE;
+	BOOL bResult;
 	if (*g_szSupportHost && g_nSupportPort)
 	{
+		if (g_bShowUI)
+		{
+			if ((g_dwFlags & (BTF_DETAILEDMODE | BTF_DESCRIBEERROR)) == (BTF_DETAILEDMODE | BTF_DESCRIBEERROR))
+				bResult = (BOOL)DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_DESCRIBE_ERROR_DLG), hwndParent, DescribeErrorDlgProc);
+			else
+				bResult = TRUE;
+			if (bResult)
+				bResult = (BOOL)DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_TRANSFERPROGRESS_DLG), hwndParent, TransferProgressDlgProc);
+			EndDialog(hwndParent, FALSE);
+		}
+		else
 		{
 			CTransferThreadParams TransferThreadParams;
 			bResult = TransferThreadProc(&TransferThreadParams) == ERROR_SUCCESS;
 		}
 	}
+	else
+		bResult = FALSE;
 	return bResult;
 }
 
@@ -1148,7 +1137,7 @@ BOOL SubmitTempReport(HWND hwndParent)
  * @param hwnd - parent window handle.
  * @param hlURL - hyper link control.
  */
-void InitIntro(HWND hwnd, CHyperLink& hlURL, CHyperLink& hlEmail)
+void InitIntro(HWND hwnd, CHyperLink& hlURL)
 {
 	HWND hwndCtl;
 
@@ -1177,6 +1166,8 @@ void InitIntro(HWND hwnd, CHyperLink& hlURL, CHyperLink& hlEmail)
 	{
 		hwndCtl = GetDlgItem(hwnd, IDC_URL);
 		SetWindowText(hwndCtl, g_szSupportURL);
+		//hlURL.SetLinkURL(g_szSupportURL);
+		//hlURL.Attach(hwndCtl);
 	}
 	else
 	{
@@ -1186,18 +1177,20 @@ void InitIntro(HWND hwnd, CHyperLink& hlURL, CHyperLink& hlEmail)
 		ShowWindow(hwndCtl, SW_HIDE);
 	}
 
-	if (*g_szSupportEMail)
-	{
-		hwndCtl = GetDlgItem(hwnd, IDC_EMAIL);
-		SetWindowText(hwndCtl, g_szSupportEMail);
-	}
-	else
-	{
-		hwndCtl = GetDlgItem(hwnd, IDC_EMAIL);
-		ShowWindow(hwndCtl, SW_HIDE);
-		hwndCtl = GetDlgItem(hwnd, IDC_EMAIL_PREFIX);
-		ShowWindow(hwndCtl, SW_HIDE);
-	}
+    if (*g_szSupportEMail)
+    {
+        hwndCtl = GetDlgItem(hwnd, IDC_EMAIL);
+        SetWindowText(hwndCtl, g_szSupportEMail);
+        //hlEmail.SetLinkURL(g_szSupportEMail);
+        //hlEmail.Attach(hwndCtl);
+    }
+    else
+    {
+        hwndCtl = GetDlgItem(hwnd, IDC_EMAIL);
+        ShowWindow(hwndCtl, SW_HIDE);
+        hwndCtl = GetDlgItem(hwnd, IDC_EMAIL_PREFIX);
+        ShowWindow(hwndCtl, SW_HIDE);
+    }
 
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hBigAppIcon)
@@ -1214,18 +1207,18 @@ void InitIntro(HWND hwnd, CHyperLink& hlURL, CHyperLink& hlEmail)
  */
 void InitAbout(HWND hwnd)
 {
-	//// IDM_ABOUTBOX must be in the system command range.
-	//_ASSERTE((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	//_ASSERTE(IDM_ABOUTBOX < 0xF000);
+	// IDM_ABOUTBOX must be in the system command range.
+	_ASSERTE((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
+	_ASSERTE(IDM_ABOUTBOX < 0xF000);
 
-	//HMENU hSysMenu = GetSystemMenu(hwnd, FALSE);
-	//if (hSysMenu != NULL)
-	//{
-	//	TCHAR szAboutMenu[64];
-	//	LoadString(g_hInstance, IDS_ABOUT_ITEM, szAboutMenu, countof(szAboutMenu));
-	//	AppendMenu(hSysMenu, MF_SEPARATOR, 0, NULL);
-	//	AppendMenu(hSysMenu, MF_STRING, IDM_ABOUTBOX, szAboutMenu);
-	//}
+	HMENU hSysMenu = GetSystemMenu(hwnd, FALSE);
+	if (hSysMenu != NULL)
+	{
+		TCHAR szAboutMenu[64];
+		LoadString(g_hInstance, IDS_ABOUT_ITEM, szAboutMenu, countof(szAboutMenu));
+		AppendMenu(hSysMenu, MF_SEPARATOR, 0, NULL);
+		AppendMenu(hSysMenu, MF_STRING, IDM_ABOUTBOX, szAboutMenu);
+	}
 }
 
 /**
@@ -1278,9 +1271,9 @@ static BOOL CreateTempReport(void)
 {
 	BOOL bResult;
 	// Scope of progress dialog.
-	//CWaitDialog wait;
-	//if (g_bShowUI)
-	//	wait.BeginWait(NULL);
+	CWaitDialog wait;
+	if (g_bShowUI)
+		wait.BeginWait(NULL);
 
 	TCHAR szReportFileName[MAX_PATH];
 	g_pSymEngine->GetReportFileName(szReportFileName, countof(szReportFileName));
@@ -1373,7 +1366,10 @@ static void ExecuteHandlerAction(void)
 		case BTA_SHOWUI:
 			if (g_pResManager)
 			{
-				DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_SIMPLE_DLG), NULL, SimpleDlgProc);
+				if (g_dwFlags & BTF_SHOWADVANCEDUI)
+					DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_MAIN_DLG), NULL, MainDlgProc);
+				else if (DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_SIMPLE_DLG), NULL, SimpleDlgProc) == TRUE)
+					DialogBox(g_hInstance, MAKEINTRESOURCE(IDD_MAIN_DLG), NULL, MainDlgProc);
 			}
 			break;
 		}
@@ -1440,7 +1436,10 @@ static void HideAppWindow(HWND hwndParent)
 	if (hwndParent != NULL)
 	{
 		__try {
-			ShowWindow(hwndParent, SW_HIDE);
+			DWORD_PTR dwResult;
+			// Ping parent window
+			if (SendMessageTimeout(hwndParent, WM_NULL, 0l, 0l, SMTO_ABORTIFHUNG, SEND_MSG_TIMEOUT, &dwResult))
+				ShowWindow(hwndParent, SW_HIDE);
 		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			// ignore any exception in broken app...
 		}
@@ -1459,7 +1458,7 @@ void StartHandlerThread(void)
 	HWND hwndParent;
 	if (g_eActivityType == BTA_SHOWUI)
 	{
-		//g_bShowUI = TRUE;
+		g_bShowUI = TRUE;
 		hwndParent = GetAppWindow();
 		g_pResManager = new CResManager(hwndParent);
 		HideAppWindow(hwndParent);

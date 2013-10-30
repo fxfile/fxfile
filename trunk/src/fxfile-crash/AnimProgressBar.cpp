@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Animated progress bar control.
@@ -40,7 +40,7 @@ void CAnimProgressBar::Attach(HWND hwnd)
 	_ASSERTE(hwnd != NULL);
 	_ASSERTE(m_hwnd == NULL);
 	m_hwnd = hwnd;
-	SetWindowLongPtr(hwnd, GWL_USERDATA, (LONG_PTR)this);
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 	m_pfnAnimProgressBarWndProc = SubclassWindow(hwnd, AnimProgressBarWndProc);
 	InvalidateRect(hwnd, NULL, TRUE);
 }
@@ -51,7 +51,7 @@ void CAnimProgressBar::Detach(void)
 	{
 		Stop();
 		SubclassWindow(m_hwnd, m_pfnAnimProgressBarWndProc);
-		SetWindowLongPtr(m_hwnd, GWL_USERDATA, NULL);
+		SetWindowLongPtr(m_hwnd, GWLP_USERDATA, NULL);
 		InvalidateRect(m_hwnd, NULL, TRUE);
 		m_pfnAnimProgressBarWndProc = NULL;
 		m_hwnd = NULL;
@@ -145,6 +145,8 @@ void CAnimProgressBar::DrawAnimProgressBar(HDC hdc, const RECT* prcPaint) const
 		themeXP.GetThemeBackgroundContentRect(hdcMem, PP_BAR, 0, &rcClient, &rcContent);
 		SIZE szChunk;
 		themeXP.GetThemePartSize(hdcMem, PP_CHUNK, 0, &rcContent, TS_TRUE, &szChunk);
+		if (szChunk.cx <= 1)
+			szChunk.cx = szChunk.cy * 3 / 4;
 		DWORD dwChunksWidth = m_dwNumChunks * szChunk.cx;
 		DWORD dwPosition = m_dwPosition % (rcContent.right - rcContent.left + dwChunksWidth);
 		int nPosition = (int)dwPosition - (int)dwChunksWidth;
@@ -206,7 +208,7 @@ LRESULT CALLBACK CAnimProgressBar::AnimProgressBarWndProc(HWND hwnd, UINT uMsg, 
 	PAINTSTRUCT ps;
 	HDC hdc;
 
-	CAnimProgressBar* _this  = (CAnimProgressBar*)GetWindowLongPtr(hwnd, GWL_USERDATA);
+	CAnimProgressBar* _this  = (CAnimProgressBar*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 	_ASSERTE(_this != NULL);
 	switch(uMsg)
 	{

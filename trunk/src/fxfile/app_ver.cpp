@@ -34,11 +34,16 @@ void getFullAppVer(xpr_tchar_t *aAppVer)
     if (XPR_IS_NOT_NULL(aAppVer))
     {
         _stprintf(aAppVer,
-                  XPR_STRING_LITERAL("v%d.%d.%d-%s%s"),
+                  XPR_STRING_LITERAL("v%d.%d.%d-%s%s%s"),
                   FXFILE_MAJOR_VER, FXFILE_MINOR_VER, FXFILE_PATCH_VER,
                   ((FXFILE_MINOR_VER % 2) == 0) ? kDevVer : kStableVer,
+#ifdef XPR_CFG_COMPILER_64BIT
+        XPR_STRING_LITERAL(" 64bit"),
+#else
+        XPR_STRING_LITERAL(" 32bit"),
+#endif
 #ifdef XPR_CFG_UNICODE
-        XPR_STRING_LITERAL(" Unicode")
+        XPR_STRING_LITERAL(" (Unicode)")
 #else
         XPR_STRING_LITERAL("")
 #endif

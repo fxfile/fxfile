@@ -19,11 +19,14 @@
 
 class WinApp : public CWinApp
 {
+    typedef CWinApp super;
+
 public:
     WinApp(void);
 
 public:
     virtual xpr_bool_t InitInstance(void);
+    virtual xpr_sint_t ExitInstance(void);
 
 protected:
     fxfile::updater::MainWindow mMainWindow;

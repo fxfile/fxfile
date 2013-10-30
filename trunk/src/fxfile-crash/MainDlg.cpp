@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: BugTrap main dialog.
@@ -70,13 +70,13 @@ enum STACK_NET_COLUMN_ID
 static HWND g_hwndToolTip = NULL;
 /// URL hyper-link control pointing to support site.
 static CHyperLink g_hlURL;
-static CHyperLink g_hlMailTo;
+static CHyperLink g_hlEmail;
 
 /**
  * @brief Save bug report on the disk.
  * @param hwndParent - parent window handle.
  */
-void SaveReport(HWND hwndParent)
+static void SaveReport(HWND hwndParent)
 {
 	TCHAR szFileName[MAX_PATH];
 	OPENFILENAME ofn;
@@ -125,7 +125,11 @@ static void InitReg(HWND hwnd)
 	_ASSERTE(g_pResManager != NULL);
 	if (g_pResManager->m_hFixedFont)
 		SetWindowFont(hwndReg, g_pResManager->m_hFixedFont, FALSE);
+#if defined _WIN64
+	TCHAR szRegString[512];
+#elif defined _WIN32
 	TCHAR szRegString[256];
+#endif
 	g_pSymEngine->GetRegistersString(szRegString, countof(szRegString));
 	SetWindowText(hwndReg, szRegString);
 }
@@ -377,7 +381,7 @@ static BOOL MainDlg_OnInitDialog(HWND hwnd, HWND hwndFocus, LPARAM lParam)
 	lParam; hwndFocus;
 
 	InitControls(hwnd);
-	InitIntro(hwnd, g_hlURL, g_hlMailTo);
+	InitIntro(hwnd, g_hlURL);
 	InitReg(hwnd);
 	InitErrorInfo(hwnd);
 	InitStackTrace(hwnd);
@@ -402,8 +406,11 @@ static HBRUSH MainDlg_OnCtlColor(HWND hwnd, HDC hdc, HWND hwndChild, int type)
 		int nChildID = GetDlgCtrlID(hwndChild);
 		if (nChildID == IDC_INTRO_BKGND ||
 			nChildID == IDC_INTRO1 ||
+			nChildID == IDC_INTRO2 ||
 			nChildID == IDC_URL ||
-			nChildID == IDC_URL_PREFIX)
+			nChildID == IDC_URL_PREFIX ||
+			nChildID == IDC_EMAIL ||
+			nChildID == IDC_EMAIL_PREFIX)
 		{
 			_ASSERTE(g_pResManager != NULL);
 			SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
@@ -422,7 +429,6 @@ static void MainDlg_OnDestroy(HWND hwnd)
 	hwnd;
 
 	g_hlURL.Detach();
-	g_hlMailTo.Detach();
 
 	if (g_hwndToolTip)
 	{

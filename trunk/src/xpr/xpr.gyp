@@ -30,6 +30,7 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/dbg-x86',
+					'OutputDirectory': '../../bin',
                 },
                 
                 'msvs_settings':
@@ -42,9 +43,18 @@
                     'VCLinkerTool': 
                     {
                         'OutputFile': '$(OutDir)\lib$(ProjectName)_dbg.dll',
+						'AdditionalLibraryDirectories':
+						[
+							'../../lib/libxml2/lib',
+						]
                     },
                 },
-            },
+
+				'msvs_postbuild': 'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y\r\n',
+			},
             
             'Release-x86':
             {
@@ -53,6 +63,7 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/rel-x86',
+					'OutputDirectory': '../../bin',
                 },
                 
                 'msvs_settings':
@@ -65,9 +76,18 @@
                     'VCLinkerTool': 
                     {
                         'OutputFile': '$(OutDir)\lib$(ProjectName).dll',
+						'AdditionalLibraryDirectories':
+						[
+							'../../lib/libxml2/lib',
+						]
                     },
                 },
-            },
+
+				'msvs_postbuild': 'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y\r\n'
+								  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y\r\n',
+			},
             
             'conditions':
             [
@@ -80,6 +100,7 @@
                             'msvs_configuration_attributes':
                             {
                                 'IntermediateDirectory': '../../obj/xpr/dbg-x64',
+								'OutputDirectory': '../../bin/x64',
                             },
                             
                             'msvs_settings':
@@ -92,9 +113,13 @@
                                 'VCLinkerTool': 
                                 {
                                     'OutputFile': '$(OutDir)\lib$(ProjectName)_dbg.dll',
+									'AdditionalLibraryDirectories':
+									[
+										'../../lib/libxml2/lib64',
+									]
                                 },
                             },
-                        },
+						},
 
                         'Release-x64':
                         {
@@ -103,6 +128,7 @@
                             'msvs_configuration_attributes':
                             {
                                 'IntermediateDirectory': '../../obj/xpr/rel-x64',
+								'OutputDirectory': '../../bin/x64',
                             },
                             
                             'msvs_settings':
@@ -115,6 +141,10 @@
                                 'VCLinkerTool': 
                                 {
                                     'OutputFile': '$(OutDir)\lib$(ProjectName).dll',
+									'AdditionalLibraryDirectories':
+									[
+										'../../lib/libxml2/lib64',
+									]
                                 },
                             },
                         },
@@ -140,13 +170,12 @@
             [
                 '../../src/xpr/include',
                 '../../lib/iconv/include',
-                '../../lib/libxml2/include',
+                '../../lib/libxml2/include/libxml2',
             ],
             
             'libraries':
             [
-                'iconv.lib',
-                'libxml2.lib',
+                'libxml2.dll.a',
             ],
             
             'msvs_settings':
@@ -155,21 +184,9 @@
                 {
                     'AdditionalLibraryDirectories':
                     [
-                        '../../lib/iconv/lib',
-                        '../../lib/libxml2/lib',
                     ]
                 },
             },
-            
-            'msvs_configuration_attributes':
-            {
-                'OutputDirectory': '../../bin',
-            },
-            
-            'msvs_postbuild': 'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y\r\n'
-                              'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y\r\n',
             
             'sources':
             [
@@ -186,6 +203,7 @@
                 './xpr/xpr_file_sys_win.cpp',
                 './xpr/xpr_guid.cpp',
                 './xpr/xpr_init.cpp',
+                './xpr/xpr_lazy_library_load_win.cpp',
                 './xpr/xpr_memory.cpp',
                 './xpr/xpr_process_sync_win.cpp',
                 './xpr/xpr_process_win.cpp',
@@ -224,6 +242,7 @@
                 './include/xpr_file_sys.h',
                 './include/xpr_guid.h',
                 './include/xpr_init.h',
+                './xpr/xpr_lazy_library_load.h',
                 './include/xpr_math.h',
                 './include/xpr_memory.h',
                 './include/xpr_memory_barrier.h',

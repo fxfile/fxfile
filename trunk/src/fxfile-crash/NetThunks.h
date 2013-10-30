@@ -1,6 +1,6 @@
 /*
  * This is a part of the BugTrap package.
- * Copyright (c) 2005-2007 IntelleSoft.
+ * Copyright (c) 2005-2009 IntelleSoft.
  * All rights reserved.
  *
  * Description: Managed to unmanaged code thunks.
@@ -59,8 +59,8 @@ public:
 	bool GetFirstStackTraceString(CUTF8EncStream& rEncStream);
 	bool GetNextStackTraceString(CUTF8EncStream& rEncStream);
 	bool GetErrorInfo(CNetErrorInfo& rErrorInfo);
-	void GetErrorString(CStrStream& rStream);
-	void GetErrorString(CUTF8EncStream& rEncStream);
+	bool GetErrorString(CStrStream& rStream);
+	bool GetErrorString(CUTF8EncStream& rEncStream);
 
 private:
 	CNetStackTrace(const CNetStackTrace& rStackTrace);
@@ -68,6 +68,7 @@ private:
 	void GetStackTraceString(const CNetStackTraceEntry& rEntry, CUTF8EncStream& rEncStream);
 
 	gcroot<StackFrameEnumerator^> m_gcStackFrameEnumerator;
+	gcroot<Exception^> m_gcException;
 };
 
 class CNetAssemblies
@@ -99,6 +100,11 @@ namespace NetThunks
 	inline bool IsNetException(void)
 	{
 		return (ExceptionHandler::Exception != nullptr);
+	}
+
+	inline gcroot<Exception^> GetNetException(void)
+	{
+		return ExceptionHandler::Exception;
 	}
 
 	void GetThreadInfo(gcroot<Thread^> gcThread, DWORD& dwThreadID, PWSTR pszThreadName, DWORD dwThreadNameSize);
@@ -142,7 +148,26 @@ namespace NetThunks
 
 	void FlushTraceListeners(void);
 
-	gcroot<Thread^> GetCurrentThread(void);
+	inline gcroot<Thread^> GetCurrentThread(void)
+	{
+		return gcroot<Thread^>(Thread::CurrentThread);
+	}
+
+	inline gcroot<Exception^> GetInnerException(gcroot<Exception^> gcException)
+	{
+		Exception^ exception = gcException;
+		return gcroot<Exception^>(exception->InnerException);
+	}
+
+#if 0
+	template<class T> inline bool IsNull(gcroot<T^> gcObject)
+	{
+		T^ object = gcObject;
+		return (object == nullptr);
+	}
+#else
+	bool IsNull(gcroot<Exception^> gcObject);
+#endif
 
 }
 
@@ -154,7 +179,8 @@ inline CNetStackTrace::CNetStackTrace(void) :
 }
 
 inline CNetStackTrace::CNetStackTrace(gcroot<Exception^> exception) :
-	m_gcStackFrameEnumerator(NetThunks::EnumStackFrames(exception))
+	m_gcStackFrameEnumerator(NetThunks::EnumStackFrames(exception)),
+	m_gcException(exception)
 {
 }
 
