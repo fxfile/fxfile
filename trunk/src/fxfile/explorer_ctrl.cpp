@@ -1243,7 +1243,7 @@ xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST a
 }
 
 xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER  aShellFolder,
-                                     LPCITEMIDLIST   aPidl,
+                                     LPCITEMIDLIST  aPidl,
                                      xpr_ulong_t    aShellAttributes,
                                      xpr_tchar_t   *aName,
                                      xpr_size_t     aMaxLen,
@@ -1255,48 +1255,68 @@ xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER  aShellFolder,
     if (!XPR_TEST_BITS(aShellAttributes, SFGAO_FOLDER) &&
          XPR_TEST_BITS(aShellAttributes, SFGAO_FILESYSTEM))
     {
-        if (GetName(aShellFolder, aPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, aName) == XPR_FALSE)
+        xpr::tstring sFileName;
+        if (GetName(aShellFolder, aPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, sFileName) == XPR_FALSE)
             return XPR_FALSE;
 
-        xpr_tchar_t *sExt = XPR_NULL;
-
-        switch (aExtensionType)
-        {
-        case EXT_TYPE_HIDE:
-        case EXT_TYPE_KNOWN:
-            {
-                sExt = (xpr_tchar_t *)GetFileExt(aName);
-                if (XPR_IS_NOT_NULL(sExt))
-                {
-                    if ((aExtensionType == EXT_TYPE_HIDE) ||
-                        (aExtensionType == EXT_TYPE_KNOWN && IsFileKnownExt(sExt) == XPR_TRUE))
-                    {
-                        *sExt = XPR_STRING_LITERAL('\0');
-                    }
-                }
-                break;
-            }
-
-        case EXT_TYPE_ALWAYS:
-            {
-                sExt = (xpr_tchar_t *)GetFileExt(aName);
-                break;
-            }
-        }
-
-        if (XPR_IS_NOT_NULL(sExt))
-        {
-            if (_tcsicmp(sExt, XPR_STRING_LITERAL(".lnk")) == 0 ||
-                _tcsicmp(sExt, XPR_STRING_LITERAL(".url")) == 0)
-            {
-                *sExt = XPR_STRING_LITERAL('\0');
-            }
-        }
-
-        return XPR_TRUE;
+        return getItemName(sFileName.c_str(), aName, aMaxLen, aExtensionType);
     }
 
     return GetName(aShellFolder, aPidl, SHGDN_INFOLDER, aName);
+}
+
+xpr_bool_t ExplorerCtrl::getItemName(const xpr_tchar_t *aFileName, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const
+{
+    XPR_ASSERT(aFileName != XPR_NULL);
+    XPR_ASSERT(aName != XPR_NULL);
+
+    xpr_size_t sFileNameLen = _tcslen(aFileName);
+    if (sFileNameLen > aMaxLen)
+        return XPR_FALSE;
+
+    _tcscpy(aName, aFileName);
+
+    xpr_tchar_t *sExt = XPR_NULL;
+
+    switch (aExtensionType)
+    {
+    case EXT_TYPE_HIDE:
+    case EXT_TYPE_KNOWN:
+        {
+            sExt = (xpr_tchar_t *)GetFileExt(aName);
+            if (XPR_IS_NOT_NULL(sExt))
+            {
+                if ((aExtensionType == EXT_TYPE_HIDE) ||
+                    (aExtensionType == EXT_TYPE_KNOWN && IsFileKnownExt(sExt) == XPR_TRUE))
+                {
+                    *sExt = XPR_STRING_LITERAL('\0');
+                }
+            }
+            break;
+        }
+
+    case EXT_TYPE_ALWAYS:
+        {
+            sExt = (xpr_tchar_t *)GetFileExt(aName);
+            break;
+        }
+    }
+
+    if (XPR_IS_NOT_NULL(sExt))
+    {
+        if (_tcsicmp(sExt, XPR_STRING_LITERAL(".lnk")) == 0 ||
+            _tcsicmp(sExt, XPR_STRING_LITERAL(".url")) == 0)
+        {
+            *sExt = XPR_STRING_LITERAL('\0');
+        }
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t ExplorerCtrl::getItemName(const xpr_tchar_t *aFileName, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const
+{
+    return getItemName(aFileName, aName, aMaxLen, mOption.mFileExtType);
 }
 
 xpr_bool_t ExplorerCtrl::getItemName(xpr_sint_t aIndex, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const
@@ -6975,14 +6995,16 @@ const HistoryDeque *ExplorerCtrl::getHistoryDeque(void) const
     return mHistory->getHistoryDeque();
 }
 
-xpr_sint_t ExplorerCtrl::findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStart) const
+xpr_sint_t ExplorerCtrl::findItemName(const xpr_tchar_t *aName, xpr_sint_t aStart) const
 {
+    XPR_ASSERT(aName != XPR_NULL);
+
     xpr_sint_t sIndex = -1;
     xpr_tchar_t sName[XPR_MAX_PATH + 1];
 
     LVFINDINFO sLvFindInfo = {0};
     sLvFindInfo.flags = LVFI_STRING;
-    sLvFindInfo.psz   = aFind;
+    sLvFindInfo.psz   = aName;
 
     do
     {
@@ -6993,7 +7015,7 @@ xpr_sint_t ExplorerCtrl::findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStar
             if (XPR_IS_NOT_NULL(sLvItemData))
             {
                 getItemName(sLvItemData, sName, XPR_MAX_PATH);
-                if (_tcsicmp(aFind, sName) == 0)
+                if (_tcsicmp(aName, sName) == 0)
                     break;
             }
             aStart = sIndex;
@@ -7003,81 +7025,95 @@ xpr_sint_t ExplorerCtrl::findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStar
     return sIndex;
 }
 
-xpr_sint_t ExplorerCtrl::findItemFileName(const xpr_tchar_t *aFind) const
+xpr_sint_t ExplorerCtrl::findItemFileName(const xpr_tchar_t *aName, const xpr_tchar_t *aFileName) const
 {
-    if (XPR_IS_NULL(aFind))
-        return -1;
+    XPR_ASSERT(aName != XPR_NULL);
+    XPR_ASSERT(aFileName != XPR_NULL);
 
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1];
-    _tcscpy(sFindName, aFind);
+    xpr_sint_t  sIndex = -1;
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+    xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
+    NameMap::const_iterator sIterator;
+    NameMapPairConstIterator sPairRangeIterator;
 
-    xpr_tchar_t *sExt = (xpr_tchar_t *)GetFileExt(sFindName);
-    if (XPR_IS_NOT_NULL(sExt))
-        *sExt = 0;
+    sPairRangeIterator = mNameMap.equal_range(aName);
 
-    xpr_sint_t sIndex = -1;
-    xpr_sint_t sStart = -1;
-    xpr_tchar_t sFileName[XPR_MAX_PATH + 1];
-
-    LVFINDINFO sLvFindInfo = {0};
-    sLvFindInfo.flags = LVFI_STRING | LVFI_PARTIAL;
-    sLvFindInfo.psz   = sFindName;
-
-    do
+    sIterator = sPairRangeIterator.first;
+    for (; sIterator != sPairRangeIterator.second; ++sIterator)
     {
-        sIndex = FindItem(&sLvFindInfo, sStart);
-        if (sIndex >= 0)
+        LPLVITEMDATA sLvItemData = sIterator->second;
+
+        XPR_ASSERT(sLvItemData != XPR_NULL);
+
+        getItemName(sLvItemData, sFileName, EXT_TYPE_ALWAYS);
+
+        if (_tcsicmp(aFileName, sFileName) == 0)
         {
-            LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
-            if (XPR_IS_NOT_NULL(sLvItemData))
-            {
-                getItemName(sLvItemData, sFileName, EXT_TYPE_ALWAYS);
-                if (_tcsicmp(aFind, sFileName) == 0)
-                    break;
-            }
-            sStart = sIndex;
+            LVFINDINFO sLvFindInfo = {0};
+            sLvFindInfo.flags  = LVFI_PARAM;
+            sLvFindInfo.lParam = (LPARAM)sLvItemData;
+
+            sIndex = FindItem(&sLvFindInfo);
+            if (sIndex >= 0)
+                break;
         }
-    } while (sIndex != -1);
+    }
 
     return sIndex;
 }
 
+xpr_sint_t ExplorerCtrl::findItemFileName(const xpr_tchar_t *aFileName) const
+{
+    XPR_ASSERT(aFileName != XPR_NULL);
+
+    xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
+    getItemName(aFileName, sName, XPR_MAX_PATH);
+
+    return findItemFileName(sName, aFileName);
+}
+
 xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aPath) const
 {
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
-    SplitPath(aPath, XPR_NULL, sFindName);
+    XPR_ASSERT(aPath != XPR_NULL);
 
-    xpr_tchar_t *sExt = (xpr_tchar_t *)GetFileExt(sFindName);
-    if (XPR_IS_NOT_NULL(sExt))
-        sExt[0] = 0;
+    xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
+    xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
 
-    return findItemPath(sFindName, aPath);
+    SplitPath(aPath, XPR_NULL, sFileName);
+    getItemName(sFileName, sName, XPR_MAX_PATH);
+
+    return findItemPath(sName, aPath);
 }
 
 xpr_sint_t ExplorerCtrl::findItemPath(LPITEMIDLIST aFullPidl) const
 {
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
+    xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
 
-    getItemName(aFullPidl, sFindName, XPR_MAX_PATH);
+    getItemName(aFullPidl, sName, XPR_MAX_PATH);
     GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
-    return findItemPath(sFindName, sPath);
+    return findItemPath(sName, sPath);
 }
 
 xpr_sint_t ExplorerCtrl::findItemPath(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl) const
 {
-    xpr_tchar_t sFindName[XPR_MAX_PATH + 1] = {0};
+    XPR_ASSERT(aShellFolder != XPR_NULL);
+
+    xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
 
-    getItemName(aShellFolder, aPidl, sFindName, XPR_MAX_PATH);
+    getItemName(aShellFolder, aPidl, sName, XPR_MAX_PATH);
     GetName(aShellFolder, aPidl, SHGDN_FORPARSING, sPath);
 
-    return findItemPath(sFindName, sPath);
+    return findItemPath(sName, sPath);
 }
 
 xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aName, const xpr_tchar_t *aPath) const
 {
+    XPR_ASSERT(aName != XPR_NULL);
+    XPR_ASSERT(aPath != XPR_NULL);
+
     xpr_sint_t  sIndex = -1;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     NameMap::const_iterator sIterator;
@@ -7089,32 +7125,62 @@ xpr_sint_t ExplorerCtrl::findItemPath(const xpr_tchar_t *aName, const xpr_tchar_
     for (; sIterator != sPairRangeIterator.second; ++sIterator)
     {
         LPLVITEMDATA sLvItemData = sIterator->second;
-        if (XPR_IS_NOT_NULL(sLvItemData))
+
+        XPR_ASSERT(sLvItemData != XPR_NULL);
+
+        GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
+
+        if (_tcsicmp(aPath, sPath) == 0)
         {
-            GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
+            LVFINDINFO sLvFindInfo = {0};
+            sLvFindInfo.flags  = LVFI_PARAM;
+            sLvFindInfo.lParam = (LPARAM)sLvItemData;
 
-            if (_tcsicmp(aPath, sPath) == 0)
-            {
-                LVFINDINFO sLvFindInfo = {0};
-                sLvFindInfo.flags  = LVFI_PARAM;
-                sLvFindInfo.lParam = (LPARAM)sLvItemData;
-
-                sIndex = FindItem(&sLvFindInfo);
+            sIndex = FindItem(&sLvFindInfo);
+            if (sIndex >= 0)
                 break;
-            }
         }
     }
 
     return sIndex;
 }
 
-xpr_sint_t ExplorerCtrl::findItemFolder(const xpr_tchar_t *aFind) const
+xpr_sint_t ExplorerCtrl::findItemFolder(const xpr_tchar_t *aFolderName) const
 {
-    LVFINDINFO sLvFindInfo = {0};
-    sLvFindInfo.flags = LVFI_STRING;
-    sLvFindInfo.psz   = aFind;
+    XPR_ASSERT(aFolderName != XPR_NULL);
 
-    return FindItem(&sLvFindInfo, -1);
+    xpr_sint_t  sIndex = -1;
+    xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
+    NameMap::const_iterator sIterator;
+    NameMapPairConstIterator sPairRangeIterator;
+
+    sPairRangeIterator = mNameMap.equal_range(aFolderName);
+
+    sIterator = sPairRangeIterator.first;
+    for (; sIterator != sPairRangeIterator.second; ++sIterator)
+    {
+        LPLVITEMDATA sLvItemData = sIterator->second;
+
+        XPR_ASSERT(sLvItemData != XPR_NULL);
+
+        if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
+        {
+            GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, sFileName);
+
+            if (_tcsicmp(aFolderName, sFileName) == 0)
+            {
+                LVFINDINFO sLvFindInfo = {0};
+                sLvFindInfo.flags  = LVFI_PARAM;
+                sLvFindInfo.lParam = (LPARAM)sLvItemData;
+
+                sIndex = FindItem(&sLvFindInfo);
+                if (sIndex >= 0)
+                    break;
+            }
+        }
+    }
+
+    return sIndex;
 }
 
 xpr_sint_t ExplorerCtrl::findItemSignature(xpr_uint_t aSignature) const

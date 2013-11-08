@@ -173,12 +173,13 @@ public:
 
     // find item
     xpr_sint_t findItemName(const xpr_tchar_t *aFind, xpr_sint_t aStart = -1) const;
-    xpr_sint_t findItemFileName(const xpr_tchar_t *aFind) const;
-    xpr_sint_t findItemFolder(const xpr_tchar_t *aFind) const;
+    xpr_sint_t findItemFileName(const xpr_tchar_t *aFileName) const;
+    xpr_sint_t findItemFileName(const xpr_tchar_t *aName, const xpr_tchar_t *aFileName) const;
+    xpr_sint_t findItemFolder(const xpr_tchar_t *aFolderName) const;
     xpr_sint_t findItemPath(const xpr_tchar_t *aPath) const;
+    xpr_sint_t findItemPath(const xpr_tchar_t *aName, const xpr_tchar_t *aPath) const;
     xpr_sint_t findItemPath(LPITEMIDLIST aFullPidl) const;
     xpr_sint_t findItemPath(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl) const;
-    xpr_sint_t findItemPath(const xpr_tchar_t *aName, const xpr_tchar_t *aPath) const;
     xpr_sint_t findItemSignature(xpr_uint_t aSignature) const;
 
     // file information
@@ -323,6 +324,8 @@ protected:
     xpr_bool_t getItemName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const;
     xpr_bool_t getItemName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const;
     xpr_bool_t getItemName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t aShellAttributes, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const;
+    xpr_bool_t getItemName(const xpr_tchar_t *aPath, xpr_tchar_t *aName, const xpr_size_t aMaxLen, xpr_sint_t aExtensionType) const;
+    xpr_bool_t getItemName(const xpr_tchar_t *aPath, xpr_tchar_t *aName, const xpr_size_t aMaxLen) const;
     xpr_sint_t getFileIconIndex(LPLVITEMDATA aLvItemData, const xpr_tchar_t *aPath = XPR_NULL) const;
     void       getFileSize(LPLVITEMDATA aLvItemData, xpr_tchar_t *aFileSize, const xpr_size_t aMaxLen) const;
     xpr_bool_t getFileSize(LPLVITEMDATA aLvItemData, xpr_uint64_t &aFileSize) const;
