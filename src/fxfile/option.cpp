@@ -269,7 +269,7 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.file_list.size_unit"),                        OptionKey::TypeInteger, &Option::mConfig.mExplorerSizeUnit,             (void *)SIZE_UNIT_DEFAULT              },
     { XPR_STRING_LITERAL("config.file_list.list_type"),                        OptionKey::TypeInteger, &Option::mConfig.mExplorerListType,             (void *)LIST_TYPE_ALL                  },
     { XPR_STRING_LITERAL("config.file_list.show_parent_folder"),               OptionKey::TypeBoolean, &Option::mConfig.mExplorerParentFolder,         (void *)XPR_FALSE                      },
-    { XPR_STRING_LITERAL("config.file_list.up_and_select_sub_folder"),         OptionKey::TypeBoolean, &Option::mConfig.mExplorerGoUpSelSubFolder,     (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.file_list.up_and_select_sub_folder"),         OptionKey::TypeBoolean, &Option::mConfig.mExplorerGoUpSelSubFolder,     (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.file_list.custom_icon"),                      OptionKey::TypeBoolean, &Option::mConfig.mExplorerCustomIcon,           (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.no_sort"),                          OptionKey::TypeBoolean, &Option::mConfig.mExplorerNoSort,               (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.24_hour_time"),                     OptionKey::TypeBoolean, &Option::mConfig.mExplorer24HourTime,           (void *)XPR_FALSE                      },
