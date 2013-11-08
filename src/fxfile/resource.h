@@ -1634,6 +1634,7 @@
 #define ID_TOOL_FOLDER_SYNC             34012
 #define ID_TOOL_SAVE_OPTION             34013
 #define ID_TOOL_FILE_SEARCH             34014
+#define ID_TOOL_CMD_AS_ADMIN            34015
 #define ID_WINDOW_NEXT                  35000
 #define ID_WINDOW_PREV                  35001
 #define ID_WINDOW_SPLIT_SINGLE          35002

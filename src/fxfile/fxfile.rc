@@ -2500,6 +2500,7 @@ BEGIN
         MENUITEM "Open &Windows Explorer",      ID_TOOL_WINDOWS_EXPLORER
         MENUITEM SEPARATOR
         MENUITEM "Co&mmand prompt",             ID_TOOL_CMD
+        MENUITEM "Co&mmand prompt as administrator", ID_TOOL_CMD_AS_ADMIN
         MENUITEM "D&OS command execution...",   ID_TOOL_DOS_CMD
         MENUITEM SEPARATOR
         MENUITEM "Folder synchronization...",   ID_TOOL_FOLDER_SYNC

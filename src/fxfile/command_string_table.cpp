@@ -241,6 +241,7 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_TOOL_EMPTY_RECYCLEBIN]          = XPR_STRING_LITERAL("cmd.recycle_bin.empty");
     mCommandString[ID_TOOL_WINDOWS_EXPLORER]          = XPR_STRING_LITERAL("cmd.windows_explorer");
     mCommandString[ID_TOOL_CMD]                       = XPR_STRING_LITERAL("cmd.command_prompt");
+    mCommandString[ID_TOOL_CMD_AS_ADMIN]              = XPR_STRING_LITERAL("cmd.command_prompt_as_admin");
     mCommandString[ID_TOOL_DOS_CMD]                   = XPR_STRING_LITERAL("cmd.dos_command");
     mCommandString[ID_TOOL_FOLDER_SYNC]               = XPR_STRING_LITERAL("cmd.folder_sync");
     mCommandString[ID_TOOL_SHARED_PROC]               = XPR_STRING_LITERAL("cmd.shared_process");

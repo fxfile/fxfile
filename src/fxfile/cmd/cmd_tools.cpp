@@ -203,6 +203,47 @@ void CmdCommand::execute(CommandContext &aContext)
     ::ShellExecuteEx(&sShellExecuteInfo);
 }
 
+xpr_sint_t CmdAsAdminCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void CmdAsAdminCommand::execute(CommandContext &aContext)
+{
+    FXFILE_COMMAND_DECLARE_CTRL;
+
+    xpr_tchar_t sStartup[XPR_MAX_PATH + 1] = {0};
+
+    if (XPR_IS_NOT_NULL(sExplorerCtrl))
+    {
+        LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+        if (XPR_IS_NOT_NULL(sTvItemData))
+        {
+            if (XPR_TEST_BITS(sTvItemData->mShellAttributes, SFGAO_FILESYSTEM))
+                _tcscpy(sStartup, sExplorerCtrl->getCurPath());
+        }
+    }
+
+    if (sStartup[0] == 0)
+        _tcscpy(sStartup, XPR_STRING_LITERAL("C:\\"));
+
+    SHELLEXECUTEINFO sShellExecuteInfo = {0};
+    sShellExecuteInfo.cbSize      = sizeof(SHELLEXECUTEINFO);
+#ifdef XPR_CFG_UNICODE
+    sShellExecuteInfo.fMask       = SEE_MASK_UNICODE;
+#else
+    sShellExecuteInfo.fMask       = 0;
+#endif
+    sShellExecuteInfo.lpVerb      = XPR_STRING_LITERAL("runas");
+    sShellExecuteInfo.hwnd        = sMainFrame->GetSafeHwnd();
+    sShellExecuteInfo.nShow       = SW_SHOWDEFAULT;
+    sShellExecuteInfo.hInstApp    = ::AfxGetInstanceHandle();
+    sShellExecuteInfo.lpDirectory = sStartup;
+    sShellExecuteInfo.lpFile      = (xpr::getOsVer() >= xpr::kOsVerWinNT) ? XPR_STRING_LITERAL("cmd.exe") : XPR_STRING_LITERAL("command.com");
+
+    ::ShellExecuteEx(&sShellExecuteInfo);
+}
+
 xpr_sint_t DosCmdCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
