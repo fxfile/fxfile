@@ -333,6 +333,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_TOOL_EMPTY_RECYCLEBIN,            new cmd::EmptyRecycleBinCommand);
     aExecutor.bindCommand(ID_TOOL_WINDOWS_EXPLORER,            new cmd::WindowsExplorerCommand);
     aExecutor.bindCommand(ID_TOOL_CMD,                         new cmd::CmdCommand);
+    aExecutor.bindCommand(ID_TOOL_CMD_AS_ADMIN,                new cmd::CmdAsAdminCommand);
     aExecutor.bindCommand(ID_TOOL_DOS_CMD,                     new cmd::DosCmdCommand);
     aExecutor.bindCommand(ID_TOOL_FOLDER_SYNC,                 new cmd::FolderSyncCommand);
     aExecutor.bindCommand(ID_TOOL_SHARED_PROC,                 new cmd::SharedProcCommand);

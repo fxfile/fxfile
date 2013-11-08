@@ -275,6 +275,7 @@
 			<String ID="cmd.recycle_bin.empty">휴지통 비우기(&amp;R)</String>
 			<String ID="cmd.windows_explorer">윈도우즈 탐색기 실행(&amp;W)</String>
 			<String ID="cmd.command_prompt">명령 프롬프트(&amp;M)</String>
+			<String ID="cmd.command_prompt_as_admin">명령 프롬프트 (관리자 권한)(&amp;D)</String>
 			<String ID="cmd.dos_command">도스 명령 실행(&amp;O)</String>
 			<String ID="cmd.folder_sync">폴더 동기화(&amp;S)...</String>
 			<String ID="cmd.shared_process">공유 중인 프로세스 보기(&amp;P)...</String>
