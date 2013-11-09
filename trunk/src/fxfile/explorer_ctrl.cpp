@@ -7228,7 +7228,7 @@ void ExplorerCtrl::eraseNameHash(LPLVITEMDATA aLvItemData)
         LPLVITEMDATA sLvItemData = sIterator->second;
         if (sLvItemData == aLvItemData)
         {
-            mNameMap.erase(sIterator->first);
+            mNameMap.erase(sIterator);
             break;
         }
     }
