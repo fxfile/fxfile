@@ -79,65 +79,6 @@
                     },
                 },
             },
-
-            'conditions':
-            [
-                [ 'target_arch!="x86"',
-                    {
-                        'Debug-x64':
-                        {
-                            'inherit_from': ['Debug-x64-MFC-Unicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin',
-                                'IntermediateDirectory': '../../obj/fxfile-launcher/dbg-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName)_dbg.exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'fxfile-keyhook_dbg.lib',
-                                    ],
-                                },
-                            },
-                        },
-
-                        'Release-x64':
-                        {
-                            'inherit_from': ['Release-x64-MFC-Unicode_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin',
-                                'IntermediateDirectory': '../../obj/fxfile-launcher/rel-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName).exe',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                        'fxfile-keyhook_dbg.lib',
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                ],
-            ],
         },
     },
 
@@ -177,7 +118,7 @@
             
             'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
                               'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n'
-							  'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
+                              'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
             
             'sources':
             [
