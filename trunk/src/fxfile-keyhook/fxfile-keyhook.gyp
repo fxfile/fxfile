@@ -72,63 +72,6 @@
                     },
                 },
             },
-
-            'conditions':
-            [
-                [ 'target_arch!="x86"',
-                    {
-                        'Debug-x64':
-                        {
-                            'inherit_from': ['Debug-x64_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin',
-                                'IntermediateDirectory': '../../obj/fxfile-keyhook/dbg-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName)_dbg.dll',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                    ],
-                                },
-                            },
-                        },
-
-                        'Release-x64':
-                        {
-                            'inherit_from': ['Release-x64_Base'],
-                            
-                            'msvs_configuration_attributes':
-                            {
-                                'OutputDirectory':       '../../bin',
-                                'IntermediateDirectory': '../../obj/fxfile-keyhook/rel-x64',
-                            },
-                            
-                            'msvs_settings':
-                            {
-                                'VCLinkerTool': 
-                                {
-                                    'OutputFile': '$(OutDir)\$(ProjectName).dll',
-                                    'AdditionalLibraryDirectories':
-                                    [
-                                    ],
-                                    'AdditionalDependencies':
-                                    [
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                ],
-            ],
         },
     },
 
@@ -169,7 +112,7 @@
             
             'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
                               'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n'
-							  'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
+                              'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
             
             'sources':
             [
