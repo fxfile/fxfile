@@ -27,7 +27,7 @@ namespace fxfile
 
 #define FXFILE_MAJOR_VER 2
 #define FXFILE_MINOR_VER 0
-#define FXFILE_PATCH_VER 3
+#define FXFILE_PATCH_VER 4
 
 void getAppVer(xpr_tchar_t *aAppVer);
 void getFullAppVer(xpr_tchar_t *aAppVer);
