@@ -7271,7 +7271,7 @@ LRESULT ExplorerCtrl::OnShellChangeNotify(WPARAM wParam, LPARAM lParam)
         case SHCNE_DELETE:           sResult = OnShcnDeleteItem(sShcn);    break;
         case SHCNE_RMDIR:            sResult = OnShcnDeleteItem(sShcn);    break;
         case SHCNE_UPDATEDIR:        sResult = OnShcnUpdateDir(sShcn);     break;
-        case SHCNE_UPDATEITEM:       sResult = OnShcnUpdateItem();         break;
+        case SHCNE_UPDATEITEM:       sResult = OnShcnUpdateItem(sShcn);    break;
         case SHCNE_FREESPACE:        sResult = OnShcnFreeSize(sShcn);      break;
         case SHCNE_NETSHARE:
         case SHCNE_NETUNSHARE:       sResult = OnShcnNetShare(sShcn);      break;
@@ -7734,7 +7734,7 @@ xpr_bool_t ExplorerCtrl::OnShcnRenameItem(Shcn *aShcn)
     {
         // rename - "flychk (C:)" -> "flychk2 (C:)"
         if (_tcslen(sParsing1) == 3)
-            OnShcnUpdateItem();
+            OnShcnUpdateName();
         else
             sRename = XPR_TRUE;
     }
@@ -8083,7 +8083,38 @@ xpr_bool_t ExplorerCtrl::OnShcnDeleteItem(Shcn *aShcn, const xpr_tchar_t *aPath)
     return sResult;
 }
 
-xpr_bool_t ExplorerCtrl::OnShcnUpdateItem()
+xpr_bool_t ExplorerCtrl::OnShcnUpdateItem(Shcn *aShcn)
+{
+    xpr_bool_t sResult = XPR_FALSE;
+    xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
+
+    HRESULT sComResult = GetFolderPath(aShcn->mPidl1, sPath);
+    if (FAILED(sComResult))
+        return XPR_FALSE;
+
+    if (_tcsicmp(sPath, getCurPath()) == 0)
+    {
+        sResult = OnShcnUpdateDir(aShcn);
+    }
+    else
+    {
+        GetName(aShcn->mPidl1, SHGDN_FORPARSING, sPath);
+
+        xpr_sint_t sIndex = findItemPath(sPath);
+        if (sIndex == -1)
+        {
+            sResult = OnShcnCreateItem(aShcn);
+        }
+        else
+        {
+            sResult = OnShcnRenameItem(sPath, aShcn->mPidl1);
+        }
+    }
+
+    return sResult;
+}
+
+xpr_bool_t ExplorerCtrl::OnShcnUpdateName(void)
 {
     xpr_bool_t sResult = XPR_FALSE;
 

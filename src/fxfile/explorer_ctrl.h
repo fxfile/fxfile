@@ -367,7 +367,8 @@ protected:
     xpr_bool_t OnShcnUpdateDir(Shcn *aShcn);
     xpr_bool_t updateShcnLvItemData(LPLVITEMDATA aLvItemData);
     xpr_bool_t OnShcnDeleteItem(Shcn *aShcn = XPR_NULL, const xpr_tchar_t *aParsing = XPR_NULL);
-    xpr_bool_t OnShcnUpdateItem(void);
+    xpr_bool_t OnShcnUpdateItem(Shcn *aShcn);
+    xpr_bool_t OnShcnUpdateName(void);
     xpr_bool_t OnShcnNetShare(Shcn *aShcn);
     xpr_bool_t OnShcnEnumNetShare(LPLVITEMDATA aLvItemData, ShNotifyInfo *aShNotifyInfo);
     xpr_bool_t OnShcnDriveAdd(Shcn *aShcn);
