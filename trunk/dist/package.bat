@@ -1,3 +1,4 @@
+call clean.bat
 call copy.bat
-
-start nsis\makensisw.exe setup.nsi
+start /wait make_portable.bat
+call make_installer.bat
