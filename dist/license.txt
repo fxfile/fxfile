@@ -15,4 +15,4 @@
 
   귀하가 본 사용권 계약을 준수하지 않는 경우, flyExplorer는 여타 권리를 침해하지 않고 동의 계약을 종료할 수 있습니다. 그러한 경우 귀하는 본 제품의 복사본을 모두 파기해야 합니다.
 
-Copyright (C) 2001-2012 Leon Lee. All rights reserved.
+Copyright (C) 2001-2013 Leon Lee. All rights reserved.

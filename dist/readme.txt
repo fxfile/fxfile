@@ -10,15 +10,15 @@
 
 1. 프로그램 정보
 
-  프로그램 : flyExplorer (for Win98/ME/NT/2000/XP/2003/Vista/2008/7/8/2012 이상)
-  버    전 : 2.0.0 alpha2
-  배 포 일 : 2012년 10월 21일
+  프로그램 : flyExplorer (for Win98/ME/NT/2000/XP/2003/Vista/2008/7/8/2012/8.1 이상)
+  버    전 : 2.0.4-dev beta
+  배 포 일 : 2013년 11월 09일
   제 작 자 : 이재광 (Leon Lee)
   배포형태 : 프리웨어 (freeware)
   전자우편 : flychk@flychk.com
   홈페이지 : http://www.flychk.com
 
-  Copyright (c) 2001-2012 Leon Lee. All rights reserved.
+  Copyright (c) 2001-2013 Leon Lee. All rights reserved.
 
 2. 소개
 
@@ -38,8 +38,9 @@
  
   2) 소프트웨어(Software)
      운영체제(Operating System)
-     Ansi 버전 : 9x/NT 계열 모두 지원(Windows 98, NT, ME, 2000, XP, 2003, Vista, 2008, 7, 8, 2012 이상)
-     Unicode 버전 : NT 계열 지원(Windows NT, 2000, XP, 2003, Vista, 2008, 7, 8, 2012 이상)
+     32bit Ansicode 버전 : 9x/NT 계열 모두 지원(Windows 98, NT, ME, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상)
+     32bit Unicode 버전 : NT 계열 지원(Windows NT, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상)
+     64bit 버전 : Windows XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상
      인터넷 익스플로러(Internet Explorer) : 5.0 이상
 
 4. 주요 기능
