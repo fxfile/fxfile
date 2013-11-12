@@ -30,7 +30,7 @@
         {
             'Debug-x86':
             {
-                'inherit_from': ['Debug-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Debug-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
@@ -56,7 +56,7 @@
             
             'Release-x86':
             {
-                'inherit_from': ['Release-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Release-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
@@ -119,13 +119,13 @@
             },
 
             'msvs_postbuild': 'mkdir $(TargetDir)x86-unicode\updater\r\n'
-                              'mkdir $(TargetDir)x86-ansicode\updater\r\n'
+                              'mkdir $(TargetDir)x86-multibyte\updater\r\n'
                               'mkdir $(TargetDir)x64\updater\r\n'
                               'xcopy $(TargetDir)*.dll $(TargetDir)x86-unicode\updater /c /r /y\r\n'
-                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-ansicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-multibyte\updater /c /r /y\r\n'
                               'xcopy $(TargetDir)*.dll $(TargetDir)x64\updater /c /r /y\r\n'
                               'xcopy $(TargetPath) $(TargetDir)x86-unicode\updater /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode\updater /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-multibyte\updater /c /r /y\r\n'
                               'xcopy $(TargetPath) $(TargetDir)x64\updater /c /r /y\r\n',
 
             'msvs_precompiled_header': 'stdafx.h',

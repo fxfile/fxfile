@@ -12,7 +12,7 @@ cd x86-unicode
 
 cd ..
 
-cd x86-ansicode
-..\..\7zip\7za.exe a ../../fxfile_v%version%_x86_anicode_portable.zip *
+cd x86-multibyte
+..\..\7zip\7za.exe a ../../fxfile_v%version%_x86_multibyte_portable.zip *
 
 exit

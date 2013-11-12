@@ -52,8 +52,8 @@
 
                 'msvs_postbuild': 'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y\r\n'
                                   'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y\r\n'
-                                  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y\r\n'
-                                  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y\r\n',
+                                  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-multibyte /c /r /y\r\n'
+                                  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-multibyte /c /r /y\r\n',
             },
             
             'Release-x86':
@@ -85,8 +85,8 @@
 
                 'msvs_postbuild': 'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-unicode /c /r /y\r\n'
                                   'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-unicode /c /r /y\r\n'
-                                  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-ansicode /c /r /y\r\n'
-                                  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-ansicode /c /r /y\r\n',
+                                  'xcopy $(TargetDir)$(TargetName).lib $(TargetDir)x86-multibyte /c /r /y\r\n'
+                                  'xcopy $(TargetDir)$(TargetFileName) $(TargetDir)x86-multibyte /c /r /y\r\n',
             },
             
             'conditions':

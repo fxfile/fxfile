@@ -30,7 +30,7 @@
         {
             'Debug-x86':
             {
-                'inherit_from': ['Debug-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Debug-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
@@ -56,7 +56,7 @@
             
             'Release-x86':
             {
-                'inherit_from': ['Release-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Release-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
@@ -117,7 +117,7 @@
             'msvs_precompiled_source': 'stdafx.cpp',
             
             'msvs_postbuild': 'xcopy $(TargetPath) $(TargetDir)x86-unicode /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-ansicode /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-multibyte /c /r /y\r\n'
                               'xcopy $(TargetPath) $(TargetDir)x64 /c /r /y\r\n',
             
             'sources':

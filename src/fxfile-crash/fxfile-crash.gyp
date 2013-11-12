@@ -73,14 +73,14 @@
                 },
             },
             
-            'Debug-x86-Ansicode':
+            'Debug-x86-Multibyte':
             {
-                'inherit_from': ['Debug-x86-Ansicode_Base'],
+                'inherit_from': ['Debug-x86-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
-                    'OutputDirectory':       '../../bin/x86-ansicode',
-                    'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x86-ansicode',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x86-multibyte',
                 },
                 
                 'msvs_settings':
@@ -98,14 +98,14 @@
                 },
             },
             
-            'Release-x86-Ansicode':
+            'Release-x86-Multibyte':
             {
-                'inherit_from': ['Release-x86-Ansicode_Base'],
+                'inherit_from': ['Release-x86-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
-                    'OutputDirectory':       '../../bin/x86-ansicode',
-                    'IntermediateDirectory': '../../obj/fxfile-crash/rel-x86-ansicode',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'IntermediateDirectory': '../../obj/fxfile-crash/rel-x86-multibyte',
                 },
                 
                 'msvs_settings':

@@ -76,7 +76,7 @@ protected:
     xpr_uint_t   mMsg;
 
     xpr_uint_t   mFlags;
-    xpr_char_t  *mTextA; // for ANSICODE text search
+    xpr_char_t  *mTextA; // for MULTIBYTE text search
     xpr_wchar_t *mTextW; // for UNICODE text search
 
     typedef struct SearchDir

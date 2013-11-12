@@ -219,7 +219,7 @@
                 },
             },
             
-            'Ansicode_Base':
+            'Multibyte_Base':
             {
                 'abstract': 1,
                 
@@ -245,10 +245,10 @@
                 'inherit_from': [ 'Common_Base', 'Debug-x86_Base', 'Unicode_Base' ],
             },
             
-            'Debug-x86-Ansicode_Base':
+            'Debug-x86-Multibyte_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'Debug-x86_Base', 'Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'Debug-x86_Base', 'Multibyte_Base' ],
             },
             
             'Release-x86-Unicode_Base':
@@ -257,10 +257,10 @@
                 'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'Unicode_Base' ],
             },
             
-            'Release-x86-Ansicode_Base':
+            'Release-x86-Multibyte_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'Multibyte_Base' ],
             },
             
             'Debug-x64-Unicode_Base':
@@ -287,16 +287,16 @@
                 'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'MFC_Base', 'Unicode_Base' ],
             },
             
-            'Debug-x86-MFC-Ansicode_Base':
+            'Debug-x86-MFC-Multibyte_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'Debug-x86_Base', 'MFC_Base', 'Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'Debug-x86_Base', 'MFC_Base', 'Multibyte_Base' ],
             },
             
-            'Release-x86-MFC-Ansicode_Base':
+            'Release-x86-MFC-Multibyte_Base':
             {
                 'abstract': 1,
-                'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'MFC_Base', 'Ansicode_Base' ],
+                'inherit_from': [ 'Common_Base', 'Release-x86_Base', 'MFC_Base', 'Multibyte_Base' ],
             },
             
             'Debug-x64-MFC-Unicode_Base':
