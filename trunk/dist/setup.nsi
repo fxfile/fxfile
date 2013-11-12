@@ -19,7 +19,7 @@ ReserveFile               "option_uninstall.ini"
 Var MUI_TEMP
 Var STARTMENU_FOLDER
 Var OPT_32BIT_UNICODE
-Var OPT_32BIT_ANSICODE
+Var OPT_32BIT_MULTIBYTE
 Var OPT_64BIT
 Var UN_OPT_RMCONF
 Var UN_OPT_RMALL
@@ -87,7 +87,7 @@ LangString TEXT_WELCOMEPAGE_TEXT           ${LANG_KOREAN} "이 프로그램은 사용자 
 
 LangString TEXT_OPTION_HEADER              ${LANG_KOREAN} "버전 선택"
 LangString TEXT_OPTION_HEADER_DESC         ${LANG_KOREAN} "설치하고자 하는 버전을 선택하여 주십시오."
-LangString TEXT_OPTION_TEXT                ${LANG_KOREAN} "64bit 버전은 윈도우즈 64bit인 경우에만 설치 가능하고 32bit Unicode 버전은 윈도우즈 NT 계열, 32bit Ansicode는 모든 윈도우에서 설치 가능합니다. 윈도우즈 NT, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상에서는 64bit 또는 32bit Unicode 버전을 권장합니다."
+LangString TEXT_OPTION_TEXT                ${LANG_KOREAN} "64bit 버전은 윈도우즈 64bit인 경우에만 설치 가능하고 32bit Unicode 버전은 윈도우즈 NT 계열, 32bit Multibyte는 모든 윈도우에서 설치 가능합니다. 윈도우즈 NT, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상에서는 64bit 또는 32bit Unicode 버전을 권장합니다."
 
 LangString TEXT_DESKTOP_SHORTCUT           ${LANG_KOREAN} "바탕 화면에 바로 가기 만들기"
 LangString TEXT_QUICKLAUNCH_SHORTCUT       ${LANG_KOREAN} "빠른 실행에 바로 가기 만들기"
@@ -186,9 +186,9 @@ FunctionEnd
 Function OptionLeavePage
 
     # Read option value
-    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_64BIT          "option.ini" "Field 2" "State"
-    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_32BIT_UNICODE  "option.ini" "Field 3" "State"
-    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_32BIT_ANSICODE "option.ini" "Field 4" "State"
+    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_64BIT           "option.ini" "Field 2" "State"
+    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_32BIT_UNICODE   "option.ini" "Field 3" "State"
+    !insertmacro MUI_INSTALLOPTIONS_READ $OPT_32BIT_MULTIBYTE "option.ini" "Field 4" "State"
 
     #
     # Set install directory
@@ -265,15 +265,15 @@ Section "" SecCopyUI
     StrCmp $OPT_32BIT_UNICODE "1" "" +2
         CopyFiles /silent "$INSTDIR\x86-unicode\*.*" "$INSTDIR"
 
-    StrCmp $OPT_32BIT_ANSICODE "1" "" +2
-        CopyFiles /silent "$INSTDIR\x86-ansicode\*.*" "$INSTDIR"
+    StrCmp $OPT_32BIT_MULTIBYTE "1" "" +2
+        CopyFiles /silent "$INSTDIR\x86-multibyte\*.*" "$INSTDIR"
 
     StrCmp $OPT_64BIT "1" "" +2
         CopyFiles /silent "$INSTDIR\x64\*.*" "$INSTDIR"
 
     RMDir /r "$INSTDIR\x64"
     RMDir /r "$INSTDIR\x86-unicode"
-    RMDir /r "$INSTDIR\x86-ansicode"
+    RMDir /r "$INSTDIR\x86-multibyte"
 
     # Store install folder
     DeleteRegKey HKCU "Software\fxfile\fxfile"

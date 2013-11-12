@@ -38,7 +38,7 @@
  
   2) 소프트웨어(Software)
      운영체제(Operating System)
-     32bit Ansicode 버전 : 9x/NT 계열 모두 지원(Windows 98, NT, ME, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상)
+     32bit Multibyte 버전 : 9x/NT 계열 모두 지원(Windows 98, NT, ME, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상)
      32bit Unicode 버전 : NT 계열 지원(Windows NT, 2000, XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상)
      64bit 버전 : Windows XP, 2003, Vista, 2008, 7, 8, 2012, 8.1 이상
      인터넷 익스플로러(Internet Explorer) : 5.0 이상

@@ -83,14 +83,14 @@
                 },
             },
             
-            'Debug-x86-Ansicode':
+            'Debug-x86-Multibyte':
             {
-                'inherit_from': ['Debug-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Debug-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
-                    'OutputDirectory':       '../../bin/x86-ansicode',
-                    'IntermediateDirectory': '../../obj/xpr/dbg-x86-ansicode',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'IntermediateDirectory': '../../obj/xpr/dbg-x86-multibyte',
                 },
                 
                 'msvs_settings':
@@ -111,14 +111,14 @@
                 },
             },
             
-            'Release-x86-Ansicode':
+            'Release-x86-Multibyte':
             {
-                'inherit_from': ['Release-x86-MFC-Ansicode_Base'],
+                'inherit_from': ['Release-x86-MFC-Multibyte_Base'],
                 
                 'msvs_configuration_attributes':
                 {
-                    'OutputDirectory':       '../../bin/x86-ansicode',
-                    'IntermediateDirectory': '../../obj/xpr/rel-x86-ansicode',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'IntermediateDirectory': '../../obj/xpr/rel-x86-multibyte',
                 },
                 
                 'msvs_settings':
