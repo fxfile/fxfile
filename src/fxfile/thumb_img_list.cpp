@@ -180,8 +180,8 @@ void ThumbImgList::save(void)
     {
         xpr_tchar_t sDataPath[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sIndexPath[XPR_MAX_PATH + 1] = {0};
-        ConfDir::instance().getSavePath(ConfDir::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
-        ConfDir::instance().getSavePath(ConfDir::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
+        ConfDir::instance().getSavePath(ConfDir::TypeThumbnailData, sDataPath,  XPR_MAX_PATH);
+        ConfDir::instance().getSavePath(ConfDir::TypeThumbnailIndex, sIndexPath, XPR_MAX_PATH);
 
         // Save Data
         {
@@ -236,8 +236,8 @@ xpr_bool_t ThumbImgList::load(void)
 {
     xpr_tchar_t sDataPath[XPR_MAX_PATH + 1] = {0};
     xpr_tchar_t sIndexPath[XPR_MAX_PATH + 1] = {0};
-    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnail, sDataPath,  XPR_MAX_PATH, XPR_STRING_LITERAL("dat"));
-    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnail, sIndexPath, XPR_MAX_PATH, XPR_STRING_LITERAL("idx"));
+    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnailData, sDataPath,  XPR_MAX_PATH);
+    ConfDir::instance().getLoadPath(ConfDir::TypeThumbnailIndex, sIndexPath, XPR_MAX_PATH);
 
     if (IsExistFile(sDataPath) == XPR_FALSE || IsExistFile(sIndexPath) == XPR_FALSE)
         return XPR_FALSE;

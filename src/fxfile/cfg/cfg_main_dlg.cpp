@@ -406,7 +406,7 @@ void CfgMainDlg::OnDefault(void)
     sConfDir.save();
 
     // initialize default option and save one
-    sOptionManager.initDefault();
+    sOptionManager.initDefaultConfigOption();
 
     // save default option
     sOptionManager.saveConfigOption();

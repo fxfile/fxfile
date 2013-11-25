@@ -15,7 +15,7 @@
 #include "file_op_thread.h"
 #include "file_op_undo.h"
 #include "sync_dirs.h"
-#include "cmd_line_parser.h"
+#include "program_opts.h"
 #include "shell_new.h"
 #include "size_format.h"
 #include "wnet_mgr.h"
@@ -332,11 +332,11 @@ xpr_bool_t MainFrame::OnCreateClient(LPCREATESTRUCT aCreateStruct, CCreateContex
     xpr_sint_t sRowCount    = gOpt->mMain.mViewSplitRowCount;
     xpr_sint_t sColumnCount = gOpt->mMain.mViewSplitColumnCount;
 
-    xpr::tstring sSplitArg;
-    if (CmdLineParser::instance().getArg(XPR_STRING_LITERAL("W"), sSplitArg) == XPR_TRUE)
     {
+        ProgramOpts &sProgramOpts = SingletonManager::get<ProgramOpts>();
+
         xpr_sint_t sCmdRowCount = -1, sCmdColumnCount = -1;
-        _stscanf(sSplitArg.c_str(), XPR_STRING_LITERAL("%d,%d"), &sCmdRowCount, sCmdColumnCount);
+        sProgramOpts.getWindowSplit(sCmdRowCount, sCmdColumnCount);
 
         if (XPR_IS_RANGE(1, sCmdRowCount, MAX_VIEW_SPLIT_ROW))
             sRowCount = sCmdRowCount;

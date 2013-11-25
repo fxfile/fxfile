@@ -17,7 +17,7 @@
 
 #include "file_op_undo.h"     // for Undo
 #include "drive_shcn.h"
-#include "cmd_line_parser.h"
+#include "program_opts.h"
 #include "filter.h"
 #include "size_format.h"
 #include "winapi_ex.h"
@@ -172,15 +172,50 @@ xpr_bool_t WinApp::InitInstance(void)
     SetRegistryKey(XPR_STRING_LITERAL("fxfile"));
 #endif
 
+    // parse command line arguments
+    ProgramOpts &sProgramOpts = SingletonManager::get<ProgramOpts>();
+    sProgramOpts.parse();
+
+    if (sProgramOpts.isShowUsage() == XPR_TRUE)
+    {
+        ProgramOpts::showUsage();
+        return XPR_FALSE;
+    }
+
+    if (sProgramOpts.isShowVersion() == XPR_TRUE)
+    {
+        ProgramOpts::showVersion();
+    }
+
+    xpr_bool_t   sResetConf     = sProgramOpts.isResetConf();
+    xpr::tstring sConfDirToLoad = sProgramOpts.getConfDir();
+
     // load configuration directory
     ConfDir &sConfDir = ConfDir::instance();
-    sConfDir.load();
+
+    if (sConfDirToLoad.empty() == false)
+    {
+        sConfDir.setConfDir(sConfDirToLoad.c_str(), XPR_TRUE);
+    }
+    else
+    {
+        sConfDir.load();
+    }
 
     // load options from file or load default option if configuration file does not exist
     OptionManager &sOptionManager = OptionManager::instance();
 
     xpr_bool_t sInitCfg = XPR_FALSE;
-    sOptionManager.load(sInitCfg);
+
+    if (XPR_IS_TRUE(sResetConf))
+    {
+        sOptionManager.initDefault();
+        sInitCfg = XPR_TRUE;
+    }
+    else
+    {
+        sOptionManager.load(sInitCfg);
+    }
 
     gOpt = sOptionManager.getOption();
 
@@ -227,11 +262,6 @@ xpr_bool_t WinApp::InitInstance(void)
     m_pMainWnd = sMainFrame;
     if (sMainFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, XPR_NULL, XPR_NULL) == XPR_FALSE)
         return XPR_FALSE;
-
-    // parse command line arguments
-    CmdLineParser &sCmdLineParser = CmdLineParser::instance();
-    sCmdLineParser.parse();
-    sCmdLineParser.clear();
 
     // The one and only window has been initialized, so show and update it.
     sMainFrame->SetForegroundWindow();

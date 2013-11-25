@@ -115,18 +115,17 @@ protected:
 
     enum
     {
-        InitFolderNone      = 0x00000000,
-        InitFolderSplit     = 0x00000001,
-        InitFolderCmdParam  = 0x00000002,
-        InitFolderCfgInit   = 0x00000004,
-        InitFolderDefault   = 0x00000008,
-        InitFolderAll       = 0xffffffff,
+        InitFolderNone    = 0x00000000,
+        InitFolderSplit   = 0x00000001,
+        InitFolderCfgInit = 0x00000002,
+        InitFolderDefault = 0x00000004,
+        InitFolderAll     = 0xffffffff,
     };
 
-    LPITEMIDLIST getInitFolder(xpr_sint_t    aIndex,
-                               xpr::tstring &aSelFile,
-                               xpr_uint_t    aFlags = InitFolderAll,
-                               xpr_uint_t   *aInitFolderType = XPR_NULL) const;
+    LPITEMIDLIST getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::tstring &aSelFile) const;
+    LPITEMIDLIST getInitFolder(xpr_sint_t  aIndex,
+                               xpr_uint_t  aFlags = InitFolderAll,
+                               xpr_uint_t *aInitFolderType = XPR_NULL) const;
 
     xpr_bool_t openFolder(const xpr_tchar_t *aDir, const xpr_tchar_t *aSelPath);
     xpr_bool_t openFolder(LPCITEMIDLIST aFullPidl);

@@ -39,6 +39,7 @@ namespace fxfile
 OptionManager::OptionManager(void)
     : mOption(new Option)
 {
+    XPR_ASSERT(mOption != XPR_NULL);
 }
 
 OptionManager::~OptionManager(void)
@@ -51,11 +52,43 @@ void OptionManager::initDefault(void)
     FilterMgr     &sFilterMgr     = FilterMgr::instance();
     ProgramAssMgr &sProgramAssMgr = ProgramAssMgr::instance();
     SizeFormat    &sSizeFormat    = SizeFormat::instance();
+    ConfDir       &sConfDir       = ConfDir::instance();
 
     sFilterMgr.initDefault();
     sProgramAssMgr.initDefault();
     sSizeFormat.initDefault();
     mOption->initDefault();
+
+    xpr_sint_t  sType;
+    xpr_tchar_t sConfPath[XPR_MAX_PATH + 1] = {0};
+
+    for (sType = ConfDir::TypeBegin; sType < ConfDir::TypeEnd; ++sType)
+    {
+        if (sType == ConfDir::TypeMain || sType == ConfDir::TypeConfig)
+        {
+            continue;
+        }
+        else
+        {
+            sConfPath[0] = XPR_STRING_LITERAL('\0');
+
+            sConfDir.getSavePath(sType, sConfPath, XPR_MAX_PATH);
+
+            xpr::FileSys::remove(sConfPath);
+        }
+    }
+}
+
+void OptionManager::initDefaultConfigOption(void)
+{
+    FilterMgr     &sFilterMgr     = FilterMgr::instance();
+    ProgramAssMgr &sProgramAssMgr = ProgramAssMgr::instance();
+    SizeFormat    &sSizeFormat    = SizeFormat::instance();
+
+    sFilterMgr.initDefault();
+    sProgramAssMgr.initDefault();
+    sSizeFormat.initDefault();
+    mOption->initDefaultConfigOption();
 }
 
 void OptionManager::load(xpr_bool_t &aInitCfg)

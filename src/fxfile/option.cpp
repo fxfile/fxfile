@@ -456,6 +456,13 @@ void Option::notifyConfig(void)
 void Option::initDefault(void)
 {
     fxfile::base::ConfFileEx sConfFile;
+    loadMainOption(sConfFile);
+    loadConfigOption(sConfFile);
+}
+
+void Option::initDefaultConfigOption(void)
+{
+    fxfile::base::ConfFileEx sConfFile;
     loadConfigOption(sConfFile);
 }
 
