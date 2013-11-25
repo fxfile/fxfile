@@ -40,6 +40,7 @@ public:
 
 public:
     void initDefault(void);
+    void initDefaultConfigOption(void);
 
     void loadMainOption(fxfile::base::ConfFileEx &aConfFile);
     void saveMainOption(fxfile::base::ConfFileEx &aConfFile) const;

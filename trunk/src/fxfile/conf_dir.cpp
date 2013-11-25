@@ -32,6 +32,7 @@ static const xpr_tchar_t kFxFileSection [] = XPR_STRING_LITERAL(".fxfile");
 static const xpr_tchar_t kConfHomeKey   [] = XPR_STRING_LITERAL("conf_home");
 
 ConfDir::ConfDir(void)
+    : mReadOnly(XPR_FALSE)
 {
 }
 
@@ -54,10 +55,12 @@ const xpr_tchar_t *ConfDir::getOldConfDir(void) const
     return mOldConfDir.c_str();
 }
 
-void ConfDir::setConfDir(const xpr_tchar_t *aConfDir)
+void ConfDir::setConfDir(const xpr_tchar_t *aConfDir, xpr_bool_t aReadOnly)
 {
-    if (XPR_IS_NOT_NULL(aConfDir))
-        mConfDir = aConfDir;
+    XPR_ASSERT(aConfDir != XPR_NULL);
+
+    mConfDir  = aConfDir;
+    mReadOnly = aReadOnly;
 }
 
 xpr_bool_t ConfDir::getDir(const xpr_tchar_t *aConfDir, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const
@@ -89,7 +92,7 @@ xpr_bool_t ConfDir::getDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const
     return getDir(sConfDir, aDir, aMaxLen);
 }
 
-xpr_bool_t ConfDir::getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName) const
+xpr_bool_t ConfDir::getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const
 {
     const xpr_tchar_t *sFileName = ConfDir::getFileName(aType);
     if (XPR_IS_NULL(sFileName))
@@ -99,13 +102,6 @@ xpr_bool_t ConfDir::getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar
     sPath += XPR_STRING_LITERAL('\\');
     sPath += sFileName;
 
-    if (XPR_IS_NOT_NULL(aRefName))
-    {
-        xpr_size_t sFind = sPath.find(XPR_STRING_LITERAL('*'));
-        if (sFind != xpr::tstring::npos)
-            sPath.replace(sFind, 1, aRefName);
-    }
-
     if (sPath.length() > aMaxLen)
         return XPR_FALSE;
 
@@ -114,22 +110,22 @@ xpr_bool_t ConfDir::getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar
     return XPR_TRUE;
 }
 
-xpr_bool_t ConfDir::getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName) const
+xpr_bool_t ConfDir::getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const
 {
     xpr_tchar_t sDir[XPR_MAX_PATH + 1] = {0};
     getDir(sDir, XPR_MAX_PATH + 1);
 
-    return getPath(aType, sDir, aPath, aMaxLen, aRefName);
+    return getPath(aType, sDir, aPath, aMaxLen);
 }
 
-xpr_bool_t ConfDir::getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName) const
+xpr_bool_t ConfDir::getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const
 {
-    return getPath(aType, aPath, aMaxLen, aRefName);
+    return getPath(aType, aPath, aMaxLen);
 }
 
-xpr_bool_t ConfDir::getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName) const
+xpr_bool_t ConfDir::getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const
 {
-    if (getPath(aType, aPath, aMaxLen, aRefName) == XPR_FALSE)
+    if (getPath(aType, aPath, aMaxLen) == XPR_FALSE)
         return XPR_FALSE;
 
     if (CreateDirectoryLevel(aPath, 0, XPR_FALSE) == XPR_FALSE)
@@ -191,9 +187,14 @@ xpr_bool_t ConfDir::moveToNewConfDir(void)
         getPath(sType, sOldConfDir, sOldPath, XPR_MAX_PATH);
         getSavePath(sType, sNewPath, XPR_MAX_PATH);
 
-        if (::MoveFile(sOldPath, sNewPath) == XPR_FALSE)
+        if (xpr::FileSys::exist(sOldPath) == XPR_TRUE)
         {
-            return XPR_FALSE;
+            if (xpr::FileSys::exist(sNewPath) == XPR_TRUE)
+            {
+                xpr::FileSys::remove(sNewPath);
+            }
+
+            xpr::FileSys::rename(sOldPath, sNewPath);
         }
     }
 
@@ -204,19 +205,20 @@ const xpr_tchar_t *ConfDir::getFileName(xpr_sint_t aType)
 {
     switch (aType)
     {
-    case TypeMain:       return XPR_STRING_LITERAL("fxfile-main.conf");
-    case TypeConfig:     return XPR_STRING_LITERAL("fxfile.conf");
-    case TypeBookmark:   return XPR_STRING_LITERAL("fxfile-bookmark.conf");
-    case TypeFileScrap:  return XPR_STRING_LITERAL("fxfile-file_scrap.conf");
-    case TypeSearchDir:  return XPR_STRING_LITERAL("fxfile-search_dir.conf");
-    case TypeViewSet:    return XPR_STRING_LITERAL("fxfile-view_set.conf");
-    case TypeDlgState:   return XPR_STRING_LITERAL("fxfile-dlg_state.conf");
-    case TypeAccel:      return XPR_STRING_LITERAL("fxfile-accel.dat");
-    case TypeCoolBar:    return XPR_STRING_LITERAL("fxfile-coolbar.dat");
-    case TypeToolBar:    return XPR_STRING_LITERAL("fxfile-toolbar.dat");
-    case TypeThumbnail:  return XPR_STRING_LITERAL("fxfile-thumbnail.*");
-    case TypeLauncher:   return XPR_STRING_LITERAL("fxfile-launcher.conf");
-    case TypeUpdater:    return XPR_STRING_LITERAL("fxfile-updater.conf");
+    case TypeMain:           return XPR_STRING_LITERAL("fxfile-main.conf");
+    case TypeConfig:         return XPR_STRING_LITERAL("fxfile.conf");
+    case TypeBookmark:       return XPR_STRING_LITERAL("fxfile-bookmark.conf");
+    case TypeFileScrap:      return XPR_STRING_LITERAL("fxfile-file_scrap.conf");
+    case TypeSearchDir:      return XPR_STRING_LITERAL("fxfile-search_dir.conf");
+    case TypeViewSet:        return XPR_STRING_LITERAL("fxfile-view_set.conf");
+    case TypeDlgState:       return XPR_STRING_LITERAL("fxfile-dlg_state.conf");
+    case TypeAccel:          return XPR_STRING_LITERAL("fxfile-accel.dat");
+    case TypeCoolBar:        return XPR_STRING_LITERAL("fxfile-coolbar.dat");
+    case TypeToolBar:        return XPR_STRING_LITERAL("fxfile-toolbar.dat");
+    case TypeThumbnailData:  return XPR_STRING_LITERAL("fxfile-thumbnail.dat");
+    case TypeThumbnailIndex: return XPR_STRING_LITERAL("fxfile-thumbnail.idx");
+    case TypeLauncher:       return XPR_STRING_LITERAL("fxfile-launcher.conf");
+    case TypeUpdater:        return XPR_STRING_LITERAL("fxfile-updater.conf");
     }
 
     return XPR_NULL;
@@ -276,6 +278,11 @@ xpr_bool_t ConfDir::load(void)
 
 xpr_bool_t ConfDir::save(void) const
 {
+    if (XPR_IS_TRUE(mReadOnly))
+    {
+        return XPR_TRUE;
+    }
+
     xpr::tstring sPath;
     GetEnvRealPath(kFxFilePath, sPath);
 
@@ -289,10 +296,15 @@ xpr_bool_t ConfDir::save(void) const
 
     sConfFile.setValueS(sSection, kConfHomeKey, mConfDir.c_str());
 
+    // remove hidden file attributes to save
+    DWORD sFileAttributes = ::GetFileAttributes(sPath.c_str());
+    sFileAttributes &= ~FILE_ATTRIBUTE_HIDDEN;
+    ::SetFileAttributes(sPath.c_str(), sFileAttributes);
+
     sConfFile.save(xpr::CharSetUtf16);
 
-    // set system and hidden file attributes
-    DWORD sFileAttributes = ::GetFileAttributes(sPath.c_str());
+    // set hidden file attributes
+    sFileAttributes = ::GetFileAttributes(sPath.c_str());
     sFileAttributes |= FILE_ATTRIBUTE_HIDDEN;
     ::SetFileAttributes(sPath.c_str(), sFileAttributes);
 

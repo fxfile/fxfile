@@ -37,6 +37,7 @@ public:   ~OptionManager(void);
 
 public:
     void initDefault(void);
+    void initDefaultConfigOption(void);
 
     void load(xpr_bool_t &aInitCfg);
     xpr_bool_t save(void);

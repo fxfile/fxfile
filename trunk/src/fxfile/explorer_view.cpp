@@ -14,7 +14,7 @@
 #include "bookmark.h"
 #include "context_menu.h"
 #include "file_scrap.h"
-#include "cmd_line_parser.h"
+#include "program_opts.h"
 #include "program_ass.h"
 #include "clip_format.h"
 #include "size_format.h"
@@ -402,10 +402,67 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     return 0;
 }
 
-LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
-                                         xpr::tstring &aSelFile,
-                                         xpr_uint_t    aFlags,
-                                         xpr_uint_t   *aInitFolderType) const
+LPITEMIDLIST ExplorerView::getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::tstring &aSelFile) const
+{
+    LPITEMIDLIST sFullPidl = XPR_NULL;
+
+    ProgramOpts &sProgramOpts = SingletonManager::get<ProgramOpts>();
+
+    xpr::tstring sPathArg = sProgramOpts.getDir(aIndex);
+    if (sPathArg.empty() == XPR_FALSE)
+    {
+        if (sPathArg.length() == 2)
+            sPathArg += XPR_STRING_LITERAL("\\");
+
+        if (xpr::FileSys::exist(sPathArg.c_str()) == XPR_TRUE)
+        {
+            xpr::tstring sDirArg;
+
+            if (IsFileSystemFolder(sPathArg.c_str()) == XPR_FALSE)
+            {
+                xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
+                if (sFind != xpr::tstring::npos)
+                {
+                    aSelFile = sPathArg.substr(sFind + 1);
+                    sDirArg = sPathArg.substr(0, sFind);
+                }
+            }
+            else
+            {
+                if (sProgramOpts.isSelect() == XPR_TRUE)
+                {
+                    xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
+                    if (sFind != xpr::tstring::npos)
+                    {
+                        aSelFile = sPathArg.substr(sFind + 1);
+                        sDirArg = sPathArg.substr(0, sFind);
+                    }
+                }
+            }
+
+            if (sDirArg.empty() == XPR_TRUE)
+                sDirArg = sPathArg;
+
+            if (sDirArg.length() == 2)
+                sDirArg += XPR_STRING_LITERAL('\\');
+
+            if (IsFileSystemFolder(sDirArg.c_str()) == XPR_TRUE)
+            {
+                sFullPidl = Path2Pidl(sDirArg.c_str());
+            }
+        }
+        else
+        {
+            sFullPidl = Path2Pidl(sPathArg.c_str());
+        }
+    }
+
+    return sFullPidl;
+}
+
+LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t  aIndex,
+                                         xpr_uint_t  aFlags,
+                                         xpr_uint_t *aInitFolderType) const
 {
     xpr_uint_t sInitFolderType;
     LPITEMIDLIST sFullPidl = XPR_NULL;
@@ -422,67 +479,7 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         }
     }
 
-    // [2] folder by command line arguments
-    if (XPR_IS_NULL(sFullPidl))
-    {
-        sInitFolderType = aFlags & InitFolderCmdParam;
-        if (sInitFolderType != 0)
-        {
-            xpr_tchar_t sCmdOption[0xff] = {0};
-            _stprintf(sCmdOption, XPR_STRING_LITERAL("%d"), aIndex + 1);
-
-            xpr::tstring sPathArg;
-            if (CmdLineParser::instance().getArg(sCmdOption, sPathArg) == XPR_TRUE)
-            {
-                if (sPathArg.length() == 2)
-                    sPathArg += XPR_STRING_LITERAL("\\");
-
-                if (xpr::FileSys::exist(sPathArg.c_str()) == XPR_TRUE)
-                {
-                    xpr::tstring sDirArg;
-
-                    if (IsFileSystemFolder(sPathArg.c_str()) == XPR_FALSE)
-                    {
-                        xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
-                        if (sFind != xpr::tstring::npos)
-                        {
-                            aSelFile = sPathArg.substr(sFind + 1);
-                            sDirArg = sPathArg.substr(0, sFind);
-                        }
-                    }
-                    else
-                    {
-                        if (CmdLineParser::instance().isExistArg(XPR_STRING_LITERAL("U")) == XPR_TRUE)
-                        {
-                            xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
-                            if (sFind != xpr::tstring::npos)
-                            {
-                                aSelFile = sPathArg.substr(sFind + 1);
-                                sDirArg = sPathArg.substr(0, sFind);
-                            }
-                        }
-                    }
-
-                    if (sDirArg.empty() == XPR_TRUE)
-                        sDirArg = sPathArg;
-
-                    if (sDirArg.length() == 2)
-                        sDirArg += XPR_STRING_LITERAL('\\');
-
-                    if (IsFileSystemFolder(sDirArg.c_str()) == XPR_TRUE)
-                    {
-                        sFullPidl = Path2Pidl(sDirArg.c_str());
-                    }
-                }
-                else
-                {
-                    sFullPidl = Path2Pidl(sPathArg.c_str());
-                }
-            }
-        }
-    }
-
-    // [3] init folder of configuration option
+    // [2] init folder of configuration option
     if (XPR_IS_NULL(sFullPidl))
     {
         sInitFolderType = aFlags & InitFolderCfgInit;
@@ -499,7 +496,7 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t    aIndex,
         }
     }
 
-    // [4] default folder of explorer control
+    // [3] default folder of explorer control
     if (XPR_IS_NULL(sFullPidl))
     {
         sInitFolderType = aFlags & InitFolderDefault;
@@ -1188,7 +1185,24 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
     // initailize folder location
     xpr_bool_t sExplored = XPR_FALSE;
 
-    if (XPR_IS_NOT_NULL(aInitFolder))
+    xpr::tstring sSelFile;
+
+    if (XPR_IS_TRUE(mInit))
+    {
+        LPITEMIDLIST sFullPidl = getInitFolderByProgramOption(mViewIndex, sSelFile);
+        if (XPR_IS_NOT_NULL(sFullPidl))
+        {
+            if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)
+            {
+                sFullPidl = XPR_NULL;
+                sExplored = XPR_TRUE;
+            }
+
+            COM_FREE(sFullPidl);
+        }
+    }
+
+    if (XPR_IS_FALSE(sExplored))
     {
         LPITEMIDLIST sFullPidl = fxfile::base::Pidl::clone(aInitFolder);
         if (XPR_IS_NOT_NULL(sFullPidl))
@@ -1203,8 +1217,6 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
         }
     }
 
-    xpr::tstring sSelFile;
-
     if (XPR_IS_FALSE(sExplored))
     {
         LPITEMIDLIST sFullPidl;
@@ -1216,7 +1228,7 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
         if (XPR_IS_FALSE(gOpt->mConfig.mViewSplitReopenLastFolder))
             sFlags &= ~InitFolderSplit;
 
-        sFullPidl = getInitFolder(mViewIndex, sSelFile, sFlags, &sInitFolderType);
+        sFullPidl = getInitFolder(mViewIndex, sFlags, &sInitFolderType);
 
         if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)
         {
@@ -1231,7 +1243,7 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
             if (sInitFolderType != InitFolderCfgInit)
                 sFlags |= InitFolderCfgInit;
 
-            sFullPidl = getInitFolder(mViewIndex, sSelFile, sFlags);
+            sFullPidl = getInitFolder(mViewIndex, sFlags);
             if (XPR_IS_NOT_NULL(sFullPidl))
             {
                 if (sExplorerCtrl->explore(sFullPidl) == XPR_TRUE)

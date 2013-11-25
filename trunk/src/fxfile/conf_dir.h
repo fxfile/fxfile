@@ -40,7 +40,8 @@ public:
         TypeAccel,
         TypeCoolBar,
         TypeToolBar,
-        TypeThumbnail,
+        TypeThumbnailData,
+        TypeThumbnailIndex,
         TypeLauncher,
         TypeUpdater,
         TypeEnd,
@@ -51,7 +52,7 @@ public:
     xpr_bool_t save(void) const;
 
     const xpr_tchar_t *getConfDir(void) const;
-    void setConfDir(const xpr_tchar_t *aConfDir);
+    void setConfDir(const xpr_tchar_t *aConfDir, xpr_bool_t aReadOnly = XPR_FALSE);
 
     void setBackup(void);
     const xpr_tchar_t *getOldConfDir(void) const;
@@ -59,8 +60,8 @@ public:
     xpr_bool_t moveToNewConfDir(void);
 
 public:
-    xpr_bool_t getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
-    xpr_bool_t getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getLoadPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
+    xpr_bool_t getSavePath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
     xpr_bool_t getLoadDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
     xpr_bool_t getSaveDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
@@ -68,8 +69,8 @@ public:
     static const xpr_tchar_t *getProgramConfDir(void);
 
 protected:
-    xpr_bool_t getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
-    xpr_bool_t getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar_t *aPath, xpr_size_t aMaxLen, const xpr_tchar_t *aRefName = XPR_NULL) const;
+    xpr_bool_t getPath(xpr_sint_t aType, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
+    xpr_bool_t getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
     xpr_bool_t getDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
     xpr_bool_t getDir(const xpr_tchar_t *aConfDir, xpr_tchar_t *aDir, xpr_size_t aMaxLen) const;
 
@@ -80,6 +81,7 @@ protected:
 protected:
     xpr::tstring mConfDir;
     xpr::tstring mOldConfDir;
+    xpr_bool_t   mReadOnly;
 };
 } // namespace fxfile
 

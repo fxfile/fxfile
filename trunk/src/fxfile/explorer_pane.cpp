@@ -14,7 +14,6 @@
 #include "bookmark.h"
 #include "context_menu.h"
 #include "file_scrap.h"
-#include "cmd_line_parser.h"
 #include "program_ass.h"
 #include "clip_format.h"
 #include "size_format.h"
