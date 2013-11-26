@@ -3963,8 +3963,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuShell(CWnd *aWnd, CPoint aPoint, CRect aWi
             }
         }
 
-        sContextMenu.destroySubclass();
-        sContextMenu.release();
+        sContextMenu.destroy();
 
         if (XPR_IS_TRUE(sInvokeCommandSelf))
         {
@@ -4026,8 +4025,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuParent(CWnd *aWnd, CPoint aPoint, CRect aW
                 }
             }
 
-            sContextMenu.destroySubclass();
-            sContextMenu.release();
+            sContextMenu.destroy();
         }
 
         COM_RELEASE(sShellFolder);
@@ -4086,8 +4084,7 @@ xpr_bool_t ExplorerCtrl::OnContextMenuDrive(CWnd *aWnd, CPoint aPoint, CRect aWi
                 }
             }
 
-            sContextMenu.destroySubclass();
-            sContextMenu.release();
+            sContextMenu.destroy();
         }
 
         COM_RELEASE(sShellFolder);

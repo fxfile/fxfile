@@ -944,8 +944,7 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             }
 
             sMenu.DestroyMenu();
-            sContextMenu.destroySubclass();
-            sContextMenu.release();
+            sContextMenu.destroy();
 
             if (XPR_IS_FALSE(sOwnerMenu))
             {

@@ -460,8 +460,7 @@ void DriveToolBar::OnContextMenu(CWnd* pWnd, CPoint pt)
                     sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
                 }
 
-                sContextMenu.destroySubclass();
-                sContextMenu.release();
+                sContextMenu.destroy();
 
                 sSucceeded = XPR_TRUE;
             }

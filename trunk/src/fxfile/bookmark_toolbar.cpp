@@ -1138,8 +1138,7 @@ void BookmarkToolBar::OnContextMenu(CWnd* pWnd, CPoint aPoint)
                         sToolBarCtrl.SetState(sTbButton.idCommand, TBSTATE_ENABLED);
                     }
 
-                    sContextMenu.destroySubclass();
-                    sContextMenu.release();
+                    sContextMenu.destroy();
 
                     sSucceeded = XPR_TRUE;
                 }

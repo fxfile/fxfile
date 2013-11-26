@@ -421,8 +421,7 @@ void FolderCtrl::trackContextMenu(xpr_bool_t aRightClick)
             }
         }
 
-        sContextMenu.destroySubclass();
-        sContextMenu.release();
+        sContextMenu.destroy();
 
         if (XPR_IS_TRUE(sInvokeCommandSelf))
         {
