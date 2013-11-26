@@ -120,7 +120,9 @@ protected:
 
     void setChangeNotify(xpr_bool_t aNotify = XPR_TRUE);
 
-    xpr_bool_t invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId);
+    xpr_bool_t canInvokeCommandSelf(xpr_uint_t aId);
+    xpr_bool_t canInvokeCommandSelf(const xpr_tchar_t *aVerb);
+    void       invokeCommandSelf(ContextMenu &aContextMenu, xpr_uint_t aId, const xpr_tchar_t *aVerb);
     static xpr_sint_t CALLBACK DefaultItemCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 
     xpr_sint_t findItemSignature(xpr_uint_t aSignature);

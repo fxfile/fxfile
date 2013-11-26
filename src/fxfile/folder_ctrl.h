@@ -145,7 +145,8 @@ protected:
 
     // Shell Context Menu
     void       trackContextMenu(xpr_bool_t aRightClick);
-    xpr_bool_t invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId, HTREEITEM aTreeItem);
+    xpr_bool_t canInvokeCommandSelf(const xpr_tchar_t *aVerb);
+    void       invokeCommandSelf(ContextMenu &aContextMenu, const xpr_tchar_t *aVerb, HTREEITEM aTreeItem);
 
     typedef std::deque<HTREEITEM> ScanDeque;
     void expandRecursiveAll(HTREEITEM aTreeItem);

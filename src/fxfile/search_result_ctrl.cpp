@@ -908,21 +908,36 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             CMenu sMenu;
             sMenu.CreatePopupMenu();
 
-            xpr_bool_t sOwnerMenu = XPR_FALSE;
+            xpr_uint_t  sId;
+            xpr_tchar_t sVerb[0xff] = {0};
+            xpr_bool_t  sInvokeCommandSelf = XPR_FALSE;
+            xpr_bool_t  sOwnerMenu = XPR_FALSE;
             ContextMenu sContextMenu(GetSafeHwnd());
+
             if (sContextMenu.init(sShellFolder, (LPCITEMIDLIST *)sPidls, sCount) == XPR_TRUE && sContextMenu.getMenu(&sMenu) == XPR_TRUE)
             {
                 ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getFirstId() + CMID_OPEN_PARENT_FOLDER, gApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
                 ::InsertMenu(sMenu.m_hMenu, 1, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
                 //::SetMenuDefaultItem(sMenu.m_hMenu, 0, XPR_TRUE);
 
-                xpr_uint_t sId = ::TrackPopupMenuEx(sMenu.m_hMenu, sFlags, aPoint.x, aPoint.y, m_hWnd, XPR_NULL);
+                sId = ::TrackPopupMenuEx(sMenu.m_hMenu, sFlags, aPoint.x, aPoint.y, m_hWnd, XPR_NULL);
                 if (sId != -1)
                 {
                     sId -= sContextMenu.getFirstId();
 
-                    if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
+                    sInvokeCommandSelf = canInvokeCommandSelf(sId);
+                    if (XPR_IS_FALSE(sInvokeCommandSelf))
+                    {
+                        if (sContextMenu.getCommandVerb(sId, sVerb, 0xfe) == XPR_TRUE)
+                        {
+                            sInvokeCommandSelf = canInvokeCommandSelf(sVerb);
+                        }
+                    }
+
+                    if (XPR_IS_FALSE(sInvokeCommandSelf))
+                    {
                         sContextMenu.invokeCommand(sId);
+                    }
                 }
 
                 sOwnerMenu = XPR_TRUE;
@@ -935,6 +950,13 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             if (XPR_IS_FALSE(sOwnerMenu))
             {
                 ContextMenu::trackItemMenu(sShellFolder, (LPCITEMIDLIST *)sPidls, sCount, &aPoint, sFlags, m_hWnd);
+            }
+            else
+            {
+                if (XPR_IS_TRUE(sInvokeCommandSelf))
+                {
+                    invokeCommandSelf(sContextMenu, sId, sVerb);
+                }
             }
         }
 
@@ -967,12 +989,45 @@ void SearchResultCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
     }
 }
 
-xpr_bool_t SearchResultCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId)
+xpr_bool_t SearchResultCtrl::canInvokeCommandSelf(xpr_uint_t aId)
 {
-    if (XPR_IS_NULL(aContextMenu))
-        return XPR_FALSE;
+    xpr_bool_t sResult = XPR_FALSE;
+
+    if (aId == CMID_OPEN_PARENT_FOLDER)
+    {
+        sResult = XPR_TRUE;
+    }
+
+    return sResult;
+}
+
+xpr_bool_t SearchResultCtrl::canInvokeCommandSelf(const xpr_tchar_t *aVerb)
+{
+    XPR_ASSERT(aVerb != XPR_NULL);
 
     xpr_bool_t sResult = XPR_FALSE;
+
+    xpr_sint_t sIndex = GetSelectionMark();
+
+    if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
+    {
+        SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
+        if (XPR_IS_NOT_NULL(sSrItemData) && XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+        {
+            sResult = XPR_TRUE;
+        }
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
+
+    return sResult;
+}
+
+void SearchResultCtrl::invokeCommandSelf(ContextMenu &aContextMenu, xpr_uint_t aId, const xpr_tchar_t *aVerb)
+{
+    XPR_ASSERT(aVerb != XPR_NULL);
 
     xpr_sint_t sIndex = GetSelectionMark();
 
@@ -992,26 +1047,23 @@ xpr_bool_t SearchResultCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_ui
     }
     else
     {
-        xpr_tchar_t sVerb[0xff] = {0};
-        aContextMenu->getCommandVerb(aId, sVerb, 0xfe);
-
-        if (_tcsicmp(sVerb, CMID_VERB_OPEN) == 0)
+        if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
         {
             SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
             if (XPR_IS_NOT_NULL(sSrItemData) && XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
             {
                 execute(sIndex);
-                sResult = XPR_TRUE;
             }
         }
-        else if (_tcsicmp(sVerb, CMID_VERB_RENAME) == 0)
+        else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
         {
             gFrame->executeCommand(ID_FILE_RENAME);
-            sResult = XPR_TRUE;
+        }
+        else
+        {
+            XPR_ASSERT(0);
         }
     }
-
-    return sResult;
 }
 
 void SearchResultCtrl::OnBegindrag(NMHDR *aNmHdr, LRESULT *aResult) 

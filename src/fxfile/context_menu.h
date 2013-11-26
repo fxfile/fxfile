@@ -35,6 +35,7 @@ namespace fxfile
 typedef struct tagSubClassData
 {
     LPCONTEXTMENU2 mContextMenu2;
+    LPCONTEXTMENU3 mContextMenu3;
     WNDPROC        mOldWndProc;
 } SUBCLASSDATA, *LPSUBCLASSDATA;
 
@@ -52,12 +53,12 @@ public:
     xpr_bool_t init(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST *aPidls, xpr_uint_t aCount);
     xpr_bool_t init(LPSHELLFOLDER aShellFolder);
     xpr_bool_t getMenu(CMenu *aMenu, xpr_uint_t aFirstId = CMID_DEF_ID_FIRST, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
-    xpr_uint_t getFirstId(void);
+    xpr_uint_t getFirstId(void) const;
     xpr_uint_t trackPopupMenu(xpr_uint_t aFlags, LPPOINT aPoint, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
     xpr_bool_t invokeCommand(xpr_uint_t aId);
     xpr_bool_t invokeCommand(const xpr_tchar_t *aVerb);
-    xpr_bool_t getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength);
-    void getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2);
+    xpr_bool_t getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength) const;
+    void getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2) const;
     void destroySubclass(void);
     void release(void);
 
@@ -78,6 +79,7 @@ protected:
     HMENU          mMenu;
     LPCONTEXTMENU  mContextMenu;
     LPCONTEXTMENU2 mContextMenu2;
+    LPCONTEXTMENU3 mContextMenu3;
     LPSUBCLASSDATA mSubclassData;
     xpr_uint_t     mFirstId;
 

@@ -398,70 +398,98 @@ void FolderCtrl::trackContextMenu(xpr_bool_t aRightClick)
     {
         //ContextMenu::TrackItemMenu(sTvItemData->mShellFolder, &sTvItemData->mPidl, 1, &sPoint, sFlags, m_hWnd);
 
+        xpr_tchar_t sVerb[0xff] = {0};
+        xpr_bool_t  sInvokeCommandSelf = XPR_FALSE;
         ContextMenu sContextMenu(GetSafeHwnd());
+
         if (sContextMenu.init(sTvItemData->mShellFolder, (LPCITEMIDLIST *)&sTvItemData->mPidl, 1) == XPR_TRUE)
         {
             xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &sPoint);
             if (sId != -1)
             {
-                xpr_uint_t sCmdId = sId - sContextMenu.getFirstId();
+                sId -= sContextMenu.getFirstId();
 
-                if (invokeCommandSelf(&sContextMenu, sCmdId, sTreeItem) == XPR_FALSE)
+                if (sContextMenu.getCommandVerb(sId, sVerb, 0xfe) == XPR_TRUE)
                 {
-                    sContextMenu.invokeCommand(sCmdId);
+                    sInvokeCommandSelf = canInvokeCommandSelf(sVerb);
+                }
+
+                if (XPR_IS_FALSE(sInvokeCommandSelf))
+                {
+                    sContextMenu.invokeCommand(sId);
                 }
             }
         }
 
         sContextMenu.destroySubclass();
         sContextMenu.release();
+
+        if (XPR_IS_TRUE(sInvokeCommandSelf))
+        {
+            invokeCommandSelf(sContextMenu, sVerb, sTreeItem);
+        }
     }
 }
 
-xpr_bool_t FolderCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId, HTREEITEM aTreeItem)
+xpr_bool_t FolderCtrl::canInvokeCommandSelf(const xpr_tchar_t *aVerb)
 {
-    if (XPR_IS_NULL(aContextMenu))
-        return XPR_FALSE;
+    XPR_ASSERT(aVerb != XPR_NULL);
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    xpr_tchar_t sVerb[0xff] = {0};
-    aContextMenu->getCommandVerb(aId, sVerb, 0xfe);
+    if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
+    {
+        return sResult;
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_DELETE) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_PASTE) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
 
-    if (_tcsicmp(sVerb, CMID_VERB_OPEN) == 0)
+    return sResult;
+}
+
+void FolderCtrl::invokeCommandSelf(ContextMenu &aContextMenu, const xpr_tchar_t *aVerb, HTREEITEM aTreeItem)
+{
+    XPR_ASSERT(aVerb != XPR_NULL);
+
+    if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
     {
         SelectItem(aTreeItem);
-        return XPR_TRUE;
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_DELETE) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_DELETE) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuDelete(*this, aTreeItem);
         }
-
-        sResult = XPR_TRUE;
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_RENAME) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuRename(*this, aTreeItem);
         }
-
-        sResult = XPR_TRUE;
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_PASTE) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_PASTE) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuPaste(*this, aTreeItem);
         }
-
-        sResult = XPR_TRUE;
     }
-
-    return sResult;
+    else
+    {
+        XPR_ASSERT(0);
+    }
 }
 
 void FolderCtrl::OnSelchanging(NMHDR *aNmHdr, LRESULT *aResult) 
