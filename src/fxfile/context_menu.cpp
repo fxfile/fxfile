@@ -40,8 +40,7 @@ ContextMenu::ContextMenu(HWND aHwnd)
 
 ContextMenu::~ContextMenu(void)
 {
-    destroySubclass();
-    release();
+    destroy();
 }
 
 void ContextMenu::setFileScrapMenu(xpr_bool_t aShowFileScrapMenu)
@@ -321,7 +320,7 @@ xpr_bool_t ContextMenu::invokeCommand(const xpr_tchar_t *aVerb)
     return SUCCEEDED(sComResult) ? XPR_TRUE : XPR_FALSE;
 }
 
-void ContextMenu::destroySubclass(void)
+void ContextMenu::destroy(void)
 {
     if (XPR_IS_NOT_NULL(mSubclassData))
     {
@@ -336,10 +335,7 @@ void ContextMenu::destroySubclass(void)
         ::RemoveProp(mHwnd, PROP_CONTEXT_MENU);
         XPR_SAFE_DELETE(mSubclassData);
     }
-}
 
-void ContextMenu::release(void)
-{
     if (XPR_IS_NOT_NULL(mMenu))
     {
         ::DestroyMenu(mMenu);
@@ -376,8 +372,7 @@ xpr_bool_t ContextMenu::trackItemMenu(LPSHELLFOLDER  aShellFolder,
         }
     }
 
-    sContextMenu.destroySubclass();
-    sContextMenu.release();
+    sContextMenu.destroy();
 
     return sResult;
 }
@@ -401,8 +396,7 @@ xpr_bool_t ContextMenu::trackBackMenu(LPSHELLFOLDER aShellFolder, LPPOINT aPoint
         }
     }
 
-    sContextMenu.destroySubclass();
-    sContextMenu.release();
+    sContextMenu.destroy();
 
     return sResult;
 }
@@ -424,8 +418,7 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
                 sResult = sContextMenu.invokeCommand(aId);
         }
     }
-    sContextMenu.destroySubclass();
-    sContextMenu.release();
+    sContextMenu.destroy();
 
     return sResult;
 }
@@ -447,8 +440,7 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
                 sResult = sContextMenu.invokeCommand(aVerb);
         }
     }
-    sContextMenu.destroySubclass();
-    sContextMenu.release();
+    sContextMenu.destroy();
 
     return sResult;
 }

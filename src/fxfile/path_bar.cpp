@@ -586,8 +586,7 @@ void PathBar::trackContextMenu(CPoint aPoint)
             }
         }
 
-        sContextMenu.destroySubclass();
-        sContextMenu.release();
+        sContextMenu.destroy();
     }
 
     COM_RELEASE(sShellFolder);

@@ -59,8 +59,7 @@ public:
     xpr_bool_t invokeCommand(const xpr_tchar_t *aVerb);
     xpr_bool_t getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength) const;
     void getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2) const;
-    void destroySubclass(void);
-    void release(void);
+    void destroy(void);
 
     static xpr_bool_t trackItemMenu(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST *aPidls, xpr_uint_t aCount, LPPOINT aPoint, xpr_uint_t aFlags, HWND aWnd, xpr_uint_t aQueryFlags = CMF_EXPLORE | CMF_CANRENAME);
     static xpr_bool_t trackBackMenu(LPSHELLFOLDER aShellFolder, LPPOINT lppt, xpr_uint_t nFlags, HWND aWnd);
