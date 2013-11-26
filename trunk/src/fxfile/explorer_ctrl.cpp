@@ -3940,7 +3940,10 @@ xpr_bool_t ExplorerCtrl::OnContextMenuShell(CWnd *aWnd, CPoint aPoint, CRect aWi
             aPoint.y = sRect.bottom;
         }
 
+        xpr_tchar_t sVerb[0xff] = {0};
+        xpr_bool_t  sInvokeCommandSelf = XPR_FALSE;
         ContextMenu sContextMenu(GetSafeHwnd());
+
         if (sContextMenu.init(sShellFolder, sPidls, sCount) == XPR_TRUE)
         {
             xpr_uint_t sId = sContextMenu.trackPopupMenu(TPM_LEFTALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON, &aPoint);
@@ -3948,12 +3951,25 @@ xpr_bool_t ExplorerCtrl::OnContextMenuShell(CWnd *aWnd, CPoint aPoint, CRect aWi
             {
                 sId -= sContextMenu.getFirstId();
 
-                if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
+                if (sContextMenu.getCommandVerb(sId, sVerb, 0xfe) == XPR_TRUE)
+                {
+                    sInvokeCommandSelf = canInvokeCommandSelf(sVerb);
+                }
+
+                if (XPR_IS_FALSE(sInvokeCommandSelf))
+                {
                     sContextMenu.invokeCommand(sId);
+                }
             }
         }
+
         sContextMenu.destroySubclass();
         sContextMenu.release();
+
+        if (XPR_IS_TRUE(sInvokeCommandSelf))
+        {
+            invokeCommandSelf(sContextMenu, sVerb);
+        }
 
         sResult = XPR_TRUE;
     }
@@ -4196,54 +4212,73 @@ xpr_bool_t ExplorerCtrl::OnContextMenuHeader(CWnd *aWnd, CPoint aPoint, CRect aW
     return XPR_TRUE;
 }
 
-xpr_bool_t ExplorerCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId)
+xpr_bool_t ExplorerCtrl::canInvokeCommandSelf(const xpr_tchar_t *aVerb)
 {
-    if (XPR_IS_NULL(aContextMenu))
-        return XPR_FALSE;
+    XPR_ASSERT(aVerb != XPR_NULL);
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    xpr_tchar_t sVerb[0xff] = {0};
-    aContextMenu->getCommandVerb(aId, sVerb, 0xfe);
+    if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
+    {
+        LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(GetSelectionMark());
+        if (XPR_IS_NOT_NULL(sLvItemData) && XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
+        {
+            sResult = XPR_TRUE;
+        }
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_DELETE) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
+    else if (_tcsicmp(aVerb, CMID_VERB_PASTE) == 0)
+    {
+        sResult = XPR_TRUE;
+    }
 
-    if (_tcsicmp(sVerb, CMID_VERB_OPEN) == 0)
+    return XPR_FALSE;
+}
+
+void ExplorerCtrl::invokeCommandSelf(ContextMenu &aContextMenu, const xpr_tchar_t *aVerb)
+{
+    XPR_ASSERT(aVerb != XPR_NULL);
+
+    if (_tcsicmp(aVerb, CMID_VERB_OPEN) == 0)
     {
         LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(GetSelectionMark());
         if (XPR_IS_NOT_NULL(sLvItemData) && XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
         {
             execute(GetSelectionMark());
-            sResult = XPR_TRUE;
         }
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_DELETE) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_DELETE) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuDelete(*this);
         }
-
-        sResult = XPR_TRUE;
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_RENAME) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_RENAME) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuRename(*this);
         }
-
-        sResult = XPR_TRUE;
     }
-    else if (_tcsicmp(sVerb, CMID_VERB_PASTE) == 0)
+    else if (_tcsicmp(aVerb, CMID_VERB_PASTE) == 0)
     {
         if (mObserver != XPR_NULL)
         {
             mObserver->onContextMenuPaste(*this);
         }
-
-        sResult = XPR_TRUE;
     }
-
-    return sResult;
+    else
+    {
+        XPR_ASSERT(0);
+    }
 }
 
 void ExplorerCtrl::getSelItemData(LPSHELLFOLDER *aShellFolder, LPCITEMIDLIST **aPidls, xpr_sint_t &aCount, xpr_ulong_t aShellAttributes) const

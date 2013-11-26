@@ -385,7 +385,8 @@ protected:
     xpr_uint_t getThumbImageId(const xpr_tchar_t *aPath);
 
     // shell context menu
-    xpr_bool_t invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId);
+    xpr_bool_t canInvokeCommandSelf(const xpr_tchar_t *aVerb);
+    void       invokeCommandSelf(ContextMenu &aContextMenu, const xpr_tchar_t *aVerb);
     xpr_bool_t OnContextMenuShell(CWnd *aWnd, CPoint aPoint, CRect aWindowRect);
     xpr_bool_t OnContextMenuShellBkgnd(CWnd *aWnd, CPoint aPoint, CRect aWindowRect);
     xpr_bool_t OnContextMenuParent(CWnd *aWnd, CPoint aPoint, CRect aWindowRect);

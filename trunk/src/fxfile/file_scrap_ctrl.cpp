@@ -837,21 +837,28 @@ void FileScrapCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             CMenu sMenu;
             sMenu.CreatePopupMenu();
 
-            xpr_bool_t sOwnerMenu = XPR_FALSE;
+            xpr_uint_t  sId;
+            xpr_bool_t  sOwnerMenu = XPR_FALSE;
+            xpr_bool_t  sInvokeCommandSelf = XPR_FALSE;
             ContextMenu sContextMenu(GetSafeHwnd());
+
             if (sContextMenu.init(sShellFolder, (LPCITEMIDLIST *)sPidls, sCount) == XPR_TRUE && sContextMenu.getMenu(&sMenu) == XPR_TRUE)
             {
                 ::InsertMenu(sMenu.m_hMenu, 0, MF_BYPOSITION, sContextMenu.getFirstId() + CMID_OPEN_PARENT_FOLDER, gApp.loadString(XPR_STRING_LITERAL("cmd.search_result.open_parent_folder")));
                 ::InsertMenu(sMenu.m_hMenu, 1, MF_BYPOSITION | MF_SEPARATOR, 0, XPR_NULL);
                 //::SetMenuDefaultItem(sMenu.m_hMenu, 0, XPR_TRUE);
 
-                xpr_uint_t sId = ::TrackPopupMenuEx(sMenu.m_hMenu, sFlags, aPoint.x, aPoint.y, m_hWnd, XPR_NULL);
+                sId = ::TrackPopupMenuEx(sMenu.m_hMenu, sFlags, aPoint.x, aPoint.y, m_hWnd, XPR_NULL);
                 if (sId != -1)
                 {
                     sId -= sContextMenu.getFirstId();
 
-                    if (invokeCommandSelf(&sContextMenu, sId) == XPR_FALSE)
+                    sInvokeCommandSelf = canInvokeCommandSelf(sId);
+
+                    if (XPR_IS_FALSE(sInvokeCommandSelf))
+                    {
                         sContextMenu.invokeCommand(sId);
+                    }
                 }
 
                 sOwnerMenu = XPR_TRUE;
@@ -864,6 +871,13 @@ void FileScrapCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
             if (XPR_IS_FALSE(sOwnerMenu))
             {
                 ContextMenu::trackItemMenu(sShellFolder, (LPCITEMIDLIST *)sPidls, sCount, &aPoint, sFlags, m_hWnd);
+            }
+            else
+            {
+                if (XPR_IS_TRUE(sInvokeCommandSelf))
+                {
+                    invokeCommandSelf(sContextMenu, sId);
+                }
             }
         }
 
@@ -896,13 +910,20 @@ void FileScrapCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
     }
 }
 
-xpr_bool_t FileScrapCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId)
+xpr_bool_t FileScrapCtrl::canInvokeCommandSelf(xpr_uint_t aId)
 {
-    if (XPR_IS_NULL(aContextMenu))
-        return XPR_FALSE;
-
     xpr_bool_t sResult = XPR_FALSE;
 
+    if (aId == CMID_OPEN_PARENT_FOLDER)
+    {
+        sResult = XPR_TRUE;
+    }
+
+    return sResult;
+}
+
+void FileScrapCtrl::invokeCommandSelf(ContextMenu &aContextMenu, xpr_uint_t aId)
+{
     xpr_sint_t sIndex = GetSelectionMark();
 
     if (aId == CMID_OPEN_PARENT_FOLDER)
@@ -919,8 +940,10 @@ xpr_bool_t FileScrapCtrl::invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_
             }
         }
     }
-
-    return sResult;
+    else
+    {
+        XPR_ASSERT(0);
+    }
 }
 
 void FileScrapCtrl::OnBegindrag(NMHDR *aNmHdr, LRESULT *aResult) 

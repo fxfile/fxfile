@@ -81,7 +81,8 @@ protected:
     void doExecuteError(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
     void doExecuteError(const xpr_tchar_t *aPath);
 
-    xpr_bool_t invokeCommandSelf(ContextMenu *aContextMenu, xpr_uint_t aId);
+    xpr_bool_t canInvokeCommandSelf(xpr_uint_t aId);
+    void       invokeCommandSelf(ContextMenu &aContextMenu, xpr_uint_t aId);
     static xpr_sint_t CALLBACK DefaultItemCompareProc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 
     xpr_sint_t findItemSignature(xpr_uint_t aSignature);

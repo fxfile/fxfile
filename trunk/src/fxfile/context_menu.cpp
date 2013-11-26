@@ -23,7 +23,7 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t PROP_CONTEXT_MENU[] = XPR_STRING_LITERAL("fxfile::SubclassData");
+static const xpr_tchar_t PROP_CONTEXT_MENU[] = XPR_STRING_LITERAL("OldWndProc");
 
 xpr_bool_t ContextMenu::mShowFileScrapMenu = XPR_FALSE;
 xpr_bool_t ContextMenu::mAnimationMenu     = XPR_FALSE;
@@ -32,7 +32,7 @@ ContextMenu::ContextMenu(HWND aHwnd)
     : mHwnd(aHwnd)
     , mShellFolder(XPR_NULL), mPidls(XPR_NULL), mCount(0)
     , mMenu(XPR_NULL)
-    , mContextMenu(XPR_NULL), mContextMenu2(XPR_NULL)
+    , mContextMenu(XPR_NULL), mContextMenu2(XPR_NULL), mContextMenu3(XPR_NULL)
     , mFirstId(CMID_DEF_ID_FIRST)
     , mSubclassData(XPR_NULL)
 {
@@ -63,12 +63,16 @@ xpr_bool_t ContextMenu::init(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST *aPidls, 
     mPidls = aPidls;
     mCount = aCount;
 
-    HRESULT sHResult;
-    sHResult = mShellFolder->GetUIObjectOf(mHwnd, mCount, (LPCITEMIDLIST *)mPidls, IID_IContextMenu, XPR_NULL, (LPVOID *)&mContextMenu);
-    if (FAILED(sHResult))
+    HRESULT sComResult;
+    sComResult = mShellFolder->GetUIObjectOf(mHwnd, mCount, (LPCITEMIDLIST *)mPidls, IID_IContextMenu, XPR_NULL, (LPVOID *)&mContextMenu);
+    if (FAILED(sComResult))
         return XPR_FALSE;
 
-    mContextMenu->QueryInterface(IID_IContextMenu2, (LPVOID *)&mContextMenu2);
+    sComResult = mContextMenu->QueryInterface(IID_IContextMenu3, (LPVOID *)&mContextMenu3);
+    if (FAILED(sComResult))
+    {
+        mContextMenu->QueryInterface(IID_IContextMenu2, (LPVOID *)&mContextMenu2);
+    }
 
     return XPR_TRUE;
 }
@@ -80,12 +84,16 @@ xpr_bool_t ContextMenu::init(LPSHELLFOLDER aShellFolder)
 
     mShellFolder = aShellFolder;
 
-    HRESULT sHResult;
-    sHResult = mShellFolder->CreateViewObject(mHwnd, IID_IContextMenu, (LPVOID*)&mContextMenu);
-    if (FAILED(sHResult))
+    HRESULT sComResult;
+    sComResult = mShellFolder->CreateViewObject(mHwnd, IID_IContextMenu, (LPVOID*)&mContextMenu);
+    if (FAILED(sComResult))
         return XPR_FALSE;
 
-    mContextMenu->QueryInterface(IID_IContextMenu2, (LPVOID *)&mContextMenu2);
+    sComResult = mContextMenu->QueryInterface(IID_IContextMenu3, (LPVOID *)&mContextMenu3);
+    if (FAILED(sComResult))
+    {
+        mContextMenu->QueryInterface(IID_IContextMenu2, (LPVOID *)&mContextMenu2);
+    }
 
     return XPR_TRUE;
 }
@@ -96,19 +104,33 @@ LRESULT CALLBACK ContextMenu::subclassWndProc(HWND aWnd, xpr_uint_t aMsg, WPARAM
     if (XPR_IS_NOT_NULL(sSubclassData))
     {
         LPCONTEXTMENU2 sContextMenu2 = sSubclassData->mContextMenu2;
+        LPCONTEXTMENU3 sContextMenu3 = sSubclassData->mContextMenu3;
+
         switch (aMsg)
         {
+        case WM_MENUCHAR:
+            if (XPR_IS_NOT_NULL(sContextMenu3))
+            {
+                LRESULT lResult = 0;
+                sContextMenu3->HandleMenuMsg2(aMsg, wParam, lParam, &lResult);
+                return lResult;
+            }
+
         case WM_INITMENUPOPUP:
         case WM_DRAWITEM:
-        case WM_MENUCHAR:
         case WM_MEASUREITEM:
-            if (XPR_IS_NOT_NULL(sContextMenu2))
+            if (XPR_IS_NOT_NULL(sContextMenu3))
+            {
+                LRESULT lResult = 0;
+                sContextMenu3->HandleMenuMsg2(aMsg, wParam, lParam, &lResult);
+            }
+            else if (XPR_IS_NOT_NULL(sContextMenu2))
             {
                 if (SUCCEEDED(sContextMenu2->HandleMenuMsg(aMsg, wParam, lParam)))
                     return XPR_FALSE;
             }
 
-            return XPR_TRUE;
+            return (aMsg == WM_INITMENUPOPUP ? 0 : TRUE);
         }
 
         return CallWindowProc(sSubclassData->mOldWndProc, aWnd, aMsg, wParam, lParam);
@@ -117,7 +139,7 @@ LRESULT CALLBACK ContextMenu::subclassWndProc(HWND aWnd, xpr_uint_t aMsg, WPARAM
     return DefWindowProc(aWnd, aMsg, wParam, lParam);
 }
 
-void ContextMenu::getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2)
+void ContextMenu::getInterface(LPCONTEXTMENU *aContextMenu, LPCONTEXTMENU2 *aContextMenu2) const
 {
     *aContextMenu  = mContextMenu;
     *aContextMenu2 = mContextMenu2;
@@ -128,20 +150,29 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aFirstId, xpr_uint_t aQ
     if (XPR_IS_NULL(aMenu) || IsWindow(mHwnd) == XPR_FALSE)
         return XPR_FALSE;
 
-    HRESULT sHResult = E_FAIL;
-    if (XPR_IS_NOT_NULL(mContextMenu2))
-        sHResult = mContextMenu2->QueryContextMenu(aMenu->m_hMenu, 0, aFirstId, aFirstId + 0x7FFF, aQueryFlags);
-
-    if (FAILED(sHResult))
+    HRESULT sComResult = E_FAIL;
+    if (XPR_IS_NOT_NULL(mContextMenu3))
     {
-        sHResult = mContextMenu->QueryContextMenu(aMenu->m_hMenu, 0, aFirstId, aFirstId + 0x7FFF, aQueryFlags);
-        COM_RELEASE(mContextMenu2);
-
-        if (FAILED(sHResult))
-            return XPR_FALSE;
+        sComResult = mContextMenu3->QueryContextMenu(aMenu->m_hMenu, 0, aFirstId, aFirstId + 0x7FFF, aQueryFlags);
+    }
+    else if (XPR_IS_NOT_NULL(mContextMenu2))
+    {
+        sComResult = mContextMenu2->QueryContextMenu(aMenu->m_hMenu, 0, aFirstId, aFirstId + 0x7FFF, aQueryFlags);
     }
 
-    if (XPR_IS_NOT_NULL(mContextMenu2))
+    if (FAILED(sComResult))
+    {
+        sComResult = mContextMenu->QueryContextMenu(aMenu->m_hMenu, 0, aFirstId, aFirstId + 0x7FFF, aQueryFlags);
+        COM_RELEASE(mContextMenu2);
+        COM_RELEASE(mContextMenu3);
+
+        if (FAILED(sComResult))
+        {
+            return XPR_FALSE;
+        }
+    }
+
+    if (XPR_IS_NOT_NULL(mContextMenu2) || XPR_IS_NOT_NULL(mContextMenu3))
     {
         int nIndex = 
 #if defined(XPR_CFG_COMPILER_64BIT)
@@ -152,6 +183,7 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aFirstId, xpr_uint_t aQ
 
         mSubclassData = new SUBCLASSDATA;
         mSubclassData->mContextMenu2 = mContextMenu2;
+        mSubclassData->mContextMenu3 = mContextMenu3;
         mSubclassData->mOldWndProc   = (WNDPROC)::SetWindowLongPtr(mHwnd, nIndex, (LONG_PTR)subclassWndProc);
         ::SetProp(mHwnd, PROP_CONTEXT_MENU, (HANDLE)mSubclassData);
     }
@@ -168,7 +200,7 @@ xpr_bool_t ContextMenu::getMenu(CMenu *aMenu, xpr_uint_t aFirstId, xpr_uint_t aQ
     return XPR_TRUE;
 }
 
-xpr_uint_t ContextMenu::getFirstId(void)
+xpr_uint_t ContextMenu::getFirstId(void) const
 {
     return mFirstId;
 }
@@ -192,7 +224,7 @@ xpr_uint_t ContextMenu::trackPopupMenu(xpr_uint_t aFlags, LPPOINT aPoint, xpr_ui
     return sId;
 }
 
-xpr_bool_t ContextMenu::getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength)
+xpr_bool_t ContextMenu::getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_sint_t aMaxVerbLength) const
 {
     if (XPR_IS_NULL(mContextMenu))
         return XPR_FALSE;
@@ -200,10 +232,10 @@ xpr_bool_t ContextMenu::getCommandVerb(xpr_uint_t aId, xpr_tchar_t *aVerb, xpr_s
     if (aId == 0xFFFFFFFF)
         return XPR_FALSE;
 
-    HRESULT sHResult;
-    sHResult = mContextMenu->GetCommandString(aId, GCS_VERB, XPR_NULL, (xpr_char_t *)aVerb, aMaxVerbLength);
+    HRESULT sComResult;
+    sComResult = mContextMenu->GetCommandString(aId, GCS_VERB, XPR_NULL, (xpr_char_t *)aVerb, aMaxVerbLength);
 
-    return SUCCEEDED(sHResult);
+    return SUCCEEDED(sComResult);
 }
 
 xpr_bool_t ContextMenu::invokeCommand(xpr_uint_t aId)
@@ -220,7 +252,7 @@ xpr_bool_t ContextMenu::invokeCommand(xpr_uint_t aId)
     xpr_tchar_t sVerb[0xff] = {0};
     getCommandVerb(aId, sVerb, 0xfe);
 
-    xpr_bool_t sHResult = XPR_FALSE;
+    xpr_bool_t sComResult = XPR_FALSE;
 
     if (XPR_IS_RANGE(0, aId, 0x7FFF - 1))
     {
@@ -230,15 +262,25 @@ xpr_bool_t ContextMenu::invokeCommand(xpr_uint_t aId)
         sCmInvokeCommandInfo.lpVerb = (const xpr_char_t *)MAKEINTRESOURCE(aId);
         sCmInvokeCommandInfo.nShow  = SW_SHOW;
 
-        HRESULT sHResult;
-        if (mContextMenu2 != XPR_NULL) sHResult = mContextMenu2->InvokeCommand(&sCmInvokeCommandInfo);
-        else                           sHResult = mContextMenu->InvokeCommand(&sCmInvokeCommandInfo);
+        HRESULT sComResult;
+        if (XPR_IS_NOT_NULL(mContextMenu3))
+        {
+            sComResult = mContextMenu3->InvokeCommand(&sCmInvokeCommandInfo);
+        }
+        else if (XPR_IS_NOT_NULL(mContextMenu2))
+        {
+            sComResult = mContextMenu2->InvokeCommand(&sCmInvokeCommandInfo);
+        }
+        else
+        {
+            sComResult = mContextMenu->InvokeCommand(&sCmInvokeCommandInfo);
+        }
 
-        if (SUCCEEDED(sHResult))
-            sHResult = XPR_TRUE;
+        if (SUCCEEDED(sComResult))
+            sComResult = XPR_TRUE;
     }
 
-    return sHResult;
+    return sComResult;
 }
 
 xpr_bool_t ContextMenu::invokeCommand(const xpr_tchar_t *aVerb)
@@ -262,11 +304,21 @@ xpr_bool_t ContextMenu::invokeCommand(const xpr_tchar_t *aVerb)
     sCmInvokeCommandInfo.lpVerb = sVerb;
     sCmInvokeCommandInfo.nShow  = SW_SHOW;
 
-    HRESULT sHResult;
-    if (mContextMenu2 != XPR_NULL) sHResult = mContextMenu2->InvokeCommand(&sCmInvokeCommandInfo);
-    else                           sHResult = mContextMenu->InvokeCommand(&sCmInvokeCommandInfo);
+    HRESULT sComResult;
+    if (XPR_IS_NOT_NULL(mContextMenu3))
+    {
+        sComResult = mContextMenu3->InvokeCommand(&sCmInvokeCommandInfo);
+    }
+    else if (XPR_IS_NOT_NULL(mContextMenu2))
+    {
+        sComResult = mContextMenu2->InvokeCommand(&sCmInvokeCommandInfo);
+    }
+    else
+    {
+        sComResult = mContextMenu->InvokeCommand(&sCmInvokeCommandInfo);
+    }
 
-    return SUCCEEDED(sHResult) ? XPR_TRUE : XPR_FALSE;
+    return SUCCEEDED(sComResult) ? XPR_TRUE : XPR_FALSE;
 }
 
 void ContextMenu::destroySubclass(void)
@@ -296,6 +348,7 @@ void ContextMenu::release(void)
 
     COM_RELEASE(mContextMenu);
     COM_RELEASE(mContextMenu2);
+    COM_RELEASE(mContextMenu3);
 }
 
 xpr_bool_t ContextMenu::trackItemMenu(LPSHELLFOLDER  aShellFolder,
@@ -309,7 +362,7 @@ xpr_bool_t ContextMenu::trackItemMenu(LPSHELLFOLDER  aShellFolder,
     if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidls) || aCount == 0 || XPR_IS_NULL(aPoint))
         return XPR_FALSE;
 
-    xpr_bool_t sHResult = XPR_FALSE;
+    xpr_bool_t sResult = XPR_FALSE;
 
     ContextMenu sContextMenu(aWnd);
     if (sContextMenu.init(aShellFolder, aPidls, aCount) == XPR_TRUE)
@@ -319,14 +372,14 @@ xpr_bool_t ContextMenu::trackItemMenu(LPSHELLFOLDER  aShellFolder,
         {
             xpr_uint_t sCmdId = sId - sContextMenu.getFirstId();
 
-            sHResult = sContextMenu.invokeCommand(sCmdId);
+            sResult = sContextMenu.invokeCommand(sCmdId);
         }
     }
 
     sContextMenu.destroySubclass();
     sContextMenu.release();
 
-    return sHResult;
+    return sResult;
 }
 
 xpr_bool_t ContextMenu::trackBackMenu(LPSHELLFOLDER aShellFolder, LPPOINT aPoint, xpr_uint_t aFlags, HWND aWnd)
@@ -334,7 +387,7 @@ xpr_bool_t ContextMenu::trackBackMenu(LPSHELLFOLDER aShellFolder, LPPOINT aPoint
     if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPoint))
         return XPR_FALSE;
 
-    xpr_bool_t sHResult = XPR_FALSE;
+    xpr_bool_t sResult = XPR_FALSE;
 
     ContextMenu sContextMenu(aWnd);
     if (sContextMenu.init(aShellFolder) == XPR_TRUE)
@@ -344,14 +397,14 @@ xpr_bool_t ContextMenu::trackBackMenu(LPSHELLFOLDER aShellFolder, LPPOINT aPoint
         {
             xpr_uint_t sCmdId = sId - sContextMenu.getFirstId();
 
-            sHResult = sContextMenu.invokeCommand(sCmdId);
+            sResult = sContextMenu.invokeCommand(sCmdId);
         }
     }
 
     sContextMenu.destroySubclass();
     sContextMenu.release();
 
-    return sHResult;
+    return sResult;
 }
 
 xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST *aPidls, xpr_uint_t aCount, xpr_uint_t aId, HWND aWnd)
@@ -359,7 +412,7 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
     if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidls) || aCount == 0)
         return XPR_FALSE;
 
-    xpr_bool_t sHResult = XPR_FALSE;
+    xpr_bool_t sResult = XPR_FALSE;
 
     ContextMenu sContextMenu(aWnd);
     if (sContextMenu.init(aShellFolder, aPidls, aCount) == XPR_TRUE)
@@ -368,13 +421,13 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
         if (sMenu.CreatePopupMenu() == XPR_TRUE)
         {
             if (sContextMenu.getMenu(&sMenu, CMID_DEF_ID_FIRST, CMF_EXPLORE) == XPR_TRUE)
-                sHResult = sContextMenu.invokeCommand(aId);
+                sResult = sContextMenu.invokeCommand(aId);
         }
     }
     sContextMenu.destroySubclass();
     sContextMenu.release();
 
-    return sHResult;
+    return sResult;
 }
 
 xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST *aPidls, xpr_uint_t aCount, const xpr_tchar_t *aVerb, HWND aWnd)
@@ -382,7 +435,7 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
     if (XPR_IS_NULL(aShellFolder) || XPR_IS_NULL(aPidls) || aCount == 0 || XPR_IS_NULL(aVerb))
         return XPR_FALSE;
 
-    xpr_bool_t sHResult = XPR_FALSE;
+    xpr_bool_t sResult = XPR_FALSE;
 
     ContextMenu sContextMenu(aWnd);
     if (sContextMenu.init(aShellFolder, aPidls, aCount) == XPR_TRUE)
@@ -391,12 +444,12 @@ xpr_bool_t ContextMenu::invokeCommand(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST 
         if (sMenu.CreatePopupMenu() == XPR_TRUE)
         {
             if (sContextMenu.getMenu(&sMenu, CMID_DEF_ID_FIRST, CMF_EXPLORE) == XPR_TRUE)
-                sHResult = sContextMenu.invokeCommand(aVerb);
+                sResult = sContextMenu.invokeCommand(aVerb);
         }
     }
     sContextMenu.destroySubclass();
     sContextMenu.release();
 
-    return sHResult;
+    return sResult;
 }
 } // namespace fxfile
