@@ -437,6 +437,18 @@ BOOL CSizableReBar::OnNotify( WPARAM wParam, LPARAM lParam, LRESULT* pResult )
             ::SendMessage( rbbi.hwndChild, WM_REBAR_CHILDSIZE,
                 ( WPARAM )&lprbcs->rcBand,
                 ( LPARAM )&lprbcs->rcChild );
+
+            // resize, if rebar window size not eqauls
+            CRect rcWindow;
+            CRect rcReBar;
+            GetWindowRect(&rcWindow);
+            m_rbCtrl.GetWindowRect(&rcReBar);
+
+            if (rcWindow != rcReBar)
+            {
+                SetWindowPos(NULL, 0, 0, rcReBar.Width(), rcReBar.Height(), SWP_NOZORDER | SWP_NOMOVE);
+                GetParent()->Invalidate();
+            }
             break;
         }
         case RBN_CHEVRONPUSHED:
