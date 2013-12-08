@@ -158,14 +158,13 @@ void CfgAppearanceColorDlg::OnDestroy(void)
 
 void CfgAppearanceColorDlg::onInit(Option::Config &aConfig)
 {
-    CComboBox *sViewColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_VIEW);
-
-    XPR_ASSERT(sViewColorComboBox != XPR_NULL);
-
     xpr_sint_t i;
     xpr::tstring sStringId;
     xpr::tstring sViewText;
     ViewColor *pViewColor;
+    CComboBox *sViewColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_VIEW);
+
+    XPR_ASSERT(sViewColorComboBox != XPR_NULL);
 
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
@@ -183,7 +182,7 @@ void CfgAppearanceColorDlg::onInit(Option::Config &aConfig)
         pViewColor->mFolderTreeHighlightColor = aConfig.mFolderTreeHighlightColor[i];
         pViewColor->mFolderTreeHighlight      = aConfig.mFolderTreeHighlight[i];
 
-        sStringId.format(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.view%d"), i + 1);
+        sStringId.format(XPR_STRING_LITERAL("popup.cfg.body.appearance.color.combo.view%d"), i + 1);
 
         sViewColorComboBox->AddString(gApp.loadString(sStringId.c_str()));
         sViewColorComboBox->SetItemData(i, (DWORD_PTR)pViewColor);
@@ -204,17 +203,9 @@ void CfgAppearanceColorDlg::onApply(Option::Config &aConfig)
 
     xpr_sint_t i, sCount;
     ViewColor *sViewColor;
-    CComboBox *sViewColorComboBox            = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_VIEW);
-    CComboBox *sFileListTextColorComboBox    = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_TEXT_COLOR);
-    CComboBox *sFileListBkgndColorComboBox   = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_COLOR);
-    CComboBox *sFolderTreeTextColorComboBox  = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_TEXT_COLOR);
-    CComboBox *sFolderTreeBkgndColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_BKGND_COLOR);
+    CComboBox *sViewColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_VIEW);
 
-    XPR_ASSERT(sViewColorComboBox            != XPR_NULL);
-    XPR_ASSERT(sFileListTextColorComboBox    != XPR_NULL);
-    XPR_ASSERT(sFileListBkgndColorComboBox   != XPR_NULL);
-    XPR_ASSERT(sFolderTreeTextColorComboBox  != XPR_NULL);
-    XPR_ASSERT(sFolderTreeBkgndColorComboBox != XPR_NULL);
+    XPR_ASSERT(sViewColorComboBox != XPR_NULL);
 
     sCount = sViewColorComboBox->GetCount();
     for (i = 0; i < sCount; ++i)
