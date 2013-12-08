@@ -213,7 +213,6 @@
 #define IDD_CFG_APPEARANCE_SIZE_FORMAT  431
 #define IDD_CFG_APPEARANCE_LANGUAGE     432
 #define IDD_CFG_APPEARANCE_THUMBNAIL    433
-#define IDD_CFG_APPEARANCE_COLOR_VIEW   434
 #define IDD_CFG_APPEARANCE              435
 #define IDD_CFG_GENERAL_STARTUP_VIEW    436
 #define IDD_CFG_FUNC_FOLDER_TREE        437
@@ -1391,6 +1390,7 @@
 #define IDC_CFG_STARTUP_TAB             1815
 #define IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE 1815
 #define IDC_CFG_STARTUP_VIEW_STARTUP    1816
+#define IDC_CFG_COLOR_APPLY_ALL         1816
 #define IDC_CFG_STARTUP_VIEW_LABEL_STARTUP 1817
 #define IDC_CFG_STARTUP_VIEW_LABEL_FOLDER 1818
 #define IDC_CFG_STARTUP_VIEW_FOLDER     1819
@@ -1419,6 +1419,7 @@
 #define IDC_ABOUT_CREDITS               1847
 #define IDC_PROGRAM                     1848
 #define IDC_ABOUT_PROGRAM               1848
+#define IDC_CFG_COLOR_VIEW              1849
 #define ID_FILE_NEW_FOLDER              30000
 #define ID_FILE_NEW_FILE                30001
 #define ID_FILE_NEW_TEXT                30002
@@ -1820,7 +1821,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        425
 #define _APS_NEXT_COMMAND_VALUE         50006
-#define _APS_NEXT_CONTROL_VALUE         1849
+#define _APS_NEXT_CONTROL_VALUE         1850
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

@@ -96,9 +96,6 @@ FilterItem *Filter::getFilterFromName(const xpr::tstring &aName)
 
 xpr_sint_t Filter::getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
 {
-    if (XPR_IS_NULL(aPath))
-        return 0;
-
     FilterItem *sFilterItem;
     FilterDeque::iterator sIterator;
 
@@ -117,6 +114,9 @@ xpr_sint_t Filter::getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
 
         return -1;
     }
+
+    if (XPR_IS_NULL(aPath))
+        return 0;
 
     const xpr_tchar_t *sExt = GetFileExt(aPath);
     if (XPR_IS_NOT_NULL(sExt))

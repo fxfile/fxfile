@@ -1434,12 +1434,14 @@
 			<String ID="popup.cfg.body.appearance.font.check.folder_tree_custom_font">폴더 트리의 사용자 정의 글꼴 사용(&amp;D):</String>
 			<String ID="popup.cfg.body.appearance.font.check.folder_tree_item_height">폴더 트리의 항목 높이(&amp;H):</String>
 
-			<String ID="popup.cfg.body.appearance.color.tab.view1">창 #&amp;1</String>
-			<String ID="popup.cfg.body.appearance.color.tab.view2">창 #&amp;2</String>
-			<String ID="popup.cfg.body.appearance.color.tab.view3">창 #&amp;3</String>
-			<String ID="popup.cfg.body.appearance.color.tab.view4">창 #&amp;4</String>
-			<String ID="popup.cfg.body.appearance.color.tab.view5">창 #&amp;5</String>
-			<String ID="popup.cfg.body.appearance.color.tab.view6">창 #&amp;6</String>
+			<String ID="popup.cfg.body.appearance.color.view1">창 #1</String>
+			<String ID="popup.cfg.body.appearance.color.view2">창 #2</String>
+			<String ID="popup.cfg.body.appearance.color.view3">창 #3</String>
+			<String ID="popup.cfg.body.appearance.color.view4">창 #4</String>
+			<String ID="popup.cfg.body.appearance.color.view5">창 #5</String>
+			<String ID="popup.cfg.body.appearance.color.view6">창 #6</String>
+			<String ID="popup.cfg.body.appearance.color.button.apply_all">모두 적용</String>
+			<String ID="popup.cfg.body.appearance.color.type.file_list">파일 리스트와 동일</String>
 			<String ID="popup.cfg.body.appearance.color.label.actived_view_color">활성화된 창 표시(&amp;V):</String>
 			<String ID="popup.cfg.body.appearance.color.label.info_bar_bookmark_color">정보바에서의 북마크 색(&amp;B):</String>
 			<String ID="popup.cfg.body.appearance.color.check.path_bar_highlight_color">경로바 강조색 사용(&amp;P):</String>
