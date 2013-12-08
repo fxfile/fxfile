@@ -35,10 +35,20 @@ protected:
     virtual void onInit(Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
 
-protected:
-    CTabCtrl mTabCtrl;
-    CfgGeneralStartupViewDlg *mViewDlg[MAX_VIEW_SPLIT];
-    xpr_sint_t                mOldViewIndex;
+private:
+    struct ViewStartup
+    {
+        xpr_sint_t   mExplorerInitFolderType;
+        xpr_bool_t   mExplorerNoNetLastFolder;
+        xpr::tstring mExplorerInitFolder;
+    };
+
+    void loadViewStartup(const ViewStartup &aViewStartup);
+    void saveViewStartup(ViewStartup &aViewStartup);
+    void saveViewStartup(void);
+
+private:
+    xpr_sint_t mOldViewIndex;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -47,7 +57,9 @@ protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnDestroy(void);
-    afx_msg void OnSelChangeTab(NMHDR *aNMHDR, LRESULT *aResult);
+    afx_msg void OnSelChangeView(void);
+    afx_msg void OnApplyAll(void);
+    afx_msg void OnFolderBrowse(void);
 };
 } // namespace cfg
 } // namespace fxfile

@@ -661,8 +661,6 @@
                 './cfg/cfg_general_dlg.h',
                 './cfg/cfg_general_startup_dlg.cpp',
                 './cfg/cfg_general_startup_dlg.h',
-                './cfg/cfg_general_startup_view_dlg.cpp',
-                './cfg/cfg_general_startup_view_dlg.h',
                 './cfg/cfg_main_dlg.cpp',
                 './cfg/cfg_main_dlg.h',
                 './cfg/filter_set_dlg.cpp',
