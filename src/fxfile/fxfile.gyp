@@ -616,8 +616,6 @@
                 './cfg/cfg_adv_hotkey_dlg.h',
                 './cfg/cfg_appearance_color_dlg.cpp',
                 './cfg/cfg_appearance_color_dlg.h',
-                './cfg/cfg_appearance_color_view_dlg.cpp',
-                './cfg/cfg_appearance_color_view_dlg.h',
                 './cfg/cfg_appearance_dlg.cpp',
                 './cfg/cfg_appearance_dlg.h',
                 './cfg/cfg_appearance_file_list_dlg.cpp',

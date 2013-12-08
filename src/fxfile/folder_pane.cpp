@@ -18,6 +18,7 @@
 #include "main_frame.h"
 #include "folder_ctrl.h"
 #include "option.h"
+#include "filter.h"
 
 #include "cmd/router/cmd_parameters.h"
 #include "cmd/router/cmd_parameter_define.h"
@@ -151,6 +152,8 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
 {
     XPR_ASSERT(aFolderCtrl != XPR_NULL);
 
+    FilterMgr &sFilterMgr = FilterMgr::instance();
+
     FolderCtrl::Option sOption;
 
     sOption.mMouseClick               = aOption.mConfig.mMouseClick;
@@ -158,9 +161,9 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
     sOption.mShowSystemAttribute      = aOption.mConfig.mShowSystemAttribute;
     sOption.mRenameByMouse            = aOption.mConfig.mRenameByMouse;
 
-    if (aOption.mConfig.mFolderTreeBkgndColorType[mViewIndex] == FOLDER_TREE_CUSTOM_EXPLORER)
+    if (aOption.mConfig.mFolderTreeBkgndColorType[mViewIndex] == COLOR_TYPE_FILE_LIST)
     {
-        sOption.mBkgndColorType       = COLOR_TYPE_CUSTOM;
+        sOption.mBkgndColorType       = aOption.mConfig.mExplorerBkgndColorType[mViewIndex];
         sOption.mBkgndColor           = aOption.mConfig.mExplorerBkgndColor[mViewIndex];
     }
     else
@@ -169,15 +172,27 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
         sOption.mBkgndColor           = aOption.mConfig.mFolderTreeBkgndColor[mViewIndex];
     }
 
-    if (aOption.mConfig.mFolderTreeTextColorType[mViewIndex] == FOLDER_TREE_CUSTOM_EXPLORER)
+    if (sOption.mBkgndColorType == COLOR_TYPE_FILTERING)
     {
-        sOption.mTextColorType        = COLOR_TYPE_CUSTOM;
+        sOption.mBkgndColorType       = COLOR_TYPE_CUSTOM;
+        sOption.mBkgndColor           = sFilterMgr.getColor(XPR_NULL, XPR_TRUE);
+    }
+
+    if (aOption.mConfig.mFolderTreeTextColorType[mViewIndex] == COLOR_TYPE_FILE_LIST)
+    {
+        sOption.mTextColorType        = aOption.mConfig.mExplorerTextColorType[mViewIndex];
         sOption.mTextColor            = aOption.mConfig.mExplorerTextColor[mViewIndex];
     }
     else
     {
         sOption.mTextColorType        = aOption.mConfig.mFolderTreeTextColorType[mViewIndex];
         sOption.mTextColor            = aOption.mConfig.mFolderTreeTextColor[mViewIndex];
+    }
+
+    if (sOption.mTextColorType == COLOR_TYPE_FILTERING)
+    {
+        sOption.mTextColorType        = COLOR_TYPE_CUSTOM;
+        sOption.mTextColor            = sFilterMgr.getColor(XPR_NULL, XPR_TRUE);
     }
 
     if (XPR_IS_TRUE(aOption.mConfig.mFolderTreeCustomFont))

@@ -19,8 +19,6 @@ namespace fxfile
 {
 namespace cfg
 {
-class CfgAppearanceColorViewDlg;
-
 class CfgAppearanceColorDlg : public CfgDlg
 {
     typedef CfgDlg super;
@@ -36,14 +34,37 @@ protected:
     virtual void onInit(Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
 
-protected:
-    CTabCtrl        mTabCtrl;
+private:
+    struct ViewColor
+    {
+        xpr_sint_t   mExplorerTextColorType;
+        xpr_uint_t   mExplorerTextColor;
+        xpr_sint_t   mExplorerBkgndColorType;
+        xpr_uint_t   mExplorerBkgndColor;
+        xpr_sint_t   mFolderTreeTextColorType;
+        xpr_uint_t   mFolderTreeTextColor;
+        xpr_sint_t   mFolderTreeBkgndColorType;
+        xpr_uint_t   mFolderTreeBkgndColor;
+        xpr_sint_t   mExplorerBkgndImage;
+        xpr::tstring mExplorerBkgndImagePath;
+        xpr_sint_t   mFolderTreeHighlightColor;
+        xpr_sint_t   mFolderTreeHighlight;
+    };
+
+    void loadViewColor(const ViewColor &aViewColor);
+    void saveViewColor(ViewColor &aViewColor);
+    void saveViewColor(void);
+
+private:
+    xpr_sint_t      mOldViewIndex;
+    CColourPickerXP mFileListTextCustomColorCtrl;
+    CColourPickerXP mFileListBkgndCustomColorCtrl;
+    CColourPickerXP mFolderTreeTextCustomColorCtrl;
+    CColourPickerXP mFolderTreeBkgndCustomColorCtrl;
+    CColourPickerXP mFolderTreeInactiveHighlightColorCtrl;
     CColourPickerXP mActivedViewColorCtrl;
     CColourPickerXP mInfoBarBookmarkColorCtrl;
     CColourPickerXP mPathBarHighlightColorCtrl;
-
-    CfgAppearanceColorViewDlg *mViewDlg[MAX_VIEW_SPLIT];
-    xpr_sint_t                mOldViewIndex;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -52,7 +73,9 @@ protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnDestroy(void);
-    afx_msg void OnSelChangeTab(NMHDR *aNMHDR, LRESULT *aResult);
+    afx_msg void OnApplyAll(void);
+    afx_msg void OnSelChangeView(void);
+    afx_msg void OnFileListBkgndImageBrowse(void);
     afx_msg LRESULT OnSelEndOK(WPARAM aWParam, LPARAM aLParam);
 };
 } // namespace cfg

@@ -16,8 +16,10 @@
 // Neutral resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
 LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-#pragma code_page(1252)
+#pragma code_page(949)
+#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -126,7 +128,7 @@ FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "F&ormat:",IDC_CREATE_LABEL_FORMAT,7,7,92,14,SS_CENTERIMAGE
     EDITTEXT        IDC_CREATE_FORMAT,7,20,182,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "¢º",IDC_CREATE_FORMAT_MENU,191,20,13,14
+    PUSHBUTTON      "¡Ë¨¬",IDC_CREATE_FORMAT_MENU,191,20,13,14
     PUSHBUTTON      "Number digit",IDC_CREATE_FORMAT_AUTO_NUM,79,38,39,13
     PUSHBUTTON      "Date",IDC_CREATE_FORMAT_DATE,124,38,39,13
     PUSHBUTTON      "Time",IDC_CREATE_FORMAT_TIME,165,38,39,13
@@ -334,8 +336,8 @@ BEGIN
     LTEXT           "&Destination file:",IDC_MERGE_LABEL_DEST_FILE,7,130,99,8
     EDITTEXT        IDC_MERGE_DEST_FILE,7,142,202,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_MERGE_DEST_FILE_BROWSE,211,142,14,14
-    PUSHBUTTON      "¡è",IDC_MERGE_ITEM_UP,7,164,13,12
-    PUSHBUTTON      "¡é",IDC_MERGE_ITEM_DOWN,23,164,13,12
+    PUSHBUTTON      "¢®e",IDC_MERGE_ITEM_UP,7,164,13,12
+    PUSHBUTTON      "¢®e",IDC_MERGE_ITEM_DOWN,23,164,13,12
     CONTROL         "Progress1",IDC_MERGE_PROGRESS,"msctls_progress32",PBS_SMOOTH | WS_BORDER,40,159,185,10
     LTEXT           "Ready",IDC_MERGE_STATUS,40,169,185,10,SS_CENTERIMAGE | SS_SUNKEN
     DEFPUSHBUTTON   "Mer&ge",IDOK,113,185,55,14
@@ -687,7 +689,7 @@ BEGIN
     EDITTEXT        IDC_RENAME_EDIT_NEW_NAME_EDIT,131,18,112,148,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
     LTEXT           "&Old name list:",IDC_RENAME_EDIT_LABEL_OLD_NAME,7,7,112,8
     EDITTEXT        IDC_RENAME_EDIT_OLD_NAME_EDIT,7,18,112,148,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
-    LTEXT           "¡æ",IDC_RENAME_EDIT_LABEL_ARROW,122,81,8,23,SS_CENTERIMAGE
+    LTEXT           "¢®©¡",IDC_RENAME_EDIT_LABEL_ARROW,122,81,8,23,SS_CENTERIMAGE
     CONTROL         "&Synchronize vertical scroll",IDC_RENAME_EDIT_SYNC_SCROLL,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,7,172,119,10
     DEFPUSHBUTTON   "OK",IDOK,130,172,55,14
@@ -701,7 +703,7 @@ FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     RTEXT           "F&ormat:",IDC_BATCH_RENAME_LABEL_FORMAT,7,7,27,14,SS_CENTERIMAGE
     COMBOBOX        IDC_BATCH_RENAME_FORMAT,36,7,232,102,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "¢º",IDC_BATCH_RENAME_FORMAT_MENU,271,7,14,13
+    PUSHBUTTON      "¡Ë¨¬",IDC_BATCH_RENAME_FORMAT_MENU,271,7,14,13
     RTEXT           "&Start:",IDC_BATCH_RENAME_FORMAT_LABEL_NUMBER,7,25,27,14,SS_CENTERIMAGE
     EDITTEXT        IDC_BATCH_RENAME_FORMAT_NUMBER,36,25,32,14,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_BATCH_RENAME_FORMAT_NUMBER_SPIN,
@@ -845,8 +847,8 @@ BEGIN
     COMBOBOX        IDC_TEXT_MERGE_ENCODING,59,7,67,86,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Text file &list to merge in order:",IDC_TEXT_MERGE_LABEL_LIST,7,31,177,8
     CONTROL         "List1",IDC_TEXT_MERGE_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,41,204,108
-    PUSHBUTTON      "¡è",IDC_TEXT_MERGE_ITEM_UP,7,154,13,12
-    PUSHBUTTON      "¡é",IDC_TEXT_MERGE_ITEM_DOWN,23,154,13,12
+    PUSHBUTTON      "¢®e",IDC_TEXT_MERGE_ITEM_UP,7,154,13,12
+    PUSHBUTTON      "¢®e",IDC_TEXT_MERGE_ITEM_DOWN,23,154,13,12
     CONTROL         "Progress1",IDC_TEXT_MERGE_PROGRESS,"msctls_progress32",PBS_SMOOTH | WS_BORDER,40,149,171,10
     LTEXT           "Total 0 text file.",IDC_TEXT_MERGE_STATUS,40,159,171,10,SS_CENTERIMAGE | SS_SUNKEN
     DEFPUSHBUTTON   "Mer&ge",IDOK,98,176,55,14
@@ -993,8 +995,8 @@ FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "Size format &list:",IDC_SIZE_FORMAT_LABEL_LIST,7,7,104,8
     CONTROL         "List1",IDC_SIZE_FORMAT_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,17,197,86
-    PUSHBUTTON      "¡è",IDC_SIZE_FORMAT_ITEM_UP,7,107,13,12
-    PUSHBUTTON      "¡é",IDC_SIZE_FORMAT_ITEM_DOWN,23,107,13,12
+    PUSHBUTTON      "¢®e",IDC_SIZE_FORMAT_ITEM_UP,7,107,13,12
+    PUSHBUTTON      "¢®e",IDC_SIZE_FORMAT_ITEM_DOWN,23,107,13,12
     PUSHBUTTON      "&Add",IDC_SIZE_FORMAT_ADD,60,107,46,14
     PUSHBUTTON      "&Modify",IDC_SIZE_FORMAT_MODIFY,109,107,46,14
     PUSHBUTTON      "&Delete",IDC_SIZE_FORMAT_DELETE,158,107,46,14
@@ -1211,8 +1213,8 @@ BEGIN
     PUSHBUTTON      "&Add",IDC_CFG_PROGRAM_ASS_ITEM_ADD,147,227,34,14
     PUSHBUTTON      "&Modify",IDC_CFG_PROGRAM_ASS_ITEM_MODIFY,183,227,34,14
     PUSHBUTTON      "&Delete",IDC_CFG_PROGRAM_ASS_ITEM_DELETE,221,227,34,14
-    PUSHBUTTON      "¡è",IDC_CFG_PROGRAM_ASS_ITEM_UP,0,227,16,14
-    PUSHBUTTON      "¡é",IDC_CFG_PROGRAM_ASS_ITEM_DOWN,19,227,16,14
+    PUSHBUTTON      "¢®e",IDC_CFG_PROGRAM_ASS_ITEM_UP,0,227,16,14
+    PUSHBUTTON      "¢®e",IDC_CFG_PROGRAM_ASS_ITEM_DOWN,19,227,16,14
     PUSHBUTTON      "De&fault",IDC_CFG_PROGRAM_ASS_DEFAULT,56,227,64,14
 END
 
@@ -1430,14 +1432,35 @@ IDD_CFG_APPEARANCE_COLOR DIALOGEX 0, 0, 255, 241
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "Actived &view color:",IDC_CFG_COLOR_LABEL_ACTIVED_VIEW_COLOR,0,140,93,14,SS_CENTERIMAGE
-    PUSHBUTTON      "",IDC_CFG_COLOR_ACTIVED_VIEW_COLOR,100,140,44,14
+    GROUPBOX        "",IDC_STATIC,0,14,254,135
+    COMBOBOX        IDC_CFG_COLOR_VIEW,7,12,82,85,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Actived &view color:",IDC_CFG_COLOR_LABEL_ACTIVED_VIEW_COLOR,0,152,93,14,SS_CENTERIMAGE
+    PUSHBUTTON      "",IDC_CFG_COLOR_ACTIVED_VIEW_COLOR,100,152,44,14
     CONTROL         "Highlight color in &path bar:",IDC_CFG_COLOR_LABEL_PATH_BAR_HIGHLIGHT_COLOR,
-                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,174,93,10
-    PUSHBUTTON      "",IDC_CFG_COLOR_PATH_BAR_HIGHLIGHT_COLOR,100,172,44,14
-    LTEXT           "&Bookmark color in info bar:",IDC_CFG_COLOR_LABEL_INFO_BAR_BOOKMARK_COLOR,0,159,93,8
-    PUSHBUTTON      "",IDC_CFG_COLOR_INFO_BAR_BOOKMARK_COLOR,100,156,44,14
-    CONTROL         "",IDC_CFG_COLOR_TAB,"SysTabControl32",0x0,0,0,254,137
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,186,93,10
+    PUSHBUTTON      "",IDC_CFG_COLOR_PATH_BAR_HIGHLIGHT_COLOR,100,184,44,14
+    LTEXT           "&Bookmark color in info bar:",IDC_CFG_COLOR_LABEL_INFO_BAR_BOOKMARK_COLOR,0,171,93,8
+    PUSHBUTTON      "",IDC_CFG_COLOR_INFO_BAR_BOOKMARK_COLOR,100,168,44,14
+    EDITTEXT        IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH,17,107,215,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDC_CFG_COLOR_FILE_LIST_TEXT_CUSTOM_COLOR,191,28,44,14
+    PUSHBUTTON      "",IDC_CFG_COLOR_FILE_LIST_BKGND_CUSTOM_COLOR,191,44,44,14
+    PUSHBUTTON      "...",IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_BROWSE,234,107,15,14
+    COMBOBOX        IDC_CFG_COLOR_FILE_LIST_TEXT_COLOR,114,29,76,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CFG_COLOR_FILE_LIST_BKGND_COLOR,114,45,76,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Text color of file list:",IDC_CFG_COLOR_LABEL_FILE_LIST_TEXT_COLOR,8,31,103,8
+    LTEXT           "&Background color of file list:",IDC_CFG_COLOR_LABEL_FILE_LIST_BKGND_COLOR,8,46,103,8
+    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_TEXT_CUSTOM_COLOR,191,60,44,14
+    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_BKGND_CUSTOM_COLOR,191,76,44,14
+    COMBOBOX        IDC_CFG_COLOR_FOLDER_TREE_TEXT_COLOR,114,61,76,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CFG_COLOR_FOLDER_TREE_BKGND_COLOR,114,77,76,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Te&xt color of folder tree:",IDC_CFG_COLOR_LABEL_FOLDER_TREE_TEXT_COLOR,8,64,103,8
+    LTEXT           "Bac&kground color of folder tree:",IDC_CFG_COLOR_LABEL_FOLDER_TREE_BKGND_COLOR,8,79,103,8
+    CONTROL         "&Highlight color of inactive folder tree: ",IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,127,179,10
+    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT_COLOR,191,125,44,14
+    CONTROL         "Background &image of file list:",IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,8,95,157,10
+    PUSHBUTTON      "Apply all",IDC_CFG_COLOR_APPLY_ALL,186,0,69,14
 END
 
 IDD_CFG_APPEARANCE_LAYOUT DIALOGEX 0, 0, 255, 241
@@ -1532,31 +1555,6 @@ BEGIN
     LTEXT           "0 image format",IDC_CFG_THUMBNAIL_LABEL_SUPPORTED_IMAGE_COUNT,82,111,116,8
 END
 
-IDD_CFG_APPEARANCE_COLOR_VIEW DIALOGEX 0, 0, 255, 241
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
-FONT 9, "MS Shell Dlg", 0, 0, 0x0
-BEGIN
-    EDITTEXT        IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH,12,82,218,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "",IDC_CFG_COLOR_FILE_LIST_TEXT_CUSTOM_COLOR,186,3,44,14
-    PUSHBUTTON      "",IDC_CFG_COLOR_FILE_LIST_BKGND_CUSTOM_COLOR,186,19,44,14
-    PUSHBUTTON      "...",IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_BROWSE,233,82,15,14
-    COMBOBOX        IDC_CFG_COLOR_FILE_LIST_TEXT_COLOR,109,4,76,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_CFG_COLOR_FILE_LIST_BKGND_COLOR,109,20,76,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Text color of file list:",IDC_CFG_COLOR_LABEL_FILE_LIST_TEXT_COLOR,3,6,103,8
-    LTEXT           "&Background color of file list:",IDC_CFG_COLOR_LABEL_FILE_LIST_BKGND_COLOR,3,21,103,8
-    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_TEXT_CUSTOM_COLOR,186,35,44,14
-    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_BKGND_CUSTOM_COLOR,186,51,44,14
-    COMBOBOX        IDC_CFG_COLOR_FOLDER_TREE_TEXT_COLOR,109,36,76,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_CFG_COLOR_FOLDER_TREE_BKGND_COLOR,109,52,76,54,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Te&xt color of folder tree:",IDC_CFG_COLOR_LABEL_FOLDER_TREE_TEXT_COLOR,3,39,103,8
-    LTEXT           "Bac&kground color of folder tree:",IDC_CFG_COLOR_LABEL_FOLDER_TREE_BKGND_COLOR,3,54,103,8
-    CONTROL         "&Highlight color of inactive folder tree: ",IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT,
-                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,3,102,179,10
-    PUSHBUTTON      "",IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT_COLOR,186,100,44,14
-    CONTROL         "Background &image of file list:",IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE,
-                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,3,70,157,10
-END
-
 IDD_CFG_APPEARANCE DIALOGEX 0, 0, 255, 241
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
@@ -1647,8 +1645,8 @@ BEGIN
     PUSHBUTTON      "&Add",IDC_CFG_FILTER_ADD,147,227,34,14
     PUSHBUTTON      "&Modify",IDC_CFG_FILTER_MODIFY,183,227,34,14
     PUSHBUTTON      "&Delete",IDC_CFG_FILTER_DELETE,221,227,34,14
-    PUSHBUTTON      "¡è",IDC_CFG_FILTER_ITEM_UP,0,227,15,14
-    PUSHBUTTON      "¡é",IDC_CFG_FILTER_ITEM_DOWN,18,227,15,14
+    PUSHBUTTON      "¢®e",IDC_CFG_FILTER_ITEM_UP,0,227,15,14
+    PUSHBUTTON      "¢®e",IDC_CFG_FILTER_ITEM_DOWN,18,227,15,14
     PUSHBUTTON      "De&fault",IDC_CFG_FILTER_DEFAULT,56,227,68,14
 END
 
@@ -2118,13 +2116,6 @@ BEGIN
         RIGHTMARGIN, 135
         TOPMARGIN, 4
         BOTTOMMARGIN, 123
-    END
-
-    IDD_CFG_APPEARANCE_COLOR_VIEW, DIALOG
-    BEGIN
-        LEFTMARGIN, 3
-        RIGHTMARGIN, 248
-        TOPMARGIN, 3
     END
 
     IDD_CFG_GENERAL_STARTUP_VIEW, DIALOG
@@ -3108,6 +3099,20 @@ BEGIN
     END
 END
 
+IDR_TAB MENU 
+BEGIN
+    POPUP "Context Menu"
+    BEGIN
+        MENUITEM "&New tab",                    ID_WINDOW_TAB_NEW
+        MENUITEM SEPARATOR
+        MENUITEM "&Duplicate tab",              ID_WINDOW_TAB_DUPLICATE_ON_CURSOR
+        MENUITEM SEPARATOR
+        MENUITEM "Close this tab",              ID_WINDOW_TAB_CLOSE_ON_CURSOR
+        MENUITEM "Close other tabs",            ID_WINDOW_TAB_CLOSE_OTHERS_ON_CURSOR
+        MENUITEM "Close all tabs",              ID_WINDOW_TAB_CLOSE_ALL
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -3272,6 +3277,58 @@ IDI_EXPAND              ICON                    "res\\expand.ico"
 IDI_FILE_SCRAP          ICON                    "res\\file_scrap.ico"
 IDI_PENDING             ICON                    "res\\pending.ico"
 
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\fxfile.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""        // Standard components\r\n"
+    "#include ""afxprint.rc""      // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "res\\fxfile.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+IDR_CREDITS             TEXT                    "..\\..\\CREDITS"
+IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -3330,77 +3387,6 @@ BEGIN
     IDS_TRAY_NOTIFY         "Tray Notify Message"
 END
 
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDR_TAB MENU 
-BEGIN
-    POPUP "Context Menu"
-    BEGIN
-        MENUITEM "&New tab",                    ID_WINDOW_TAB_NEW
-        MENUITEM SEPARATOR
-        MENUITEM "&Duplicate tab",              ID_WINDOW_TAB_DUPLICATE_ON_CURSOR
-        MENUITEM SEPARATOR
-        MENUITEM "Close this tab",              ID_WINDOW_TAB_CLOSE_ON_CURSOR
-        MENUITEM "Close other tabs",            ID_WINDOW_TAB_CLOSE_OTHERS_ON_CURSOR
-        MENUITEM "Close all tabs",              ID_WINDOW_TAB_CLOSE_ALL
-    END
-END
-
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#include ""res\\fxfile.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""afxres.rc""        // Standard components\r\n"
-    "#include ""afxprint.rc""      // printing/print preview resources\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// RT_MANIFEST
-//
-
-1                       RT_MANIFEST             "res\\fxfile.exe.manifest"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXT
-//
-
-IDR_CREDITS             TEXT                    "..\\..\\CREDITS"
-IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -3420,8 +3406,8 @@ IDR_LICENSE             TEXT                    "..\\..\\LICENSE"
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #include "res\fxfile.rc2"  // non-Microsoft Visual C++ edited resources
-#include "afxres.rc"       // Standard components
-#include "afxprint.rc"     // printing/print preview resources
+#include "afxres.rc"        // Standard components
+#include "afxprint.rc"      // printing/print preview resources
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
