@@ -148,7 +148,8 @@ public:
         xpr_bool_t      mFolderTreeInitNoExpand;
         xpr_bool_t      mFolderTreeSelDelay;
         xpr_sint_t      mFolderTreeSelDelayTime;
-        xpr_bool_t      mSingleFolderTreeLinkage;
+        xpr_bool_t      mFolderTreeLinkage;
+        xpr_bool_t      mFolderTreeLinkageOnSingle;
 
         // layout
         xpr_bool_t      mShowAddressBar;

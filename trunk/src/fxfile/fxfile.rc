@@ -1591,7 +1591,9 @@ BEGIN
                     "msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,188,1,10,14
     LTEXT           "(Range)",IDC_CFG_FOLDER_TREE_LABEL_EXPLORE_DELAY_TIME_RANGE,152,29,77,8,SS_CENTERIMAGE
     LTEXT           "ms",IDC_STATIC,190,13,11,8
-    CONTROL         "Linkag&e between Folder and Explorer",IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE,
+    CONTROL         "Linkage on &single folder tree",IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,55,255,10
+    CONTROL         "&Linkage between folder tree and file list",IDC_CFG_FOLDER_TREE_LINKAGE,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,42,254,10
 END
 
