@@ -1735,7 +1735,7 @@ FolderCtrl *ExplorerView::getFolderCtrl(void) const
 {
     if (XPR_IS_TRUE(gOpt->mMain.mSingleFolderPaneMode))
     {
-        if (XPR_IS_TRUE(gOpt->mConfig.mSingleFolderTreeLinkage))
+        if (XPR_IS_TRUE(gOpt->mConfig.mFolderTreeLinkageOnSingle))
             return gFrame->getFolderCtrl();
 
         return XPR_NULL;
@@ -2068,7 +2068,7 @@ void ExplorerView::OnActivateView(xpr_bool_t aActivate, CView *aActivateView, CV
                 if (XPR_IS_NOT_NULL(sTvItemData))
                 {
                     // update single folder pane linkage
-                    if (XPR_IS_TRUE(gOpt->mConfig.mSingleFolderTreeLinkage))
+                    if (XPR_IS_TRUE(gOpt->mConfig.mFolderTreeLinkageOnSingle))
                     {
                         FolderCtrl *sFolderCtrl = getFolderCtrl();
                         if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sFolderCtrl->m_hWnd))

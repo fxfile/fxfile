@@ -1467,7 +1467,8 @@
 			<String ID="popup.cfg.body.appearance.folder_tree.check.init_no_expand">초기화시, 선택한 항목 확장시키지 않기(&amp;N)</String>
 			<String ID="popup.cfg.body.appearance.folder_tree.check.explore_delay">키보드 선택시, 탐색창 갱신 지연(&amp;D):</String>
 			<String ID="popup.cfg.body.appearance.folder_tree.label.explore_delay_time_range">(범위) %1%~%2%, %3%</String>
-			<String ID="popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage">단일 폴더 트리일 경우, 폴더 트리와 탐색창 간에 연동(&amp;L)</String>
+			<String ID="popup.cfg.body.appearance.folder_tree.check.linkage">파일 리스트와 연동(&amp;L)</String>
+			<String ID="popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage">단일 폴더 트리일 경우, 파일 리스트와의 연동(&amp;L)</String>
 
 			<String ID="popup.cfg.body.appearance.file_list.check.show_parent_folder">상위 폴더 [..] 표시하기(&amp;P)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.show_each_drive">드라이브 표시(&amp;D)</String>
