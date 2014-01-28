@@ -81,7 +81,7 @@ xpr_bool_t CfgAppearanceFileListDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAppearanceFileListDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceFileListDlg::onInit(const Option::Config &aConfig)
 {
     xpr_sint_t i;
     xpr_sint_t sIndex;

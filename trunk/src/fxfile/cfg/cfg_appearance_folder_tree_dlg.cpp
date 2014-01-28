@@ -22,7 +22,7 @@ namespace fxfile
 namespace cfg
 {
 CfgAppearanceFolderTreeDlg::CfgAppearanceFolderTreeDlg(void)
-    : super(IDD_CFG_FUNC_FOLDER_TREE, XPR_NULL)
+    : super(IDD_CFG_APPEARANCE_FOLDER_TREE, XPR_NULL)
 {
 }
 
@@ -58,7 +58,7 @@ xpr_bool_t CfgAppearanceFolderTreeDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAppearanceFolderTreeDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceFolderTreeDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_INIT_NO_EXPAND            ))->SetCheck(aConfig.mFolderTreeInitNoExpand);
     ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY             ))->SetCheck(aConfig.mFolderTreeSelDelay);

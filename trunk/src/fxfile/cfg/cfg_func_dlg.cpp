@@ -50,7 +50,7 @@ xpr_bool_t CfgFuncDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncDlg::onInit(Option::Config &aConfig)
+void CfgFuncDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_FUNC_DRIVE_LAST_FOLDER       ))->SetCheck(aConfig.mDriveLastFolder);
     ((CButton *)GetDlgItem(IDC_CFG_FUNC_DRIVE_SHIFT_KEY         ))->SetCheck(aConfig.mDriveShiftKey);

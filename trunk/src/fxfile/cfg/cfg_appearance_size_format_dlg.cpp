@@ -130,7 +130,7 @@ void CfgAppearanceSizeFormatDlg::copySizeFormatFromList(void)
     XPR_SAFE_DELETE(mSizeFormatDeque);
 }
 
-void CfgAppearanceSizeFormatDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceSizeFormatDlg::onInit(const Option::Config &aConfig)
 {
     xpr_sint_t i;
     xpr_sint_t sIndex;

@@ -22,7 +22,7 @@ namespace fxfile
 namespace cfg
 {
 CfgAppearanceHistoryDlg::CfgAppearanceHistoryDlg(void)
-    : super(IDD_CFG_FUNC_HISTORY, XPR_NULL)
+    : super(IDD_CFG_APPEARANCE_HISTORY, XPR_NULL)
 {
 }
 
@@ -57,7 +57,7 @@ xpr_bool_t CfgAppearanceHistoryDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAppearanceHistoryDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceHistoryDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_HISTORY_SAVE_HISTROY))->SetCheck(aConfig.mSaveHistory);
 

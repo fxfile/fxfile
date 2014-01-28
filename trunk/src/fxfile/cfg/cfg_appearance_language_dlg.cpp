@@ -76,7 +76,7 @@ void CfgAppearanceLanguageDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceLanguageDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceLanguageDlg::onInit(const Option::Config &aConfig)
 {
     chooseLanguagePack(aConfig.mLanguage);
 }

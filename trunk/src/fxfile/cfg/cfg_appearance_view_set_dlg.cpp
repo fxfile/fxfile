@@ -25,7 +25,7 @@ namespace fxfile
 namespace cfg
 {
 CfgAppearanceViewSetDlg::CfgAppearanceViewSetDlg(void)
-    : super(IDD_CFG_GENERAL_VIEWSET, XPR_NULL)
+    : super(IDD_CFG_APPEARANCE_VIEWSET, XPR_NULL)
 {
 }
 
@@ -84,7 +84,7 @@ xpr_bool_t CfgAppearanceViewSetDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAppearanceViewSetDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceViewSetDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NONE              ))->SetCheck(aConfig.mExplorerSaveViewSet == 0);
     ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT           ))->SetCheck(aConfig.mExplorerSaveViewSet == 1);

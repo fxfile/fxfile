@@ -55,7 +55,7 @@ xpr_bool_t CfgAdvConfDirDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAdvConfDirDlg::onInit(Option::Config &aConfig)
+void CfgAdvConfDirDlg::onInit(const Option::Config &aConfig)
 {
     const xpr_tchar_t *sConfDir = ConfDir::instance().getConfDir();
 

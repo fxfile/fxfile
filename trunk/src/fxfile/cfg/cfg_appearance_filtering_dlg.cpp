@@ -87,7 +87,7 @@ void CfgAppearanceFilteringDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceFilteringDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceFilteringDlg::onInit(const Option::Config &aConfig)
 {
     FilterMgr &sFilterMgr = FilterMgr::instance();
 

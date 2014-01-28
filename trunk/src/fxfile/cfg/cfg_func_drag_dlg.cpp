@@ -81,7 +81,7 @@ xpr_bool_t CfgFuncDragDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncDragDlg::onInit(Option::Config &aConfig)
+void CfgFuncDragDlg::onInit(const Option::Config &aConfig)
 {
     xpr_sint_t sId;
     switch (aConfig.mDragType)

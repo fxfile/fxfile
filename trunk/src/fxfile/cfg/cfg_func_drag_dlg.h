@@ -25,7 +25,7 @@ public:
     CfgFuncDragDlg(void);
 
 protected:
-    virtual void onInit(Option::Config &aConfig);
+    virtual void onInit(const Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
 
 protected:

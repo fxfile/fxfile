@@ -48,7 +48,7 @@ xpr_bool_t CfgFuncFileOpDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncFileOpDlg::onInit(Option::Config &aConfig)
+void CfgFuncFileOpDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_FILE_OP_COMPLETED_FLASH_TASKBAR))->SetCheck(aConfig.mFileOpCompleteFlash);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_OP_EXTERNAL_COPY          ))->SetCheck(aConfig.mExternalCopyFileOp);

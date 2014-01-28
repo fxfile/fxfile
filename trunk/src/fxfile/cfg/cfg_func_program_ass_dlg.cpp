@@ -82,7 +82,7 @@ xpr_bool_t CfgFuncProgramAssDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncProgramAssDlg::onInit(Option::Config &aConfig)
+void CfgFuncProgramAssDlg::onInit(const Option::Config &aConfig)
 {
     ProgramAssMgr &sProgramAssMgr = ProgramAssMgr::instance();
 

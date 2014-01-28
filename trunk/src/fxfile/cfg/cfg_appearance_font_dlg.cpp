@@ -69,7 +69,7 @@ void CfgAppearanceFontDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceFontDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceFontDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_FONT_CUSTOM_FONT            ))->SetCheck(aConfig.mCustomFont);
     ((CButton *)GetDlgItem(IDC_CFG_FONT_FOLDER_TREE_CUSTOM_FONT))->SetCheck(aConfig.mFolderTreeCustomFont);

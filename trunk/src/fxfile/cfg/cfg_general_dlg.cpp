@@ -84,7 +84,7 @@ void CfgGeneralDlg::OnDefault(void)
     ((CButton   *)GetDlgItem(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM))->SetCheck(XPR_TRUE);
 }
 
-void CfgGeneralDlg::onInit(Option::Config &aConfig)
+void CfgGeneralDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_GENERAL_ONE_CLICK               ))->SetCheck((aConfig.mMouseClick == MOUSE_ONE_CLICK) ? XPR_TRUE : XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_CFG_GENERAL_DOUBLE_CLICK            ))->SetCheck((aConfig.mMouseClick == MOUSE_DOUBLE_CLICK) ? XPR_TRUE : XPR_FALSE);

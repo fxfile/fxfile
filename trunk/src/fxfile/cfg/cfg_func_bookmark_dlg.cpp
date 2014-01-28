@@ -46,7 +46,7 @@ xpr_bool_t CfgFuncBookmarkDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncBookmarkDlg::onInit(Option::Config &aConfig)
+void CfgFuncBookmarkDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_BOOKMARK_SHOW_TOOLTIP ))->SetCheck(aConfig.mBookmarkTooltip);
     ((CButton *)GetDlgItem(IDC_CFG_BOOKMARK_EXPAND_FOLDER))->SetCheck(aConfig.mBookmarkExpandFolder);

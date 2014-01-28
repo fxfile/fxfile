@@ -53,7 +53,7 @@ void CfgAppearanceDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_APPEARANCE_MENU_ANIMATION                   ))->SetCheck(aConfig.mAnimationMenu);
     ((CButton *)GetDlgItem(IDC_CFG_APPEARANCE_STANDARD_MENU_STYLE              ))->SetCheck(aConfig.mStandardMenu);

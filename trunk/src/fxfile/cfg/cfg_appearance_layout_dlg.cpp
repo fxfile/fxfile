@@ -71,7 +71,7 @@ void CfgAppearanceLayoutDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceLayoutDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceLayoutDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_VIEW_SPLIT_RESIZE_BY_RATIO    ))->SetCheck(aConfig.mViewSplitByRatio);
     ((CButton *)GetDlgItem(IDC_CFG_LAYOUT_SHOW_ADDRESS_BAR              ))->SetCheck(aConfig.mShowAddressBar);

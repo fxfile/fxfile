@@ -38,7 +38,7 @@ public:
     xpr_bool_t isModified(void);
     void setModified(xpr_bool_t aModified = XPR_TRUE);
 
-    virtual void onInit(Option::Config &aConfig) = 0;
+    virtual void onInit(const Option::Config &aConfig) = 0;
     virtual void onApply(Option::Config &aConfig) = 0;
 
 protected:
