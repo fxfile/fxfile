@@ -85,7 +85,7 @@ void CfgGeneralStartupDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgGeneralStartupDlg::onInit(Option::Config &aConfig)
+void CfgGeneralStartupDlg::onInit(const Option::Config &aConfig)
 {
     CComboBox *sViewStartupComboBox = (CComboBox *)GetDlgItem(IDC_CFG_STARTUP_VIEW);
 

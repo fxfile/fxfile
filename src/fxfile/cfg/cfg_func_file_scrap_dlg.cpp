@@ -44,7 +44,7 @@ xpr_bool_t CfgFuncFileScrapDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncFileScrapDlg::onInit(Option::Config &aConfig)
+void CfgFuncFileScrapDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SHOW_POPUP))->SetCheck(aConfig.mFileScrapContextMenu);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_SCRAP_SAVE_SCRAP))->SetCheck(aConfig.mFileScrapSave);

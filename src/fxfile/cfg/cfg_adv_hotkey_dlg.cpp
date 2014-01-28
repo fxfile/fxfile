@@ -53,7 +53,7 @@ xpr_bool_t CfgAdvHotKeyDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAdvHotKeyDlg::onInit(Option::Config &aConfig)
+void CfgAdvHotKeyDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER            ))->SetCheck(aConfig.mLauncher);
     ((CButton *)GetDlgItem(IDC_CFG_GLOBAL_HOTKEY_LAUNCHER_TRAY       ))->SetCheck(aConfig.mLauncherTray);

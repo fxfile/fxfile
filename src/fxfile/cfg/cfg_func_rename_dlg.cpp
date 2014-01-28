@@ -54,7 +54,7 @@ xpr_bool_t CfgFuncRenameDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncRenameDlg::onInit(Option::Config &aConfig)
+void CfgFuncRenameDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_RENAME_EXT_DEFAULT                    ))->SetCheck((aConfig.mRenameExtType == RENAME_EXT_TYPE_DEFAULT) ? 1 : 0);
     ((CButton *)GetDlgItem(IDC_CFG_RENAME_EXT_KEEP                       ))->SetCheck((aConfig.mRenameExtType == RENAME_EXT_TYPE_KEEP) ? 1 : 0);

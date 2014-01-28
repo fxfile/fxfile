@@ -32,7 +32,7 @@ protected:
     void selectItem(xpr_sint_t aIndex);
 
 protected:
-    virtual void onInit(Option::Config &aConfig);
+    virtual void onInit(const Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
 
 protected:

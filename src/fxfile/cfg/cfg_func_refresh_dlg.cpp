@@ -44,7 +44,7 @@ xpr_bool_t CfgFuncRefreshDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgFuncRefreshDlg::onInit(Option::Config &aConfig)
+void CfgFuncRefreshDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_REFRESH_NO_REFRESH))->SetCheck(aConfig.mNoRefresh);
     ((CButton *)GetDlgItem(IDC_CFG_REFRESH_AUTO_SORT ))->SetCheck(aConfig.mRefreshSort);

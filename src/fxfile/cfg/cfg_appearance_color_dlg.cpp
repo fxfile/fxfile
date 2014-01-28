@@ -156,7 +156,7 @@ void CfgAppearanceColorDlg::OnDestroy(void)
     super::OnDestroy();
 }
 
-void CfgAppearanceColorDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceColorDlg::onInit(const Option::Config &aConfig)
 {
     xpr_sint_t i;
     xpr::tstring sStringId;

@@ -111,7 +111,7 @@ xpr_bool_t CfgAppearanceThumbnailDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAppearanceThumbnailDlg::onInit(Option::Config &aConfig)
+void CfgAppearanceThumbnailDlg::onInit(const Option::Config &aConfig)
 {
     SetDlgItemInt(IDC_CFG_THUMBNAIL_WIDTH,  aConfig.mThumbnailWidth);
     SetDlgItemInt(IDC_CFG_THUMBNAIL_HEIGHT, aConfig.mThumbnailHeight);

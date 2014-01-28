@@ -67,7 +67,7 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void CfgAdvDlg::onInit(Option::Config &aConfig)
+void CfgAdvDlg::onInit(const Option::Config &aConfig)
 {
     ((CButton *)GetDlgItem(IDC_CFG_ADV_SINGLE_PROCESS                      ))->SetCheck(aConfig.mSingleProcess);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_CONFIRM_TO_EXIT                     ))->SetCheck(aConfig.mConfirmExit);
