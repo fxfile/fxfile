@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -21,6 +21,8 @@ xpr_bool_t DuplicateImgList(CImageList *aSrcImgList, CImageList *aDstImgList);
 xpr_bool_t LoadImgList(CImageList *aImgList, HBITMAP aBitmap, CSize aIconSize, xpr_sint_t aOverlayCount = 0);
 xpr_bool_t LoadImgList(CImageList *aImgList, xpr_uint_t aBitmapId, CSize aIconSize, xpr_sint_t aOverlayCount = 0);
 xpr_bool_t LoadImgList(CImageList *aImgList, const xpr_tchar_t *aPath, CSize aIconSize, xpr_sint_t aOverlayCount = 0);
+
+xpr_bool_t getIconInfo(HICON sIcon, SIZE *aIconSize);
 
 HFONT CreateFont(const xpr_tchar_t *aFaceName,
                  xpr_sint_t         aHeight,

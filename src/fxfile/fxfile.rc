@@ -1681,6 +1681,30 @@ BEGIN
     EDITTEXT        IDC_ABOUT_CREDITS,25,21,213,150,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL
 END
 
+IDD_CFG_APPEARANCE_TAB DIALOGEX 0, 0, 255, 241
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "Switch to a new tab immediately",IDC_CFG_TAB_SWITCH_TO_NEW_TAB,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,0,254,10
+    CONTROL         "Auto fit tab",IDC_CFG_TAB_AUTO_FIT,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,24,255,10
+    CONTROL         "Close tab on double click",IDC_CFG_TAB_CLOSE_ON_DOUBLE_CLICK,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,12,254,10
+    CONTROL         "Show tab also when there is only one tab",IDC_CFG_TAB_SHOW_ONE_TAB,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,36,255,10
+    CONTROL         "Confirm to close tab",IDC_CFG_TAB_CONFIRM_TO_CLOSE,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,48,255,10
+    CONTROL         "Confirm to close all tabs",IDC_CFG_TAB_CONFIRM_TO_CLOSE_ALL,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,60,255,10
+    CONTROL         "Open new tab near current tab",IDC_CFG_TAB_NEAR_OPEN_NEW_TAB,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,72,255,10
+    CONTROL         "Tab icon display",IDC_CFG_TAB_ICON,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,84,255,10
+    CONTROL         "Always show drive letter in tab title",IDC_CFG_TAB_SHOW_DRIVE,
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,96,255,10
+    CONTROL         "Show new tab button",IDC_CFG_TAB_SHOW_NEW_BUTTON,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,108,255,10
+    CONTROL         "Move tab on mouse drag",IDC_CFG_TAB_DRAG_MOVE,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,120,255,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -3267,6 +3291,7 @@ IDI_SEARCH_INC          ICON                    "res\\schinc.ico"
 IDI_EXPAND              ICON                    "res\\expand.ico"
 IDI_FILE_SCRAP          ICON                    "res\\file_scrap.ico"
 IDI_PENDING             ICON                    "res\\pending.ico"
+IDI_TAB_NEW             ICON                    "res\\tab_new.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

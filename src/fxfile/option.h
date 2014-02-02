@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -216,6 +216,19 @@ public:
         xpr_bool_t      mAnimationMenu;
         xpr_bool_t      mStandardMenu;
         xpr_uint_t      mActiveViewColor;
+
+        // tab
+        xpr_bool_t      mTabSwitchToNewTab;
+        xpr_bool_t      mTabCloseOnDoubleClick;
+        xpr_bool_t      mTabAutoFit;
+        xpr_bool_t      mTabShowOneTab;
+        xpr_bool_t      mTabConfirmToClose;
+        xpr_bool_t      mTabConfirmToCloseAll;
+        xpr_bool_t      mTabNearOpenNewTab;
+        xpr_bool_t      mTabIcon;
+        xpr_bool_t      mTabShowDrive;
+        xpr_bool_t      mTabShowNewButton;
+        xpr_bool_t      mTabDragMove;
 
         // path bar
         xpr_bool_t      mPathBarRealPath;

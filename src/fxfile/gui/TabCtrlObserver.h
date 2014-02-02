@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -25,6 +25,8 @@ public:
     virtual void       onTabEmptied(TabCtrl &aTabCtrl) = 0;
     virtual void       onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab) = 0;
     virtual void       onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint) = 0;
+    virtual void       onTabNewButton(TabCtrl &aTabCtrl) = 0;
+    virtual void       onSetFocus(TabCtrl &aTabCtrl) = 0;
 };
 
 #endif // __FXFILE_TAB_CTRL_OBSERVER_H__

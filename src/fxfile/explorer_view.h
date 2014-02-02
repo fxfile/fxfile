@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -60,11 +60,13 @@ public:
     xpr_sint_t    newTab(const xpr::tstring &aInitFolder);
     xpr_sint_t    newSearchResultTab(void);
     xpr_sint_t    newFileScrapTab(void);
-    xpr_sint_t    duplicateTab(xpr_bool_t aOnCursor = XPR_FALSE);
-    xpr_bool_t    canDuplicateTab(xpr_bool_t aOnCursor = XPR_FALSE) const;
+    xpr_sint_t    duplicateTab(xpr_sint_t aTab = -1);
+    xpr_bool_t    canDuplicateTab(xpr_sint_t aTab = -1) const;
     xpr_bool_t    isExplorerTabMode(void) const;
     xpr_sint_t    getTabOnCursor(void) const;
     xpr_sint_t    getTabCount(void) const;
+    xpr_bool_t    getTabText(xpr_sint_t aTab, xpr_tchar_t *aText, xpr_size_t aMaxLen) const;
+    xpr_bool_t    getTabText(xpr_sint_t aTab, xpr::tstring &aText) const;
     TabPane      *getTabPane(xpr_sint_t aTab = -1) const;
     xpr_uint_t    getTabPaneId(xpr_sint_t aTab = -1) const;
     xpr_sint_t    findTab(xpr_uint_t aTabPaneId) const;
@@ -75,8 +77,8 @@ public:
     void          previousTab(void);
     void          nextTab(void);
     void          lastTab(void);
-    void          closeTab(xpr_sint_t aTab = -1, xpr_bool_t aOnCursor = XPR_FALSE);
-    void          closeAllTabsButThis(xpr_bool_t aOnCursor = XPR_FALSE);
+    void          closeTab(xpr_sint_t aTab = -1);
+    void          closeOthers(xpr_sint_t aTab = -1);
     void          closeAllTabs(void);
 
     FolderPane       *getFolderPane(void) const;
@@ -185,6 +187,8 @@ protected:
     virtual void       onTabEmptied(TabCtrl &aTabCtrl);
     virtual void       onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab);
     virtual void       onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint);
+    virtual void       onTabNewButton(TabCtrl &aTabCtrl);
+    virtual void       onSetFocus(TabCtrl &aTabCtrl);
 
     // from SplitterObserver
     virtual CWnd *onSplitterPaneCreate(Splitter &aSplitter, xpr_sint_t aRow, xpr_sint_t aColumn);

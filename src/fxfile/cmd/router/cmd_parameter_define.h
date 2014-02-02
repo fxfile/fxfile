@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -21,6 +21,7 @@ enum
     CommandParameterIdTreeSelectedItem,
     CommandParameterIdTreeTargetItem,
     CommandParameterIdIsSelectedItem,
+    CommandParameterIdTab,
 };
 } // namespace cmd
 } // namespace fxfile

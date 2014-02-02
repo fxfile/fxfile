@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -34,6 +34,9 @@ public:
     void setImageList(CImageList *aImageList);
     void setTabSizeLimit(xpr_sint_t aMinSize, xpr_sint_t aMaxSize);
     void setTabSizeMode(xpr_bool_t aFixedSizeMode, xpr_sint_t aFixedSize = 0);
+    void enableDragMove(xpr_bool_t aDragMove);
+    void showNewButton(xpr_bool_t aShowNewButton);
+    void setTabIcon(HICON aNewButtonId);
 
 public:
     xpr_size_t addTab(const xpr_tchar_t *aText, xpr_sint_t aImageIndex = -1, void *aData = XPR_NULL);
@@ -41,12 +44,16 @@ public:
     xpr_size_t getTabCount(void) const;
     xpr_size_t getCurTab(void) const;
     xpr_bool_t getTabText(xpr_size_t aTab, xpr_tchar_t *aText, xpr_size_t aMaxLen) const;
+    xpr_bool_t getTabText(xpr_size_t aTab, xpr::tstring &aText) const;
     void *     getTabData(xpr_size_t aTab) const;
+    xpr_bool_t getNewButtonRect(CRect &aNewButtonRect) const;
     xpr_size_t hitTest(const POINT &aPoint) const;
     xpr_bool_t setCurTab(xpr_size_t aTab);
+    xpr_bool_t setTab(xpr_size_t aTab, const xpr_tchar_t *aText, xpr_sint_t aImageIndex);
     xpr_bool_t setTabText(xpr_size_t aTab, const xpr_tchar_t *aText);
+    xpr_bool_t setTabImage(xpr_size_t aTab, xpr_sint_t aImageIndex);
     xpr_bool_t swapTab(xpr_size_t aTab1, xpr_size_t aTab2);
-    xpr_bool_t moveTab(xpr_size_t aSourceTab, xpr_size_t aTargetTab);
+    xpr_bool_t moveTab(xpr_size_t aFromTab, xpr_size_t aToTab);
     xpr_bool_t removeTab(xpr_size_t aTab);
     void       removeAllTabs(void);
 
@@ -78,8 +85,19 @@ protected:
     CFont       mBoldFont;
 
     xpr_bool_t  mSetCapture;
-    xpr_size_t  mHoverTab;
-    xpr_size_t  mPressedTab;
+    xpr_size_t  mTabHover;
+    xpr_bool_t  mDragMove;
+    xpr_size_t  mDragTab;
+    xpr_bool_t  mDragBegun;
+    CPoint      mDragBegunPoint;
+    xpr_size_t  mDragBegunTab;
+
+    xpr_bool_t  mShowNewButton;
+    HICON       mNewButtonIcon;
+    CRect       mNewButtonRect;
+    BOOL        mNewButtonHover;
+    BOOL        mNewButtonPressed;
+    BOOL        mNewButtonPressedLeave;
 
     CXPTheme    mXPTheme;
 
@@ -96,6 +114,7 @@ protected:
     afx_msg void OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint);
     afx_msg void OnCaptureChanged(CWnd *aWnd);
     afx_msg void OnContextMenu(CWnd *aWnd, CPoint aPoint);
+    afx_msg void OnSetFocus(CWnd *aOldWnd);
     DECLARE_MESSAGE_MAP()
 };
 

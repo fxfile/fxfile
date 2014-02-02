@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -84,7 +84,6 @@ public:
             else
             {
                 mTabPane->destroySubPane(mTabPaneId);
-                mTabPane->ShowWindow(SW_HIDE);
                 mTabPane = XPR_NULL;
             }
         }
@@ -539,9 +538,20 @@ void ExplorerView::OnDestroy(void)
 void ExplorerView::setChangedOption(Option &aOption)
 {
     xpr_sint_t           i;
-    xpr_sint_t           sTabCount;
+    xpr_sint_t           sTabCount = getTabCount();
     TabPane             *sTabPane;
     std::set<TabPane *>  mTabPaneSet;
+
+    // tab options
+    mTabCtrl->setTabSizeMode(!gOpt->mConfig.mTabAutoFit);
+    mTabCtrl->enableDragMove(gOpt->mConfig.mTabDragMove);
+    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton);
+
+    xpr_bool_t sShowTabCtrl = XPR_IS_TRUE(gOpt->mConfig.mTabShowOneTab);
+    if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab) && sTabCount > 1)
+        sShowTabCtrl = XPR_TRUE;
+
+    mTabCtrl->ShowWindow(XPR_IS_TRUE(sShowTabCtrl) ? SW_SHOW : SW_HIDE);
 
     // set activate bar options
     visibleActivateBar(gOpt->mConfig.mShowActivateBar, XPR_FALSE);
@@ -764,8 +774,13 @@ void ExplorerView::recalcLayout(void)
     // tab
     if (XPR_IS_NOT_NULL(mTabCtrl) && XPR_IS_NOT_NULL(mTabCtrl->m_hWnd))
     {
+        xpr_bool_t sResizeTabCtrl = XPR_IS_TRUE(gOpt->mConfig.mTabShowOneTab);
+
         xpr_size_t sTabCount = mTabCtrl->getTabCount();
-        if (sTabCount > 1)
+        if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab) && sTabCount > 1)
+            sResizeTabCtrl = XPR_TRUE;
+
+        if (XPR_IS_TRUE(sResizeTabCtrl))
         {
             CRect sTabRect(sRect);
             sTabRect.bottom = sTabRect.top + kTabHeight;
@@ -1067,7 +1082,22 @@ xpr_bool_t ExplorerView::createTabCtrl(void)
         return XPR_FALSE;
     }
 
-    mTabCtrl->ShowWindow(SW_HIDE);
+    // tab options
+    mTabCtrl->setTabSizeMode(!gOpt->mConfig.mTabAutoFit);
+    mTabCtrl->enableDragMove(gOpt->mConfig.mTabDragMove);
+    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton);
+
+    //HICON sIcon = AfxGetApp()->LoadIcon(IDI_TAB_NEW);
+    HICON sIcon = (HICON)::LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_TAB_NEW), IMAGE_ICON, 0, 0, 0);
+    mTabCtrl->setTabIcon(sIcon);
+
+    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    mTabCtrl->setImageList(&sSysImgListMgr.mSysImgList16);
+
+    if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab))
+    {
+        mTabCtrl->ShowWindow(SW_HIDE);
+    }
 
     return XPR_TRUE;
 }
@@ -1172,7 +1202,18 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
         sTabData->mTabPane   = mExplorerPane;
         sTabData->mTabPaneId = sExplorerCtrlId;
 
-        sInsertedTab = mTabCtrl->addTab(XPR_NULL, -1, sTabData);
+        if (XPR_IS_TRUE(gOpt->mConfig.mTabNearOpenNewTab))
+        {
+            xpr_size_t sTab = mTabCtrl->getCurTab();
+            if (sTab != -1)
+                ++sTab;
+
+            sInsertedTab = mTabCtrl->insertTab(sTab, XPR_NULL, -1, sTabData);
+        }
+        else
+        {
+            sInsertedTab = mTabCtrl->addTab(XPR_NULL, -1, sTabData);
+        }
     }
 
     if (sInsertedTab == TabCtrl::InvalidTab)
@@ -1293,7 +1334,18 @@ xpr_sint_t ExplorerView::newSearchResultTab(void)
 
             const xpr_tchar_t *sTitle = gApp.loadString(XPR_STRING_LITERAL("search_result.title"));
 
-            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
+            if (XPR_IS_TRUE(gOpt->mConfig.mTabNearOpenNewTab))
+            {
+                xpr_size_t sTab = mTabCtrl->getCurTab();
+                if (sTab != -1)
+                    ++sTab;
+
+                sInsertedTab = mTabCtrl->insertTab(sTab, sTitle, -1, sTabData);
+            }
+            else
+            {
+                sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
+            }
         }
         else
         {
@@ -1333,7 +1385,18 @@ xpr_sint_t ExplorerView::newFileScrapTab(void)
 
             const xpr_tchar_t *sTitle = gApp.loadString(XPR_STRING_LITERAL("file_scrap.title"));
 
-            sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
+            if (XPR_IS_TRUE(gOpt->mConfig.mTabNearOpenNewTab))
+            {
+                xpr_size_t sTab = mTabCtrl->getCurTab();
+                if (sTab != -1)
+                    ++sTab;
+
+                sInsertedTab = mTabCtrl->insertTab(sTab, sTitle, -1, sTabData);
+            }
+            else
+            {
+                sInsertedTab = mTabCtrl->addTab(sTitle, -1, sTabData);
+            }
         }
         else
         {
@@ -1351,20 +1414,13 @@ xpr_sint_t ExplorerView::newFileScrapTab(void)
     return (xpr_sint_t)sInsertedTab;
 }
 
-xpr_sint_t ExplorerView::duplicateTab(xpr_bool_t aOnCursor)
+xpr_sint_t ExplorerView::duplicateTab(xpr_sint_t aTab)
 {
     if (XPR_IS_NULL(mTabCtrl))
         return -1;
 
-    xpr_size_t sTab;
-    if (XPR_IS_TRUE(aOnCursor))
-    {
-        CPoint sPoint(mContextMenuCursor);
-        mTabCtrl->ScreenToClient(&sPoint);
-
-        sTab = mTabCtrl->hitTest(sPoint);
-    }
-    else
+    xpr_size_t sTab = aTab;
+    if (sTab == -1)
     {
         sTab = mTabCtrl->getCurTab();
     }
@@ -1401,20 +1457,13 @@ xpr_sint_t ExplorerView::duplicateTab(xpr_bool_t aOnCursor)
     return -1;
 }
 
-xpr_bool_t ExplorerView::canDuplicateTab(xpr_bool_t aOnCursor) const
+xpr_bool_t ExplorerView::canDuplicateTab(xpr_sint_t aTab) const
 {
     if (XPR_IS_NULL(mTabCtrl))
         return XPR_FALSE;
 
-    xpr_size_t sTab;
-    if (XPR_IS_TRUE(aOnCursor))
-    {
-        CPoint sPoint(mContextMenuCursor);
-        mTabCtrl->ScreenToClient(&sPoint);
-
-        sTab = mTabCtrl->hitTest(sPoint);
-    }
-    else
+    xpr_size_t sTab = aTab;
+    if (sTab == -1)
     {
         sTab = mTabCtrl->getCurTab();
     }
@@ -1429,7 +1478,7 @@ xpr_bool_t ExplorerView::canDuplicateTab(xpr_bool_t aOnCursor) const
     return XPR_TRUE;
 }
 
-void ExplorerView::closeTab(xpr_sint_t aTab, xpr_bool_t aOnCursor)
+void ExplorerView::closeTab(xpr_sint_t aTab)
 {
     if (XPR_IS_NULL(mTabCtrl))
         return;
@@ -1437,17 +1486,7 @@ void ExplorerView::closeTab(xpr_sint_t aTab, xpr_bool_t aOnCursor)
     xpr_size_t sTab = aTab;
     if (sTab == -1)
     {
-        if (XPR_IS_TRUE(aOnCursor))
-        {
-            CPoint sPoint(mContextMenuCursor);
-            mTabCtrl->ScreenToClient(&sPoint);
-
-            sTab = mTabCtrl->hitTest(sPoint);
-        }
-        else
-        {
-            sTab = mTabCtrl->getCurTab();
-        }
+        sTab = mTabCtrl->getCurTab();
     }
 
     xpr_size_t sTabCount = mTabCtrl->getTabCount();
@@ -1461,25 +1500,20 @@ void ExplorerView::closeTab(xpr_sint_t aTab, xpr_bool_t aOnCursor)
     RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 }
 
-void ExplorerView::closeAllTabsButThis(xpr_bool_t aOnCursor)
+void ExplorerView::closeOthers(xpr_sint_t aTab)
 {
     if (XPR_IS_NULL(mTabCtrl))
         return;
 
-    xpr_size_t sTab;
-    if (XPR_IS_TRUE(aOnCursor))
-    {
-        CPoint sPoint(mContextMenuCursor);
-        mTabCtrl->ScreenToClient(&sPoint);
-
-        sTab = mTabCtrl->hitTest(sPoint);
-    }
-    else
+    xpr_size_t sTab = aTab;
+    if (sTab == -1)
     {
         sTab = mTabCtrl->getCurTab();
     }
-
-    mTabCtrl->setCurTab(sTab);
+    else
+    {
+        mTabCtrl->setCurTab(sTab);
+    }
 
     xpr_size_t i;
     xpr_size_t sTabCount = mTabCtrl->getTabCount();
@@ -1650,6 +1684,34 @@ xpr_sint_t ExplorerView::getTabCount(void) const
         return 0;
 
     return (xpr_sint_t)mTabCtrl->getTabCount();
+}
+
+xpr_bool_t ExplorerView::getTabText(xpr_sint_t aTab, xpr_tchar_t *aText, xpr_size_t aMaxLen) const
+{
+    if (XPR_IS_NULL(mTabCtrl))
+        return XPR_FALSE;
+
+    xpr_size_t sTab = aTab;
+    if (sTab == -1)
+    {
+        sTab = mTabCtrl->getCurTab();
+    }
+
+    return mTabCtrl->getTabText(sTab, aText, aMaxLen);
+}
+
+xpr_bool_t ExplorerView::getTabText(xpr_sint_t aTab, xpr::tstring &aText) const
+{
+    if (XPR_IS_NULL(mTabCtrl))
+        return XPR_FALSE;
+
+    xpr_size_t sTab = aTab;
+    if (sTab == -1)
+    {
+        sTab = mTabCtrl->getCurTab();
+    }
+
+    return mTabCtrl->getTabText(sTab, aText);
 }
 
 xpr_sint_t ExplorerView::getTabOnCursor(void) const
@@ -2089,9 +2151,12 @@ void ExplorerView::OnActivateView(xpr_bool_t aActivate, CView *aActivateView, CV
 
 void ExplorerView::onTabInserted(TabCtrl &aTabCtrl, xpr_size_t aTab)
 {
-    xpr_size_t sTabCount = aTabCtrl.getTabCount();
-    if (sTabCount > 1)
-        aTabCtrl.ShowWindow(SW_SHOW);
+    if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab))
+    {
+        xpr_size_t sTabCount = aTabCtrl.getTabCount();
+        if (sTabCount > 1)
+            aTabCtrl.ShowWindow(SW_SHOW);
+    }
 
     recalcLayout();
 }
@@ -2138,11 +2203,34 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                         sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
                     }
 
-                    // update tab text
+                    // update tab text and image
                     xpr::tstring sName;
+                    xpr_sint_t sImageIndex = -1;
                     GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
 
-                    aTabCtrl.setTabText(aNewTab, sName.c_str());
+                    if (XPR_IS_TRUE(gOpt->mConfig.mTabShowDrive))
+                    {
+                        if (IsFileSystem(sTvItemData->mShellFolder, sTvItemData->mPidl))
+                        {
+                            xpr::tstring sPath;
+                            GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sPath);
+
+                            if (sPath.length() > 3)
+                            {
+                                xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
+                                _stprintf(sDrive, _T("[%c:] "), sPath[0]);
+
+                                sName.insert(0, sDrive);
+                            }
+                        }
+                    }
+
+                    if (XPR_IS_TRUE(gOpt->mConfig.mTabIcon))
+                    {
+                        sImageIndex = GetItemIconIndex(sTvItemData->mShellFolder, sTvItemData->mPidl);
+                    }
+
+                    aTabCtrl.setTab(aNewTab, sName.c_str(), sImageIndex);
 
                     if (gFrame->getActiveView() == mViewIndex)
                     {
@@ -2170,19 +2258,55 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
 void ExplorerView::onTabRemove(TabCtrl &aTabCtrl, xpr_size_t aTab)
 {
     TabData *sTabData = (TabData *)aTabCtrl.getTabData(aTab);
+
+    BOOL sHideWindow = XPR_FALSE;
+
+    xpr_size_t aCurTab = aTabCtrl.getCurTab();
+    if (aTab == aCurTab)
+    {
+        sHideWindow = XPR_TRUE;
+    }
+    else
+    {
+        TabData *sCurTabData = (TabData *)aTabCtrl.getTabData(aCurTab);
+
+        if (XPR_IS_NOT_NULL(sTabData) && XPR_IS_NOT_NULL(sCurTabData))
+        {
+            // check other shared pane
+            if (sTabData->mTabPane != sCurTabData->mTabPane)
+            {
+                sHideWindow = XPR_TRUE;
+            }
+        }
+    }
+
+    if (XPR_IS_TRUE(sHideWindow))
+    {
+        if (XPR_IS_NOT_NULL(sTabData->mTabPane))
+        {
+            sTabData->mTabPane->ShowWindow(SW_HIDE);
+        }
+    }
+
     XPR_SAFE_DELETE(sTabData);
 }
 
 void ExplorerView::onTabRemoved(TabCtrl &aTabCtrl)
 {
-    xpr_size_t sTabCount = aTabCtrl.getTabCount();
-    if (sTabCount <= 1)
-        aTabCtrl.ShowWindow(SW_HIDE);
+    if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab))
+    {
+        xpr_size_t sTabCount = aTabCtrl.getTabCount();
+        if (sTabCount <= 1)
+            aTabCtrl.ShowWindow(SW_HIDE);
+    }
 }
 
 void ExplorerView::onTabRemoveAll(TabCtrl &aTabCtrl)
 {
-    aTabCtrl.ShowWindow(SW_HIDE);
+    if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab))
+    {
+        aTabCtrl.ShowWindow(SW_HIDE);
+    }
 }
 
 void ExplorerView::onTabEmptied(TabCtrl &aTabCtrl)
@@ -2191,7 +2315,13 @@ void ExplorerView::onTabEmptied(TabCtrl &aTabCtrl)
 
 void ExplorerView::onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab)
 {
-    closeTab((xpr_sint_t)aTab);
+    if (XPR_IS_TRUE(gOpt->mConfig.mTabCloseOnDoubleClick))
+    {
+        cmd::CommandParameters sParameters;
+        sParameters.set(cmd::CommandParameterIdTab, (void *)aTab);
+
+        gFrame->executeCommand(ID_WINDOW_TAB_CLOSE, XPR_NULL, &sParameters);
+    }
 }
 
 void ExplorerView::onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint)
@@ -2207,6 +2337,16 @@ void ExplorerView::onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const PO
             sPopupMenu->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, aPoint, AfxGetMainWnd());
         }
     }
+}
+
+void ExplorerView::onTabNewButton(TabCtrl &aTabCtrl)
+{
+    gFrame->executeCommand(ID_WINDOW_TAB_NEW);
+}
+
+void ExplorerView::onSetFocus(TabCtrl &aTabCtrl)
+{
+    gFrame->setActiveView(mViewIndex);
 }
 
 void ExplorerView::OnLButtonDblClk(xpr_uint_t aFlags, CPoint aPoint)
@@ -2503,9 +2643,32 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
     if (sTab >= 0)
     {
         xpr::tstring sName;
+        xpr_sint_t sImageIndex = -1;
         GetName(aFullPidl, SHGDN_INFOLDER, sName);
 
-        mTabCtrl->setTabText(sTab, sName.c_str());
+        if (XPR_IS_TRUE(gOpt->mConfig.mTabShowDrive))
+        {
+            if (IsFileSystem(aFullPidl))
+            {
+                xpr::tstring sPath;
+                GetName(aFullPidl, SHGDN_FORPARSING, sPath);
+
+                if (sPath.length() > 3)
+                {
+                    xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
+                    _stprintf(sDrive, _T("[%c:] "), sPath[0]);
+
+                    sName.insert(0, sDrive);
+                }
+            }
+        }
+
+        if (XPR_IS_TRUE(gOpt->mConfig.mTabIcon))
+        {
+            sImageIndex = GetItemIconIndex(aFullPidl);
+        }
+
+        mTabCtrl->setTab(sTab, sName.c_str(), sImageIndex);
     }
 
     if (gFrame->getActiveView() == mViewIndex)
