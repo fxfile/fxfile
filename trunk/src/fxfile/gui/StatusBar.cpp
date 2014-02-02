@@ -513,18 +513,19 @@ void StatusBar::OnPaint(void)
     CRect sClientRect;
     GetClientRect(&sClientRect);
 
+    COLORREF sFaceColor   = ::GetSysColor(COLOR_3DFACE);
+    COLORREF sShadowColor = ::GetSysColor(COLOR_3DSHADOW);
+    COLORREF sTextColor   = ::GetSysColor(COLOR_BTNTEXT);
+
     CDC sMemDC;
     sMemDC.CreateCompatibleDC(&sPaintDC);
     sMemDC.SetBkMode(TRANSPARENT);
-    sMemDC.SetTextColor(RGB(0,0,0));
+    sMemDC.SetTextColor(sTextColor);
 
     CBitmap sBitmap;
     sBitmap.CreateCompatibleBitmap(&sPaintDC, sClientRect.Width(), sClientRect.Height());
 
     CBitmap *sOldBitmap = sMemDC.SelectObject(&sBitmap);
-
-    COLORREF sFaceColor   = ::GetSysColor(COLOR_3DFACE);
-    COLORREF sShadowColor = ::GetSysColor(COLOR_3DSHADOW);
 
     sMemDC.FillSolidRect(&sClientRect, sFaceColor);
 
