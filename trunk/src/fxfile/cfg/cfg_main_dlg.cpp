@@ -413,6 +413,9 @@ void CfgMainDlg::OnDefault(void)
     // save default option
     sOptionManager.saveConfigOption();
 
+    // copy default option
+    gOpt->copyConfig(mNewConfig);
+
     // notify default option
     gOpt->notifyConfig();
 
