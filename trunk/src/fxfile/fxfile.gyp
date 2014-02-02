@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013 Leon Lee author. All rights reserved.
+# Copyright (c) 2013-2014 Leon Lee author. All rights reserved.
 #
 #   homepage: http://www.flychk.com
 #   e-mail:   mailto:flychk@flychk.com
@@ -638,6 +638,8 @@
                 './cfg/cfg_appearance_thumbnail_dlg.h',
                 './cfg/cfg_appearance_view_set_dlg.cpp',
                 './cfg/cfg_appearance_view_set_dlg.h',
+                './cfg/cfg_appearance_tab_dlg.cpp',
+                './cfg/cfg_appearance_tab_dlg.h',
                 './cfg/cfg_dlg.cpp',
                 './cfg/cfg_dlg.h',
                 './cfg/cfg_dlg_observer.h',

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -310,6 +310,18 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.recent_file"),                                OptionKey::TypeBoolean, &Option::mConfig.mRecentFile,                   (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.animation_menu"),                             OptionKey::TypeBoolean, &Option::mConfig.mAnimationMenu,                (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.standard_menu"),                              OptionKey::TypeBoolean, &Option::mConfig.mStandardMenu,                 (void *)XPR_FALSE                      },
+
+    { XPR_STRING_LITERAL("config.tab.switch_to_new_tab"),                      OptionKey::TypeBoolean, &Option::mConfig.mTabSwitchToNewTab,            (void *)XPR_TRUE                       },
+    { XPR_STRING_LITERAL("config.tab.auto_fit"),                               OptionKey::TypeBoolean, &Option::mConfig.mTabAutoFit,                   (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.close_on_double_click"),                  OptionKey::TypeBoolean, &Option::mConfig.mTabCloseOnDoubleClick,        (void *)XPR_TRUE                       },
+    { XPR_STRING_LITERAL("config.tab.show_one_tab"),                           OptionKey::TypeBoolean, &Option::mConfig.mTabShowOneTab,                (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.confirm_to_close"),                       OptionKey::TypeBoolean, &Option::mConfig.mTabConfirmToClose,            (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.confirm_to_close_all"),                   OptionKey::TypeBoolean, &Option::mConfig.mTabConfirmToCloseAll,         (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.near_open_new_tab"),                      OptionKey::TypeBoolean, &Option::mConfig.mTabNearOpenNewTab,            (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.icon"),                                   OptionKey::TypeBoolean, &Option::mConfig.mTabIcon,                      (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.show_drive"),                             OptionKey::TypeBoolean, &Option::mConfig.mTabShowDrive,                 (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.show_new_button"),                        OptionKey::TypeBoolean, &Option::mConfig.mTabShowNewButton,             (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.tab.drag_move"),                              OptionKey::TypeBoolean, &Option::mConfig.mTabDragMove,                  (void *)XPR_TRUE                       },
 
     { XPR_STRING_LITERAL("config.file_scrap.context_menu"),                    OptionKey::TypeBoolean, &Option::mConfig.mFileScrapContextMenu,         (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.file_scrap.save"),                            OptionKey::TypeBoolean, &Option::mConfig.mFileScrapSave,                (void *)XPR_FALSE                      },

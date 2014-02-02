@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -181,6 +181,30 @@ xpr_bool_t LoadImgList(CImageList *aImgList, const xpr_tchar_t *aPath, CSize aIc
         return XPR_FALSE;
 
     return LoadImgList(aImgList, sBitmap, aIconSize, aOverlayCount);
+}
+
+xpr_bool_t getIconInfo(HICON sIcon, SIZE *aIconSize)
+{
+    ICONINFO sIconInfo = {0};
+    BOOL sResult = GetIconInfo(sIcon, &sIconInfo);
+    if (XPR_IS_TRUE(sResult))
+    {
+        BITMAP sBitmap = {0};
+        sResult = GetObject(sIconInfo.hbmMask, sizeof(sBitmap), &sBitmap) == sizeof(sBitmap);
+        if (XPR_IS_TRUE(sResult))
+        {
+            if (XPR_IS_NOT_NULL(aIconSize))
+            {
+                (*aIconSize).cx = sBitmap.bmWidth;
+                (*aIconSize).cy = XPR_IS_NOT_NULL(sIconInfo.hbmColor) ? sBitmap.bmHeight : sBitmap.bmHeight / 2;
+            }
+        }
+
+        if (XPR_IS_NOT_NULL(sIconInfo.hbmMask))  DeleteObject(sIconInfo.hbmMask);
+        if (XPR_IS_NOT_NULL(sIconInfo.hbmColor)) DeleteObject(sIconInfo.hbmColor);
+    }
+
+    return sResult;
 }
 
 HFONT CreateFont(const xpr_tchar_t *aFaceName,

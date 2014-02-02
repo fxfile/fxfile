@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -10,8 +10,11 @@
 #include "stdafx.h"
 #include "cmd_tab.h"
 
+#include "router/cmd_parameters.h"
+#include "router/cmd_parameter_define.h"
 #include "main_frame.h"
 #include "explorer_view.h"
+#include "option.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -35,7 +38,19 @@ void NewTabCommand::execute(CommandContext &aContext)
     {
         xpr_sint_t sTab = sExplorerView->newTab();
         if (sTab >= 0)
-            sExplorerView->setCurTab(sTab);
+        {
+            if (sExplorerView->getTabCount() == 1)
+            {
+                sExplorerView->setCurTab(sTab);
+            }
+            else
+            {
+                if (XPR_IS_TRUE(gOpt->mConfig.mTabSwitchToNewTab))
+                {
+                    sExplorerView->setCurTab(sTab);
+                }
+            }
+        }
     }
 }
 
@@ -78,7 +93,7 @@ xpr_sint_t DuplicateTabOnCursorCommand::canExecute(CommandContext &aContext)
         xpr_sint_t sTab = sExplorerView->getTabOnCursor();
         if (sTab >= 0)
         {
-            if (sExplorerView->canDuplicateTab(XPR_TRUE) == XPR_TRUE)
+            if (sExplorerView->canDuplicateTab(sTab) == XPR_TRUE)
                 sState = StateEnable;
         }
     }
@@ -93,7 +108,9 @@ void DuplicateTabOnCursorCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->duplicateTab(XPR_TRUE);
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
+
+        sExplorerView->duplicateTab(sTab);
     }
 }
 
@@ -104,6 +121,95 @@ xpr_sint_t CloseTabCommand::canExecute(CommandContext &aContext)
     return StateEnable;
 }
 
+namespace
+{
+void closeTab(MainFrame *aMainFrame, ExplorerView *aExplorerView, xpr_sint_t aTab)
+{
+    XPR_ASSERT(aMainFrame != XPR_NULL);
+    XPR_ASSERT(aExplorerView != XPR_NULL);
+
+    xpr_sint_t sTabCount = aExplorerView->getTabCount();
+    xpr_bool_t sExplorerTabMode = aExplorerView->isExplorerTabMode();
+
+    if (sTabCount >= 1)
+    {
+        if ((sTabCount > 1) || (sTabCount == 1 && sExplorerTabMode == XPR_FALSE))
+        {
+            xpr_bool_t sConfirmToClose = XPR_FALSE;
+
+            if (XPR_IS_TRUE(gOpt->mConfig.mTabConfirmToClose))
+            {
+                xpr::tstring sTabText;
+                aExplorerView->getTabText(aTab, sTabText);
+
+                xpr::tstring sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close")));
+                sMsg += XPR_STRING_LITERAL("\r\n\r\n");
+                sMsg += sTabText;
+
+                xpr_sint_t sMsgId = aMainFrame->MessageBox(sMsg.c_str(), XPR_NULL, MB_YESNO | MB_ICONQUESTION);
+                if (sMsgId == IDYES)
+                {
+                    sConfirmToClose = XPR_TRUE;
+                }
+            }
+            else
+            {
+                sConfirmToClose = XPR_TRUE;
+            }
+
+            if (XPR_IS_TRUE(sConfirmToClose))
+            {
+                aExplorerView->SetRedraw(XPR_FALSE);
+
+                aExplorerView->closeTab(aTab);
+
+                if (sTabCount == 1 && sExplorerTabMode == XPR_FALSE)
+                {
+                    aExplorerView->newTab();
+                    aExplorerView->setCurTab(0);
+                }
+
+                aExplorerView->SetRedraw(XPR_TRUE);
+                aExplorerView->RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+            }
+        }
+    }
+}
+
+void closeOthers(MainFrame *aMainFrame, ExplorerView *aExplorerView, xpr_sint_t aTab)
+{
+    XPR_ASSERT(aMainFrame != XPR_NULL);
+    XPR_ASSERT(aExplorerView != XPR_NULL);
+
+    xpr_bool_t sConfirmToClose = XPR_FALSE;
+
+    if (XPR_IS_TRUE(gOpt->mConfig.mTabConfirmToClose))
+    {
+        xpr::tstring sTabText;
+        aExplorerView->getTabText(aTab, sTabText);
+
+        xpr::tstring sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close_others")));
+        sMsg += XPR_STRING_LITERAL("\r\n\r\n");
+        sMsg += sTabText;
+
+        xpr_sint_t sMsgId = aMainFrame->MessageBox(sMsg.c_str(), XPR_NULL, MB_YESNO | MB_ICONQUESTION);
+        if (sMsgId == IDYES)
+        {
+            sConfirmToClose = XPR_TRUE;
+        }
+    }
+    else
+    {
+        sConfirmToClose = XPR_TRUE;
+    }
+
+    if (XPR_IS_TRUE(sConfirmToClose))
+    {
+        aExplorerView->closeOthers();
+    }
+}
+} // anonymous namespace
+
 void CloseTabCommand::execute(CommandContext &aContext)
 {
     FXFILE_COMMAND_DECLARE_CTRL;
@@ -112,26 +218,18 @@ void CloseTabCommand::execute(CommandContext &aContext)
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
         xpr_sint_t sTabCount = sExplorerView->getTabCount();
-        xpr_bool_t sExplorerTabMode = sExplorerView->isExplorerTabMode();
 
-        if (sTabCount >= 1)
+        xpr_sint_t sTab = -1;
+        if (sParameters != XPR_NULL)
         {
-            if ((sTabCount > 1) || (sTabCount == 1 && sExplorerTabMode == XPR_FALSE))
+            sTab = (xpr_sint_t)sParameters->get(CommandParameterIdTab);
+            if (XPR_IS_OUT_OF_RANGE(0, sTab, sTabCount - 1))
             {
-                sExplorerView->SetRedraw(XPR_FALSE);
-
-                sExplorerView->closeTab();
-
-                if (sTabCount == 1 && sExplorerTabMode == XPR_FALSE)
-                {
-                    sExplorerView->newTab();
-                    sExplorerView->setCurTab(0);
-                }
-
-                sExplorerView->SetRedraw(XPR_TRUE);
-                sExplorerView->RedrawWindow(XPR_NULL, XPR_NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE | RDW_INTERNALPAINT | RDW_ALLCHILDREN);
+                return;
             }
         }
+
+        closeTab(sMainFrame, sExplorerView, sTab);
     }
 }
 
@@ -159,7 +257,9 @@ void CloseTabOnCursorCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeTab(-1, XPR_TRUE);
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
+
+        closeTab(sMainFrame, sExplorerView, sTab);
     }
 }
 
@@ -187,7 +287,7 @@ void CloseOtherTabsCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeAllTabsButThis();
+        closeOthers(sMainFrame, sExplorerView, -1);
     }
 }
 
@@ -215,7 +315,9 @@ void CloseOtherTabsOnCursorCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeAllTabsButThis(XPR_TRUE);
+        xpr_sint_t sTab = sExplorerView->getTabOnCursor();
+
+        closeOthers(sMainFrame, sExplorerView, sTab);
     }
 }
 
@@ -231,7 +333,26 @@ void CloseAllTabsCommand::execute(CommandContext &aContext)
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        sExplorerView->closeAllTabs();
+        xpr_bool_t sConfirmToCloseAll = XPR_FALSE;
+
+        if (XPR_IS_TRUE(gOpt->mConfig.mTabConfirmToCloseAll))
+        {
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close_all"));
+            xpr_sint_t sMsgId = sMainFrame->MessageBox(sMsg, XPR_NULL, MB_YESNO | MB_ICONQUESTION);
+            if (sMsgId == IDYES)
+            {
+                sConfirmToCloseAll = XPR_TRUE;
+            }
+        }
+        else
+        {
+            sConfirmToCloseAll = XPR_TRUE;
+        }
+
+        if (XPR_IS_TRUE(sConfirmToCloseAll))
+        {
+            sExplorerView->closeAllTabs();
+        }
     }
 }
 

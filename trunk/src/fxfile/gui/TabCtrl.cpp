@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -11,13 +11,20 @@
 #include "TabCtrl.h"
 
 #include "TabCtrlObserver.h"
+#include "gdi.h"
+#include <math.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-static const xpr_sint_t kDefaultTabSize = 150;
-static const CRect kOffset(3, 2, 3, 0);
+static const xpr_sint_t kDefaultTabSize     = 150;
+static const CRect      kTabOffset          = CRect(3, 2, 3, 0);
+static const CRect      kTextOffset         = CRect(5, 2, 5, 2);
+static const xpr_sint_t kIconOffset         = 5;
+static const xpr_sint_t kDragDist           = 8;
+static const xpr_sint_t kBarLineHeight      = 1;
+static const xpr_sint_t kInactivedTabOffset = 2;
 
 static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("TabCtrl");
 
@@ -33,10 +40,11 @@ struct TabCtrl::TabItem
 TabCtrl::TabCtrl(void)
     : mObserver(XPR_NULL)
     , mCurTab(InvalidTab)
-    , mFixedSizeMode(XPR_FALSE), mFixedSize(kDefaultTabSize)
-    , mTabMinSize(0), mTabMaxSize(ksint32max)
+    , mFixedSizeMode(XPR_FALSE), mFixedSize(kDefaultTabSize), mTabMinSize(0), mTabMaxSize(ksint32max)
     , mImageList(XPR_NULL)
-    , mSetCapture(XPR_FALSE), mHoverTab(InvalidTab), mPressedTab(InvalidTab)
+    , mShowNewButton(XPR_FALSE), mNewButtonIcon(XPR_NULL), mNewButtonRect(CRect(0,0,0,0)), mNewButtonHover(XPR_FALSE), mNewButtonPressed(XPR_FALSE), mNewButtonPressedLeave(XPR_FALSE)
+    , mSetCapture(XPR_FALSE), mTabHover(InvalidTab)
+    , mDragMove(XPR_FALSE), mDragTab(InvalidTab), mDragBegunPoint(0,0), mDragBegun(XPR_FALSE), mDragBegunTab(InvalidTab)
 {
 }
 
@@ -93,6 +101,7 @@ BEGIN_MESSAGE_MAP(TabCtrl, super)
     ON_WM_LBUTTONDBLCLK()
     ON_WM_CAPTURECHANGED()
     ON_WM_CONTEXTMENU()
+    ON_WM_SETFOCUS()
 END_MESSAGE_MAP()
 
 xpr_sint_t TabCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
@@ -134,11 +143,33 @@ void TabCtrl::setTabSizeLimit(xpr_sint_t aMinSize, xpr_sint_t aMaxSize)
 
 void TabCtrl::setTabSizeMode(xpr_bool_t aFixedSizeMode, xpr_sint_t aFixedSize)
 {
+    if (mFixedSizeMode == aFixedSizeMode && mFixedSize == aFixedSize)
+        return;
+
     if (aFixedSize <= 0)
         aFixedSize = kDefaultTabSize;
 
     mFixedSizeMode = aFixedSizeMode;
     mFixedSize = aFixedSize;
+
+    recalcLayout();
+}
+
+void TabCtrl::enableDragMove(xpr_bool_t aDragMove)
+{
+    mDragMove = aDragMove;
+}
+
+void TabCtrl::showNewButton(xpr_bool_t aShowNewButton)
+{
+    mShowNewButton = aShowNewButton;
+
+    recalcLayout();
+}
+
+void TabCtrl::setTabIcon(HICON aNewButtonIcon)
+{
+    mNewButtonIcon = aNewButtonIcon;
 }
 
 xpr_size_t TabCtrl::addTab(const xpr_tchar_t *aText, xpr_sint_t aImageIndex, void *aData)
@@ -148,8 +179,20 @@ xpr_size_t TabCtrl::addTab(const xpr_tchar_t *aText, xpr_sint_t aImageIndex, voi
 
 xpr_size_t TabCtrl::insertTab(xpr_size_t aTab, const xpr_tchar_t *aText, xpr_sint_t aImageIndex, void *aData)
 {
-    if (aTab != InvalidTab && !FXFILE_STL_IS_INDEXABLE(aTab, mTabDeque))
+    xpr_size_t sTab = aTab;
+
+    if (sTab > InvalidTab)
         return InvalidTab;
+
+    if (sTab != InvalidTab)
+    {
+        xpr_size_t sTabCount = mTabDeque.size();
+        if (XPR_IS_OUT_OF_RANGE(0, sTab, sTabCount))
+            return InvalidTab;
+
+        if (sTab == sTabCount)
+            sTab = InvalidTab;
+    }
 
     TabItem *sTabItem = new TabItem;
     if (XPR_IS_NULL(sTabItem))
@@ -161,7 +204,7 @@ xpr_size_t TabCtrl::insertTab(xpr_size_t aTab, const xpr_tchar_t *aText, xpr_sin
     sTabItem->mData       = aData;
     sTabItem->mImageIndex = aImageIndex;
 
-    return insertTabItem(aTab, sTabItem);
+    return insertTabItem(sTab, sTabItem);
 }
 
 xpr_size_t TabCtrl::insertTabItem(xpr_size_t aTab, TabItem *aTabItem, xpr_bool_t aNotifyObserver)
@@ -221,6 +264,17 @@ xpr_bool_t TabCtrl::getTabText(xpr_size_t aTab, xpr_tchar_t *aText, xpr_size_t a
     return XPR_TRUE;
 }
 
+xpr_bool_t TabCtrl::getTabText(xpr_size_t aTab, xpr::tstring &aText) const
+{
+    TabItem *sTabItem = getTabItem(aTab);
+    if (XPR_IS_NULL(sTabItem))
+        return XPR_FALSE;
+
+    aText = sTabItem->mText;
+
+    return XPR_TRUE;
+}
+
 void *TabCtrl::getTabData(xpr_size_t aTab) const
 {
     TabItem *sTabItem = getTabItem(aTab);
@@ -228,6 +282,16 @@ void *TabCtrl::getTabData(xpr_size_t aTab) const
         return XPR_NULL;
 
     return sTabItem->mData;
+}
+
+xpr_bool_t TabCtrl::getNewButtonRect(CRect &aNewButtonRect) const
+{
+    if (XPR_IS_FALSE(mShowNewButton))
+        return XPR_FALSE;
+
+    aNewButtonRect = mNewButtonRect;
+
+    return XPR_TRUE;
 }
 
 xpr_size_t TabCtrl::hitTest(const POINT &aPoint) const
@@ -278,6 +342,26 @@ xpr_bool_t TabCtrl::setCurTab(xpr_size_t aTab)
     return XPR_TRUE;
 }
 
+xpr_bool_t TabCtrl::setTab(xpr_size_t aTab, const xpr_tchar_t *aText, xpr_sint_t aImageIndex)
+{
+    TabItem *sTabItem = getTabItem(aTab);
+    if (XPR_IS_NULL(sTabItem))
+        return XPR_FALSE;
+
+    sTabItem->mText.clear();
+
+    if (XPR_IS_NOT_NULL(aText))
+    {
+        sTabItem->mText = aText;
+    }
+
+    sTabItem->mImageIndex = aImageIndex;
+
+    recalcLayout();
+
+    return XPR_TRUE;
+}
+
 xpr_bool_t TabCtrl::setTabText(xpr_size_t aTab, const xpr_tchar_t *aText)
 {
     if (XPR_IS_NULL(aText))
@@ -288,6 +372,19 @@ xpr_bool_t TabCtrl::setTabText(xpr_size_t aTab, const xpr_tchar_t *aText)
         return XPR_FALSE;
 
     sTabItem->mText = aText;
+
+    recalcLayout();
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t TabCtrl::setTabImage(xpr_size_t aTab, xpr_sint_t aImageIndex)
+{
+    TabItem *sTabItem = getTabItem(aTab);
+    if (XPR_IS_NULL(sTabItem))
+        return XPR_FALSE;
+
+    sTabItem->mImageIndex = aImageIndex;
 
     recalcLayout();
 
@@ -312,26 +409,26 @@ xpr_bool_t TabCtrl::swapTab(xpr_size_t aTab1, xpr_size_t aTab2)
     return XPR_TRUE;
 }
 
-xpr_bool_t TabCtrl::moveTab(xpr_size_t aSourceTab, xpr_size_t aTargetTab)
+xpr_bool_t TabCtrl::moveTab(xpr_size_t aFromTab, xpr_size_t aToTab)
 {
-    if (aSourceTab == aTargetTab)
+    if (aFromTab == aToTab)
         return XPR_TRUE;
 
-    if (!FXFILE_STL_IS_INDEXABLE(aSourceTab, mTabDeque))
+    if (!FXFILE_STL_IS_INDEXABLE(aFromTab, mTabDeque))
         return XPR_FALSE;
 
-    TabDeque::iterator sIterator = mTabDeque.begin() + aSourceTab;
-    if (sIterator != mTabDeque.end())
+    TabDeque::iterator sIterator = mTabDeque.begin() + aFromTab;
+    if (sIterator == mTabDeque.end())
         return XPR_FALSE;
 
-    TabItem *sTabItem = getTabItem(aSourceTab);
+    TabItem *sTabItem = getTabItem(aFromTab);
 
-    if (insertTabItem(aTargetTab, sTabItem, XPR_FALSE) == InvalidTab)
+    mTabDeque.erase(sIterator);
+
+    if (insertTabItem(aToTab, sTabItem, XPR_FALSE) == InvalidTab)
     {
         return XPR_FALSE;
     }
-
-    mTabDeque.erase(sIterator);
 
     return XPR_TRUE;
 }
@@ -449,33 +546,152 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
     if (sWidth <= 0 || sHeight <= 0)
         return;
 
-    sWidth -= kOffset.left + kOffset.right;
+    sWidth -= kTabOffset.left;
 
-    xpr_double_t fw = (xpr_double_t)sWidth / (xpr_double_t)mTabDeque.size();
-    if (fw >= kDefaultTabSize)
-        fw = kDefaultTabSize;
+    SIZE sNewButtonIconSize = {0};
+    if (XPR_IS_TRUE(mShowNewButton))
+    {
+        getIconInfo(mNewButtonIcon, &sNewButtonIconSize);
 
-    xpr_sint_t sLeft = kOffset.left;
-    xpr_sint_t sTop = kOffset.top;
-    xpr_sint_t sBottom = sHeight - sTop - 1; // 1 is underline
+        sWidth -= sNewButtonIconSize.cx + kIconOffset * 2;
+    }
+    else
+    {
+        sWidth -= kTabOffset.right;
+    }
 
-    xpr_size_t i;
-    TabItem *sTabItem;
+    xpr_sint_t sIconWidth = 0;
+    xpr_sint_t sIconHeight = 0;
+    xpr_sint_t sImageListCount = 0;
+    if (XPR_IS_NOT_NULL(mImageList))
+    {
+        ImageList_GetIconSize(mImageList->m_hImageList, &sIconWidth, &sIconHeight);
+        sImageListCount = mImageList->GetImageCount();
+    }
+
+    xpr_size_t  i;
+    xpr_sint_t  sLeft   = kTabOffset.left;
+    xpr_sint_t  sTop    = kTabOffset.top;
+    xpr_sint_t  sBottom = sHeight - kBarLineHeight;
+    TabItem    *sTabItem;
+    CRect       sLastTabRect(0, sTop, 0, sBottom);
     TabDeque::iterator sIterator;
 
-    sIterator = mTabDeque.begin();
-    for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
+    if (XPR_IS_TRUE(mFixedSizeMode))
     {
-        sTabItem = *sIterator;
-        if (XPR_IS_NULL(sTabItem))
-            continue;
+        xpr_double_t sAvgTabSize = (xpr_double_t)sWidth / (xpr_double_t)mTabDeque.size();
+        if (sAvgTabSize >= kDefaultTabSize)
+            sAvgTabSize = kDefaultTabSize;
 
-        sTabItem->mTabRect.SetRectEmpty();
+        sIterator = mTabDeque.begin();
+        for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
+        {
+            sTabItem = *sIterator;
 
-        sTabItem->mTabRect.left   = sLeft + (xpr_slong_t)(fw * (xpr_double_t)(i + 0));
-        sTabItem->mTabRect.right  = sLeft + (xpr_slong_t)(fw * (xpr_double_t)(i + 1));
-        sTabItem->mTabRect.top    = sTop;
-        sTabItem->mTabRect.bottom = sBottom;
+            XPR_ASSERT(sTabItem != XPR_NULL);
+
+            sTabItem->mTabRect.SetRectEmpty();
+
+            sTabItem->mTabRect.left   = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(i + 0));
+            sTabItem->mTabRect.right  = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(i + 1));
+            sTabItem->mTabRect.top    = sTop;
+            sTabItem->mTabRect.bottom = sBottom;
+
+            sLastTabRect = sTabItem->mTabRect;
+        }
+    }
+    else
+    {
+        CClientDC    sDC(this);
+        CFont       *sOldFont;
+        CRect        sTabTextRect;
+        xpr_slong_t  sAutoFitWidth = 0;
+        xpr_slong_t  sTotalAutoFitWidth = 0;
+        xpr_slong_t  sTabLeft = sLeft;
+        xpr_double_t sFitRatio = 1.0f;
+        xpr_double_t sAutoFitFloatWidth;
+        xpr_double_t sAccumulatedAutoFitFloatWidth = 0;
+        xpr_slong_t  sAccumulatedAutoFitIntegerWidth = 0;
+
+        // calcualte tab text width
+        sIterator = mTabDeque.begin();
+        for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
+        {
+            sTabItem = *sIterator;
+
+            XPR_ASSERT(sTabItem != XPR_NULL);
+
+            sTabItem->mTabRect.SetRectEmpty();
+
+            if (i == mCurTab)
+                sOldFont = sDC.SelectObject(&mBoldFont);
+            else
+                sOldFont = sDC.SelectObject(&mFont);
+
+            sTabTextRect.SetRect(0, 0, 0, 0);
+
+            sDC.DrawText(
+                sTabItem->mText.c_str(),
+                (xpr_sint_t)sTabItem->mText.length(),
+                sTabTextRect,
+                DT_CALCRECT | DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+
+            sTabTextRect.right += kTextOffset.left + kTextOffset.right;
+
+            if (XPR_IS_RANGE(0, sTabItem->mImageIndex, sImageListCount - 1))
+            {
+                sTabTextRect.right += sIconWidth + kIconOffset;
+            }
+
+            sDC.SelectObject(sOldFont);
+
+            sAutoFitWidth = sTabTextRect.Width();
+
+            sTabItem->mTabRect.left = sAutoFitWidth;
+
+            sTotalAutoFitWidth += sAutoFitWidth;
+        }
+
+        // calcualte auto fit tab width
+        if (sTotalAutoFitWidth > sWidth)
+        {
+            sFitRatio = (xpr_double_t)sWidth / (xpr_double_t)sTotalAutoFitWidth;
+        }
+
+        sIterator = mTabDeque.begin();
+        for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
+        {
+            sTabItem = *sIterator;
+
+            XPR_ASSERT(sTabItem != XPR_NULL);
+
+            sAutoFitFloatWidth = (xpr_double_t)sTabItem->mTabRect.left * sFitRatio;
+
+            sAutoFitWidth = (xpr_slong_t)(sAutoFitFloatWidth + (sAccumulatedAutoFitFloatWidth - sAccumulatedAutoFitIntegerWidth + 0.5f));
+
+            sAccumulatedAutoFitFloatWidth   += sAutoFitFloatWidth;
+            sAccumulatedAutoFitIntegerWidth += sAutoFitWidth;
+
+            sTabItem->mTabRect.SetRectEmpty();
+
+            sTabItem->mTabRect.left   = sTabLeft;
+            sTabItem->mTabRect.right  = sTabLeft + sAutoFitWidth;
+            sTabItem->mTabRect.top    = sTop;
+            sTabItem->mTabRect.bottom = sBottom;
+
+            sLastTabRect = sTabItem->mTabRect;
+
+            sTabLeft += sAutoFitWidth;
+        }
+    }
+
+    // calcuate new tab button
+    if (XPR_IS_TRUE(mShowNewButton))
+    {
+        mNewButtonRect.left   = sLastTabRect.right + kIconOffset;
+        mNewButtonRect.top    = sLastTabRect.top + (sLastTabRect.Height() + kInactivedTabOffset - sNewButtonIconSize.cy) / 2;
+        mNewButtonRect.right  = mNewButtonRect.left + sNewButtonIconSize.cx;
+        mNewButtonRect.bottom = mNewButtonRect.top + sNewButtonIconSize.cy;
     }
 
     if (XPR_IS_TRUE(aRedraw))
@@ -489,19 +705,21 @@ void TabCtrl::OnPaint(void)
     CRect sClientRect;
     GetClientRect(&sClientRect);
 
+    COLORREF sFaceColor   = ::GetSysColor(COLOR_3DFACE);
+    COLORREF sShadowColor = ::GetSysColor(COLOR_3DSHADOW);
+    COLORREF sTextColor   = ::GetSysColor(COLOR_BTNTEXT);
+
     CDC sMemDC;
     sMemDC.CreateCompatibleDC(&sPaintDC);
     sMemDC.SetBkMode(TRANSPARENT);
-    sMemDC.SetTextColor(RGB(0,0,0));
+    sMemDC.SetTextColor(sTextColor);
 
     CBitmap sBitmap;
     sBitmap.CreateCompatibleBitmap(&sPaintDC, sClientRect.Width(), sClientRect.Height());
 
     CBitmap *sOldBitmap = sMemDC.SelectObject(&sBitmap);
 
-    COLORREF sFaceColor   = ::GetSysColor(COLOR_3DFACE);
-    COLORREF sShadowColor = ::GetSysColor(COLOR_3DSHADOW);
-
+    // draw background
     sMemDC.FillSolidRect(&sClientRect, RGB(255,255,255));
 
     // Alpha Blend
@@ -532,15 +750,23 @@ void TabCtrl::OnPaint(void)
         sTempDC.SelectObject(sOldBitmap);
     }
 
-    CPen sPen(PS_SOLID, 1, sShadowColor);
-
-    CPen *sOldPen = sMemDC.SelectObject(&sPen);
-
-    xpr_sint_t i;
+    // draw tab button
+    xpr_sint_t  i;
+    TabItem    *sTabItem;
+    CFont      *sOldFont;
+    CRect       sTabRect, sCurTabButtonRect;
+    CPen        sPen(PS_SOLID, 1, sShadowColor);
+    CPen       *sOldPen;
+    xpr_sint_t  sIconWidth = 0, sIconHeight = 0, sImageListCount = 0;
     TabDeque::iterator sIterator;
-    TabItem *sTabItem;
-    CFont *sOldFont;
-    CRect sTabRect, sCurTabButtonRect;
+
+    if (XPR_IS_NOT_NULL(mImageList))
+    {
+        ImageList_GetIconSize(mImageList->m_hImageList, &sIconWidth, &sIconHeight);
+        sImageListCount = mImageList->GetImageCount();
+    }
+
+    sOldPen = sMemDC.SelectObject(&sPen);
 
     sIterator = mTabDeque.begin();
     for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
@@ -552,11 +778,11 @@ void TabCtrl::OnPaint(void)
         sTabRect = sTabItem->mTabRect;
 
         CRect sTabButtonRect(sTabRect);
-        if (i == mCurTab || i == mHoverTab)
+        if (i == mCurTab || i == mTabHover)
         {
             if (mXPTheme.IsAppThemed() == XPR_TRUE)
             {
-                sTabButtonRect.InflateRect(1, 0, 1, 4);
+                sTabButtonRect.InflateRect(0, 0, 1, 2);
 
                 if (i == mCurTab)
                 {
@@ -588,25 +814,44 @@ void TabCtrl::OnPaint(void)
         {
             if (mXPTheme.IsAppThemed() == XPR_TRUE)
             {
-                sTabButtonRect.DeflateRect(0, 2, -1, -2);
+                sTabButtonRect.DeflateRect(0, kInactivedTabOffset, -1, 0);
 
                 mXPTheme.DrawBackground(sMemDC, TABP_TABITEM, TIS_NORMAL, &sTabButtonRect, XPR_NULL);
             }
             else
             {
-                sTabButtonRect.DeflateRect(0, 2, -1, -1);
+                sTabButtonRect.DeflateRect(0, kInactivedTabOffset, -1, 0);
 
                 sMemDC.FillSolidRect(sTabButtonRect, sFaceColor);
 
-                sMemDC.MoveTo(sTabButtonRect.left, sTabButtonRect.bottom);
-                sMemDC.LineTo(sTabButtonRect.left, sTabButtonRect.top);
+                sMemDC.MoveTo(sTabButtonRect.left,  sTabButtonRect.bottom);
+                sMemDC.LineTo(sTabButtonRect.left,  sTabButtonRect.top);
                 sMemDC.LineTo(sTabButtonRect.right, sTabButtonRect.top);
                 sMemDC.LineTo(sTabButtonRect.right, sTabButtonRect.bottom);
             }
         }
 
         CRect sTabTextRect(sTabButtonRect);
-        sTabTextRect.DeflateRect(5, 2, 5, 2);
+        sTabTextRect.DeflateRect(kTextOffset);
+
+        if (XPR_IS_NOT_NULL(mImageList))
+        {
+            if (XPR_IS_RANGE(0, sTabItem->mImageIndex, sImageListCount - 1))
+            {
+                CRect sTabIconRect(sTabTextRect);
+                sTabIconRect.right   = sTabIconRect.left + sIconWidth;
+                sTabIconRect.top     = sTabIconRect.top + (sTabIconRect.Height() - sIconHeight) / 2;
+                sTabIconRect.bottom  = sTabIconRect.top + sIconHeight;
+
+                mImageList->Draw(&sMemDC,
+                                 sTabItem->mImageIndex,
+                                 sTabIconRect.TopLeft(),
+                                 ILD_NORMAL | ILD_TRANSPARENT);
+
+                sTabTextRect.left += sIconWidth + kIconOffset;
+            }
+        }
+
         if (i == mCurTab)
             sOldFont = sMemDC.SelectObject(&mBoldFont);
         else
@@ -619,6 +864,38 @@ void TabCtrl::OnPaint(void)
             DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
 
         sMemDC.SelectObject(sOldFont);
+    }
+
+    // draw new tab button
+    if (XPR_IS_TRUE(mShowNewButton))
+    {
+        CPoint sNewButtonPoint(mNewButtonRect.TopLeft());
+        if (XPR_IS_TRUE(mNewButtonPressed))
+        {
+            if (XPR_IS_TRUE(mNewButtonPressedLeave))
+            {
+                --sNewButtonPoint.x;
+                --sNewButtonPoint.y;
+            }
+        }
+        else if (XPR_IS_TRUE(mNewButtonHover))
+        {
+            --sNewButtonPoint.x;
+            --sNewButtonPoint.y;
+        }
+
+        SIZE sNewButtonIconSize = {0};
+        getIconInfo(mNewButtonIcon, &sNewButtonIconSize);
+
+        ::DrawIconEx(sMemDC,
+                     sNewButtonPoint.x,
+                     sNewButtonPoint.y,
+                     mNewButtonIcon,
+                     sNewButtonIconSize.cx,
+                     sNewButtonIconSize.cy,
+                     0,
+                     NULL,
+                     DI_NORMAL);
     }
 
     // draw underline
@@ -689,9 +966,9 @@ void TabCtrl::OnLButtonDblClk(xpr_uint_t aFlags, CPoint aPoint)
 {
     if (XPR_IS_NOT_NULL(mObserver))
     {
-        xpr_size_t sHoverTab = hitTest(aPoint);
+        xpr_size_t sTabHover = hitTest(aPoint);
 
-        mObserver->onTabDoubleClicked(*this, sHoverTab);
+        mObserver->onTabDoubleClicked(*this, sTabHover);
     }
 
     super::OnLButtonDblClk(aFlags, aPoint);
@@ -699,10 +976,36 @@ void TabCtrl::OnLButtonDblClk(xpr_uint_t aFlags, CPoint aPoint)
 
 void TabCtrl::OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint)
 {
-    xpr_size_t sHoverTab = hitTest(aPoint);
-    if (sHoverTab != InvalidTab)
+    SetFocus();
+
+    xpr_size_t sTabHover       = hitTest(aPoint);
+    xpr_bool_t sNewButtonHover = mNewButtonRect.PtInRect(aPoint);
+
+    if (sTabHover != InvalidTab)
     {
-        setCurTab(sHoverTab);
+        setCurTab(sTabHover);
+
+        if (XPR_IS_TRUE(mDragMove))
+        {
+            mTabHover       = InvalidTab;
+            mDragBegun      = XPR_TRUE;
+            mDragBegunTab   = sTabHover;
+            mDragBegunPoint = aPoint;
+            mDragTab        = InvalidTab;
+
+            SetCapture();
+            mSetCapture = XPR_TRUE;
+        }
+    }
+    else if (XPR_IS_TRUE(sNewButtonHover))
+    {
+        mNewButtonHover        = XPR_TRUE;
+        mNewButtonPressed      = XPR_TRUE;
+        mNewButtonPressedLeave = XPR_FALSE;
+
+        SetCapture();
+        mSetCapture = XPR_TRUE;
+        InvalidateRect(&mNewButtonRect, XPR_FALSE);
     }
 
     super::OnLButtonDown(aFlags, aPoint);
@@ -710,39 +1013,114 @@ void TabCtrl::OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint)
 
 void TabCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
 {
-    xpr_size_t sHoverTab = hitTest(aPoint);
+    xpr_size_t sTabHover       = hitTest(aPoint);
+    xpr_bool_t sNewButtonHover = mNewButtonRect.PtInRect(aPoint);
 
-    if (XPR_IS_FALSE(mSetCapture))
+    if (XPR_IS_FALSE(mDragBegun))
     {
-        if (sHoverTab != InvalidTab)
+        if (XPR_IS_FALSE(mSetCapture))
         {
-            mHoverTab = sHoverTab;
-            mSetCapture = XPR_TRUE;
-        }
-
-        if (XPR_IS_TRUE(mSetCapture))
-        {
-            SetCapture();
-            Invalidate(XPR_FALSE);
-        }
-    }
-    else
-    {
-        if (sHoverTab != InvalidTab)
-        {
-            if (mHoverTab != sHoverTab)
+            if (sTabHover != InvalidTab)
             {
-                mHoverTab = sHoverTab;
+                mTabHover = sTabHover;
+                mSetCapture = XPR_TRUE;
                 Invalidate(XPR_FALSE);
+            }
+            else if (XPR_IS_TRUE(sNewButtonHover))
+            {
+                mNewButtonHover = sNewButtonHover;
+                if (XPR_IS_TRUE(mNewButtonPressed))
+                    mNewButtonPressedLeave = XPR_FALSE;
+
+                mSetCapture = XPR_TRUE;
+                InvalidateRect(&mNewButtonRect, XPR_FALSE);
+            }
+
+            if (XPR_IS_TRUE(mSetCapture))
+            {
+                SetCapture();
             }
         }
         else
         {
-            mHoverTab = InvalidTab;
-            mSetCapture = XPR_FALSE;
+            if (XPR_IS_TRUE(mNewButtonPressed))
+            {
+                if (mNewButtonHover != sNewButtonHover)
+                {
+                    mNewButtonHover = sNewButtonHover;
+                    mNewButtonPressedLeave = !sNewButtonHover;
+                    InvalidateRect(&mNewButtonRect, XPR_FALSE);
+                }
+            }
+            else
+            {
+                if (mNewButtonHover != sNewButtonHover)
+                {
+                    mNewButtonHover = sNewButtonHover;
+                    InvalidateRect(&mNewButtonRect, XPR_FALSE);
+                }
 
-            ReleaseCapture();
-            Invalidate(XPR_FALSE);
+                if (sTabHover != InvalidTab)
+                {
+                    if (mTabHover != sTabHover)
+                    {
+                        mTabHover = sTabHover;
+                        Invalidate(XPR_FALSE);
+                    }
+                }
+
+                if (sTabHover == InvalidTab && XPR_IS_FALSE(mNewButtonHover))
+                {
+                    if (XPR_IS_FALSE(mNewButtonPressed))
+                    {
+                        mTabHover = InvalidTab;
+
+                        ReleaseCapture();
+                        mSetCapture = XPR_FALSE;
+                        Invalidate(XPR_FALSE);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        if (mDragTab == InvalidTab)
+        {
+            xpr_sint_t sXDist = mDragBegunPoint.x - aPoint.x;
+            xpr_sint_t sYDist = mDragBegunPoint.y - aPoint.y;
+            xpr_sint_t sRoundDist = (xpr_sint_t)sqrt((xpr_float_t)(sXDist * sXDist + sYDist * sYDist));
+
+            if (sRoundDist > kDragDist)
+            {
+                mDragTab = mDragBegunTab;
+            }
+        }
+        else
+        {
+            if (mTabDeque.empty() == false)
+            {
+                TabItem *sLastTabItem = *mTabDeque.rbegin();
+
+                CPoint sDragPoint(aPoint.x);
+                sDragPoint.x = XPR_MAX(sDragPoint.x, kTabOffset.left);
+                sDragPoint.x = XPR_MIN(sDragPoint.x, sLastTabItem->mTabRect.right - 1);
+                sDragPoint.y = XPR_MAX(sDragPoint.y, kTabOffset.top);
+                sDragPoint.y = XPR_MIN(sDragPoint.y, sLastTabItem->mTabRect.bottom - 1);
+
+                xpr_size_t sDragTab = hitTest(sDragPoint);
+
+                if (sDragTab != InvalidTab)
+                {
+                    if (mDragTab != sDragTab)
+                    {
+                        moveTab(mDragTab, sDragTab);
+                        setCurTab(sDragTab);
+
+                        mDragTab = sDragTab;
+                    }
+                }
+            }
         }
     }
 
@@ -751,18 +1129,53 @@ void TabCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
 
 void TabCtrl::OnLButtonUp(xpr_uint_t aFlags, CPoint aPoint)
 {
+    xpr_bool_t sNewButtonHover = mNewButtonRect.PtInRect(aPoint);
+
+    if (XPR_IS_TRUE(mSetCapture))
+    {
+        mSetCapture = XPR_FALSE;
+        ReleaseCapture();
+
+        if (XPR_IS_TRUE(mNewButtonHover) && XPR_IS_TRUE(mNewButtonPressed))
+        {
+            if (XPR_IS_NOT_NULL(mObserver))
+            {
+                mObserver->onTabNewButton(*this);
+            }
+        }
+
+        mDragBegun    = XPR_FALSE;
+        mDragBegunTab = InvalidTab;
+        mDragTab      = InvalidTab;
+
+        mNewButtonHover        = XPR_FALSE;
+        mNewButtonPressed      = XPR_FALSE;
+        mNewButtonPressedLeave = XPR_FALSE;
+
+        Invalidate(XPR_FALSE);
+    }
 
     super::OnLButtonUp(aFlags, aPoint);
 }
 
 void TabCtrl::OnCaptureChanged(CWnd *aWnd)
 {
-    if (XPR_IS_TRUE(mSetCapture))
+    if (aWnd != this)
     {
-        mHoverTab = InvalidTab;
-        mSetCapture = XPR_FALSE;
+        if (XPR_IS_TRUE(mSetCapture))
+        {
+            mTabHover     = InvalidTab;
+            mDragBegun    = XPR_FALSE;
+            mDragBegunTab = InvalidTab;
+            mDragTab      = InvalidTab;
 
-        Invalidate(XPR_FALSE);
+            mNewButtonHover        = XPR_FALSE;
+            mNewButtonPressed      = XPR_FALSE;
+            mNewButtonPressedLeave = XPR_FALSE;
+
+            mSetCapture = XPR_FALSE;
+            Invalidate(XPR_FALSE);
+        }
     }
 
     super::OnCaptureChanged(aWnd);
@@ -782,4 +1195,14 @@ void TabCtrl::OnContextMenu(CWnd *aWnd, CPoint aPoint)
     }
 
     super::OnContextMenu(aWnd, aPoint);
+}
+
+void TabCtrl::OnSetFocus(CWnd *aOldWnd)
+{
+    super::OnSetFocus(aOldWnd);
+
+    if (XPR_IS_NOT_NULL(mObserver))
+    {
+        mObserver->onSetFocus(*this);
+    }
 }

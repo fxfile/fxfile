@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -27,6 +27,7 @@
 #include "cfg_appearance_history_dlg.h"
 #include "cfg_appearance_size_format_dlg.h"
 #include "cfg_appearance_folder_tree_dlg.h"
+#include "cfg_appearance_tab_dlg.h"
 #include "cfg_appearance_language_dlg.h"
 #include "cfg_func_dlg.h"
 #include "cfg_func_bookmark_dlg.h"
@@ -109,6 +110,7 @@ xpr_bool_t CfgMainDlg::OnInitDialog(void)
     /*    */ addCfgItem(25, sIndex, new CfgAppearanceHistoryDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.history")));
     /*    */ addCfgItem(22, sIndex, new CfgAppearanceSizeFormatDlg, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.size_format")));
     /*    */ addCfgItem( 3, sIndex, new CfgAppearanceFolderTreeDlg, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.folder_tree")));
+    /*    */ addCfgItem(32, sIndex, new CfgAppearanceTabDlg,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.tab")));
     /*    */ addCfgItem(27, sIndex, new CfgAppearanceLanguageDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.language")));
     sIndex = addCfgItem(17,     -1, new CfgFuncDlg,                 gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function")));
     /*    */ addCfgItem(13, sIndex, new CfgFuncBookmarkDlg,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.bookmark")));
