@@ -1018,7 +1018,7 @@ void TabCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
 
     if (XPR_IS_FALSE(mDragBegun))
     {
-        if (XPR_IS_FALSE(mSetCapture))
+        if (XPR_IS_FALSE(mSetCapture) && XPR_TEST_BITS(aFlags, MK_LBUTTON))
         {
             if (sTabHover != InvalidTab)
             {
