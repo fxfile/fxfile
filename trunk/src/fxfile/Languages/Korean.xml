@@ -1813,6 +1813,7 @@
 			<String ID="tab.msg.confirm_to_close">다음의 탭을 닫겠습니까?</String>
 			<String ID="tab.msg.confirm_to_close_others">다음의 탭을 제외하고 모두 닫겠습니까?</String>
 			<String ID="tab.msg.confirm_to_close_all">탭을 모두 닫겠습니까?</String>
+			<String ID="tab.tooltip.new_tab">새 탭</String>
 
 			<!-- popup: search -->
 			<String ID="popup.search.title">파일 검색</String>

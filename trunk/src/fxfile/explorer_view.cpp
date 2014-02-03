@@ -546,7 +546,9 @@ void ExplorerView::setChangedOption(Option &aOption)
     // tab options
     mTabCtrl->setTabSizeMode(!gOpt->mConfig.mTabAutoFit);
     mTabCtrl->enableDragMove(gOpt->mConfig.mTabDragMove);
-    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton);
+
+    const xpr_tchar_t *aNewButtonToolTipText = gApp.loadString(XPR_STRING_LITERAL("tab.tooltip.new_tab"));
+    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton, aNewButtonToolTipText);
 
     xpr_bool_t sShowTabCtrl = XPR_IS_TRUE(gOpt->mConfig.mTabShowOneTab);
     if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab) && sTabCount > 1)
@@ -1086,7 +1088,9 @@ xpr_bool_t ExplorerView::createTabCtrl(void)
     // tab options
     mTabCtrl->setTabSizeMode(!gOpt->mConfig.mTabAutoFit);
     mTabCtrl->enableDragMove(gOpt->mConfig.mTabDragMove);
-    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton);
+
+    const xpr_tchar_t *aNewButtonToolTipText = gApp.loadString(XPR_STRING_LITERAL("tab.tooltip.new_tab"));
+    mTabCtrl->showNewButton(gOpt->mConfig.mTabShowNewButton, aNewButtonToolTipText);
 
     //HICON sIcon = AfxGetApp()->LoadIcon(IDI_TAB_NEW);
     HICON sIcon = (HICON)::LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_TAB_NEW), IMAGE_ICON, 0, 0, 0);
