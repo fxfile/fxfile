@@ -1024,7 +1024,7 @@
 			<String ID="popup.batch_rename.toolbar.move">해당 위치로 이동(Ctrl+G)</String>
 			<String ID="popup.batch_rename.toolbar.rename_on_result">결과 내에서 바꾸기(Ctrl+R)</String>
 			<String ID="popup.batch_rename.toolbar.no_change_ext">확장자 변경 안함(Ctrl+E)</String>
-			<String ID="popup.batch_rename.toolbar.batch_format_archive">일괄적 형식에 기록하기(Ctrl+W)</String>
+			<String ID="popup.batch_rename.toolbar.batch_rename_archive">일괄적 형식에 기록하기(Ctrl+W)</String>
 			<String ID="popup.batch_rename.label.path">경로명(&amp;P):</String>
 			<String ID="popup.batch_rename.path.multiple">다양한 폴더</String>
 			<String ID="popup.batch_rename.tab.format">&amp;1: 형식</String>
