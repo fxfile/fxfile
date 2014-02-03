@@ -976,8 +976,6 @@ void TabCtrl::OnLButtonDblClk(xpr_uint_t aFlags, CPoint aPoint)
 
 void TabCtrl::OnLButtonDown(xpr_uint_t aFlags, CPoint aPoint)
 {
-    SetFocus();
-
     xpr_size_t sTabHover       = hitTest(aPoint);
     xpr_bool_t sNewButtonHover = mNewButtonRect.PtInRect(aPoint);
 
