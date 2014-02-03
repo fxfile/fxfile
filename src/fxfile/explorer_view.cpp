@@ -484,7 +484,8 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t  aIndex,
         sInitFolderType = aFlags & InitFolderCfgInit;
         if (sInitFolderType != 0)
         {
-            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER)
+            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER ||
+                gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
             {
                 const xpr_tchar_t *sInitFolder = gOpt->mConfig.mExplorerInitFolder[mViewIndex];
                 if (sInitFolder[0] != 0)
