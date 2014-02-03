@@ -35,7 +35,7 @@ public:
     void setTabSizeLimit(xpr_sint_t aMinSize, xpr_sint_t aMaxSize);
     void setTabSizeMode(xpr_bool_t aFixedSizeMode, xpr_sint_t aFixedSize = 0);
     void enableDragMove(xpr_bool_t aDragMove);
-    void showNewButton(xpr_bool_t aShowNewButton);
+    void showNewButton(xpr_bool_t aShowNewButton, const xpr_tchar_t *aToolTipText);
     void setTabIcon(HICON aNewButtonId);
 
 public:
@@ -98,6 +98,7 @@ protected:
     BOOL        mNewButtonHover;
     BOOL        mNewButtonPressed;
     BOOL        mNewButtonPressedLeave;
+    xpr::tstring mNewButtonToolTipText;
 
     CXPTheme    mXPTheme;
 
@@ -115,6 +116,8 @@ protected:
     afx_msg void OnCaptureChanged(CWnd *aWnd);
     afx_msg void OnContextMenu(CWnd *aWnd, CPoint aPoint);
     afx_msg void OnSetFocus(CWnd *aOldWnd);
+    virtual INT_PTR OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const;
+    virtual xpr_bool_t OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
     DECLARE_MESSAGE_MAP()
 };
 

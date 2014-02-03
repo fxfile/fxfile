@@ -25,6 +25,7 @@ static const xpr_sint_t kIconOffset         = 5;
 static const xpr_sint_t kDragDist           = 8;
 static const xpr_sint_t kBarLineHeight      = 1;
 static const xpr_sint_t kInactivedTabOffset = 2;
+static const xpr_uint_t kNewTabToolTipId    = 0xfffffffe;
 
 static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("TabCtrl");
 
@@ -113,6 +114,8 @@ xpr_sint_t TabCtrl::OnCreate(LPCREATESTRUCT aCreateStruct)
 
     createFont();
 
+    EnableToolTips();
+
     return 0;
 }
 
@@ -160,9 +163,15 @@ void TabCtrl::enableDragMove(xpr_bool_t aDragMove)
     mDragMove = aDragMove;
 }
 
-void TabCtrl::showNewButton(xpr_bool_t aShowNewButton)
+void TabCtrl::showNewButton(xpr_bool_t aShowNewButton, const xpr_tchar_t *aToolTipText)
 {
     mShowNewButton = aShowNewButton;
+
+    mNewButtonToolTipText.clear();
+    if (XPR_IS_NOT_NULL(aToolTipText))
+    {
+        mNewButtonToolTipText = aToolTipText;
+    }
 
     recalcLayout();
 }
@@ -1203,4 +1212,68 @@ void TabCtrl::OnSetFocus(CWnd *aOldWnd)
     {
         mObserver->onSetFocus(*this);
     }
+}
+
+INT_PTR TabCtrl::OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const
+{
+    XPR_ASSERT(aToolInfo != XPR_NULL);
+
+    xpr_size_t sTab = hitTest(aPoint);
+    if (sTab != InvalidTab)
+    {
+        TabItem *sTabItem = getTabItem(sTab);
+
+        XPR_ASSERT(sTabItem != XPR_NULL);
+
+        aToolInfo->hwnd     = *this;
+        aToolInfo->uId      = sTab;
+        aToolInfo->rect     = sTabItem->mTabRect;
+        aToolInfo->lpszText = LPSTR_TEXTCALLBACK;
+    }
+    else if (mNewButtonRect.PtInRect(aPoint) == XPR_TRUE)
+    {
+        aToolInfo->hwnd     = *this;
+        aToolInfo->uId      = kNewTabToolTipId;
+        aToolInfo->rect     = mNewButtonRect;
+        aToolInfo->lpszText = LPSTR_TEXTCALLBACK;
+    }
+    else
+    {
+        aToolInfo->uId      = -1;
+        aToolInfo->lpszText = NULL;
+    }
+
+    return aToolInfo->uId;
+}
+
+xpr_bool_t TabCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
+{
+    if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+    {
+        LPNMTTDISPINFO sNMTTDispInfo = (LPNMTTDISPINFO)lParam;
+
+        if (sNMTTDispInfo->hdr.idFrom == kNewTabToolTipId)
+        {
+            sNMTTDispInfo->lpszText = (xpr_tchar_t *)mNewButtonToolTipText.c_str();
+        }
+        else
+        {
+            xpr_size_t sTab = (xpr_size_t)sNMTTDispInfo->hdr.idFrom;
+
+            if (sTab != InvalidTab)
+            {
+                TabItem *sTabItem = getTabItem(sTab);
+
+                XPR_ASSERT(sTabItem != XPR_NULL);
+
+                sNMTTDispInfo->lpszText = (xpr_tchar_t *)sTabItem->mText.c_str();
+            }
+            else
+            {
+                sNMTTDispInfo->lpszText = XPR_NULL;
+            }
+        }
+    }
+
+    return super::OnNotify(wParam, lParam, pResult);
 }
