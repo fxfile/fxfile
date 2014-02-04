@@ -117,7 +117,8 @@ protected:
     afx_msg void OnContextMenu(CWnd *aWnd, CPoint aPoint);
     afx_msg void OnSetFocus(CWnd *aOldWnd);
     virtual INT_PTR OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const;
-    virtual xpr_bool_t OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+    virtual xpr_bool_t OnNotify(WPARAM aWParam, LPARAM aLParam, LRESULT *aResult);
+    virtual LRESULT WindowProc(xpr_uint_t aMessage, WPARAM aWParam, LPARAM aLParam);
     DECLARE_MESSAGE_MAP()
 };
 
