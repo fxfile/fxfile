@@ -903,7 +903,7 @@ void TabCtrl::OnPaint(void)
                      sNewButtonIconSize.cx,
                      sNewButtonIconSize.cy,
                      0,
-                     NULL,
+                     XPR_NULL,
                      DI_NORMAL);
     }
 
@@ -1025,7 +1025,7 @@ void TabCtrl::OnMouseMove(xpr_uint_t aFlags, CPoint aPoint)
 
     if (XPR_IS_FALSE(mDragBegun))
     {
-        if (XPR_IS_FALSE(mSetCapture) && XPR_TEST_BITS(aFlags, MK_LBUTTON))
+        if (XPR_IS_FALSE(mSetCapture))
         {
             if (sTabHover != InvalidTab)
             {
@@ -1240,17 +1240,17 @@ INT_PTR TabCtrl::OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const
     else
     {
         aToolInfo->uId      = -1;
-        aToolInfo->lpszText = NULL;
+        aToolInfo->lpszText = XPR_NULL;
     }
 
     return aToolInfo->uId;
 }
 
-xpr_bool_t TabCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
+xpr_bool_t TabCtrl::OnNotify(WPARAM aWParam, LPARAM aLParam, LRESULT *aResult)
 {
-    if (((LPNMHDR)lParam)->code == TTN_GETDISPINFO)
+    if (((LPNMHDR)aLParam)->code == TTN_GETDISPINFO)
     {
-        LPNMTTDISPINFO sNMTTDispInfo = (LPNMTTDISPINFO)lParam;
+        LPNMTTDISPINFO sNMTTDispInfo = (LPNMTTDISPINFO)aLParam;
 
         if (sNMTTDispInfo->hdr.idFrom == kNewTabToolTipId)
         {
@@ -1275,5 +1275,20 @@ xpr_bool_t TabCtrl::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
         }
     }
 
-    return super::OnNotify(wParam, lParam, pResult);
+    return super::OnNotify(aWParam, aLParam, aResult);
+}
+
+LRESULT TabCtrl::WindowProc(xpr_uint_t aMsg, WPARAM aWParam, LPARAM aLParam)
+{
+    switch (aMsg)
+    {
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_XBUTTONDOWN:
+        SendMessage(WM_ACTIVATE, WA_CLICKACTIVE); // activate on mouse capture
+        break;
+    }
+
+    return super::WindowProc(aMsg, aWParam, aLParam);
 }
