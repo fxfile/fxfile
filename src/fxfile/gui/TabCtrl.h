@@ -69,12 +69,15 @@ protected:
     xpr_size_t insertTabItem(xpr_size_t aTab, TabItem *aTabItem, xpr_bool_t aNotifyObserver = XPR_TRUE);
     TabItem *getTabItem(xpr_size_t aTab) const;
 
+    CToolTipCtrl *getToolTipCtrl(void) const;
+
 protected:
     TabCtrlObserver *mObserver;
 
     typedef std::deque<TabItem *> TabDeque;
     TabDeque    mTabDeque;
     xpr_size_t  mCurTab;
+    xpr::tstring mTabToolTipText;
 
     xpr_bool_t  mFixedSizeMode;
     xpr_sint_t  mFixedSize;

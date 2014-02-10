@@ -188,6 +188,7 @@ protected:
     virtual void       onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab);
     virtual void       onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint);
     virtual void       onTabNewButton(TabCtrl &aTabCtrl);
+    virtual xpr_bool_t onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::tstring &aToolTipText);
     virtual void       onSetFocus(TabCtrl &aTabCtrl);
 
     // from SplitterObserver
