@@ -578,7 +578,7 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
         sImageListCount = mImageList->GetImageCount();
     }
 
-    xpr_size_t  i;
+    xpr_size_t  i, j;
     xpr_sint_t  sLeft   = kTabOffset.left;
     xpr_sint_t  sTop    = kTabOffset.top;
     xpr_sint_t  sBottom = sHeight - kBarLineHeight;
@@ -588,23 +588,47 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
 
     if (XPR_IS_TRUE(mFixedSizeMode))
     {
-        xpr_double_t sAvgTabSize = (xpr_double_t)sWidth / (xpr_double_t)mTabDeque.size();
-        if (sAvgTabSize >= kDefaultTabSize)
-            sAvgTabSize = kDefaultTabSize;
+        xpr_double_t sAvgTabSize;
+        xpr_slong_t  sTabLeft = sLeft;
+
+        if (mTabDeque.size() > 1)
+        {
+            sAvgTabSize = (xpr_double_t)(sWidth - kDefaultTabSize) / (xpr_double_t)(mTabDeque.size() - 1);
+            if (sAvgTabSize >= kDefaultTabSize)
+                sAvgTabSize = kDefaultTabSize;
+        }
+        else
+        {
+            sAvgTabSize = min(sWidth, kDefaultTabSize);
+        }
 
         sIterator = mTabDeque.begin();
-        for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
+        for (i = 0, j = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
         {
             sTabItem = *sIterator;
 
             XPR_ASSERT(sTabItem != XPR_NULL);
 
-            sTabItem->mTabRect.SetRectEmpty();
+            if (i == mCurTab)
+            {
+                sTabItem->mTabRect.left   = sTabLeft;
+                sTabItem->mTabRect.right  = sTabLeft + kDefaultTabSize;
+                sTabItem->mTabRect.top    = sTop;
+                sTabItem->mTabRect.bottom = sBottom;
 
-            sTabItem->mTabRect.left   = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(i + 0));
-            sTabItem->mTabRect.right  = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(i + 1));
-            sTabItem->mTabRect.top    = sTop;
-            sTabItem->mTabRect.bottom = sBottom;
+                sLeft += kDefaultTabSize;
+            }
+            else
+            {
+                sTabItem->mTabRect.left   = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(j + 0));
+                sTabItem->mTabRect.right  = sLeft + (xpr_slong_t)(sAvgTabSize * (xpr_double_t)(j + 1));
+                sTabItem->mTabRect.top    = sTop;
+                sTabItem->mTabRect.bottom = sBottom;
+
+                sTabLeft = sTabItem->mTabRect.right;
+
+                ++j;
+            }
 
             sLastTabRect = sTabItem->mTabRect;
         }
@@ -614,15 +638,17 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
         CClientDC    sDC(this);
         CFont       *sOldFont;
         CRect        sTabTextRect;
-        xpr_slong_t  sAutoFitWidth = 0;
-        xpr_slong_t  sTotalAutoFitWidth = 0;
+        xpr_slong_t  sCurTabAutoFitWidth = 0;
+        xpr_slong_t  sTextFitWidth = 0;
+        xpr_slong_t  sTotalTextFitWidth = 0;
         xpr_slong_t  sTabLeft = sLeft;
-        xpr_double_t sFitRatio = 1.0f;
+        xpr_double_t sAutoFitRatio = 1.0f;
+        xpr_slong_t  sAutoFitWidth;
         xpr_double_t sAutoFitFloatWidth;
         xpr_double_t sAccumulatedAutoFitFloatWidth = 0;
         xpr_slong_t  sAccumulatedAutoFitIntegerWidth = 0;
 
-        // calcualte tab text width
+        // calcualte tab text fit width
         sIterator = mTabDeque.begin();
         for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
         {
@@ -654,19 +680,42 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
 
             sDC.SelectObject(sOldFont);
 
-            sAutoFitWidth = sTabTextRect.Width();
+            sTextFitWidth = sTabTextRect.Width();
 
-            sTabItem->mTabRect.left = sAutoFitWidth;
+            if (i == mCurTab)
+            {
+                sCurTabAutoFitWidth = sTextFitWidth;
+            }
+            else
+            {
+                sTotalTextFitWidth += sTextFitWidth;
+            }
 
-            sTotalAutoFitWidth += sAutoFitWidth;
+            sTabItem->mTabRect.left = sTextFitWidth;
         }
 
-        // calcualte auto fit tab width
-        if (sTotalAutoFitWidth > sWidth)
+        // calcualte auto fit ratio
+        if (sTotalTextFitWidth > (sWidth - sCurTabAutoFitWidth) && sTotalTextFitWidth > 0)
         {
-            sFitRatio = (xpr_double_t)sWidth / (xpr_double_t)sTotalAutoFitWidth;
+            sAutoFitRatio = (xpr_double_t)(sWidth - sCurTabAutoFitWidth) / (xpr_double_t)sTotalTextFitWidth;
+            if (mCurTab >= 0 && sAutoFitRatio < 1.0f)
+            {
+                if (FXFILE_STL_IS_INDEXABLE(mCurTab, mTabDeque))
+                {
+                    sTabItem = *(mTabDeque.begin() + mCurTab);
+
+                    XPR_ASSERT(sTabItem != XPR_NULL);
+
+                    sCurTabAutoFitWidth = min(sCurTabAutoFitWidth, kDefaultTabSize);
+
+                    sTabItem->mTabRect.left = sCurTabAutoFitWidth;
+
+                    sAutoFitRatio = (xpr_double_t)(sWidth - sCurTabAutoFitWidth) / (xpr_double_t)sTotalTextFitWidth;
+                }
+            }
         }
 
+        // calcualte auto fit width
         sIterator = mTabDeque.begin();
         for (i = 0; sIterator != mTabDeque.end(); ++sIterator, ++i)
         {
@@ -674,19 +723,32 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
 
             XPR_ASSERT(sTabItem != XPR_NULL);
 
-            sAutoFitFloatWidth = (xpr_double_t)sTabItem->mTabRect.left * sFitRatio;
+            sTextFitWidth = sTabItem->mTabRect.left;
 
-            sAutoFitWidth = (xpr_slong_t)(sAutoFitFloatWidth + (sAccumulatedAutoFitFloatWidth - sAccumulatedAutoFitIntegerWidth + 0.5f));
+            if (i == mCurTab)
+            {
+                // tab text fit width
+                sTabItem->mTabRect.left   = sTabLeft;
+                sTabItem->mTabRect.right  = sTabLeft + sTextFitWidth;
+                sTabItem->mTabRect.top    = sTop;
+                sTabItem->mTabRect.bottom = sBottom;
 
-            sAccumulatedAutoFitFloatWidth   += sAutoFitFloatWidth;
-            sAccumulatedAutoFitIntegerWidth += sAutoFitWidth;
+                sAutoFitWidth = sTextFitWidth;
+            }
+            else
+            {
+                sAutoFitFloatWidth = (xpr_double_t)sTextFitWidth * sAutoFitRatio;
 
-            sTabItem->mTabRect.SetRectEmpty();
+                sAutoFitWidth = (xpr_slong_t)(sAutoFitFloatWidth + (sAccumulatedAutoFitFloatWidth - sAccumulatedAutoFitIntegerWidth + 0.5f));
 
-            sTabItem->mTabRect.left   = sTabLeft;
-            sTabItem->mTabRect.right  = sTabLeft + sAutoFitWidth;
-            sTabItem->mTabRect.top    = sTop;
-            sTabItem->mTabRect.bottom = sBottom;
+                sAccumulatedAutoFitFloatWidth   += sAutoFitFloatWidth;
+                sAccumulatedAutoFitIntegerWidth += sAutoFitWidth;
+
+                sTabItem->mTabRect.left   = sTabLeft;
+                sTabItem->mTabRect.right  = sTabLeft + sAutoFitWidth;
+                sTabItem->mTabRect.top    = sTop;
+                sTabItem->mTabRect.bottom = sBottom;
+            }
 
             sLastTabRect = sTabItem->mTabRect;
 
@@ -694,13 +756,13 @@ void TabCtrl::recalcLayout(xpr_bool_t aRedraw)
         }
     }
 
-    // calcuate new tab button
+    // calcuate new tab button area
     if (XPR_IS_TRUE(mShowNewButton))
     {
-        mNewButtonRect.left   = sLastTabRect.right + kIconOffset;
-        mNewButtonRect.top    = sLastTabRect.top + (sLastTabRect.Height() + kInactivedTabOffset - sNewButtonIconSize.cy) / 2;
+        mNewButtonRect.left   = sLastTabRect.right  + kIconOffset;
+        mNewButtonRect.top    = sLastTabRect.top    + (sLastTabRect.Height() + kInactivedTabOffset - sNewButtonIconSize.cy) / 2;
         mNewButtonRect.right  = mNewButtonRect.left + sNewButtonIconSize.cx;
-        mNewButtonRect.bottom = mNewButtonRect.top + sNewButtonIconSize.cy;
+        mNewButtonRect.bottom = mNewButtonRect.top  + sNewButtonIconSize.cy;
     }
 
     if (XPR_IS_TRUE(aRedraw))
