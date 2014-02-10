@@ -2349,6 +2349,35 @@ void ExplorerView::onTabNewButton(TabCtrl &aTabCtrl)
     gFrame->executeCommand(ID_WINDOW_TAB_NEW);
 }
 
+xpr_bool_t ExplorerView::onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::tstring &aToolTipText)
+{
+    ExplorerCtrl *sExplorerCtrl = getExplorerCtrl((xpr_sint_t)aTab);
+    if (XPR_IS_NULL(sExplorerCtrl))
+    {
+        return XPR_FALSE;
+    }
+
+    LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
+    if (XPR_IS_NOT_NULL(sTvItemData))
+    {
+        if (sExplorerCtrl->isFileSystemFolder() == XPR_TRUE)
+        {
+            GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, aToolTipText);
+
+            aToolTipText += XPR_STRING_LITERAL("\r\n");
+            aToolTipText += XPR_STRING_LITERAL("(");
+            aToolTipText += sExplorerCtrl->getCurPath();
+            aToolTipText += XPR_STRING_LITERAL(")");
+        }
+        else
+        {
+            GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, aToolTipText);
+        }
+    }
+
+    return XPR_TRUE;
+}
+
 void ExplorerView::onSetFocus(TabCtrl &aTabCtrl)
 {
     gFrame->setActiveView(mViewIndex);

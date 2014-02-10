@@ -1276,6 +1276,15 @@ void TabCtrl::OnSetFocus(CWnd *aOldWnd)
     }
 }
 
+CToolTipCtrl *TabCtrl::getToolTipCtrl(void) const
+{
+    AFX_MODULE_THREAD_STATE *sModuleThreadState = AfxGetModuleThreadState();
+
+    XPR_ASSERT(sModuleThreadState != XPR_NULL);
+
+    return sModuleThreadState->m_pToolTip;
+}
+
 INT_PTR TabCtrl::OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const
 {
     XPR_ASSERT(aToolInfo != XPR_NULL);
@@ -1305,6 +1314,15 @@ INT_PTR TabCtrl::OnToolHitTest(CPoint aPoint, TOOLINFO *aToolInfo) const
         aToolInfo->lpszText = XPR_NULL;
     }
 
+    if (XPR_IS_NOT_NULL(aToolInfo->lpszText))
+    {
+        CToolTipCtrl *sToolTipCtrl = getToolTipCtrl();
+
+        XPR_ASSERT(sToolTipCtrl != XPR_NULL);
+
+        sToolTipCtrl->SetMaxTipWidth(1024 * 8);
+    }
+
     return aToolInfo->uId;
 }
 
@@ -1320,19 +1338,39 @@ xpr_bool_t TabCtrl::OnNotify(WPARAM aWParam, LPARAM aLParam, LRESULT *aResult)
         }
         else
         {
+            xpr_bool_t sCustomToolTip = XPR_FALSE;
             xpr_size_t sTab = (xpr_size_t)sNMTTDispInfo->hdr.idFrom;
 
-            if (sTab != InvalidTab)
+            if (XPR_IS_NOT_NULL(mObserver))
             {
-                TabItem *sTabItem = getTabItem(sTab);
-
-                XPR_ASSERT(sTabItem != XPR_NULL);
-
-                sNMTTDispInfo->lpszText = (xpr_tchar_t *)sTabItem->mText.c_str();
+                sCustomToolTip = mObserver->onTabToolTip(*this, sTab, mTabToolTipText);
+                if (XPR_IS_TRUE(sCustomToolTip))
+                {
+                    if (mTabToolTipText.empty() == XPR_FALSE)
+                    {
+                        sNMTTDispInfo->lpszText = (xpr_tchar_t *)mTabToolTipText.c_str();
+                    }
+                    else
+                    {
+                        sNMTTDispInfo->lpszText = XPR_NULL;
+                    }
+                }
             }
-            else
+
+            if (XPR_IS_FALSE(sCustomToolTip))
             {
-                sNMTTDispInfo->lpszText = XPR_NULL;
+                if (sTab != InvalidTab)
+                {
+                    TabItem *sTabItem = getTabItem(sTab);
+
+                    XPR_ASSERT(sTabItem != XPR_NULL);
+
+                    sNMTTDispInfo->lpszText = (xpr_tchar_t *)sTabItem->mText.c_str();
+                }
+                else
+                {
+                    sNMTTDispInfo->lpszText = XPR_NULL;
+                }
             }
         }
     }

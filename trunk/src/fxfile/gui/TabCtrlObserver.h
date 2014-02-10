@@ -26,6 +26,7 @@ public:
     virtual void       onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab) = 0;
     virtual void       onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint) = 0;
     virtual void       onTabNewButton(TabCtrl &aTabCtrl) = 0;
+    virtual xpr_bool_t onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::tstring &aToolTipText) = 0;
     virtual void       onSetFocus(TabCtrl &aTabCtrl) = 0;
 };
 
