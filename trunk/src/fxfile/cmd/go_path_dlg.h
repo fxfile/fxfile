@@ -30,11 +30,13 @@ public:
     void getPath(xpr_tchar_t *aPath);
     xpr_bool_t isEnableFile(void) const;
     xpr_bool_t isEnableUrl(void) const;
+    xpr_bool_t isNewTab(void) const;
 
 protected:
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
     xpr_bool_t  mEnableFile;
     xpr_bool_t  mEnableUrl;
+    xpr_bool_t  mNewTab;
 
     LPITEMIDLIST mPidl1;
     LPITEMIDLIST mPidl2;
@@ -50,6 +52,7 @@ protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
     virtual void OnOK(void);
+    afx_msg void OnNewTab(void);
     afx_msg void OnGoPathBrowse(void);
     afx_msg void OnBnClickedExp1Path(void);
     afx_msg void OnBnClickedExp2Path(void);

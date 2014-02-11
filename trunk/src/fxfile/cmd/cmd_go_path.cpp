@@ -14,9 +14,12 @@
 #include "option.h"
 #include "main_frame.h"
 #include "folder_ctrl.h"
+#include "explorer_view.h"
 #include "explorer_ctrl.h"
 #include "go_path_dlg.h"
 #include "history_dlg.h"
+#include "router/cmd_parameters.h"
+#include "router/cmd_parameter_define.h"
 
 #include <Knownfolders.h>
 
@@ -40,12 +43,6 @@ void GoPathCommand::execute(CommandContext &aContext)
     LPITEMIDLIST sFullPidl1 = XPR_NULL;
     LPITEMIDLIST sFullPidl2 = XPR_NULL;
 
-    ExplorerCtrl *sExplorerCtrl1 = sMainFrame->getExplorerCtrl();
-    ExplorerCtrl *sExplorerCtrl2 = sMainFrame->getExplorerCtrl(-2);
-
-    if (XPR_IS_NOT_NULL(sExplorerCtrl1)) sFullPidl1 = sExplorerCtrl1->getFolderData()->mFullPidl;
-    if (XPR_IS_NOT_NULL(sExplorerCtrl2)) sFullPidl2 = sExplorerCtrl2->getFolderData()->mFullPidl;
-
     GoPathDlg sDlg;
     sDlg.setExpPath(sFullPidl1, sFullPidl2);
     if (sDlg.DoModal() != IDOK)
@@ -64,15 +61,27 @@ void GoPathCommand::execute(CommandContext &aContext)
     {
         if (XPR_IS_TRUE(IsFolder(sFullPidl)))
         {
-            ExplorerCtrl *sExplorerCtrl = sMainFrame->getExplorerCtrl();
-            if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
+            if (XPR_IS_TRUE(sDlg.isNewTab()))
             {
-                sResult = sExplorerCtrl->explore(sFullPidl);
-            }
+                cmd::CommandParameters sParameters;
+                sParameters.set(cmd::CommandParameterIdPidl, (void *)sFullPidl);
 
-            if (XPR_IS_FALSE(sResult))
-            {
+                sMainFrame->executeCommand(ID_WINDOW_TAB_NEW, XPR_NULL, &sParameters);
+
                 COM_FREE(sFullPidl);
+            }
+            else
+            {
+                ExplorerCtrl *sExplorerCtrl = sMainFrame->getExplorerCtrl();
+                if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
+                {
+                    sResult = sExplorerCtrl->explore(sFullPidl);
+                }
+
+                if (XPR_IS_FALSE(sResult))
+                {
+                    COM_FREE(sFullPidl);
+                }
             }
         }
         else

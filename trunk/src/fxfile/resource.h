@@ -12,6 +12,7 @@
 #define IDC_GO_PATH_EXP1_PATH           4
 #define IDC_CFG_DEFAULT                 4
 #define IDC_SEARCH_SYSTEM               5
+#define IDC_NEW_TAB                     5
 #define IDP_OLE_INIT_FAILED             100
 #define IDD_ABOUT                       100
 #define IDS_CLIPBOARD_METAFILE_FORMAT   101
