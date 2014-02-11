@@ -33,10 +33,27 @@ void NewTabCommand::execute(CommandContext &aContext)
 {
     FXFILE_COMMAND_DECLARE_CTRL;
 
+    LPITEMIDLIST sPidl = XPR_NULL;
+
+    if (XPR_IS_NOT_NULL(sParameters))
+    {
+        sPidl = (LPITEMIDLIST)sParameters->get(CommandParameterIdPidl);
+    }
+
     ExplorerView *sExplorerView = sMainFrame->getExplorerView();
     if (XPR_IS_NOT_NULL(sExplorerView))
     {
-        xpr_sint_t sTab = sExplorerView->newTab();
+        xpr_sint_t sTab;
+
+        if (XPR_IS_NOT_NULL(sPidl))
+        {
+            sTab = sExplorerView->newTab(sPidl);
+        }
+        else
+        {
+            sTab = sExplorerView->newTab();
+        }
+
         if (sTab >= 0)
         {
             if (sExplorerView->getTabCount() == 1)

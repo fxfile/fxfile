@@ -22,6 +22,7 @@ enum
     CommandParameterIdTreeTargetItem,
     CommandParameterIdIsSelectedItem,
     CommandParameterIdTab,
+    CommandParameterIdPidl,
 };
 } // namespace cmd
 } // namespace fxfile

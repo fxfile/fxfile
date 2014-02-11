@@ -24,7 +24,7 @@ namespace cmd
 {
 GoPathDlg::GoPathDlg(void)
     : super(IDD_GO_PATH, XPR_NULL)
-    , mEnableFile(XPR_FALSE), mEnableUrl(XPR_FALSE)
+    , mEnableFile(XPR_FALSE), mEnableUrl(XPR_FALSE), mNewTab(XPR_FALSE)
     , mPidl1(XPR_NULL), mPidl2(XPR_NULL)
     , mDlgState(XPR_NULL)
 {
@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(GoPathDlg, super)
     ON_BN_CLICKED(IDC_GO_PATH_PATH_BROWSE, OnGoPathBrowse)
     ON_BN_CLICKED(IDC_GO_PATH_EXP1_PATH,   OnBnClickedExp1Path)
     ON_BN_CLICKED(IDC_GO_PATH_EXP2_PATH,   OnBnClickedExp2Path)
+    ON_BN_CLICKED(IDC_NEW_TAB,             OnNewTab)
 END_MESSAGE_MAP()
 
 xpr_bool_t GoPathDlg::OnInitDialog(void) 
@@ -86,6 +87,7 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
     SetDlgItemText(IDC_GO_PATH_EXP2_PATH,   gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_2_folder")));
     SetDlgItemText(IDC_GO_PATH_FILE,        gApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.file_execution")));
     SetDlgItemText(IDC_GO_PATH_URL,         gApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.internet_address_compatible")));
+    SetDlgItemText(IDC_NEW_TAB,             gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.new_tab")));
     SetDlgItemText(IDOK,                    gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDCANCEL,                gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
@@ -114,6 +116,13 @@ void GoPathDlg::OnOK(void)
     super::OnOK();
 }
 
+void GoPathDlg::OnNewTab(void)
+{
+    mNewTab = XPR_TRUE;
+
+    OnOK();
+}
+
 void GoPathDlg::setExpPath(LPITEMIDLIST aPidl1, LPITEMIDLIST aPidl2)
 {
     mPidl1 = fxfile::base::Pidl::clone(aPidl1);
@@ -134,6 +143,11 @@ xpr_bool_t GoPathDlg::isEnableFile(void) const
 xpr_bool_t GoPathDlg::isEnableUrl(void) const
 {
     return mEnableUrl;
+}
+
+xpr_bool_t GoPathDlg::isNewTab(void) const
+{
+    return mNewTab;
 }
 
 static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM lParam, LPARAM dwData)
