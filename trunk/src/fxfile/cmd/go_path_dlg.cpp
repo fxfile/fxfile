@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -24,7 +24,7 @@ namespace cmd
 {
 GoPathDlg::GoPathDlg(void)
     : super(IDD_GO_PATH, XPR_NULL)
-    , mUrl(XPR_FALSE)
+    , mEnableFile(XPR_FALSE), mEnableUrl(XPR_FALSE)
     , mPidl1(XPR_NULL), mPidl2(XPR_NULL)
     , mDlgState(XPR_NULL)
 {
@@ -58,7 +58,8 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
     {
         mDlgState->setDialog(this);
         mDlgState->setComboBoxList(XPR_STRING_LITERAL("Path"), mComboBox.GetDlgCtrlID());
-        mDlgState->setCheckBox(XPR_STRING_LITERAL("URL"), IDC_GO_PATH_URL);
+        mDlgState->setCheckBox    (XPR_STRING_LITERAL("File"), IDC_GO_PATH_FILE);
+        mDlgState->setCheckBox    (XPR_STRING_LITERAL("URL"),  IDC_GO_PATH_URL);
         mDlgState->load();
     }
 
@@ -73,7 +74,8 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
 
     ::SHAutoComplete(sComboBoxInfo.hwndItem, SHACF_FILESYSTEM);
 
-    mUrl = ((CButton *)GetDlgItem(IDC_GO_PATH_URL))->GetCheck();
+    mEnableFile = ((CButton *)GetDlgItem(IDC_GO_PATH_FILE))->GetCheck();
+    mEnableUrl  = ((CButton *)GetDlgItem(IDC_GO_PATH_URL ))->GetCheck();
 
     GetDlgItem(IDC_GO_PATH_EXP1_PATH)->EnableWindow(mPidl1 ? XPR_TRUE : XPR_FALSE);
     GetDlgItem(IDC_GO_PATH_EXP2_PATH)->EnableWindow(mPidl2 ? XPR_TRUE : XPR_FALSE);
@@ -82,6 +84,7 @@ xpr_bool_t GoPathDlg::OnInitDialog(void)
     SetDlgItemText(IDC_GO_PATH_LABEL_INPUT, gApp.loadString(XPR_STRING_LITERAL("popup.go_path.label.input")));
     SetDlgItemText(IDC_GO_PATH_EXP1_PATH,   gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_1_folder")));
     SetDlgItemText(IDC_GO_PATH_EXP2_PATH,   gApp.loadString(XPR_STRING_LITERAL("popup.go_path.button.window_2_folder")));
+    SetDlgItemText(IDC_GO_PATH_FILE,        gApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.file_execution")));
     SetDlgItemText(IDC_GO_PATH_URL,         gApp.loadString(XPR_STRING_LITERAL("popup.go_path.check.internet_address_compatible")));
     SetDlgItemText(IDOK,                    gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDCANCEL,                gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
@@ -98,7 +101,9 @@ void GoPathDlg::OnOK(void)
     DlgState::insertComboEditString(&mComboBox, XPR_FALSE);
 
     _tcscpy(mPath, sPath);
-    mUrl = ((CButton *)GetDlgItem(IDC_GO_PATH_URL))->GetCheck();
+
+    mEnableFile = ((CButton *)GetDlgItem(IDC_GO_PATH_FILE))->GetCheck();
+    mEnableUrl  = ((CButton *)GetDlgItem(IDC_GO_PATH_URL ))->GetCheck();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -121,9 +126,14 @@ void GoPathDlg::getPath(xpr_tchar_t *aPath)
         _tcscpy(aPath, mPath);
 }
 
-xpr_bool_t GoPathDlg::isEnableUrl(void)
+xpr_bool_t GoPathDlg::isEnableFile(void) const
 {
-    return mUrl;
+    return mEnableFile;
+}
+
+xpr_bool_t GoPathDlg::isEnableUrl(void) const
+{
+    return mEnableUrl;
 }
 
 static xpr_sint_t CALLBACK BrowseCallbackProc(HWND hwnd, xpr_uint_t uMsg, LPARAM lParam, LPARAM dwData)

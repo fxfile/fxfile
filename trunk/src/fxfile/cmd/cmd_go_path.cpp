@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2012-2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2012-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -62,14 +62,26 @@ void GoPathCommand::execute(CommandContext &aContext)
     LPITEMIDLIST sFullPidl = Path2Pidl(sPath);
     if (XPR_IS_NOT_NULL(sFullPidl))
     {
-        ExplorerCtrl *sExplorerCtrl = sMainFrame->getExplorerCtrl();
-        if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
+        if (XPR_IS_TRUE(IsFolder(sFullPidl)))
         {
-            sResult = sExplorerCtrl->explore(sFullPidl);
-        }
+            ExplorerCtrl *sExplorerCtrl = sMainFrame->getExplorerCtrl();
+            if (XPR_IS_NOT_NULL(sExplorerCtrl) && XPR_IS_NOT_NULL(sExplorerCtrl->m_hWnd))
+            {
+                sResult = sExplorerCtrl->explore(sFullPidl);
+            }
 
-        if (XPR_IS_FALSE(sResult))
+            if (XPR_IS_FALSE(sResult))
+            {
+                COM_FREE(sFullPidl);
+            }
+        }
+        else
         {
+            if (sDlg.isEnableFile() == XPR_TRUE)
+            {
+                sResult = ExecFile(sFullPidl);
+            }
+
             COM_FREE(sFullPidl);
         }
     }
@@ -77,7 +89,9 @@ void GoPathCommand::execute(CommandContext &aContext)
     if (XPR_IS_FALSE(sResult))
     {
         if (sDlg.isEnableUrl() == XPR_TRUE)
+        {
             NavigateURL(sPath);
+        }
     }
 }
 

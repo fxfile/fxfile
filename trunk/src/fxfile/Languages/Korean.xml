@@ -760,6 +760,7 @@
 			<String ID="popup.go_path.label.input">이동할 경로명을 입력하십시오.</String>
 			<String ID="popup.go_path.button.window_1_folder">창 #&amp;1 경로</String>
 			<String ID="popup.go_path.button.window_2_folder">창 #&amp;2 경로</String>
+			<String ID="popup.go_path.check.file_execution">파일 실행(&amp;F)</String>
 			<String ID="popup.go_path.check.internet_address_compatible">인터넷 연결 호환(&amp;U)</String>
 			<String ID="popup.go_path.folder_browse.title">이동할 경로의 대상을 선택하여 주십시오.</String>
 

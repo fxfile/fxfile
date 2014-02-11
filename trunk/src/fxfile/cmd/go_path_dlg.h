@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2001-2012 Leon Lee author. All rights reserved.
+// Copyright (c) 2001-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -28,11 +28,13 @@ public:
 public:
     void setExpPath(LPITEMIDLIST aPidl1, LPITEMIDLIST aPidl2);
     void getPath(xpr_tchar_t *aPath);
-    xpr_bool_t isEnableUrl(void);
+    xpr_bool_t isEnableFile(void) const;
+    xpr_bool_t isEnableUrl(void) const;
 
 protected:
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
-    xpr_bool_t mUrl;
+    xpr_bool_t  mEnableFile;
+    xpr_bool_t  mEnableUrl;
 
     LPITEMIDLIST mPidl1;
     LPITEMIDLIST mPidl2;

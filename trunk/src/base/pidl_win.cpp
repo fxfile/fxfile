@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2013-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -891,7 +891,39 @@ xpr_bool_t Pidl::getAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aAttributes
     return sResult;
 }
 
-xpr_bool_t GetInfotip(HWND aHwnd, LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen)
+xpr_bool_t Pidl::hasAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t aAttributes)
+{
+    xpr_ulong_t sAttributes = aAttributes;
+    xpr_bool_t  sResult     = XPR_FALSE;
+
+    sResult = getAttributes(aFullPidl, sAttributes);
+    if (XPR_IS_FALSE(sResult))
+    {
+        return XPR_FALSE;
+    }
+
+    sResult = XPR_TEST_BITS(sAttributes, aAttributes);
+
+    return sResult;
+}
+
+xpr_bool_t Pidl::hasAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t aAttributes)
+{
+    xpr_ulong_t sAttributes = aAttributes;
+    xpr_bool_t  sResult     = XPR_FALSE;
+
+    sResult = getAttributes(aShellFolder, aPidl, sAttributes);
+    if (XPR_IS_FALSE(sResult))
+    {
+        return XPR_FALSE;
+    }
+
+    sResult = XPR_TEST_BITS(sAttributes, aAttributes);
+
+    return sResult;
+}
+
+xpr_bool_t Pidl::getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen)
 {
     xpr_bool_t  sResult    = XPR_FALSE;
     IQueryInfo *sQueryInfo = XPR_NULL;
@@ -912,12 +944,61 @@ xpr_bool_t GetInfotip(HWND aHwnd, LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl
         sComResult = sQueryInfo->GetInfoTip(SHGDN_INFOLDER, &sWideInfotip);
         if (SUCCEEDED(sComResult) && XPR_IS_NOT_NULL(sWideInfotip))
         {
-            if (sWideInfotip[0] != 0)
+            xpr_size_t sInfotipLen = wcslen(sWideInfotip);
+            if (sInfotipLen != 0 && sInfotipLen < aMaxLen)
             {
-                xpr_size_t sInputBytes = wcslen(sWideInfotip) * sizeof(xpr_wchar_t);
-                xpr_size_t sOutputBytes = XPR_MAX_PATH * sizeof(xpr_tchar_t);
+                xpr_size_t sInputBytes = sInfotipLen * sizeof(xpr_wchar_t);
+                xpr_size_t sOutputBytes = aMaxLen * sizeof(xpr_tchar_t);
                 XPR_UTF16_TO_TCS(sWideInfotip, &sInputBytes, aInfotip, &sOutputBytes);
                 aInfotip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                sResult = XPR_TRUE;
+            }
+        }
+
+        COM_FREE(sWideInfotip);
+    }
+
+    COM_RELEASE(sQueryInfo);
+
+    return sResult;
+}
+
+xpr_bool_t Pidl::getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aInfotip)
+{
+    xpr_bool_t  sResult    = XPR_FALSE;
+    IQueryInfo *sQueryInfo = XPR_NULL;
+    HRESULT     sComResult;
+
+    sComResult = aShellFolder->GetUIObjectOf(
+        XPR_NULL,
+        1,
+        (LPCITEMIDLIST *)&aPidl,
+        IID_IQueryInfo,
+        0,
+        (LPVOID *)&sQueryInfo);
+
+    if (SUCCEEDED(sComResult) && XPR_IS_NOT_NULL(sQueryInfo))
+    {
+        xpr_wchar_t *sWideInfotip = XPR_NULL;
+
+        sComResult = sQueryInfo->GetInfoTip(SHGDN_INFOLDER, &sWideInfotip);
+        if (SUCCEEDED(sComResult) && XPR_IS_NOT_NULL(sWideInfotip))
+        {
+            xpr_size_t sInfotipLen = wcslen(sWideInfotip);
+            if (sInfotipLen != 0)
+            {
+                aInfotip.clear();
+                aInfotip.reserve(sInfotipLen + 1);
+
+                xpr_tchar_t *sInfotip = (xpr_tchar_t *)aInfotip.c_str();
+
+                xpr_size_t sInputBytes = sInfotipLen * sizeof(xpr_wchar_t);
+                xpr_size_t sOutputBytes = sInfotipLen * sizeof(xpr_tchar_t);
+                XPR_UTF16_TO_TCS(sWideInfotip, &sInputBytes, sInfotip, &sOutputBytes);
+                sInfotip[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                aInfotip.update();
 
                 sResult = XPR_TRUE;
             }
