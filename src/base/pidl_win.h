@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2013 Leon Lee author. All rights reserved.
+// Copyright (c) 2013-2014 Leon Lee author. All rights reserved.
 //
 //   homepage: http://www.flychk.com
 //   e-mail:   mailto:flychk@flychk.com
@@ -58,7 +58,10 @@ public:
     static xpr_bool_t   getAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aAttributes);
     static xpr_ulong_t  getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
     static xpr_bool_t   getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t &aAttributes);
+    static xpr_bool_t   hasAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t aAttributes);
+    static xpr_bool_t   hasAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t aAttributes);
     static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen);
+    static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aInfotip);
 };
 } // namespace base
 } // namespace fxfile
