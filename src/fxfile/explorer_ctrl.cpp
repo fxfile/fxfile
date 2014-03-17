@@ -8132,14 +8132,27 @@ xpr_bool_t ExplorerCtrl::OnShcnUpdateItem(Shcn *aShcn)
     {
         GetName(aShcn->mPidl1, SHGDN_FORPARSING, sPath);
 
-        xpr_sint_t sIndex = findItemPath(sPath);
-        if (sIndex == -1)
+        // get the full qualified pidl once more because aShcn->mPidl1 is simple PIDL.
+        LPITEMIDLIST sPidl = base::Pidl::create(sPath);
+        if (XPR_IS_NOT_NULL(sPidl))
         {
-            sResult = OnShcnCreateItem(aShcn);
-        }
-        else
-        {
-            sResult = OnShcnRenameItem(sPath, aShcn->mPidl1);
+            xpr_sint_t sIndex = findItemPath(sPath);
+            if (sIndex == -1)
+            {
+                LPITEMIDLIST sOrgPidl = aShcn->mPidl1;
+
+                aShcn->mPidl1 = sPidl;
+
+                sResult = OnShcnCreateItem(aShcn);
+
+                aShcn->mPidl1 = sOrgPidl;
+            }
+            else
+            {
+                sResult = OnShcnRenameItem(sPath, sPidl);
+            }
+
+            COM_FREE(sPidl);
         }
     }
 
