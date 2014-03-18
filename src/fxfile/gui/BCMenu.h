@@ -123,8 +123,8 @@ public:
 	// Implementation
 
 public:
-    static void setStandardMenuStyle(xpr_bool_t aStandardMenuStyle);
-    static void setAnimationMenu(xpr_bool_t aAnimationMenu);
+    static void setStandardMenuStyle(BOOL aStandardMenuStyle);
+    static void setAnimationMenu(BOOL aAnimationMenu);
 
 public:
 	void SetBitmapBackground(COLORREF color);
@@ -164,6 +164,7 @@ public:
 	void DrawItemStandardStyle(LPDRAWITEMSTRUCT lpDIS);
 	void DrawItemOffice2003Style(LPDRAWITEMSTRUCT lpDIS);
 	void DrawItemOffice2007Style(LPDRAWITEMSTRUCT lpDIS);
+	void DrawItemWindows8Style(LPDRAWITEMSTRUCT lpDIS);
 
 	int GetMenuHeight();
 	void SetMenuItemHeight(int nItemHeight);
@@ -266,7 +267,14 @@ public:
 	BOOL TrackPopupMenu(UINT nFlags, int x, int y, CWnd* pWnd, LPCRECT lpRect = 0);
 	
 	virtual BOOL DestroyMenu();
-	
+
+private:
+    void drawSelection(CDC *pDC, const CRect &rc, UINT aItemState);
+    void drawCheckOrRadioMark(CDC *pDC, const CRect &rc, UINT aItemState, HMENU aMenuItem, UINT aMenuItemId);
+    void drawIcon(CDC *pDC, const CRect &rc, CImageList *pImgList);
+    void drawSeperator(CDC *pDC, const CRect &aItemRect);
+    void drawText(CDC *aDC, const CRect &aItemRect, UINT aItemState, const CString &aText, const CString &aAccelKey);
+
 	// Generated message map functions
 protected:
 	int m_nIconX;
@@ -275,8 +283,8 @@ protected:
 	COLORREF m_bitmapBackground;
 	BOOL m_bitmapBackgroundFlag;
 
-    static xpr_bool_t mStandardMenuStyle;
-    static xpr_bool_t mAnimationMenu;
+    static BOOL mStandardMenuStyle;
+    static BOOL mAnimationMenu;
 }; 
 
 #endif

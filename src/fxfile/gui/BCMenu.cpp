@@ -23,7 +23,7 @@
 //********************************************************************
 //////////////////////////////////////////////////////////////////////
 //
-// modified by flychk (2003.9.14)
+// modified by flychk (2003.9.14, 2014.03.18)
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -40,7 +40,13 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define GAP 1
+#define GAP            (1)
+#define ICON_OFFSET_X  (4)
+#define ICON_OFFSET_X2 (ICON_OFFSET_X * 2)
+#define ICON_OFFSET_Y  (3)
+#define ICON_OFFSET_Y2 (ICON_OFFSET_Y * 2)
+#define TEXT_OFFSET_X  (6)
+
 #ifndef OBM_CHECK
 #define OBM_CHECK 32760 // from winuser.h
 #endif
@@ -107,8 +113,8 @@ CString BCMenuData::GetString(void)
 
 CTypedPtrArray<CPtrArray, HMENU> BCMenu::m_AllSubMenus;  // Stores list of all sub-menus
 
-xpr_bool_t BCMenu::mStandardMenuStyle = XPR_FALSE;
-xpr_bool_t BCMenu::mAnimationMenu     = XPR_FALSE;
+BOOL BCMenu::mStandardMenuStyle = FALSE;
+BOOL BCMenu::mAnimationMenu     = FALSE;
 
 IMPLEMENT_DYNCREATE(BCMenu, CMenu)
 
@@ -244,12 +250,12 @@ void DrawGradient(CDC*pDC, CRect rc)
 }
 */
 
-void BCMenu::setStandardMenuStyle(xpr_bool_t aStandardMenuStyle)
+void BCMenu::setStandardMenuStyle(BOOL aStandardMenuStyle)
 {
     mStandardMenuStyle = aStandardMenuStyle;
 }
 
-void BCMenu::setAnimationMenu(xpr_bool_t aAnimationMenu)
+void BCMenu::setAnimationMenu(BOOL aAnimationMenu)
 {
     mAnimationMenu = aAnimationMenu;
 }
@@ -940,12 +946,201 @@ void BCMenu::DrawItemStandardStyle(LPDRAWITEMSTRUCT lpDIS)
 	}
 }
 
+void BCMenu::DrawItemWindows8Style(LPDRAWITEMSTRUCT aDrawItemStruct)
+{
+    ASSERT(aDrawItemStruct != NULL);
+    ASSERT(aDrawItemStruct->hDC != NULL);
+    ASSERT(aDrawItemStruct->itemData != NULL);
+
+    CRect       sItemRect(aDrawItemStruct->rcItem);
+    CDC        *sDC         = CDC::FromHandle(aDrawItemStruct->hDC);
+    HMENU       sMenuItem   = (HMENU)aDrawItemStruct->hwndItem;
+    UINT        sMenuItemId = aDrawItemStruct->itemID;
+    BCMenuData *sMenuData   = (BCMenuData *)aDrawItemStruct->itemData;
+    UINT        sFlags      = sMenuData->nFlags;
+    UINT        sItemState  = aDrawItemStruct->itemState;
+
+    COLORREF sBkgndColor = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_3DFACE  ), 240);
+    COLORREF sLineColor  = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_3DSHADOW), 200);
+
+    CPen sPen(PS_SOLID, 1, sLineColor);
+    CPen *sOldPen = (CPen *)sDC->SelectObject(&sPen);
+
+    // draw background
+    sDC->FillSolidRect(sItemRect, sBkgndColor);
+
+    if (sFlags & MF_SEPARATOR)
+    {
+        // draw seperator
+        drawSeperator(sDC, sItemRect);
+    }
+    else
+    {
+        CString     sText      = sMenuData->GetString();
+        CString     sAccelKey  = sMenuData->strAccelKey;
+        int         sIconIndex = sMenuData->menuIconNormal;
+        CImageList *sImageList = sMenuData->bitmap;
+
+        // draw selection
+        drawSelection(sDC, sItemRect, sItemState);
+
+        // draw icon
+        if (sIconIndex >= 0 && sImageList != NULL)
+        {
+            drawIcon(sDC, sItemRect, sImageList);
+        }
+
+        // draw check or radio mark
+        if (sIconIndex < 0 && sItemState & ODS_CHECKED)
+        {
+            drawCheckOrRadioMark(sDC, sItemRect, sItemState, sMenuItem, sMenuItemId);
+        }
+
+        // draw text
+        drawText(sDC, sItemRect, sItemState, sText, sAccelKey);
+    }
+
+    sDC->SelectObject(sOldPen);
+}
+
+void BCMenu::drawSeperator(CDC *aDC, const CRect &aItemRect)
+{
+    ASSERT(aDC != NULL);
+
+    CPoint sVertPoint1(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.top);
+    CPoint sVertPoint2(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.bottom);
+    aDC->MoveTo(sVertPoint1);
+    aDC->LineTo(sVertPoint2);
+
+    CPoint sHorzPoint1(aItemRect.left + m_nIconX + ICON_OFFSET_X2 + GAP, aItemRect.top + (aItemRect.Height() / 2));
+    CPoint sHorzPoint2(aItemRect.right, aItemRect.top + (aItemRect.Height() / 2));
+    aDC->MoveTo(sHorzPoint1);
+    aDC->LineTo(sHorzPoint2);
+}
+
+void BCMenu::drawSelection(CDC *aDC, const CRect &aItemRect, UINT aItemState)
+{
+    ASSERT(aDC != NULL);
+
+    if (aItemState & ODS_SELECTED)
+    {
+        if ((aItemState & ODS_GRAYED) != ODS_GRAYED)
+        {
+            COLORREF sBoxLineColor  = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_HIGHLIGHT), 100);
+            COLORREF sBoxColor      = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_HIGHLIGHT), 220);
+
+            CRect sBoxRect(aItemRect);
+            aDC->FillSolidRect(sBoxRect, sBoxLineColor);
+
+            sBoxRect.DeflateRect(1, 1, 1, 1);
+            aDC->FillSolidRect(sBoxRect, sBoxColor);
+        }
+        else
+        {
+            COLORREF sBoxLineColor  = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_BTNSHADOW), 100);
+            COLORREF sBoxColor      = CalculateColor(GetSysColor(COLOR_MENU), GetSysColor(COLOR_BTNSHADOW), 220);
+
+            CRect sBoxRect(aItemRect);
+            aDC->FillSolidRect(sBoxRect, sBoxLineColor);
+
+            sBoxRect.DeflateRect(1, 1, 1, 1);
+            aDC->FillSolidRect(sBoxRect, sBoxColor);
+        }
+
+        CPoint sVertPoint1(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.top    + 1);
+        CPoint sVertPoint2(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.bottom - 1);
+        aDC->MoveTo(sVertPoint1);
+        aDC->LineTo(sVertPoint2);
+    }
+    else
+    {
+        CPoint sVertPoint1(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.top);
+        CPoint sVertPoint2(aItemRect.left + m_nIconX + ICON_OFFSET_X2, aItemRect.bottom);
+        aDC->MoveTo(sVertPoint1);
+        aDC->LineTo(sVertPoint2);
+    }
+}
+
+void BCMenu::drawIcon(CDC *aDC, const CRect &aItemRect, CImageList *aImageList)
+{
+    ASSERT(aDC != NULL);
+    ASSERT(aImageList != NULL);
+
+    CPoint sIconPoint(aItemRect.left + ICON_OFFSET_X, aItemRect.top + ICON_OFFSET_Y);
+
+    if (aImageList->m_hImageList != NULL && aImageList->GetImageCount() > 0)
+    {
+        HICON sIcon = aImageList->ExtractIcon(0);
+        if (sIcon != NULL)
+        {
+            DrawIconEx(aDC->m_hDC, sIconPoint.x, sIconPoint.y, sIcon, 16, 16, 0, NULL, DI_NORMAL);
+
+            ::DestroyIcon(sIcon);
+            sIcon = NULL;
+        }
+    }
+}
+
+void BCMenu::drawCheckOrRadioMark(CDC *aDC, const CRect &aItemRect, UINT aItemState, HMENU aMenuItem, UINT aMenuItemId)
+{
+    ASSERT(aDC != NULL);
+
+    CRect sMarkRect(aItemRect.left + ICON_OFFSET_X, aItemRect.top + ICON_OFFSET_Y, aItemRect.left + ICON_OFFSET_X + m_nIconX, aItemRect.top + ICON_OFFSET_Y + m_nIconY);
+
+    CMenuItemInfo sMenuItemInfo;
+    sMenuItemInfo.fMask = MIIM_CHECKMARKS;
+    ::GetMenuItemInfo((HMENU)aMenuItem, aMenuItemId, MF_BYCOMMAND, &sMenuItemInfo);
+
+    Draw3DCheckmark(aDC, sMarkRect, aItemState & ODS_SELECTED, sMenuItemInfo.hbmpChecked);
+}
+
+void BCMenu::drawText(CDC *aDC, const CRect &aItemRect, UINT aItemState, const CString &aText, const CString &aAccelKey)
+{
+    ASSERT(aDC != NULL);
+
+    if (aText.IsEmpty())
+    {
+        return;
+    }
+
+    CRect sTextRect(aItemRect.left + m_nIconX + ICON_OFFSET_X2 + GAP + TEXT_OFFSET_X, aItemRect.top + 1, aItemRect.right, aItemRect.bottom);
+    if (aAccelKey.GetLength() > 0)
+    {
+        sTextRect.right -= m_nIconX;
+    }
+
+    NONCLIENTMETRICS sNonClientMetrics = {0};
+    sNonClientMetrics.cbSize = sizeof(NONCLIENTMETRICS);
+    SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sNonClientMetrics.cbSize, &sNonClientMetrics, 0); 
+
+    CFont sFont;
+    sFont.CreateFontIndirect(&sNonClientMetrics.lfMenuFont);
+
+    int sOldMode = aDC->GetBkMode();
+    COLORREF sTextColor = (aItemState & ODS_GRAYED) ? GetSysColor(COLOR_3DSHADOW) : GetSysColor(COLOR_MENUTEXT);
+
+    CFont *sOldFont = aDC->SelectObject(&sFont);
+
+    aDC->SetBkMode(TRANSPARENT);
+    aDC->SetTextColor(sTextColor);
+
+    aDC->DrawText(aText, sTextRect, DT_LEFT | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
+
+    if (aAccelKey.GetLength() > 0)
+    {
+        aDC->DrawText(aAccelKey, sTextRect, DT_RIGHT | DT_SINGLELINE | DT_VCENTER | DT_END_ELLIPSIS);
+    }
+
+    aDC->SetBkMode(sOldMode);
+    aDC->SelectObject(sOldFont);
+}
+
 void BCMenu::DrawItem(LPDRAWITEMSTRUCT lpDIS)
 {
-	if (mStandardMenuStyle == XPR_TRUE)
+	if (mStandardMenuStyle == TRUE)
 		DrawItemStandardStyle(lpDIS);
 	else
-		DrawItemOffice2007Style(lpDIS);
+		DrawItemWindows8Style(lpDIS);
 }
 
 void BCMenu::MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
@@ -987,10 +1182,10 @@ void BCMenu::MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
 		pWnd->ReleaseDC(pDC);
 		ftMenu.DeleteObject();
 
-		lpMIS->itemWidth = m_nIconX + sz.cx + m_nIconX + GAP;
+		lpMIS->itemWidth = m_nIconX + (ICON_OFFSET_X2 * 2) + GAP + TEXT_OFFSET_X + sz.cx;
 		lpMIS->itemWidth = min(lpMIS->itemWidth, MAX_MENU_WIDTH);
 
-		lpMIS->itemHeight = max(GetSystemMetrics(SM_CYMENU), (m_nIconY+4));
+		lpMIS->itemHeight = max(GetSystemMetrics(SM_CYMENU), (m_nIconY + ICON_OFFSET_Y2));
 	}
 }
 
@@ -2476,7 +2671,7 @@ BOOL BCMenu::TrackPopupMenu(UINT nFlags, CPoint pt, CWnd* pWnd, LPCRECT lpRect /
 
 BOOL BCMenu::TrackPopupMenu(UINT nFlags, int x, int y, CWnd* pWnd, LPCRECT lpRect /*= 0*/)
 {
-	if (mAnimationMenu == XPR_FALSE)
+	if (mAnimationMenu == FALSE)
 		nFlags |= 0x4000L;
 
 	return CMenu::TrackPopupMenu(nFlags, x, y, pWnd, lpRect);
