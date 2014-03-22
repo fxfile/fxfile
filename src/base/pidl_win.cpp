@@ -429,7 +429,7 @@ LPITEMIDLIST Pidl::create(const KNOWNFOLDERID &aKnownFolderId)
     HINSTANCE sDll = ::LoadLibrary(XPR_STRING_LITERAL("shell32.dll"));
     if (XPR_IS_NOT_NULL(sDll))
     {
-        SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t *)380);
+        SHGetKnownFolderIDListFunc sSHGetKnownFolderIDListFunc = (SHGetKnownFolderIDListFunc)::GetProcAddress(sDll, (const xpr_char_t *)XPR_MBCS_STRING_LITERAL("SHGetKnownFolderIDList"));
         if (XPR_IS_NOT_NULL(sSHGetKnownFolderIDListFunc))
         {
             sComResult = sSHGetKnownFolderIDListFunc(aKnownFolderId, 0, XPR_NULL, &sFullPidl);
