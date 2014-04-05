@@ -311,8 +311,9 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
         sDriveChar = XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
         _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), sDriveChar);
 
+        xpr::tstring sName;
         LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sDrive);
-        GetName(sFullPidl, SHGDN_INFOLDER, sText);
+        GetName(sFullPidl, SHGDN_INFOLDER, sName);
         COM_FREE(sFullPidl);
 
         // [2009/11/15] bug patched
@@ -324,11 +325,11 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
         {
             xpr_tchar_t sFormatedSize[0xff] = {0};
             SizeFormat::getSizeUnitFormat(sFreeSize, SIZE_UNIT_AUTO, sFormatedSize, 0xfe);
-            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s\n(%s: %s)"), sText, gApp.loadString(XPR_STRING_LITERAL("drive.tooltip.free_size")), sFormatedSize);
+            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s\n(%s: %s)"), sName.c_str(), gApp.loadString(XPR_STRING_LITERAL("drive.tooltip.free_size")), sFormatedSize);
         }
         else
         {
-            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s"), sText);
+            _stprintf(mToolTipText, XPR_STRING_LITERAL("%s"), sName.c_str());
         }
 
         lpnmttdi->lpszText = mToolTipText;

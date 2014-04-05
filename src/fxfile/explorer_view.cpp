@@ -2223,7 +2223,7 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                             if (sPath.length() > 3)
                             {
                                 xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
-                                _stprintf(sDrive, _T("[%c:] "), sPath[0]);
+                                _stprintf(sDrive, XPR_STRING_LITERAL("[%c:] "), sPath[0]);
 
                                 sName.insert(0, sDrive);
                             }
@@ -2690,7 +2690,7 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
                 if (sPath.length() > 3)
                 {
                     xpr_tchar_t sDrive[XPR_MAX_PATH + 1] = {0};
-                    _stprintf(sDrive, _T("[%c:] "), sPath[0]);
+                    _stprintf(sDrive, XPR_STRING_LITERAL("[%c:] "), sPath[0]);
 
                     sName.insert(0, sDrive);
                 }

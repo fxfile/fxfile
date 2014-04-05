@@ -43,7 +43,7 @@ BEGIN_MESSAGE_MAP(BatchRenameTabFormatDlg, super)
     ON_WM_MENUCHAR()
     ON_WM_DESTROY()
     ON_BN_CLICKED(IDC_BATCH_RENAME_FORMAT_APPLY, OnApply)
-    ON_BN_CLICKED(IDC_BATCH_RENAME_FORMAT_DESC,  OnFormatDesc)
+    ON_BN_CLICKED(IDC_BATCH_RENAME_FORMAT_TIP,   OnFormatTip)
     ON_BN_CLICKED(IDC_BATCH_RENAME_FORMAT_MENU,  OnFormatMenu)
 END_MESSAGE_MAP()
 
@@ -59,31 +59,29 @@ xpr_bool_t BatchRenameTabFormatDlg::OnInitDialog(void)
     //sizeRepos:    The control will be moved in the appropriate direction 
     //sizeRelative: The control will be moved proportionally in the appropriate direction 
 
-    AddControl(IDC_BATCH_RENAME_FORMAT,          sizeResize, sizeNone);
-    AddControl(IDC_BATCH_RENAME_FORMAT_MENU,     sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT,           sizeResize, sizeNone);
+    AddControl(IDC_BATCH_RENAME_FORMAT_MENU,      sizeRepos,  sizeNone, XPR_FALSE);
 
-    AddControl(IDC_BATCH_RENAME_FORMAT_NAME,     sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_BATCH_RENAME_FORMAT_EXT,      sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_BATCH_RENAME_FORMAT_AUTO_NUM, sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_BATCH_RENAME_FORMAT_DATE,     sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_BATCH_RENAME_FORMAT_TIME,     sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_NAME,      sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_EXT,       sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_NUMBERING, sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_DATE,      sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_TIME,      sizeRepos,  sizeNone, XPR_FALSE);
 
-    AddControl(IDC_BATCH_RENAME_FORMAT_DESC,     sizeRepos,  sizeNone, XPR_FALSE);
-    AddControl(IDC_BATCH_RENAME_FORMAT_APPLY,    sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_TIP,       sizeRepos,  sizeNone, XPR_FALSE);
+    AddControl(IDC_BATCH_RENAME_FORMAT_APPLY,     sizeRepos,  sizeNone, XPR_FALSE);
     //------------------------------------------------------------
 
-    CSpinButtonCtrl* pSpinCtrl;
-    pSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_NUMBER_SPIN);
-    pSpinCtrl->SetRange32(0, 400000000);
-    pSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_INCREASE_SPIN);
-    pSpinCtrl->SetRange32(1, 400000000);
-    pSpinCtrl = (CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_LENGTH_SPIN);
-    pSpinCtrl->SetRange32(1, 9);
-    ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_FORMAT))->LimitText(XPR_MAX_PATH);
+    ((CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_NUMBER_SPIN  ))->SetRange32(FXFILE_BATCH_RENAME_FORMAT_NUMBER_MIN,   FXFILE_BATCH_RENAME_FORMAT_NUMBER_MAX);
+    ((CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_INCREASE_SPIN))->SetRange32(FXFILE_BATCH_RENAME_FORMAT_INCREASE_MIN, FXFILE_BATCH_RENAME_FORMAT_INCREASE_MAX);
+    ((CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_DIGIT_SPIN   ))->SetRange32(FXFILE_BATCH_RENAME_FORMAT_DIGIT_MIN,    FXFILE_BATCH_RENAME_FORMAT_DIGIT_MAX);
 
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT, XPR_STRING_LITERAL("/n/e"));
-    SetDlgItemInt(IDC_BATCH_RENAME_FORMAT_INCREASE, 1, XPR_FALSE);
-    SetDlgItemInt(IDC_BATCH_RENAME_FORMAT_LENGTH,   1, XPR_FALSE);
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT, FXFILE_BATCH_RENAME_FORMAT_DEF);
+    SetDlgItemInt(IDC_BATCH_RENAME_FORMAT_NUMBER,   FXFILE_BATCH_RENAME_FORMAT_NUMBER_DEF,   XPR_FALSE);
+    SetDlgItemInt(IDC_BATCH_RENAME_FORMAT_INCREASE, FXFILE_BATCH_RENAME_FORMAT_INCREASE_DEF, XPR_FALSE);
+    SetDlgItemInt(IDC_BATCH_RENAME_FORMAT_DIGIT,    FXFILE_BATCH_RENAME_FORMAT_DIGIT_DEF,    XPR_FALSE);
+
+    ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_FORMAT))->LimitText(FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH);
 
     CRect sRect;
     CWnd *sWnd = GetDlgItem(IDC_BATCH_RENAME_FORMAT);
@@ -102,23 +100,23 @@ xpr_bool_t BatchRenameTabFormatDlg::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_LENGTH,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.length")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_LABEL_INCREASE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.label.increase")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.check.zero_filled")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_AUTO_NUM,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.number_digit")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NUMBERING,      gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.number_digit")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_NAME,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.filename")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_EXT,            gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.extension")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DATE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.date")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_TIME,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.time")));
-    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_DESC,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.format_tip")));
+    SetDlgItemText(IDC_BATCH_RENAME_FORMAT_TIP,            gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.format_tip")));
     SetDlgItemText(IDC_BATCH_RENAME_FORMAT_APPLY,          gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.button.apply")));
 
     // Load Dialog State
-    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename1"));
+    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BatchRenameFormat"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this);
         mDlgState->setComboBoxList(XPR_STRING_LITERAL("Format"), IDC_BATCH_RENAME_FORMAT);
         mDlgState->setEditCtrl(XPR_STRING_LITERAL("Start"),      IDC_BATCH_RENAME_FORMAT_NUMBER);
         mDlgState->setEditCtrl(XPR_STRING_LITERAL("Increase"),   IDC_BATCH_RENAME_FORMAT_INCREASE);
-        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Length"),     IDC_BATCH_RENAME_FORMAT_LENGTH);
+        mDlgState->setEditCtrl(XPR_STRING_LITERAL("Digit"),      IDC_BATCH_RENAME_FORMAT_DIGIT);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("Zero"),       IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO);
         mDlgState->load();
     }
@@ -161,8 +159,8 @@ xpr_bool_t BatchRenameTabFormatDlg::PreTranslateMessage(MSG* pMsg)
         case IDC_BATCH_RENAME_FORMAT_NUMBER_SPIN:
         case IDC_BATCH_RENAME_FORMAT_INCREASE:
         case IDC_BATCH_RENAME_FORMAT_INCREASE_SPIN:
-        case IDC_BATCH_RENAME_FORMAT_LENGTH:
-        case IDC_BATCH_RENAME_FORMAT_LENGTH_SPIN:
+        case IDC_BATCH_RENAME_FORMAT_DIGIT:
+        case IDC_BATCH_RENAME_FORMAT_DIGIT_SPIN:
         case IDC_BATCH_RENAME_FORMAT_APPLY:
             OnApply();
             break;
@@ -330,11 +328,11 @@ void BatchRenameTabFormatDlg::OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRU
         CResizingDialog::OnMeasureItem(nIDCtl, lpMeasureItemStruct);
 }
 
-void BatchRenameTabFormatDlg::OnFormatDesc(void) 
+void BatchRenameTabFormatDlg::OnFormatTip(void) 
 {
     if (mTipDlg == XPR_NULL)
     {
-        mTipDlg = new RenameTipDlg;
+        mTipDlg = new BatchRenameTipDlg;
         mTipDlg->Create(GetParent());
 
         CRect sRect;
@@ -363,7 +361,7 @@ void BatchRenameTabFormatDlg::OnFormatMenu(void)
     GetDlgItem(IDC_BATCH_RENAME_FORMAT_MENU)->GetWindowRect(&sRect);
 
     BCMenu sMenu;
-    if (sMenu.LoadMenu(IDR_RENAME_FORMAT) == XPR_TRUE)
+    if (sMenu.LoadMenu(IDR_BATCH_RENAME_FORMAT) == XPR_TRUE)
     {
         BCMenu *sPopupMenu = (BCMenu *)sMenu.GetSubMenu(0);
         if (XPR_IS_NOT_NULL(sPopupMenu))
@@ -378,38 +376,54 @@ xpr_bool_t BatchRenameTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
     xpr_uint_t sNotifyMsg = HIWORD(wParam);
     xpr_uint_t sId = LOWORD(wParam);
 
-    xpr_tchar_t sForamt[MAX_FORMAT + 1] = {0};
-    xpr_tchar_t sAppendedFormat[MAX_FORMAT + 1] = {0};
-    GetDlgItemText(IDC_BATCH_RENAME_FORMAT, sForamt, MAX_FORMAT);
+    xpr_tchar_t sForamt[FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH + 1] = {0};
+    GetDlgItemText(IDC_BATCH_RENAME_FORMAT, sForamt, FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH);
 
-    if (sId == ID_SRN_FORMAT_MENU_NUMBER || sId == ID_SRN_FORMAT_MENU_NUMBER_ZERO || sId == IDC_BATCH_RENAME_FORMAT_AUTO_NUM)
+    xpr::tstring sAppendedFormat(sForamt);
+    if (sId == IDC_BATCH_RENAME_FORMAT_NUMBERING && sId == ID_BATCH_RENAME_FORMAT_MENU_NUMBERING)
     {
-        xpr_sint_t sLength = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_LENGTH);
-        if (!XPR_IS_RANGE(1, sLength, 9))
-        {
-            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.format.msg.wrong_number_digit"));
-            MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONWARNING);
+        xpr_sint_t sNumber   = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_NUMBER);
+        xpr_sint_t sIncrease = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_INCREASE);
+        xpr_size_t sDigit    = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_DIGIT, XPR_FALSE);
+        xpr_bool_t sZero     = ((CButton *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO))->GetCheck();
 
-            GetDlgItem(IDC_BATCH_RENAME_FORMAT_LENGTH)->SetFocus();
+        if (XPR_IS_TRUE(sZero))
+        {
+            if (sIncrease == 1)
+            {
+                xpr::tstring sStringFormat;
+                sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd>"), sDigit);
+
+                sAppendedFormat.append_format(sStringFormat.c_str(), sNumber);
+            }
+            else
+            {
+                xpr::tstring sStringFormat;
+                sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd+%%d>"), sDigit);
+
+                sAppendedFormat.append_format(sStringFormat.c_str(), sNumber, sIncrease);
+            }
         }
         else
         {
-            xpr_bool_t sZero = (sId == ID_SRN_FORMAT_MENU_NUMBER_ZERO) || ((sId == IDC_BATCH_RENAME_FORMAT_AUTO_NUM) && GetKeyState(VK_CONTROL) >= 0);
-
-            if (sId == IDC_BATCH_RENAME_FORMAT_AUTO_NUM)
-                sZero = ((CButton *)GetDlgItem(IDC_BATCH_RENAME_FORMAT_NUMBER_ZERO))->GetCheck();
-
-            _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/%s%d"), sForamt, (sZero == XPR_TRUE) ? XPR_STRING_LITERAL("0") : XPR_STRING_LITERAL(""), sLength);
-
-            SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat);
+            if (sIncrease == 1)
+            {
+                sAppendedFormat.append_format(XPR_STRING_LITERAL("<%d>"), sNumber);
+            }
+            else
+            {
+                sAppendedFormat.append_format(XPR_STRING_LITERAL("<%d+%d>"), sNumber, sIncrease);
+            }
         }
-    }
-    else if (sId == ID_SRN_FORMAT_MENU_ORIGINAL_FILENAME_RANGE)
-    {
-        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/N(?-?)"), sForamt);
 
-        SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat);
-        xpr_sint_t sLen = (xpr_sint_t)_tcslen(sAppendedFormat);
+        SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat.c_str());
+    }
+    else if (sId == ID_BATCH_RENAME_FORMAT_MENU_ORIGINAL_FILENAME_RANGE)
+    {
+        sAppendedFormat.append_format(XPR_STRING_LITERAL("<gn?-?"));
+
+        SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat.c_str());
+        xpr_sint_t sLen = (xpr_sint_t)sAppendedFormat.length();
 
         CComboBox *sComboBox = (CComboBox *)GetDlgItem(IDC_BATCH_RENAME_FORMAT);
         if (sComboBox != XPR_NULL && sComboBox->m_hWnd != XPR_NULL)
@@ -420,52 +434,54 @@ xpr_bool_t BatchRenameTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
     }
     else
     {
-        xpr_bool_t sOk = XPR_TRUE;
+        xpr_bool_t sSuccess = XPR_TRUE;
         switch (sId)
         {
-        case ID_SRN_FORMAT_MENU_FULLNAME:               _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/*"), sForamt); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_FULLNAME:              sAppendedFormat.append_format(XPR_STRING_LITERAL("<*>")); break;
         case IDC_BATCH_RENAME_FORMAT_NAME:
-        case ID_SRN_FORMAT_MENU_FILENAME:               _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/n"), sForamt); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_FILENAME:              sAppendedFormat.append_format(XPR_STRING_LITERAL("<n>")); break;
         case IDC_BATCH_RENAME_FORMAT_EXT:
-        case ID_SRN_FORMAT_MENU_EXTENSION:              _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/e"), sForamt); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_EXTENSION:             sAppendedFormat.append_format(XPR_STRING_LITERAL("<e>")); break;
         case IDC_BATCH_RENAME_FORMAT_DATE:
-        case ID_SRN_FORMAT_MENU_DATE:                   _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/D"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_YEAR:                   _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/y"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_MONTH:                  _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/m"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_DAY:                    _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/d"), sForamt); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_DATE:                  sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:yyyy-MM-dd>"));  break;
+        case ID_BATCH_RENAME_FORMAT_MENU_YEAR:                  sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:yyyy>"));        break;
+        case ID_BATCH_RENAME_FORMAT_MENU_MONTH:                 sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:MM>"));          break;
+        case ID_BATCH_RENAME_FORMAT_MENU_DAY:                   sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:dd>"));          break;
         case IDC_BATCH_RENAME_FORMAT_TIME:
-        case ID_SRN_FORMAT_MENU_TIME:                   _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/T"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_HOUR:                   _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/h"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_MINUTE:                 _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/i"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_SECOND:                 _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/s"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_DATE:          _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/A"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_YEAR:          _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/a"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_MONTH:         _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/b"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_DAY:           _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/c"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_TIME:          _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/F"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_AM_PM_HOUR:    _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/f"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_12_HOUR:       _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/g"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_24_HOUR:       _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/k"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_MINUTE:        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/l"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_CREATION_SECOND:        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/r"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_DATE:        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/O"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_YEAR:        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/o"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_MONTH:       _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/p"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_DAY:         _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/q"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_TIME:        _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/J"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_AM_PM_HOUR:  _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/j"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_12_HOUR:     _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/u"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_24_HOUR:     _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/w"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_MINUTE:      _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/v"), sForamt); break;
-        case ID_SRN_FORMAT_MENU_LAST_WRITE_SECOND:      _stprintf(sAppendedFormat, XPR_STRING_LITERAL("%s/z"), sForamt); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_TIME:                  sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:HH.mm.ss>"));    break;
+        case ID_BATCH_RENAME_FORMAT_MENU_HOUR:                  sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:HH>"));          break;
+        case ID_BATCH_RENAME_FORMAT_MENU_MINUTE:                sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:mm>"));          break;
+        case ID_BATCH_RENAME_FORMAT_MENU_SECOND:                sAppendedFormat.append_format(XPR_STRING_LITERAL("<time:ss>"));          break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_DATE:         sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:yyyy-MM-dd>")); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_YEAR:         sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:yyyy>"));       break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_MONTH:        sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:MM>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_DAY:          sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:dd>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_TIME:         sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:HH.mm.ss>"));   break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_AM_PM_HOUR:   sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:tt>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_12_HOUR:      sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:hh>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_24_HOUR:      sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:HH>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_MINUTE:       sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:mm>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_CREATION_SECOND:       sAppendedFormat.append_format(XPR_STRING_LITERAL("<ctime:ss>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_DATE:       sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:yyyy-MM-dd>")); break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_YEAR:       sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:yyyy>"));       break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_MONTH:      sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:MM>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_DAY:        sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:dd>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_TIME:       sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:HH.mm.ss>"));   break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_AM_PM_HOUR: sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:tt>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_12_HOUR:    sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:hh>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_24_HOUR:    sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:HH>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_MINUTE:     sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:mm>"));         break;
+        case ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_SECOND:     sAppendedFormat.append_format(XPR_STRING_LITERAL("<mtime:ss>"));         break;
 
         default:
-            sOk = XPR_FALSE;
+            sSuccess = XPR_FALSE;
             break;
         }
 
-        if (sOk == XPR_TRUE)
-            SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat);
+        if (XPR_IS_TRUE(sSuccess))
+        {
+            SetDlgItemText(IDC_BATCH_RENAME_FORMAT, sAppendedFormat.c_str());
+        }
     }
 
     return CResizingDialog::OnCommand(wParam, lParam);

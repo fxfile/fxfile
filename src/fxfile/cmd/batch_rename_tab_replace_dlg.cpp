@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "batch_rename_tab_replace_dlg.h"
+#include "batch_rename.h"
 
 #include "resource.h"
 #include "dlg_state.h"
@@ -55,12 +56,10 @@ xpr_bool_t BatchRenameTabReplaceDlg::OnInitDialog(void)
     AddControl(IDC_BATCH_RENAME_REPLACE_APPLY, sizeRepos,  sizeNone, XPR_FALSE);
     //------------------------------------------------------------
 
-    CSpinButtonCtrl *sSpinCtrl;
-    sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_REPLACE_REPEAT_SPIN);
-    sSpinCtrl->SetRange32(0, ksint32max);
+    ((CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_REPLACE_REPEAT_SPIN))->SetRange32(FXFILE_BATCH_RENAME_REPLACE_REPEAT_MIN, FXFILE_BATCH_RENAME_REPLACE_REPEAT_MAX);
 
-    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_OLD))->LimitText(XPR_MAX_PATH);
-    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_NEW))->LimitText(XPR_MAX_PATH);
+    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_OLD))->LimitText(FXFILE_BATCH_RENAME_REPLACE_OLD_MAX_LENGTH);
+    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_REPLACE_NEW))->LimitText(FXFILE_BATCH_RENAME_REPLACE_NEW_MAX_LENGTH);
 
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_OLD,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.old")));
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_LABEL_NEW,    gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.label.new")));
@@ -68,7 +67,7 @@ xpr_bool_t BatchRenameTabReplaceDlg::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_NOCASE,       gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.check.no_case")));
     SetDlgItemText(IDC_BATCH_RENAME_REPLACE_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.replace.button.apply")));
 
-    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename2"));
+    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BatchRenameReplace"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this);

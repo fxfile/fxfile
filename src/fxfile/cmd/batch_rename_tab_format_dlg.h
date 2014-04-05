@@ -33,7 +33,7 @@ public:
     virtual void OnTabInit(void);
 
 public:
-    RenameTipDlg *mTipDlg;
+    BatchRenameTipDlg *mTipDlg;
 
 protected:
     DlgState     *mDlgState;
@@ -53,7 +53,7 @@ protected:
     afx_msg void OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr_bool_t bSysMenu);
     afx_msg void OnMeasureItem(xpr_sint_t nIDCtl, LPMEASUREITEMSTRUCT lpMeasureItemStruct);
     afx_msg LRESULT OnMenuChar(xpr_uint_t nChar, xpr_uint_t nFlags, CMenu* pMenu);
-    afx_msg void OnFormatDesc(void);
+    afx_msg void OnFormatTip(void);
     afx_msg void OnDestroy(void);
     afx_msg void OnFormatMenu(void);
     DECLARE_MESSAGE_MAP()

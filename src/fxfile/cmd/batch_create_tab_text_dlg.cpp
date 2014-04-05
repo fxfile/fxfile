@@ -26,7 +26,7 @@ BatchCreateTabTextDlg::BatchCreateTabTextDlg(void)
 void BatchCreateTabTextDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_CREATE_EDIT, mEditWnd);
+    DDX_Control(pDX, IDC_BATCH_CREATE_EDIT, mEditWnd);
 }
 
 BEGIN_MESSAGE_MAP(BatchCreateTabTextDlg, super)
@@ -45,7 +45,7 @@ xpr_bool_t BatchCreateTabTextDlg::OnInitDialog(void)
     //sizeRepos:    The control will be moved in the appropriate direction 
     //sizeRelative: The control will be moved proportionally in the appropriate direction 
 
-    AddControl(IDC_CREATE_EDIT, sizeResize, sizeResize);
+    AddControl(IDC_BATCH_CREATE_EDIT, sizeResize, sizeResize);
     //------------------------------------------------------------
 
     return XPR_TRUE;

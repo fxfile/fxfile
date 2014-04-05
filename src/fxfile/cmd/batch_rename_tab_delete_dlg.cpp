@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "batch_rename_tab_delete_dlg.h"
+#include "batch_rename.h"
 
 #include "resource.h"
 #include "dlg_state.h"
@@ -61,13 +62,11 @@ xpr_bool_t BatchRenameTabDeleteDlg::OnInitDialog(void)
     sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_begin")));
     sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.type.from_end")));
 
-    CSpinButtonCtrl *sSpinCtrl;
-    sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_DELETE_POS_SPIN);
-    sSpinCtrl->SetRange(0, XPR_MAX_PATH);
-    sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_DELETE_LENGTH_SPIN);
-    sSpinCtrl->SetRange(1, XPR_MAX_PATH);
+    ((CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_DELETE_POS_SPIN   ))->SetRange(FXFILE_BATCH_RENAME_DELETE_POS_MIN,    FXFILE_BATCH_RENAME_DELETE_POS_MAX);
+    ((CSpinButtonCtrl *)GetDlgItem(IDC_BATCH_RENAME_DELETE_LENGTH_SPIN))->SetRange(FXFILE_BATCH_RENAME_DELETE_LENGTH_MIN, FXFILE_BATCH_RENAME_DELETE_LENGTH_MAX);
 
-    SetDlgItemInt(IDC_BATCH_RENAME_DELETE_LENGTH, 1, XPR_FALSE);
+    SetDlgItemInt(IDC_BATCH_RENAME_DELETE_POS,    FXFILE_BATCH_RENAME_DELETE_POS_DEF);
+    SetDlgItemInt(IDC_BATCH_RENAME_DELETE_LENGTH, FXFILE_BATCH_RENAME_DELETE_LENGTH_DEF);
 
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_DELETE_TYPE))->SetCurSel(2);
 
@@ -77,7 +76,7 @@ xpr_bool_t BatchRenameTabDeleteDlg::OnInitDialog(void)
     SetDlgItemText(IDC_BATCH_RENAME_DELETE_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.delete.button.apply")));
 
     // Load Dialog State
-    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename4"));
+    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BatchRenameDelete"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this);

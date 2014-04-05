@@ -139,6 +139,46 @@ public:
         return XPR_TRUE;
     }
 
+    xpr_bool_t convertDecoding(const xmlChar *aXmlInput, xpr::string &aOutput)
+    {
+        XPR_ASSERT(aXmlInput != XPR_NULL);
+
+        xpr_size_t  sMaxOutputLength = ::xmlStrlen(aXmlInput);
+        xpr_char_t *sOutput;
+
+        aOutput.clear();
+        aOutput.reserve(sMaxOutputLength + 1);
+
+        sOutput = const_cast<xpr_char_t *>(aOutput.data());
+
+        if (convertDecoding(aXmlInput, CharSetMultiBytes, sOutput, sMaxOutputLength * sizeof(xpr_char_t)) == XPR_FALSE)
+            return XPR_FALSE;
+
+        aOutput.update();
+
+        return XPR_TRUE;
+    }
+
+    xpr_bool_t convertDecoding(const xmlChar *aXmlInput, xpr::wstring &aOutput)
+    {
+        XPR_ASSERT(aXmlInput != XPR_NULL);
+
+        xpr_size_t   sMaxOutputLength = ::xmlStrlen(aXmlInput);
+        xpr_wchar_t *sOutput;
+
+        aOutput.clear();
+        aOutput.reserve(sMaxOutputLength + 1);
+
+        sOutput = const_cast<xpr_wchar_t *>(aOutput.data());
+
+        if (convertDecoding(aXmlInput, CharSetUtf16, sOutput, sMaxOutputLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
+            return XPR_FALSE;
+
+        aOutput.update();
+
+        return XPR_TRUE;
+    }
+
 public:
     xmlDoc           *mXmlDoc;
     CharSetConverter  mUtf16Decoder;
@@ -202,6 +242,20 @@ xpr_bool_t XmlReader::load(const xpr_wchar_t *aPath)
     xpr_size_t sOutputBytes = sizeof(xpr_char_t) * XPR_MAX_PATH;
     XPR_UTF16_TO_MBS(aPath, &sInputBytes, sPath, &sOutputBytes);
     sPath[sOutputBytes] = '\0';
+
+    return load(sPath);
+}
+
+xpr_bool_t XmlReader::load(const xpr::string &aPath)
+{
+    const xpr_char_t *sPath = aPath.c_str();
+
+    return load(sPath);
+}
+
+xpr_bool_t XmlReader::load(const xpr::wstring &aPath)
+{
+    const xpr_wchar_t *sPath = aPath.c_str();
 
     return load(sPath);
 }
@@ -373,6 +427,64 @@ XmlReader::Element *XmlReader::nextElement(Element *aElement, xpr_wchar_t *aNext
     return XPR_NULL;
 }
 
+XmlReader::Element *XmlReader::nextElement(Element *aElement, xpr::string &aNextName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_NULL;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    while (true)
+    {
+        sXmlNode = sXmlNode->next;
+        if (sXmlNode == XPR_NULL)
+            return XPR_NULL;
+
+        if (sXmlNode->type == XML_ELEMENT_NODE)
+        {
+            Element *sElement = (Element *)sXmlNode;
+            if (sElement == XPR_NULL)
+                return XPR_NULL;
+
+            if (aNextName != XPR_NULL)
+                getElement(sElement, aNextName);
+
+            return sElement;
+        }
+    }
+
+    return XPR_NULL;
+}
+
+XmlReader::Element *XmlReader::nextElement(Element *aElement, xpr::wstring &aNextName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_NULL;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    while (true)
+    {
+        sXmlNode = sXmlNode->next;
+        if (sXmlNode == XPR_NULL)
+            return XPR_NULL;
+
+        if (sXmlNode->type == XML_ELEMENT_NODE)
+        {
+            Element *sElement = (Element *)sXmlNode;
+            if (sElement == XPR_NULL)
+                return XPR_NULL;
+
+            if (aNextName != XPR_NULL)
+                getElement(sElement, aNextName);
+
+            return sElement;
+        }
+    }
+
+    return XPR_NULL;
+}
+
 XmlReader::Element *XmlReader::childElement(Element *aElement) const
 {
     if (aElement == XPR_NULL)
@@ -467,6 +579,72 @@ XmlReader::Element *XmlReader::childElement(Element *aElement, xpr_wchar_t *aChi
     return XPR_NULL;
 }
 
+XmlReader::Element *XmlReader::childElement(Element *aElement, xpr::string &aChildName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_NULL;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    sXmlNode = sXmlNode->children;
+    if (sXmlNode == XPR_NULL)
+        return XPR_NULL;
+
+    while (true)
+    {
+        if (sXmlNode->type == XML_ELEMENT_NODE)
+        {
+            Element *sElement = (Element *)sXmlNode;
+            if (sElement == XPR_NULL)
+                return XPR_NULL;
+
+            if (aChildName != XPR_NULL)
+                getElement(sElement, aChildName);
+
+            return sElement;
+        }
+
+        sXmlNode = sXmlNode->next;
+        if (sXmlNode == XPR_NULL)
+            return XPR_NULL;
+    }
+
+    return XPR_NULL;
+}
+
+XmlReader::Element *XmlReader::childElement(Element *aElement, xpr::wstring &aChildName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_NULL;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    sXmlNode = sXmlNode->children;
+    if (sXmlNode == XPR_NULL)
+        return XPR_NULL;
+
+    while (true)
+    {
+        if (sXmlNode->type == XML_ELEMENT_NODE)
+        {
+            Element *sElement = (Element *)sXmlNode;
+            if (sElement == XPR_NULL)
+                return XPR_NULL;
+
+            if (aChildName != XPR_NULL)
+                getElement(sElement, aChildName);
+
+            return sElement;
+        }
+
+        sXmlNode = sXmlNode->next;
+        if (sXmlNode == XPR_NULL)
+            return XPR_NULL;
+    }
+
+    return XPR_NULL;
+}
+
 xpr_bool_t XmlReader::getElement(Element *aElement, xpr_char_t *aName, xpr_size_t aMaxNameLength) const
 {
     if (aElement == XPR_NULL)
@@ -488,6 +666,32 @@ xpr_bool_t XmlReader::getElement(Element *aElement, xpr_wchar_t *aName, xpr_size
     xmlNode *sXmlNode = (xmlNode *)aElement;
 
     if (mObject->convertDecoding(sXmlNode->name, CharSetUtf16, aName, aMaxNameLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElement(Element *aElement, xpr::string &aName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    if (mObject->convertDecoding(sXmlNode->name, aName) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElement(Element *aElement, xpr::wstring &aName) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    if (mObject->convertDecoding(sXmlNode->name, aName) == XPR_FALSE)
         return XPR_FALSE;
 
     return XPR_TRUE;
@@ -537,6 +741,20 @@ xpr_bool_t XmlReader::testElement(Element *aElement, const xpr_wchar_t *aTestNam
     return XPR_FALSE;
 }
 
+xpr_bool_t XmlReader::testElement(Element *aElement, const xpr::string &aTestName) const
+{
+    const xpr_char_t *sTestName = aTestName.c_str();
+
+    return testElement(aElement, sTestName);
+}
+
+xpr_bool_t XmlReader::testElement(Element *aElement, const xpr::wstring &aTestName) const
+{
+    const xpr_wchar_t *sTestName = aTestName.c_str();
+
+    return testElement(aElement, sTestName);
+}
+
 xpr_bool_t XmlReader::getEntity(Element *aElement, xpr_char_t *aEntity, xpr_size_t aMaxEntityLength) const
 {
     if (aElement == XPR_NULL)
@@ -573,6 +791,154 @@ xpr_bool_t XmlReader::getEntity(Element *aElement, xpr_wchar_t *aEntity, xpr_siz
 
     if (mObject->convertDecoding(sXmlNode->content, CharSetUtf16, aEntity, aMaxEntityLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
         return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getEntity(Element *aElement, xpr::string &aEntity) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    sXmlNode = sXmlNode->children;
+    if (sXmlNode == XPR_NULL)
+        return XPR_FALSE;
+
+    if (sXmlNode->type != XML_TEXT_NODE)
+        return XPR_FALSE;
+
+    if (mObject->convertDecoding(sXmlNode->content, aEntity) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getEntity(Element *aElement, xpr::wstring &aEntity) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode = (xmlNode *)aElement;
+
+    sXmlNode = sXmlNode->children;
+    if (sXmlNode == XPR_NULL)
+        return XPR_FALSE;
+
+    if (sXmlNode->type != XML_TEXT_NODE)
+        return XPR_FALSE;
+
+    if (mObject->convertDecoding(sXmlNode->content, aEntity) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElementEntity(Element *aElement, xpr_char_t *aName, xpr_size_t aMaxNameLength, xpr_char_t *aEntity, xpr_size_t aMaxEntityLength) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode      = (xmlNode *)aElement;
+    xmlNode *sChildXmlNode = sXmlNode->children;
+
+    if (mObject->convertDecoding(sXmlNode->name, CharSetMultiBytes, aName, aMaxNameLength * sizeof(xpr_char_t)) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (sChildXmlNode != XPR_NULL)
+    {
+        if (sChildXmlNode->type != XML_TEXT_NODE)
+            return XPR_FALSE;
+
+        if (mObject->convertDecoding(sChildXmlNode->content, CharSetMultiBytes, aEntity, aMaxEntityLength * sizeof(xpr_char_t)) == XPR_FALSE)
+            return XPR_FALSE;
+    }
+    else
+    {
+        aEntity[0] = XPR_STRING_LITERAL('\0');
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElementEntity(Element *aElement, xpr_wchar_t *aName, xpr_size_t aMaxNameLength, xpr_wchar_t *aEntity, xpr_size_t aMaxEntityLength) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode      = (xmlNode *)aElement;
+    xmlNode *sChildXmlNode = sXmlNode->children;
+
+    if (mObject->convertDecoding(sXmlNode->name, CharSetUtf16, aName, aMaxNameLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (sChildXmlNode != XPR_NULL)
+    {
+        if (sChildXmlNode->type != XML_TEXT_NODE)
+            return XPR_FALSE;
+
+        if (mObject->convertDecoding(sChildXmlNode->content, CharSetUtf16, aEntity, aMaxEntityLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
+            return XPR_FALSE;
+    }
+    else
+    {
+        aEntity[0] = XPR_STRING_LITERAL('\0');
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElementEntity(Element *aElement, xpr::string &aName, xpr::string &aEntity) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode      = (xmlNode *)aElement;
+    xmlNode *sChildXmlNode = sXmlNode->children;
+
+    if (mObject->convertDecoding(sXmlNode->name, aName) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (sChildXmlNode != XPR_NULL)
+    {
+        if (sChildXmlNode->type != XML_TEXT_NODE)
+            return XPR_FALSE;
+
+        if (mObject->convertDecoding(sChildXmlNode->content, aEntity) == XPR_FALSE)
+            return XPR_FALSE;
+    }
+    else
+    {
+        aEntity.clear();
+    }
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getElementEntity(Element *aElement, xpr::wstring &aName, xpr::wstring &aEntity) const
+{
+    if (aElement == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlNode *sXmlNode      = (xmlNode *)aElement;
+    xmlNode *sChildXmlNode = sXmlNode->children;
+
+    if (mObject->convertDecoding(sXmlNode->name, aName) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (sChildXmlNode != XPR_NULL)
+    {
+        if (sChildXmlNode->type != XML_TEXT_NODE)
+            return XPR_FALSE;
+
+        if (mObject->convertDecoding(sChildXmlNode->content, aEntity) == XPR_FALSE)
+            return XPR_FALSE;
+    }
+    else
+    {
+        aEntity.clear();
+    }
 
     return XPR_TRUE;
 }
@@ -624,6 +990,38 @@ xpr_bool_t XmlReader::getAttribute(Attribute *aAttribute, xpr_wchar_t *aName, xp
         return XPR_FALSE;
 
     if (mObject->convertDecoding(sXmlAttribute->children->content, CharSetUtf16, aValue, aMaxValueLength * sizeof(xpr_wchar_t)) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getAttribute(Attribute *aAttribute, xpr::string &aName, xpr::string &aValue) const
+{
+    if (aAttribute == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlAttr *sXmlAttribute = (xmlAttr *)aAttribute;
+
+    if (mObject->convertDecoding(sXmlAttribute->name, aName) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (mObject->convertDecoding(sXmlAttribute->children->content, aValue) == XPR_FALSE)
+        return XPR_FALSE;
+
+    return XPR_TRUE;
+}
+
+xpr_bool_t XmlReader::getAttribute(Attribute *aAttribute, xpr::wstring &aName, xpr::wstring &aValue) const
+{
+    if (aAttribute == XPR_NULL)
+        return XPR_FALSE;
+
+    xmlAttr *sXmlAttribute = (xmlAttr *)aAttribute;
+
+    if (mObject->convertDecoding(sXmlAttribute->name, aName) == XPR_FALSE)
+        return XPR_FALSE;
+
+    if (mObject->convertDecoding(sXmlAttribute->children->content, aValue) == XPR_FALSE)
         return XPR_FALSE;
 
     return XPR_TRUE;
@@ -908,6 +1306,20 @@ xpr_bool_t XmlWriter::beginElement(const xpr_wchar_t *aName)
     return (sXmlResult >= 0) ? XPR_TRUE : XPR_FALSE;
 }
 
+xpr_bool_t XmlWriter::beginElement(const xpr::string &aName)
+{
+    const xpr_char_t *sName = aName.c_str();
+
+    return beginElement(sName);
+}
+
+xpr_bool_t XmlWriter::beginElement(const xpr::wstring &aName)
+{
+    const xpr_wchar_t *sName = aName.c_str();
+
+    return beginElement(sName);
+}
+
 xpr_bool_t XmlWriter::endElement(void)
 {
     if (mObject->mXmlWriter == XPR_NULL)
@@ -974,6 +1386,22 @@ xpr_bool_t XmlWriter::writeElement(const xpr_wchar_t *aName, const xpr_wchar_t *
     return (sXmlResult >= 0) ? XPR_TRUE : XPR_FALSE;
 }
 
+xpr_bool_t XmlWriter::writeElement(const xpr::string &aName, const xpr::string &aValue)
+{
+    const xpr_char_t *sName  = aName.c_str();
+    const xpr_char_t *sValue = aValue.c_str();
+
+    return writeElement(sName, sValue);
+}
+
+xpr_bool_t XmlWriter::writeElement(const xpr::wstring &aName, const xpr::wstring &aValue)
+{
+    const xpr_wchar_t *sName  = aName.c_str();
+    const xpr_wchar_t *sValue = aValue.c_str();
+
+    return writeElement(sName, sValue);
+}
+
 xpr_bool_t XmlWriter::writeElementEntity(const xpr_char_t *aElement, const xpr_char_t *aEntity)
 {
     if (XPR_IS_NULL(aElement) || XPR_IS_NULL(aEntity))
@@ -1002,6 +1430,22 @@ xpr_bool_t XmlWriter::writeElementEntity(const xpr_wchar_t *aElement, const xpr_
     endElement();
 
     return sResult;
+}
+
+xpr_bool_t XmlWriter::writeElementEntity(const xpr::string &aElement, const xpr::string &aEntity)
+{
+    const xpr_char_t *sElement = aElement.c_str();
+    const xpr_char_t *sEntity  = aEntity.c_str();
+
+    return writeElementEntity(sElement, sEntity);
+}
+
+xpr_bool_t XmlWriter::writeElementEntity(const xpr::wstring &aElement, const xpr::wstring &aEntity)
+{
+    const xpr_wchar_t *sElement = aElement.c_str();
+    const xpr_wchar_t *sEntity  = aEntity.c_str();
+
+    return writeElementEntity(sElement, sEntity);
 }
 
 xpr_bool_t XmlWriter::writeEntity(const xpr_char_t *aEntity)
@@ -1044,6 +1488,20 @@ xpr_bool_t XmlWriter::writeEntity(const xpr_wchar_t *aEntity)
     xpr_sint_t sXmlResult = ::xmlTextWriterWriteString(mObject->mXmlWriter, sXmlEntity);
 
     return (sXmlResult >= 0) ? XPR_TRUE : XPR_FALSE;
+}
+
+xpr_bool_t XmlWriter::writeEntity(const xpr::string &aEntity)
+{
+    const xpr_char_t *sEntity = aEntity.c_str();
+
+    return writeEntity(sEntity);
+}
+
+xpr_bool_t XmlWriter::writeEntity(const xpr::wstring &aEntity)
+{
+    const xpr_wchar_t *sEntity = aEntity.c_str();
+
+    return writeEntity(sEntity);
 }
 
 xpr_bool_t XmlWriter::writeAttribute(const xpr_char_t *aName, const xpr_char_t *aValue)
@@ -1102,6 +1560,22 @@ xpr_bool_t XmlWriter::writeAttribute(const xpr_wchar_t *aName, const xpr_wchar_t
     return (sXmlResult >= 0) ? XPR_TRUE : XPR_FALSE;
 }
 
+xpr_bool_t XmlWriter::writeAttribute(const xpr::string &aName, const xpr::string &aValue)
+{
+    const xpr_char_t *sName  = aName.c_str();
+    const xpr_char_t *sValue = aValue.c_str();
+
+    return writeAttribute(sName, sValue);
+}
+
+xpr_bool_t XmlWriter::writeAttribute(const xpr::wstring &aName, const xpr::wstring &aValue)
+{
+    const xpr_wchar_t *sName  = aName.c_str();
+    const xpr_wchar_t *sValue = aValue.c_str();
+
+    return writeAttribute(sName, sValue);
+}
+
 xpr_bool_t XmlWriter::writeComment(const xpr_char_t *aComment)
 {
     if (XPR_IS_NULL(aComment))
@@ -1142,6 +1616,20 @@ xpr_bool_t XmlWriter::writeComment(const xpr_wchar_t *aComment)
     xpr_sint_t sXmlResult = xmlTextWriterWriteComment(mObject->mXmlWriter, sXmlComment);
 
     return (sXmlResult >= 0) ? XPR_TRUE : XPR_FALSE;
+}
+
+xpr_bool_t XmlWriter::writeComment(const xpr::string &aComment)
+{
+    const xpr_char_t *sComment = aComment.c_str();
+
+    return writeComment(sComment);
+}
+
+xpr_bool_t XmlWriter::writeComment(const xpr::wstring &aComment)
+{
+    const xpr_wchar_t *sComment = aComment.c_str();
+
+    return writeComment(sComment);
 }
 
 xpr_bool_t XmlWriter::save(const xpr_char_t *aPath) const
@@ -1198,6 +1686,20 @@ xpr_bool_t XmlWriter::save(const xpr_wchar_t *aPath) const
         return XPR_FALSE;
 
     return XPR_TRUE;
+}
+
+xpr_bool_t XmlWriter::save(const xpr::string &aPath) const
+{
+    const xpr_char_t *sPath = aPath.c_str();
+
+    return save(sPath);
+}
+
+xpr_bool_t XmlWriter::save(const xpr::wstring &aPath) const
+{
+    const xpr_wchar_t *sPath = aPath.c_str();
+
+    return save(sPath);
 }
 
 xpr_byte_t *XmlWriter::getXmlBuffer(xpr_size_t &aSize) const

@@ -49,9 +49,11 @@ typedef IShellIconOverlay *LPSHELLICONOVERLAY;
 typedef IShellIcon *LPSHELLICON;
 #endif
 
-#define MAX_CLASS_NAME 256
+#define MAX_CLASS_NAME (256)
 
-#define WM_XBUTTON1DOWN 0x1020B
-#define WM_XBUTTON2DOWN 0x2020B
+#define WM_XBUTTON1DOWN (0x1020B)
+#define WM_XBUTTON2DOWN (0x2020B)
+
+const xpr_tchar_t kInvalidCharsInFilePath[] = XPR_STRING_LITERAL("\\/:*?\"<>|");
 
 #endif // __FXFILE_BASE_DEF_WIN_H__

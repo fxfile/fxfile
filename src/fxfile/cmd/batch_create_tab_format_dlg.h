@@ -27,17 +27,13 @@ public:
     BatchCreateTabFormatDlg(void);
 
 public:
-    void getFormat(xpr_tchar_t *aFormat, xpr_sint_t aFormatLen);
-    xpr_uint_t getStart(void);
-    xpr_uint_t getEnd(void);
-    xpr_uint_t getCount(void);
-    xpr_uint_t getIncrease(void);
-    xpr_bool_t getCountType(void);
+    void getFormat(xpr_tchar_t *aFormat, xpr_sint_t aFormatLen) const;
+    xpr_sint_t getStart(void) const;
+    xpr_size_t getCount(void) const;
+    xpr_sint_t getIncrease(void) const;
 
 protected:
     virtual void OnTabInit(void);
-
-    void enableWindow(xpr_bool_t aEnd = XPR_TRUE);
 
 protected:
     DlgState *mDlgState;
@@ -51,8 +47,6 @@ protected:
     virtual xpr_bool_t OnInitDialog(void);
     afx_msg void OnDestroy(void);
     afx_msg void OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t aSysMenu);
-    afx_msg void OnIsNumberEnd(void);
-    afx_msg void OnIsNumberCount(void);
     afx_msg void OnFormatMenu(void);
 };
 } // namespace cmd
