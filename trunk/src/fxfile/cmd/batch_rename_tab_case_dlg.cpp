@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "batch_rename_tab_case_dlg.h"
+#include "batch_rename.h"
 
 #include "resource.h"
 #include "dlg_state.h"
@@ -68,14 +69,14 @@ xpr_bool_t BatchRenameTabCaseDlg::OnInitDialog(void)
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE_TYPE))->SetCurSel(0);
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_CASE))->SetCurSel(0);
 
-    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_SKIP_SPEC_CHAR))->LimitText(XPR_MAX_PATH);
+    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_SKIP_SPEC_CHAR))->LimitText(FXFILE_BATCH_RENAME_CASE_SKIP_CHARS_MAX_LENGTH);
 
     SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_TYPE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.type")));
     SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_CASE,           gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.case")));
     SetDlgItemText(IDC_BATCH_RENAME_CASE_LABEL_SKIP_SPEC_CHAR, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.label.skip_special_characters")));
     SetDlgItemText(IDC_BATCH_RENAME_CASE_APPLY,                gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.case.button.apply")));
 
-    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename5"));
+    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BatchRenameCase"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this);

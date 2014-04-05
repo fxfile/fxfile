@@ -23,8 +23,8 @@ namespace fxfile
 {
 namespace cmd
 {
-RenameEditDlg::RenameEditDlg(void)
-    : super(IDD_RENAME_EDIT, XPR_NULL)
+BatchRenameEditDlg::BatchRenameEditDlg(void)
+    : super(IDD_BATCH_RENAME_EDIT, XPR_NULL)
     , mDlgState(XPR_NULL)
 {
     mIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -38,7 +38,7 @@ RenameEditDlg::RenameEditDlg(void)
     mPrevNewVert = 0;
 }
 
-RenameEditDlg::~RenameEditDlg(void)
+BatchRenameEditDlg::~BatchRenameEditDlg(void)
 {
     xpr_tchar_t *sFilename;
     std::deque<xpr_tchar_t *>::iterator sIterator;
@@ -71,14 +71,14 @@ RenameEditDlg::~RenameEditDlg(void)
     DESTROY_ICON(mIcon);
 }
 
-void RenameEditDlg::DoDataExchange(CDataExchange* pDX)
+void BatchRenameEditDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_RENAME_EDIT_NEW_NAME_EDIT, mNewEditCtrl);
     DDX_Control(pDX, IDC_RENAME_EDIT_OLD_NAME_EDIT, mOldEditCtrl);
 }
 
-BEGIN_MESSAGE_MAP(RenameEditDlg, super)
+BEGIN_MESSAGE_MAP(BatchRenameEditDlg, super)
     ON_WM_SIZE()
     ON_WM_DESTROY()
     ON_EN_VSCROLL(IDC_RENAME_EDIT_OLD_NAME_EDIT, OnVscrollSrnOldEdit)
@@ -86,7 +86,7 @@ BEGIN_MESSAGE_MAP(RenameEditDlg, super)
     ON_BN_CLICKED(IDC_RENAME_EDIT_SYNC_SCROLL, OnSyncScroll)
 END_MESSAGE_MAP()
 
-void RenameEditDlg::add(const xpr_tchar_t *aOldFilename, const xpr_tchar_t *aNewFilenmae)
+void BatchRenameEditDlg::add(const xpr_tchar_t *aOldFilename, const xpr_tchar_t *aNewFilenmae)
 {
     xpr_tchar_t *sFilename;
 
@@ -99,12 +99,12 @@ void RenameEditDlg::add(const xpr_tchar_t *aOldFilename, const xpr_tchar_t *aNew
     mNewList.push_back(sFilename);
 }
 
-xpr_size_t RenameEditDlg::getNewCount(void)
+xpr_size_t BatchRenameEditDlg::getNewCount(void)
 {
     return mEditedList.size();
 }
 
-const xpr_tchar_t *RenameEditDlg::getNewName(xpr_size_t aIndex)
+const xpr_tchar_t *BatchRenameEditDlg::getNewName(xpr_size_t aIndex)
 {
     if (!FXFILE_STL_IS_INDEXABLE(aIndex, mEditedList))
         return XPR_NULL;
@@ -112,7 +112,7 @@ const xpr_tchar_t *RenameEditDlg::getNewName(xpr_size_t aIndex)
     return mEditedList[aIndex];
 }
 
-xpr_bool_t RenameEditDlg::OnInitDialog(void) 
+xpr_bool_t BatchRenameEditDlg::OnInitDialog(void) 
 {
     super::OnInitDialog();
 
@@ -187,7 +187,7 @@ xpr_bool_t RenameEditDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void RenameEditDlg::OnSyncScroll(void) 
+void BatchRenameEditDlg::OnSyncScroll(void) 
 {
     mSyncScroll = ((CButton *)GetDlgItem(IDC_RENAME_EDIT_SYNC_SCROLL))->GetCheck();
     if (mSyncScroll == XPR_TRUE)
@@ -208,7 +208,7 @@ void RenameEditDlg::OnSyncScroll(void)
     }
 }
 
-void RenameEditDlg::OnVscrollSrnNewEdit(void) 
+void BatchRenameEditDlg::OnVscrollSrnNewEdit(void) 
 {
     if (mSyncScroll == XPR_TRUE && (mOldEditScroll == XPR_FALSE || (mOldEditScroll == XPR_FALSE && mNewEditScroll == XPR_FALSE)))
     {
@@ -228,7 +228,7 @@ void RenameEditDlg::OnVscrollSrnNewEdit(void)
     mNewEditScroll = XPR_FALSE;
 }
 
-void RenameEditDlg::OnVscrollSrnOldEdit(void) 
+void BatchRenameEditDlg::OnVscrollSrnOldEdit(void) 
 {
     if (mSyncScroll == XPR_TRUE && (mNewEditScroll == XPR_FALSE || (mOldEditScroll == XPR_FALSE && mNewEditScroll == XPR_FALSE)))
     {
@@ -248,7 +248,7 @@ void RenameEditDlg::OnVscrollSrnOldEdit(void)
     mNewEditScroll = XPR_FALSE;
 }
 
-void RenameEditDlg::OnOK(void) 
+void BatchRenameEditDlg::OnOK(void) 
 {
     xpr_sint_t sOldCount = mOldEditCtrl.GetLineCount();
     xpr_sint_t sNewCount = mNewEditCtrl.GetLineCount();
@@ -294,7 +294,7 @@ void RenameEditDlg::OnOK(void)
 
     if (sIncorrected == XPR_TRUE)
     {
-        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename_edit.msg.invalid_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
         GetDlgItem(IDC_RENAME_EDIT_NEW_NAME_EDIT)->SetFocus();
@@ -368,7 +368,7 @@ void RenameEditDlg::OnOK(void)
     super::OnOK();
 }
 
-void RenameEditDlg::OnDestroy(void) 
+void BatchRenameEditDlg::OnDestroy(void) 
 {
     super::OnDestroy();
 
@@ -381,7 +381,7 @@ void RenameEditDlg::OnDestroy(void)
     }
 }
 
-void RenameEditDlg::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy) 
+void BatchRenameEditDlg::OnSize(xpr_uint_t nType, xpr_sint_t cx, xpr_sint_t cy) 
 {
     super::OnSize(nType, cx, cy);
 

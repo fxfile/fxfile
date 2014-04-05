@@ -156,7 +156,7 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
     {
         if (VerifyFileName(mNewName) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.wrong_filename"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.invalid_filename"));
             CWnd::FromHandle(aHwnd)->MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return ResultInvalidName;
         }

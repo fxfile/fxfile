@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "batch_rename_tab_insert_dlg.h"
+#include "batch_rename.h"
 
 #include "resource.h"
 #include "dlg_state.h"
@@ -62,9 +63,11 @@ xpr_bool_t BatchRenameTabInsertDlg::OnInitDialog()
     sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_begin")));
     sComboBox->AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.type.from_end")));
 
-    CSpinButtonCtrl *sSpinCtrl;
-    sSpinCtrl = (CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_INSERT_POS_SPIN);
-    sSpinCtrl->SetRange(0, XPR_MAX_PATH);
+    ((CSpinButtonCtrl*)GetDlgItem(IDC_BATCH_RENAME_INSERT_POS_SPIN))->SetRange(FXFILE_BATCH_RENAME_INSERT_POS_MIN, FXFILE_BATCH_RENAME_INSERT_POS_MAX);
+
+    SetDlgItemInt(IDC_BATCH_RENAME_INSERT_POS, FXFILE_BATCH_RENAME_INSERT_POS_DEF);
+
+    ((CEdit *)GetDlgItem(IDC_BATCH_RENAME_INSERT_STRING))->LimitText(FXFILE_BATCH_RENAME_INSERT_MAX_LENGTH);
 
     ((CComboBox *)GetDlgItem(IDC_BATCH_RENAME_INSERT_TYPE))->SetCurSel(2);
 
@@ -74,7 +77,7 @@ xpr_bool_t BatchRenameTabInsertDlg::OnInitDialog()
     SetDlgItemText(IDC_BATCH_RENAME_INSERT_APPLY,        gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.tab.insert.button.apply")));
 
     // Load Dialog State
-    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("Rename3"));
+    mDlgState = DlgStateManager::instance().getDlgState(XPR_STRING_LITERAL("BatchRenameInsert"));
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this);

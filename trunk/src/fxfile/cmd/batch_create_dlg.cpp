@@ -57,9 +57,9 @@ BatchCreateDlg::~BatchCreateDlg(void)
 void BatchCreateDlg::DoDataExchange(CDataExchange* pDX)
 {
     super::DoDataExchange(pDX);
-    DDX_Control(pDX, IDC_CREATE_TYPE,     mTypeWnd);
-    DDX_Control(pDX, IDC_CREATE_TAB,      mTabCtrl);
-    DDX_Control(pDX, IDC_CREATE_PROGRESS, mProgressCtrl);
+    DDX_Control(pDX, IDC_BATCH_CREATE_TYPE,     mTypeWnd);
+    DDX_Control(pDX, IDC_BATCH_CREATE_TAB,      mTabCtrl);
+    DDX_Control(pDX, IDC_BATCH_CREATE_PROGRESS, mProgressCtrl);
 }
 
 BEGIN_MESSAGE_MAP(BatchCreateDlg, super)
@@ -67,7 +67,7 @@ BEGIN_MESSAGE_MAP(BatchCreateDlg, super)
     ON_WM_SIZE()
     ON_WM_TIMER()
     ON_MESSAGE(WM_FINALIZE, OnFinalize)
-    ON_NOTIFY(TCN_SELCHANGE, IDC_CREATE_TAB, OnSelChangeTab)
+    ON_NOTIFY(TCN_SELCHANGE, IDC_BATCH_CREATE_TAB, OnSelChangeTab)
 END_MESSAGE_MAP()
 
 xpr_bool_t BatchCreateDlg::OnInitDialog(void) 
@@ -84,20 +84,20 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
     //sizeRepos:    The control will be moved in the appropriate direction 
     //sizeRelative: The control will be moved proportionally in the appropriate direction 
 
-    AddControl(IDC_CREATE_PATH,     sizeResize, sizeNone);
-    AddControl(IDC_CREATE_TAB,      sizeResize, sizeResize, XPR_FALSE);
+    AddControl(IDC_BATCH_CREATE_PATH,     sizeResize, sizeNone);
+    AddControl(IDC_BATCH_CREATE_TAB,      sizeResize, sizeResize, XPR_FALSE);
 
-    AddControl(IDC_CREATE_STATUS,   sizeResize, sizeRepos);
-    AddControl(IDC_CREATE_PROGRESS, sizeResize, sizeRepos);
+    AddControl(IDC_BATCH_CREATE_STATUS,   sizeResize, sizeRepos);
+    AddControl(IDC_BATCH_CREATE_PROGRESS, sizeResize, sizeRepos);
 
-    AddControl(IDOK,                sizeRepos,  sizeRepos,  XPR_FALSE);
-    AddControl(IDCANCEL,            sizeRepos,  sizeRepos,  XPR_FALSE);
+    AddControl(IDOK,                      sizeRepos,  sizeRepos,  XPR_FALSE);
+    AddControl(IDCANCEL,                  sizeRepos,  sizeRepos,  XPR_FALSE);
     //------------------------------------------------------------
 
     addDialog(new BatchCreateTabFormatDlg, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.format")));
     addDialog(new BatchCreateTabTextDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.tab.text")));
 
-    SetDlgItemText(IDC_CREATE_PATH, mPath.c_str());
+    SetDlgItemText(IDC_BATCH_CREATE_PATH, mPath.c_str());
 
     xpr_sint_t sIndex;
     sIndex = mTypeWnd.AddString(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.combo.type_folder")));
@@ -117,7 +117,7 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
     if (XPR_IS_NOT_NULL(mDlgState))
     {
         mDlgState->setDialog(this, XPR_TRUE);
-        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"), IDC_CREATE_TYPE);
+        mDlgState->setComboBox(XPR_STRING_LITERAL("Type"), IDC_BATCH_CREATE_TYPE);
         mDlgState->load();
 
         sActiveTab = mDlgState->getStateI(XPR_STRING_LITERAL("Active Tab"), 1); // one-based index
@@ -130,10 +130,10 @@ xpr_bool_t BatchCreateDlg::OnInitDialog(void)
     showDialog(sActiveTab);
 
     SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.title")));
-    SetDlgItemText(IDC_CREATE_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.path")));
-    SetDlgItemText(IDC_CREATE_LABEL_TYPE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.type")));
-    SetDlgItemText(IDOK,                  gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
-    SetDlgItemText(IDCANCEL,              gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
+    SetDlgItemText(IDC_BATCH_CREATE_LABEL_PATH, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.path")));
+    SetDlgItemText(IDC_BATCH_CREATE_LABEL_TYPE, gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.label.type")));
+    SetDlgItemText(IDOK,                        gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
+    SetDlgItemText(IDCANCEL,                    gApp.loadString(XPR_STRING_LITERAL("popup.common.button.cancel")));
 
     return XPR_TRUE;
 }
@@ -256,7 +256,7 @@ void BatchCreateDlg::setCreateType(BatchCreate::CreateType aType)
 void BatchCreateDlg::setStatus(const xpr_tchar_t *aStatus)
 {
     if (aStatus != XPR_NULL)
-        SetDlgItemText(IDC_CREATE_STATUS, aStatus);
+        SetDlgItemText(IDC_BATCH_CREATE_STATUS, aStatus);
 }
 
 void BatchCreateDlg::showDialog(xpr_sint_t aIndex)
@@ -387,43 +387,20 @@ void BatchCreateDlg::OnOK(void)
         {
             BatchCreateTabFormatDlg *sDlg = (BatchCreateTabFormatDlg *)getDialog(sCurTab);
 
-            xpr_tchar_t sFormat[0xff] = {0};
-            sDlg->getFormat(sFormat, 0xfe);
+            xpr_tchar_t sFormat[FXFILE_BATCH_CREATE_FORMAT_MAX_LENGTH + 1] = {0};
+            sDlg->getFormat(sFormat, FXFILE_BATCH_CREATE_FORMAT_MAX_LENGTH);
 
-            xpr_sint_t sStart     = sDlg->getStart();
-            xpr_sint_t sIncrease  = sDlg->getIncrease();
-            xpr_sint_t sEnd       = sDlg->getEnd();
-            xpr_sint_t sCount     = sDlg->getCount();
-            xpr_bool_t sCountType = sDlg->getCountType();
+            xpr_sint_t sStart    = sDlg->getStart();
+            xpr_sint_t sIncrease = sDlg->getIncrease();
+            xpr_size_t sCount    = sDlg->getCount();
 
-            if (sStart > sEnd)
-            {
-                const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_number_range"));
-                MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-                return;
-            }
-
-            sResult = mBatchCreate->addFormat(
-                mPath.c_str(),
-                sFormat,
-                sStart,
-                sIncrease,
-                (sCountType == XPR_TRUE) ? sCount : sEnd,
-                sCountType);
+            sResult = mBatchCreate->addFormat(mPath.c_str(), sFormat, sCount);
 
             switch (sResult)
             {
-            case BatchCreate::ResultExcessMaxCount:
+            case BatchCreate::ResultWrongFormat:
                 {
-                    xpr_tchar_t sMsg[0xff] = {0};
-                    _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
-                    MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-                    return;
-                }
-
-            case BatchCreate::ResultInvalidFormat:
-                {
-                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.invalid_format"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_format"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
@@ -463,7 +440,7 @@ void BatchCreateDlg::OnOK(void)
                 sPath = sFileName;
                 if (VerifyFileName(sPath) == XPR_FALSE)
                 {
-                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.invalid_filename"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
                     return;
                 }
@@ -480,14 +457,6 @@ void BatchCreateDlg::OnOK(void)
                 sResult = mBatchCreate->addPath(sPath);
                 switch (sResult)
                 {
-                case BatchCreate::ResultExcessMaxCount:
-                    {
-                        xpr_tchar_t sMsg[0xff] = {0};
-                        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), mBatchCreate->getMaxCount());
-                        MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-                        return;
-                    }
-
                 case BatchCreate::ResultExcessPathLength:
                     {
                         xpr_tchar_t sMsg[0xff] = {0};
@@ -507,6 +476,13 @@ void BatchCreateDlg::OnOK(void)
     {
         const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.none"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
+        return;
+    }
+    else if (sCount > FXFILE_BATCH_CREATE_FORMAT_COUNT_MAX)
+    {
+        xpr::tstring sMsg;
+        sMsg.format(gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), FXFILE_BATCH_CREATE_FORMAT_COUNT_MAX);
+        MessageBox(sMsg.c_str(), XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }
 
@@ -569,7 +545,7 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
             {
             case BatchCreate::ResultInvalidName:
                 {
-                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.wrong_filename"));
+                    const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.invalid_filename"));
                     MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
 
                     const xpr_tchar_t *sStatusText = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.status.re-fill"));
@@ -578,7 +554,6 @@ LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
                 }
 
             case BatchCreate::ResultExcessPathLength:
-            case BatchCreate::ResultEmptiedName:
             case BatchCreate::ResultEqualedName:
                 {
                     const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_create.msg.re-fill"));

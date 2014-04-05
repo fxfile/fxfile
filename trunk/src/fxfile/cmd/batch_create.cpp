@@ -9,7 +9,8 @@
 
 #include "stdafx.h"
 #include "batch_create.h"
-#include "format_parser.h"
+#include "format.h"
+#include "format_short_parser.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -19,13 +20,30 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
+void getLocalTime(SYSTEMTIME &aTimeNow)
+{
+    xpr::TimeExpr sNowTimeExpr;
+    xpr::getLocalTimeNow(sNowTimeExpr);
+
+    memset(&aTimeNow, 0, sizeof(aTimeNow));
+    aTimeNow.wYear         = sNowTimeExpr.mYear;
+    aTimeNow.wMonth        = sNowTimeExpr.mMonth;
+    aTimeNow.wDay          = sNowTimeExpr.mDay;
+    aTimeNow.wHour         = sNowTimeExpr.mHour;
+    aTimeNow.wMinute       = sNowTimeExpr.mMinute;
+    aTimeNow.wSecond       = sNowTimeExpr.mSecond;
+    aTimeNow.wMilliseconds = sNowTimeExpr.getMillisecond();
+}
+} // namespace anonymous
+
 BatchCreate::BatchCreate(void)
     : mHwnd(XPR_NULL), mMsg(0)
     , mCreateType(CreateTypeNone)
     , mStatus(StatusNone)
     , mPreparedCount(0), mValidatedCount(0), mCreatedCount(0)
     , mInvalidItem(-1)
-    , mMaxCount(1000)
 {
 }
 
@@ -47,27 +65,18 @@ void BatchCreate::setCreateType(CreateType aCreateType)
     mCreateType = aCreateType;
 }
 
-BatchCreate::CreateType BatchCreate::getCreateType(void)
+BatchCreate::CreateType BatchCreate::getCreateType(void) const
 {
     return mCreateType;
 }
 
 BatchCreate::Result BatchCreate::addPath(const xpr::tstring &aPath)
 {
-    if (aPath.empty() == XPR_TRUE)
-        return ResultEmptiedName;
-
-    if (aPath.length() >= XPR_MAX_PATH)
+    if (aPath.length() > XPR_MAX_PATH)
         return ResultExcessPathLength;
 
-    if (mNewDeque.size() >= mMaxCount)
-        return ResultExcessMaxCount;
-
-    Item *sItem = new Item;
-    if (XPR_IS_NULL(sItem))
-        return ResultUnknownError;
-
-    sItem->mPath = aPath.c_str();
+    Item *sItem    = new Item;
+    sItem->mPath   = aPath;
     sItem->mResult = ResultNone;
 
     mNewDeque.push_back(sItem);
@@ -77,68 +86,86 @@ BatchCreate::Result BatchCreate::addPath(const xpr::tstring &aPath)
 
 BatchCreate::Result BatchCreate::addFormat(const xpr_tchar_t *aDir,
                                            const xpr_tchar_t *aFormat,
-                                           xpr_sint_t         aStart,
-                                           xpr_sint_t         aIncrease,
-                                           xpr_sint_t         aEndOrCount,
-                                           xpr_bool_t         aCount)
+                                           xpr_size_t         aCount)
 {
-    if (XPR_IS_NULL(aDir) || XPR_IS_NULL(aFormat))
-        return ResultInvalidParameter;
-
-    xpr_size_t sCount = aEndOrCount;
-    if (XPR_IS_FALSE(aCount))
-        sCount = aEndOrCount - aStart + 1;
-
-    if (sCount <= 0)
-        return ResultInvalidParameter;
-
-    if (sCount > mMaxCount)
-        return ResultExcessMaxCount;
+    XPR_ASSERT(aDir != XPR_NULL);
+    XPR_ASSERT(aFormat != XPR_NULL);
+    XPR_ASSERT(aCount > 0);
 
     xpr::tstring sDir = aDir;
     xpr::tstring sFormat = aFormat;
 
     if (sDir[sDir.length()-1] != XPR_STRING_LITERAL('\\'))
+    {
         sDir += XPR_STRING_LITERAL('\\');
+    }
+
+    if (mCreateType == CreateTypeTextFile)
+    {
+        sFormat += XPR_STRING_LITERAL(".txt");
+    }
 
     Result sResult = ResultSucceeded;
 
-    xpr::tstring sNew;
+    xpr_sint_t   i = 0;
+    xpr_size_t   sMaxNewLen;
+    xpr_bool_t   sFolder = (mCreateType == CreateTypeFolder) ? XPR_TRUE : XPR_FALSE;
+    xpr_bool_t   sAtLeastOneError = XPR_FALSE;
+    xpr::tstring sOrgFilePath;
+    xpr::tstring sOrgFileName;
+    xpr::tstring sOldFileName;
     xpr::tstring sPath;
-    FormatParser sFormatParser;
-    FormatParser::Result sParseResult;
+    SYSTEMTIME   sNowTime = {0,};
 
-    xpr_size_t i;
-    for (i = 0; i < sCount; ++i)
+    FormatSequence *sFormatSequence;
+    FileNameFormat  sFileNameFormat;
+    ShortFormatParser &sShortFormatParser = SingletonManager::get<ShortFormatParser>();
+
+    sFormatSequence = new FormatSequence;
+
+    if (sShortFormatParser.parse(sFormat, *sFormatSequence) == XPR_FALSE)
     {
-        sParseResult = sFormatParser.parse(sFormat, sNew, (xpr_uint_t)(aStart + i*aIncrease));
-        if (sParseResult != FormatParser::PARSING_FORMAT_SUCCEEDED)
+        XPR_SAFE_DELETE(sFormatSequence);
+
+        return ResultWrongFormat;
+    }
+
+    sFileNameFormat.add(sFormatSequence);
+
+    getLocalTime(sNowTime);
+
+    for (i = 0; i < aCount; ++i)
+    {
+        sMaxNewLen = XPR_MAX_PATH - sDir.length() - 1;
+
+        RenameContext sContext(sFolder,
+                               sOrgFilePath,
+                               sOrgFileName,
+                               sOldFileName,
+                               i,
+                               sMaxNewLen,
+                               sNowTime);
+
+        if (XPR_IS_FALSE(sFileNameFormat.rename(sContext)))
         {
-            sResult = ResultInvalidFormat;
-            break;
+            sAtLeastOneError = XPR_TRUE;
         }
 
-        sPath = sDir + sNew;
-
-        if (mCreateType == CreateTypeTextFile)
-            sPath += XPR_STRING_LITERAL(".txt");
+        sPath = sDir + sContext.mNewFileName;
 
         sResult = addPath(sPath);
-        if (sResult == ResultExcessMaxCount || sResult == ResultExcessPathLength)
+        if (sResult == ResultExcessPathLength)
+        {
             break;
+        }
     }
 
     return sResult;
 }
 
-xpr_size_t BatchCreate::getCount(void)
+xpr_size_t BatchCreate::getCount(void) const
 {
     return mNewDeque.size();
-}
-
-xpr_size_t BatchCreate::getMaxCount(void)
-{
-    return mMaxCount;
 }
 
 void BatchCreate::clear(void)
@@ -216,8 +243,8 @@ unsigned BatchCreate::OnEntryProc(void)
     for (; sIterator != mNewDeque.end(); ++sIterator)
     {
         sItem = *sIterator;
-        if (XPR_IS_NULL(sItem))
-            continue;
+
+        XPR_ASSERT(sItem != XPR_NULL);
 
         if (IsStop() == XPR_TRUE)
             break;
@@ -247,8 +274,8 @@ unsigned BatchCreate::OnEntryProc(void)
         for (; sHashPathIterator != sPairRangeIterator.second; ++sHashPathIterator)
         {
             sItem2 = sHashPathIterator->second;
-            if (XPR_IS_NULL(sItem2))
-                continue;
+
+            XPR_ASSERT(sItem2 != XPR_NULL);
 
             if (sItem != sItem2)
                 break;
@@ -283,8 +310,8 @@ unsigned BatchCreate::OnEntryProc(void)
         for (; sIterator != mNewDeque.end(); ++sIterator)
         {
             sItem = *sIterator;
-            if (XPR_IS_NULL(sItem))
-                continue;
+
+            XPR_ASSERT(sItem != XPR_NULL);
 
             if (IsStop() == XPR_TRUE)
                 break;
@@ -347,7 +374,7 @@ unsigned BatchCreate::OnEntryProc(void)
     return 0;
 }
 
-BatchCreate::Status BatchCreate::getStatus(xpr_size_t *aPreparedCount, xpr_size_t *aValidatedCount, xpr_size_t *aCreatedCount)
+BatchCreate::Status BatchCreate::getStatus(xpr_size_t *aPreparedCount, xpr_size_t *aValidatedCount, xpr_size_t *aCreatedCount) const
 {
     xpr::MutexGuard sLockGuard(mMutex);
 
@@ -358,7 +385,7 @@ BatchCreate::Status BatchCreate::getStatus(xpr_size_t *aPreparedCount, xpr_size_
     return mStatus;
 }
 
-BatchCreate::Result BatchCreate::getItemResult(xpr_size_t aIndex)
+BatchCreate::Result BatchCreate::getItemResult(xpr_size_t aIndex) const
 {
     if (!FXFILE_STL_IS_INDEXABLE(aIndex, mNewDeque))
         return ResultNone;
@@ -366,7 +393,7 @@ BatchCreate::Result BatchCreate::getItemResult(xpr_size_t aIndex)
     return mNewDeque[aIndex]->mResult;
 }
 
-xpr_sint_t BatchCreate::getInvalidItem(void)
+xpr_sint_t BatchCreate::getInvalidItem(void) const
 {
     xpr::MutexGuard sLockGuard(mMutex);
 

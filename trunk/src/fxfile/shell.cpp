@@ -394,43 +394,6 @@ void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath)
     COM_FREE(sFullPidl2);
 }
 
-void GetDispFullPath(LPCITEMIDLIST aFullPidl, CString &aPath)
-{
-    if (XPR_IS_NULL(aFullPidl))
-    {
-        GetName(XPR_NULL, SHGDN_INFOLDER, aPath);
-        return;
-    }
-
-    CString sName;
-    LPITEMIDLIST sFullPidl2 = fxfile::base::Pidl::clone(aFullPidl);
-
-    aPath = XPR_STRING_LITERAL("");
-    while (XPR_IS_NOT_NULL(sFullPidl2))
-    {
-        // new
-        if (GetName(sFullPidl2, SHGDN_INFOLDER, sName) == XPR_FALSE)
-            break;
-
-        aPath = sName + aPath;
-        if (sFullPidl2->mkid.cb != 0)
-            aPath = XPR_STRING_LITERAL("\\") + aPath;
-        else
-            break;
-
-        fxfile::base::Pidl::removeLastItem(sFullPidl2);
-    }
-
-    COM_FREE(sFullPidl2);
-}
-
-CString GetDispFullPath(LPCITEMIDLIST aFullPidl)
-{
-    CString sPath;
-    GetDispFullPath(aFullPidl, sPath);
-    return sPath;
-}
-
 xpr_bool_t GetDispFullPidl(const xpr_tchar_t *aFullPath, LPITEMIDLIST *aFullPidl)
 {
     if (XPR_IS_NULL(aFullPath) || XPR_IS_NULL(aFullPidl))
@@ -584,23 +547,6 @@ LPITEMIDLIST GetDispFullPidl(const xpr_tchar_t *aFullPath)
 //
 // name
 //
-xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, CString &aFriendlyName)
-{
-    xpr_bool_t    sResult      = XPR_FALSE;
-    LPSHELLFOLDER sShellFolder = XPR_NULL;
-    LPCITEMIDLIST sPidl        = XPR_NULL;
-
-    sResult = fxfile::base::Pidl::getSimplePidl(aFullPidl, sShellFolder, sPidl);
-    if (XPR_IS_TRUE(sResult))
-    {
-        sResult = GetName(sShellFolder, sPidl, aFlags, aFriendlyName);
-    }
-
-    COM_RELEASE(sShellFolder);
-
-    return sResult;
-}
-
 xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aFriendlyName)
 {
     xpr_bool_t    sResult      = XPR_FALSE;
@@ -633,18 +579,6 @@ xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aFriendly
     COM_RELEASE(sShellFolder);
 
     return sResult;
-}
-
-xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, CString &aFriendlyName)
-{
-    xpr_tchar_t sFriendlyName[XPR_MAX_PATH + 1] = {0};
-    if (GetName(aShellFolder, aPidl, aFlags, sFriendlyName) == XPR_TRUE)
-    {
-        aFriendlyName = sFriendlyName;
-        return XPR_TRUE;
-    }
-
-    return XPR_FALSE;
 }
 
 xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aFriendlyName)
@@ -823,10 +757,9 @@ xpr_bool_t GetFileTime(const FILETIME &aFileTime, xpr_tchar_t *aFileTimeText)
     return XPR_TRUE;
 }
 
-xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aModifiedFileTime)
+xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aCreationFileTime, FILETIME *aModifiedFileTime, FILETIME *aLastAccessFileTime)
 {
-    if (XPR_IS_NULL(aPath) || XPR_IS_NULL(aModifiedFileTime))
-        return XPR_FALSE;
+    XPR_ASSERT(aPath != XPR_NULL);
 
     xpr_bool_t sResult = XPR_FALSE;
 
@@ -834,8 +767,24 @@ xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aModifiedFileTime)
     HANDLE sFindFile = ::FindFirstFile(aPath, &sWin32FindData);
     if (sFindFile != INVALID_HANDLE_VALUE)
     {
-        aModifiedFileTime->dwLowDateTime  = sWin32FindData.ftLastWriteTime.dwLowDateTime;
-        aModifiedFileTime->dwHighDateTime = sWin32FindData.ftLastWriteTime.dwHighDateTime;
+        if (XPR_IS_NOT_NULL(aCreationFileTime))
+        {
+            aCreationFileTime->dwLowDateTime  = sWin32FindData.ftCreationTime.dwLowDateTime;
+            aCreationFileTime->dwHighDateTime = sWin32FindData.ftCreationTime.dwHighDateTime;
+        }
+
+        if (XPR_IS_NOT_NULL(aModifiedFileTime))
+        {
+            aModifiedFileTime->dwLowDateTime  = sWin32FindData.ftLastWriteTime.dwLowDateTime;
+            aModifiedFileTime->dwHighDateTime = sWin32FindData.ftLastWriteTime.dwHighDateTime;
+        }
+
+        if (XPR_IS_NOT_NULL(aLastAccessFileTime))
+        {
+            aLastAccessFileTime->dwLowDateTime  = sWin32FindData.ftLastAccessTime.dwLowDateTime;
+            aLastAccessFileTime->dwHighDateTime = sWin32FindData.ftLastAccessTime.dwHighDateTime;
+        }
+
         sResult = XPR_TRUE;
     }
 

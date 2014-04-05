@@ -7,20 +7,20 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_RENAME_TIP_DLG_H__
-#define __FXFILE_RENAME_TIP_DLG_H__ 1
+#ifndef __FXFILE_BATCH_RENAME_TIP_DLG_H__
+#define __FXFILE_BATCH_RENAME_TIP_DLG_H__ 1
 #pragma once
 
 namespace fxfile
 {
 namespace cmd
 {
-class RenameTipDlg : public CDialog
+class BatchRenameTipDlg : public CDialog
 {
     typedef CDialog super;
 
 public:
-    RenameTipDlg(void);
+    BatchRenameTipDlg(void);
 
 public:
     virtual xpr_bool_t Create(CWnd* pParentWnd);
@@ -36,4 +36,4 @@ protected:
 } // namespace cmd
 } // namespace fxfile
 
-#endif // __FXFILE_RENAME_TIP_DLG_H__
+#endif // __FXFILE_BATCH_RENAME_TIP_DLG_H__

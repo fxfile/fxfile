@@ -1923,7 +1923,10 @@ xpr_bool_t FolderCtrl::OnShcnDriveRemove(Shcn *aShcn)
     if (FAILED(sHResult) || XPR_IS_NULL(sFullPidl))
         return XPR_FALSE;
 
-    HTREEITEM sTreeItem = searchTree(GetDispFullPath(sFullPidl), XPR_FALSE, XPR_TRUE);
+    xpr::tstring sDispFullPath;
+    GetDispFullPath(sFullPidl, sDispFullPath);
+
+    HTREEITEM sTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_TRUE);
     COM_FREE(sFullPidl);
     if (XPR_IS_NULL(sTreeItem))
         return XPR_FALSE;
@@ -2342,14 +2345,14 @@ xpr_bool_t FolderCtrl::OnShcnMediaInsRem(Shcn *aShcn, xpr_bool_t aInserted)
     if (FAILED(sHResult))
         return XPR_FALSE;
 
-    CString sFullPath;
-    sFullPath = GetDispFullPath(sFullPidl);
+    xpr::tstring sDispFullPath;
+    GetDispFullPath(sFullPidl, sDispFullPath);
 
-    HTREEITEM sParentTreeItem = searchTree(sFullPath, XPR_FALSE, XPR_FALSE);
+    HTREEITEM sParentTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_FALSE);
     if (XPR_IS_NULL(sParentTreeItem))
         return XPR_TRUE;
 
-    CString sName;
+    xpr::tstring sName;
     //xpr_tchar_t sPath[XPR_MAX_PATH + 1];
     LPTVITEMDATA sTvItemData = XPR_NULL;
     xpr_sint_t sImageNew, sSelImageNew;
@@ -2375,7 +2378,7 @@ xpr_bool_t FolderCtrl::OnShcnMediaInsRem(Shcn *aShcn, xpr_bool_t aInserted)
             SetItemImage(sTreeItem, sImageNew, sSelImageNew);
 
             // pszText Update
-            sName.Empty();
+            sName.clear();
             GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
             if (XPR_IS_FALSE(aInserted))
             {
@@ -2390,7 +2393,7 @@ xpr_bool_t FolderCtrl::OnShcnMediaInsRem(Shcn *aShcn, xpr_bool_t aInserted)
                 }
             }
 
-            SetItemText(sTreeItem, sName);
+            SetItemText(sTreeItem, sName.c_str());
         }
 
         sTreeItem = GetNextSiblingItem(sTreeItem);
@@ -2405,18 +2408,19 @@ xpr_bool_t FolderCtrl::OnShcnUpdateDrive(const xpr_tchar_t *aDrive)
 
     LPITEMIDLIST sPidl = XPR_NULL;
     HTREEITEM sTreeItem = XPR_NULL;
-    CString sPath;
     HRESULT sHResult = ::SHGetSpecialFolderLocation(m_hWnd, CSIDL_DRIVES, &sPidl);
     if (SUCCEEDED(sHResult))
     {
-        sPath = GetDispFullPath(sPidl);
-        sTreeItem = searchTree(sPath, XPR_FALSE, XPR_FALSE);
+        xpr::tstring sDispFullPath;
+        GetDispFullPath(sPidl, sDispFullPath);
+        sTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_FALSE);
     }
     COM_FREE(sPidl);
 
     if (XPR_IS_NULL(sTreeItem))
         return sResult;
 
+    xpr::tstring sName;
     LPTVITEMDATA sTvItemData = XPR_NULL;
     HTREEITEM sChildTreeItem = GetChildItem(sTreeItem);
     CString sTemp = GetItemText(sTreeItem);
@@ -2428,11 +2432,11 @@ xpr_bool_t FolderCtrl::OnShcnUpdateDrive(const xpr_tchar_t *aDrive)
         sTvItemData = (LPTVITEMDATA)GetItemData(sChildTreeItem);
         if (XPR_IS_NOT_NULL(sTvItemData))
         {
-            GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sPath);
+            GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
             CString sText = GetItemText(sChildTreeItem);
-            if (sText != sPath)
+            if (sText != sName)
             {
-                SetItemText(sChildTreeItem, sPath);
+                SetItemText(sChildTreeItem, sName.c_str());
                 sResult = XPR_TRUE;
                 break;
             }

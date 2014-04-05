@@ -343,54 +343,52 @@
 			<String ID="cmd.shell.add_to_scrap">수집하기(&amp;F)</String>
 			
 			<!-- popup menu: new items -->
-			<String ID="cmd.new.items.format.number_digit">자동 숫자 증가 (/?)</String>
-			<String ID="cmd.new.items.format.number_digit_with_zero_filled">자동 숫자 증가 (/0?)</String>
-			<String ID="cmd.new.items.format.today_date">오늘 날짜(/D)</String>
-			<String ID="cmd.new.items.format.current_year">현재 년도 (/y)</String>
-			<String ID="cmd.new.items.format.current_month">현재 월 (/m)</String>
-			<String ID="cmd.new.items.format.current_day">현재 일 (/d)</String>
-			<String ID="cmd.new.items.format.current_time">현재 시간 (/T)</String>
-			<String ID="cmd.new.items.format.current_hour">현재 시 (/h)</String>
-			<String ID="cmd.new.items.format.current_minute">현재 분 (/i)</String>
-			<String ID="cmd.new.items.format.current_second">현재 초 (/s)</String>
+			<String ID="cmd.new.items.format.numbering">자동 숫자 증가 &lt;1&gt;</String>
+			<String ID="cmd.new.items.format.today_date">오늘 날짜 &lt;time:yyyy-MM-dd&gt;</String>
+			<String ID="cmd.new.items.format.current_year">현재 년도 &lt;time:yyyy&gt;</String>
+			<String ID="cmd.new.items.format.current_month">현재 월 &lt;time:MM&gt;</String>
+			<String ID="cmd.new.items.format.current_day">현재 일 &lt;time:dd&gt;</String>
+			<String ID="cmd.new.items.format.current_time">현재 시간 &lt;time:HH.mm.ss&gt;</String>
+			<String ID="cmd.new.items.format.current_hour">현재 시 &lt;time:HH&gt;</String>
+			<String ID="cmd.new.items.format.current_minute">현재 분 &lt;time:mm&gt;</String>
+			<String ID="cmd.new.items.format.current_second">현재 초 &lt;time:ss&gt;</String>
 
 			<!-- popup menu: batch rename -->
-			<String ID="cmd.batch_rename.format.number_digit">자동 숫자 증가 (/?)</String>
-			<String ID="cmd.batch_rename.format.number_digit_with_zero_filled">자동 숫자 증가 (/0?)</String>
-			<String ID="cmd.batch_rename.format.full_filename">전체 이름 (/*)</String>
-			<String ID="cmd.batch_rename.format.filename">파일명 (/n)</String>
-			<String ID="cmd.batch_rename.format.original_filename">원본 파일명에서 가져오기 (/N(?-?))</String>
-			<String ID="cmd.batch_rename.format.extension">확장자 (/e)</String>
-			<String ID="cmd.batch_rename.format.today_date">오늘 날짜 (/D)</String>
-			<String ID="cmd.batch_rename.format.current_year">현재 년도 (/y)</String>
-			<String ID="cmd.batch_rename.format.current_month">현재 월 (/m)</String>
-			<String ID="cmd.batch_rename.format.current_day">현재 일 (/d)</String>
-			<String ID="cmd.batch_rename.format.current_time">현재 시간 (/T)</String>
-			<String ID="cmd.batch_rename.format.current_hour">현재 시 (/h)</String>
-			<String ID="cmd.batch_rename.format.current_minute">현재 분 (/i)</String>
-			<String ID="cmd.batch_rename.format.current_second">현재 초 (/s)</String>
+			<String ID="cmd.batch_rename.format.numbering">자동 숫자 증가 &lt;1&gt;</String>
+			<String ID="cmd.batch_rename.format.full_filename">전체 파일명 &lt;*&gt;</String>
+			<String ID="cmd.batch_rename.format.filename">파일명만 &lt;n&gt;</String>
+			<String ID="cmd.batch_rename.format.original_filename">원본 파일명에서 가져오기 &lt;gn&gt;</String>
+			<String ID="cmd.batch_rename.format.extension">확장자만 &lt;e&gt;</String>
+			<String ID="cmd.batch_rename.format.today_date">오늘 날짜 &lt;time:yyyy-MM-dd&gt;</String>
+			<String ID="cmd.batch_rename.format.current_year">현재 년도 &lt;time:yyyy&gt;</String>
+			<String ID="cmd.batch_rename.format.current_month">현재 월 &lt;time:MM&gt;</String>
+			<String ID="cmd.batch_rename.format.current_day">현재 일 &lt;time:dd&gt;</String>
+			<String ID="cmd.batch_rename.format.current_time">현재 시간 &lt;time:HH.mm.ss&gt;</String>
+			<String ID="cmd.batch_rename.format.current_hour">현재 시 &lt;time:HH&gt;</String>
+			<String ID="cmd.batch_rename.format.current_minute">현재 분 &lt;time:mm&gt;</String>
+			<String ID="cmd.batch_rename.format.current_second">현재 초 &lt;time:ss&gt;</String>
 			<String ID="cmd.batch_rename.format.file_created_time.popup">파일 생성 날짜/시간(&amp;C)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.date">파일 생성 날짜 (/A)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.year">파일 생성 년도 (/a)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.month">파일 생성 월 (/b)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.day">파일 생성 일 (/c)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.time">파일 생성 시간 (/F)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.am_pm">파일 생성 오전/오후 (/f)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.12-hour">파일 생성 12시 (/g)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.24-hour">파일 생성 24시 (/k)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.minute">파일 생성 분 (/l)</String>
-			<String ID="cmd.batch_rename.format.file_created_time.second">파일 생성 초 (/r)</String>
+			<String ID="cmd.batch_rename.format.file_created_time.date">파일 생성 날짜 &lt;ctime:yyyy-MM-dd&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.year">파일 생성 년도 &lt;ctime:yyyy&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.month">파일 생성 월 &lt;ctime:MM&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.day">파일 생성 일 &lt;ctime:dd&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.time">파일 생성 시간 &lt;ctime:HH.mm.ss&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.am_pm">파일 생성 오전/오후 &lt;ctime:tt&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.12-hour">파일 생성 12시 &lt;ctime:hh&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.24-hour">파일 생성 24시 &lt;ctime:HH&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.minute">파일 생성 분 &lt;ctime:mm&gt;</String>
+			<String ID="cmd.batch_rename.format.file_created_time.second">파일 생성 초 &lt;ctime:ss&gt;</String>
 			<String ID="cmd.batch_rename.format.file_modified_time.popup">파일 수정 날짜/시간(&amp;M)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.date">파일 수정 날짜 (/O)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.year">파일 수정 년도 (/o)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.month">파일 수정 월 (/p)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.day">파일 수정 일 (/q)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.time">파일 수정 시간 (/J)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.am_pm">파일 수정 오전/오후 (/j)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.12-hour">파일 수정 12시 (/u)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.24-hour">파일 수정 24시 (/w)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.minute">파일 수정 분 (/v)</String>
-			<String ID="cmd.batch_rename.format.file_modified_time.second">파일 수정 초 (/z)</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.date">파일 수정 날짜 &lt;mtime:yyyy-MM-dd&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.year">파일 수정 년도 &lt;mtime:yyyy&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.month">파일 수정 월 &lt;mtime:MM&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.day">파일 수정 일 &lt;mtime:dd&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.time">파일 수정 시간 &lt;mtime:HH.mm.ss&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.am_pm">파일 수정 오전/오후 &lt;mtime:tt&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.12-hour">파일 수정 12시 &lt;mtime:hh&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.24-hour">파일 수정 24시 &lt;mtime:HH&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.minute">파일 수정 분 &lt;mtime:mm&gt;</String>
+			<String ID="cmd.batch_rename.format.file_modified_time.second">파일 수정 초 &lt;mtime:ss&gt;</String>
 
 			<!-- popup menu: file scrap floater -->
 			<String ID="cmd.file_scrap.floater.always_topmost">항상 최상위 유지(&amp;A)</String>
@@ -578,14 +576,12 @@
 			<String ID="popup.batch_create.combo.type_text_file">텍스트 파일</String>
 			<String ID="popup.batch_create.button.stop">중지</String>
 			<String ID="popup.batch_create.msg.select_type">일괄적으로 새로 만들 종류를 선택하여 주십시오.</String>
-			<String ID="popup.batch_create.msg.wrong_number_range">끝 번호는 시작 번호보다 커야 합니다.</String>
-			<String ID="popup.batch_create.msg.excess_max_count">한번에 일괄적으로 생성할 수 있는 새 항목 최대 개수는 %1%개입니다.</String>
-			<String ID="popup.batch_create.msg.invalid_format">포멧 형식이 잘못되어 있습니다.</String>
+			<String ID="popup.batch_create.msg.excess_max_count">한번에 일괄적으로 생성할 수 있는 최대 개수는 %1%개입니다.</String>
+			<String ID="popup.batch_create.msg.wrong_format">포멧 형식이 잘못되어 있습니다.</String>
 			<String ID="popup.batch_create.msg.excess_path_length">새로 만들 항목 이름을 %1%자 이하로 설정해 주시기 바랍니다.</String>
 			<String ID="popup.batch_create.msg.none">새로 만들 항목의 형식이나 목록을 입력하여 주십시오.</String>
-			<String ID="popup.batch_create.msg.wrong_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.batch_create.msg.invalid_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 			<String ID="popup.batch_create.msg.re-fill">새로운 이름이 다음과 같은 요소들에 의해 잘못 구성되어져 있습니다.&#10;&#10;&#9;새로운 이름이 비어 있습니다.&#10;&#9;새로운 이름이 중복되어져 있습니다.&#10;&#10;새로운 이름을 다시 구성해 주십시오.</String>
-			<String ID="popup.batch_create.msg.wrong_number_length">자리수는 1 ~ 9까지 입력할 수 있습니다. 다시 입력하여 주십시오.</String>
 			<String ID="popup.batch_create.status.completed">모두 완료 되었습니다.</String>
 			<String ID="popup.batch_create.status.stoped">%1% / %2% 중지되었습니다.</String>
 			<String ID="popup.batch_create.status.re-fill">새로운 이름을 다시 구성해 주십시오.</String>
@@ -593,12 +589,11 @@
 			<String ID="popup.batch_create.status.verifying">%1% / %2% 유효성 검사 중...%3%%%</String>
 			<String ID="popup.batch_create.status.creating">%1% / %2% 새 항목 생성 중...%3%%%</String>
 			<String ID="popup.batch_create.tab.format.label.format">형식(&amp;O):</String>
-			<String ID="popup.batch_create.tab.format.button.number_digit">숫자</String>
+			<String ID="popup.batch_create.tab.format.button.numbering">숫자</String>
 			<String ID="popup.batch_create.tab.format.button.date">날짜</String>
 			<String ID="popup.batch_create.tab.format.button.time">시간</String>
 			<String ID="popup.batch_create.tab.format.label.increase">숫자 증가값(&amp;I):</String>
 			<String ID="popup.batch_create.tab.format.label.start_number">시작 번호(&amp;S):</String>
-			<String ID="popup.batch_create.tab.format.label.end_number">끝 번호(&amp;S):</String>
 			<String ID="popup.batch_create.tab.format.label.count">번호 개수(&amp;T):</String>
 			<String ID="popup.batch_create.tab.format.label.length">자리수(&amp;L):</String>
 			<String ID="popup.batch_create.tab.format.check.zero_filled">&#8216;0&#8217;으로 자리수 채우기(&amp;0)</String>
@@ -781,7 +776,7 @@
 			<!-- popup: input -->
 			<String ID="popup.input.label.desc">입력하십시오.</String>
 			<String ID="popup.input.msg.empty_re-input">빈 문자열을 입력할 수 없습니다. 다시 입력하여 주십시오.</String>
-			<String ID="popup.input.msg.wrong_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.input.msg.invalid_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 			
 			<!-- popup: bookmark edit -->
 			<String ID="popup.bookmark_edit.title">북마크 편집</String>
@@ -872,13 +867,13 @@
 			<String ID="popup.create_shortcut.show.maximize">최대화</String>
 			<String ID="popup.create_shortcut.folder_browse.title">아래에서 바로 가기의 대상을 선택하여 주십시오.</String>
 			<String ID="popup.create_shortcut.msg.input">항목의 위치나 이름을 정확하게 써 주십시오.</String>
-			<String ID="popup.create_shortcut.msg.wrong_filename">항목의 위치나 이름에 다음의 문자가 올 수 없습니다.&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.create_shortcut.msg.invalid_filename">항목의 위치나 이름에 다음의 문자가 올 수 없습니다.&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 			
 			<!-- popup: rename -->
 			<String ID="popup.rename.title">이름 바꾸기</String>
 			<String ID="popup.rename.label.top_desc">새로운 이름을 입력하십시오.&#13;&#10;(이전: %1%)</String>
 			<String ID="popup.rename.msg.title">파일 이름 바꾸기</String>
-			<String ID="popup.rename.msg.wrong_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.rename.msg.invalid_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 			<String ID="popup.rename.msg.confirm_drive_rename">%1%: 드라이브 이름을 &#8216;%2%&#8217;에서 &#8216;%3%&#8217;(으)로 바꾸시겠습니까?</String>
 			<String ID="popup.rename.msg.confirm_file_rename">&#8216;%1%&#8217; %2%을 &#8216;%3%&#8217;(으)로 이름을 바꾸시겠습니까?</String>
 			<String ID="popup.rename.msg.confirm_file_rename.system_file">시스템 파일</String>
@@ -973,40 +968,23 @@
 
 			<!-- popup: batch rename format tip -->
 			<String ID="popup.batch_rename_tip.title">형식 보기</String>
-			<String ID="popup.batch_rename_tip.label.number_digit">/? - 자동 숫자 증가 (? = [1~9])</String>
-			<String ID="popup.batch_rename_tip.label.number_digit_with_zero_filled">/0? - 자동 숫자 증가 (? = [1~9])</String>
-			<String ID="popup.batch_rename_tip.label.original_filename">/N(?-?) - 원본 파일명에서 가져오기 (? = [1~9]))</String>
-			<String ID="popup.batch_rename_tip.label.full_filename">/* - 전체 이름</String>
-			<String ID="popup.batch_rename_tip.label.filename">/n - 파일명</String>
-			<String ID="popup.batch_rename_tip.label.extension">/e - 확장자</String>
-			<String ID="popup.batch_rename_tip.label.today_date">/D - 오늘 날짜</String>
-			<String ID="popup.batch_rename_tip.label.current_year">/y - 현재 년도</String>
-			<String ID="popup.batch_rename_tip.label.current_month">/m - 현재 월</String>
-			<String ID="popup.batch_rename_tip.label.current_day">/d - 현재 일</String>
-			<String ID="popup.batch_rename_tip.label.current_time">/T - 현재 시간</String>
-			<String ID="popup.batch_rename_tip.label.current_hour">/h - 현재 시</String>
-			<String ID="popup.batch_rename_tip.label.current_minute">/i - 현재 분</String>
-			<String ID="popup.batch_rename_tip.label.current_second">/s - 현재 초</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.date">/A - 파일 생성 날짜</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.year">/a - 파일 생성 년도</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.month">/b - 파일 생성 월</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.day">/c - 파일 생성 일</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.time">/F - 파일 생성 시간</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.am_pm">/f - 파일 생성 오전/오후</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.12-hour">/g - 파일 생성 12시</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.24-hour">/k - 파일 생성 24시</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.minute">/l - 파일 생성 분</String>
-			<String ID="popup.batch_rename_tip.label.file_created_time.second">/r - 파일 생성 초</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.date">/O - 파일 수정 날짜</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.year">/o - 파일 수정 년도</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.month">/p - 파일 수정 월</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.day">/q - 파일 수정 일</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.time">/J - 파일 수정 시간</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.am_pm">/j - 파일 수정 오전/오후</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.12-hour">/u - 파일 수정 12시</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.24-hour">/w - 파일 수정 24시</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.minute">/v - 파일 수정 분</String>
-			<String ID="popup.batch_rename_tip.label.file_modified_time.second">/z - 파일 수정 초</String>
+			<String ID="popup.batch_rename_tip.label.numbering">&lt;1&gt; - 자동 숫자 증가</String>
+			<String ID="popup.batch_rename_tip.label.original_filename">&lt;gn&gt; - 원본 파일명에서 가져오기</String>
+			<String ID="popup.batch_rename_tip.label.full_filename">&lt;*&gt; - 전체 파일명</String>
+			<String ID="popup.batch_rename_tip.label.filename">&lt;n&gt; - 파일명만</String>
+			<String ID="popup.batch_rename_tip.label.extension">&lt;e&gt; - 확장자만</String>
+			<String ID="popup.batch_rename_tip.label.current_time">&lt;time:yyyy&gt; - 현재 날짜/시간</String>
+			<String ID="popup.batch_rename_tip.label.file_created_time">&lt;ctime:yyyy&gt; - 파일 생성 날짜/시간</String>
+			<String ID="popup.batch_rename_tip.label.file_modified_time">&lt;mtime:yyyy&gt; - 파일 수정 날짜/시간</String>
+			<String ID="popup.batch_rename_tip.group.time_format">날짜/시간 형식</String>
+			<String ID="popup.batch_rename_tip.label.time_format.year">yyyy - 년도</String>
+			<String ID="popup.batch_rename_tip.label.time_format.month">MM - 월</String>
+			<String ID="popup.batch_rename_tip.label.time_format.day">dd - 일</String>
+			<String ID="popup.batch_rename_tip.label.time_format.am_pm">tt - 오전/오후</String>
+			<String ID="popup.batch_rename_tip.label.time_format.12-hour">hh - 12시</String>
+			<String ID="popup.batch_rename_tip.label.time_format.24-hour">HH - 24시</String>
+			<String ID="popup.batch_rename_tip.label.time_format.minute">mm - 분</String>
+			<String ID="popup.batch_rename_tip.label.time_format.second">ss - 초</String>
 
 			<!-- popup: batch rename edit -->
 			<String ID="popup.batch_rename_edit.title">직접 입력</String>
@@ -1014,19 +992,21 @@
 			<String ID="popup.batch_rename_edit.label.new_name">새로운 이름(&amp;N):</String>
 			<String ID="popup.batch_rename_edit.check.sync_scroll">수직 스크롤 동기화(&amp;S)</String>
 			<String ID="popup.batch_rename_edit.msg.not_matched_count">이전 이름과 새로운 이름의 개수가 일치하지 않습니다. 다시 구성해 주십시오.</String>
-			<String ID="popup.batch_rename_edit.msg.wrong_filename">새로운 이름이 잘못 구성되어져 있습니다. 다시 구성해 주십시오.&#13;&#10;&#13;&#10;참고:&#13;&#10;&#9;파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.batch_rename_edit.msg.invalid_filename">새로운 이름이 잘못 구성되어져 있습니다. 다시 구성해 주십시오.&#13;&#10;&#13;&#10;참고:&#13;&#10;&#9;파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 
 			<!-- popup: batch rename -->
 			<String ID="popup.batch_rename.title">일괄적 이름 바꾸기</String>
-			<String ID="popup.batch_rename.toolbar.initialize">처음 목록(Ctrl+U)</String>
+			<String ID="popup.batch_rename.toolbar.initialize">초기화(Ctrl+U)</String>
 			<String ID="popup.batch_rename.toolbar.undo">되돌리기(Alt+←)</String>
 			<String ID="popup.batch_rename.toolbar.redo">되살리기(Alt+→)</String>
 			<String ID="popup.batch_rename.toolbar.move_up">위로 이동(Ctrl+↑)</String>
 			<String ID="popup.batch_rename.toolbar.move_down">아래로 이동(Ctrl+↓)</String>
 			<String ID="popup.batch_rename.toolbar.move">해당 위치로 이동(Ctrl+G)</String>
-			<String ID="popup.batch_rename.toolbar.rename_on_result">결과 내에서 바꾸기(Ctrl+R)</String>
+			<String ID="popup.batch_rename.toolbar.rename_by_result">결과 내에서 바꾸기(Ctrl+R)</String>
 			<String ID="popup.batch_rename.toolbar.no_change_ext">확장자 변경 안함(Ctrl+E)</String>
-			<String ID="popup.batch_rename.toolbar.batch_rename_archive">일괄적 형식에 기록하기(Ctrl+W)</String>
+			<String ID="popup.batch_rename.toolbar.history_archive">일괄적 형식에 기록하기(Ctrl+W)</String>
+			<String ID="popup.batch_rename.toolbar.load">프리셋 읽어오기(Ctrl+O)</String>
+			<String ID="popup.batch_rename.toolbar.save">프리셋 저장하기(Ctrl+S)</String>
 			<String ID="popup.batch_rename.label.path">경로명(&amp;P):</String>
 			<String ID="popup.batch_rename.path.multiple">다양한 폴더</String>
 			<String ID="popup.batch_rename.tab.format">&amp;1: 형식</String>
@@ -1035,8 +1015,10 @@
 			<String ID="popup.batch_rename.tab.delete">&amp;4: 삭제</String>
 			<String ID="popup.batch_rename.tab.case">&amp;5: 대/소</String>
 			<String ID="popup.batch_rename.label.backup_prefix">중복시 원본 보관(&amp;Y):</String>
+			<String ID="popup.batch_rename.label.list">미리보기(&amp;V):</String>
 			<String ID="popup.batch_rename.backup_prefix">[원본] </String>
 			<String ID="popup.batch_rename.label.batch_format">일괄적 형식(&amp;F):</String>
+			<String ID="popup.batch_rename.list.column.no">No.</String>
 			<String ID="popup.batch_rename.list.column.old_name">이전 이름</String>
 			<String ID="popup.batch_rename.list.column.new_name">새로운 이름</String>
 			<String ID="popup.batch_rename.button.apply_batch_format">적용</String>
@@ -1052,11 +1034,14 @@
 			<String ID="popup.batch_rename.status.renaming">%1% / %2% 이름 변경 중...%3%%%</String>
 			<String ID="popup.batch_rename.msg.wrong_format">일괄적 포멧에 맞지 않는 부분이 있습니다.&#10;다시 입력해 주십시오.</String>
 			<String ID="popup.batch_rename.msg.input_backup_prefix">새로운 이름이 이미 존재하였을 때 백업 받을 이름을 입력하십시오.</String>
-			<String ID="popup.batch_rename.msg.wrong_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
+			<String ID="popup.batch_rename.msg.invalid_filename">파일 이름에 다음의 문자가 올 수 없습니다.&#10;&#10;&#9;&#92; / : * ? &quot; &lt; &gt; |</String>
 			<String ID="popup.batch_rename.msg.wrong_input">새로운 이름이 다음과 같은 요소들에 의해 잘못 구성되어져 있습니다.&#10;&#10;&#9;새로운 이름이 비어 있습니다.&#10;&#9;새로운 이름이 중복되어져 있습니다.&#10;&#10;새로운 이름을 다시 구성해 주십시오.</String>
+			<String ID="popup.batch_rename.msg.load_failed">인식 불가 등의 이유로 파일을 읽어드릴 수 없습니다.</String>
+			<String ID="popup.batch_rename.msg.save_failed">공간 부족, 쓰기 금지 등의 이유로 파일을 저장할 수 없습니다.</String>
+			<String ID="popup.batch_rename.file_dialog.filter.preset_files">프리셋 파일</String>
 			<String ID="popup.batch_rename.error.excess_max_length">길이 초과</String>
 			<String ID="popup.batch_rename.error.max_filename_legnth">최대 경로 길이</String>
-			<String ID="popup.batch_rename.error.wrong_format">잘못된 포멧</String>
+			<String ID="popup.batch_rename.error.invalid_filename">잘못된 포멧</String>
 			<String ID="popup.batch_rename.tab.format.label.format">형식(&amp;O):</String>
 			<String ID="popup.batch_rename.tab.format.label.start">시작(&amp;S):</String>
 			<String ID="popup.batch_rename.tab.format.label.length">자리수(&amp;L):</String>
@@ -1068,10 +1053,9 @@
 			<String ID="popup.batch_rename.tab.format.button.date">날짜</String>
 			<String ID="popup.batch_rename.tab.format.button.time">시간</String>
 			<String ID="popup.batch_rename.tab.format.button.format_tip">형식 보기(&amp;V)</String>
-			<String ID="popup.batch_rename.tab.format.button.apply">변경</String>
+			<String ID="popup.batch_rename.tab.format.button.apply">적용</String>
 			<String ID="popup.batch_rename.tab.format.tooltip.title">포멧 형식 보기</String>
-			<String ID="popup.batch_rename.tab.format.tooltip.contents">다음과 같은 포멧을 지원합니다.&#10;&#10;&#9;/? 자동 숫자 증가의 자리수(? = [1~9])&#10;&#9;/0? 자동 숫자 증가의 자리수(&#8216;0&#8217;으로 채움)(? = [1~9])&#10;&#9;/* - 전체 이름&#10;&#9;/n - 파일명&#10;&#9;/e - 확장자&#10;&#10;좀 더 자세한 설명은 &#8216;형식 보기&#8217;나 도움말을 참고하세요.</String>
-			<String ID="popup.batch_rename.tab.format.msg.wrong_number_digit">자리수는 1 ~ 9까지 입력할 수 있습니다. 다시 입력하여 주십시오.</String>
+			<String ID="popup.batch_rename.tab.format.tooltip.contents">다음과 같은 포멧을 지원합니다.&#10;&#10;&#9;&lt;1&gt; 자동 숫자 증가의 자리수&#10;&#9;&lt;*&gt; - 전체 파일명&#10;&#9;&lt;n&gt; - 파일명만&#10;&#9;&lt;e&gt; - 확장자만&#10;&#10;좀 더 자세한 설명은 &#8216;형식 보기&#8217;나 도움말을 참고하세요.</String>
 			<String ID="popup.batch_rename.tab.replace.label.old">찾을 문자열(&amp;S):</String>
 			<String ID="popup.batch_rename.tab.replace.label.new">바꿀 문자열(&amp;C):</String>
 			<String ID="popup.batch_rename.tab.replace.label.repeat">반복(&amp;A):</String>

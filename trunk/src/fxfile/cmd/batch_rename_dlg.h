@@ -36,13 +36,11 @@ public:
 
 public:
     void addPath(const xpr_tchar_t *aPath, xpr_bool_t aFolder);
-    void addPath(BatRenItem *aBatRenItem);
+    void addPath(BatchRename::Item *aBatchRenameItem);
     xpr_size_t getFileCount(void);
 
 protected:
     void setStatus(const xpr_tchar_t *aStatusText);
-    void setBatchFormatText(const xpr::tstring &aBatchFormat, xpr_sint_t aSel = -1);
-    void setBatchFormatText(xpr_sint_t aSel = -1);
     void enableWindow(xpr_bool_t aEnable);
 
     void editItem(xpr_sint_t aIndex = -1);
@@ -97,20 +95,23 @@ protected:
     afx_msg void OnWindowPosChanged(WINDOWPOS FAR* lpwndpos);
     virtual void OnCancel(void);
     afx_msg void OnItemActivate(NMHDR* pNMHDR, LRESULT* pResult);
-    afx_msg void OnBatchFormatApply(void);
     afx_msg void OnUpdateInit(CCmdUI *pCmdUI);
     afx_msg void OnUpdateBatchFormatArchive(CCmdUI *pCmdUI);
     afx_msg void OnUpdateNoChangeExt(CCmdUI *pCmdUI);
     afx_msg void OnUpdateResult(CCmdUI *pCmdUI);
+    afx_msg void OnUpdateLoad(CCmdUI *pCmdUI);
+    afx_msg void OnUpdateSave(CCmdUI *pCmdUI);
     afx_msg void OnUpdateUndo(CCmdUI *pCmdUI);
     afx_msg void OnUpdateRedo(CCmdUI *pCmdUI);
     afx_msg void OnUpdateItemUp(CCmdUI *pCmdUI);
     afx_msg void OnUpdateItemDown(CCmdUI *pCmdUI);
     afx_msg void OnUpdateItemMove(CCmdUI *pCmdUI);
-    afx_msg void OnBatchFormatArchive(void);
+    afx_msg void OnHistoryArchive(void);
     afx_msg void OnNoChangeExt(void);
     afx_msg void OnResult(void);
     afx_msg void OnEdit(void);
+    afx_msg void OnLoad(void);
+    afx_msg void OnSave(void);
     afx_msg void OnUndo(void);
     afx_msg void OnRedo(void);
     afx_msg void OnItemUp(void);

@@ -167,7 +167,7 @@ void InputDlg::OnOK(void)
     {
         if (VerifyFileName(mText) == XPR_FALSE)
         {
-            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.input.msg.wrong_filename"));
+            const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.input.msg.invalid_filename"));
             MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
             return;
         }

@@ -1362,7 +1362,7 @@ xpr_bool_t FilePath::getFileName(xpr::tstring &aFileName, xpr_bool_t aWithExt) c
     if (XPR_IS_FALSE(aWithExt))
     {
         xpr_size_t sFileExtSeparator = aFileName.rfind(XPR_FILE_EXT_SEPARATOR);
-        if (sFileExtSeparator == xpr::tstring::npos)
+        if (sFileExtSeparator != xpr::tstring::npos)
         {
             aFileName.erase(sFileExtSeparator);
         }

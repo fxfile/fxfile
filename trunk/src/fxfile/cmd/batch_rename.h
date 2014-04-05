@@ -12,32 +12,68 @@
 #pragma once
 
 #include "multi_rename.h"
+#include "format.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-#define MAX_FORMAT       1024
-#define MAX_BATCH_FORMAT 4096
-
-typedef struct BatRenItem
-{
-    xpr::tstring mDir;
-    xpr::tstring mOld;
-    xpr::tstring mNew;
-    xpr_bool_t   mFolder;
-} BatRenItem;
-
-typedef std::deque<BatRenItem *> BatRenDeque;
+#define FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH          (1024)
+#define FXFILE_BATCH_RENAME_FORMAT_DEF                 XPR_STRING_LITERAL("<n>")
+#define FXFILE_BATCH_RENAME_FORMAT_NUMBER_MIN          (0)
+#define FXFILE_BATCH_RENAME_FORMAT_NUMBER_DEF          (1)
+#define FXFILE_BATCH_RENAME_FORMAT_NUMBER_MAX          (ksint32max)
+#define FXFILE_BATCH_RENAME_FORMAT_COUNT_MIN           (1)
+#define FXFILE_BATCH_RENAME_FORMAT_COUNT_DEF           (1)
+#define FXFILE_BATCH_RENAME_FORMAT_COUNT_MAX           (kuint32max)
+#define FXFILE_BATCH_RENAME_FORMAT_INCREASE_MIN        (1)
+#define FXFILE_BATCH_RENAME_FORMAT_INCREASE_DEF        (1)
+#define FXFILE_BATCH_RENAME_FORMAT_INCREASE_MAX        (kuint32max)
+#define FXFILE_BATCH_RENAME_FORMAT_DIGIT_MIN           (1)
+#define FXFILE_BATCH_RENAME_FORMAT_DIGIT_DEF           (1)
+#define FXFILE_BATCH_RENAME_FORMAT_DIGIT_MAX           (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_REPLACE_OLD_MAX_LENGTH     (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_REPLACE_NEW_MAX_LENGTH     (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_REPLACE_REPEAT_MIN         (0)
+#define FXFILE_BATCH_RENAME_REPLACE_REPEAT_DEF         (1)
+#define FXFILE_BATCH_RENAME_REPLACE_REPEAT_MAX         (ksint32max)
+#define FXFILE_BATCH_RENAME_INSERT_MAX_LENGTH          (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_INSERT_POS_MIN             (0)
+#define FXFILE_BATCH_RENAME_INSERT_POS_DEF             (0)
+#define FXFILE_BATCH_RENAME_INSERT_POS_MAX             (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_DELETE_POS_MIN             (0)
+#define FXFILE_BATCH_RENAME_DELETE_POS_DEF             (0)
+#define FXFILE_BATCH_RENAME_DELETE_POS_MAX             (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_DELETE_LENGTH_MIN          (1)
+#define FXFILE_BATCH_RENAME_DELETE_LENGTH_DEF          (1)
+#define FXFILE_BATCH_RENAME_DELETE_LENGTH_MAX          (XPR_MAX_PATH)
+#define FXFILE_BATCH_RENAME_CASE_SKIP_CHARS_MAX_LENGTH (XPR_MAX_PATH)
 
 class BatchRename
 {
 public:
+    typedef struct Item
+    {
+        xpr::tstring mDir;
+        xpr::tstring mOld;
+        xpr::tstring mNew;
+        xpr_bool_t   mFolder;
+    } Item;
+
+    typedef std::deque<Item *> ItemDeque;
+
+    enum Result
+    {
+        ResultSuccess,
+        ResultError,
+        ResultWrongFormat,
+    };
+
     enum
     {
-        FlagsNoChangeExt        = 0x00000001,
-        FlagsResultRename       = 0x00000002,
-        FlagsBatchFormatArchive = 0x00000004,
+        FlagNoChangeExt    = 0x00000001,
+        FlagResultRename   = 0x00000002,
+        FlagHistoryArchive = 0x00000004,
     };
 
 public:
@@ -47,101 +83,105 @@ public:
 public:
     void setOwner(HWND aHwnd, xpr_uint_t aMsg);
     void setBackupName(const xpr_tchar_t *aBackup);
-    void setString(const xpr_tchar_t *aExcessMaxLengthString, const xpr_tchar_t *aMaxPathLengthString, const xpr_tchar_t *aWrongFormatString);
+    static void setString(const xpr_tchar_t *aExcessMaxLengthString,
+                          const xpr_tchar_t *aMaxPathLengthString,
+                          const xpr_tchar_t *aInvalidFileNameString);
+    xpr_bool_t isFlag(xpr_uint_t aFlag) const;
+    xpr_uint_t getFlags(void) const;
+    void setFlags(xpr_uint_t aFlags);
 
+public:
     void addItem(const xpr_tchar_t *aDir, const xpr_tchar_t *aOldName, const xpr_tchar_t *aNewName, xpr_bool_t aFolder);
-    void addItem(BatRenItem *aBatRenItem);
-    xpr_size_t getCount(void);
-    BatRenItem *getItem(xpr_size_t aIndex);
+    void addItem(Item *aItem);
+    xpr_size_t getCount(void) const;
+    const Item *getItem(xpr_size_t aIndex) const;
+    Item *getItem(xpr_size_t aIndex);
     xpr_bool_t setItemName(xpr_size_t aIndex, const xpr_tchar_t *aName);
     xpr_bool_t moveItem(xpr_size_t aIndex1, xpr_size_t aIndex2);
+    void clear(void);
+    void reset(void);
 
-    xpr_bool_t renameFormat(
-        const xpr_tchar_t *aFormat,
-        xpr_uint_t         aNumber,
-        xpr_uint_t         aIncrease,
-        xpr_bool_t         aNotReplaceExt,
-        xpr_bool_t         aByResult);
-    xpr_bool_t renameReplace(
-        xpr_sint_t         aRepeat,
-        xpr_bool_t         aCase,
-        const xpr_tchar_t *aOld,
-        const xpr_tchar_t *aNew,
-        xpr_bool_t         aNotReplaceExt,
-        xpr_bool_t         aByResult);
-    xpr_bool_t renameInsert(
-        xpr_sint_t         aType,
-        xpr_sint_t         aPos,
-        const xpr_tchar_t *aInsert,
-        xpr_bool_t         aNotReplaceExt,
-        xpr_bool_t         aByResult);
-    void renameDelete(
-        xpr_sint_t         aType,
-        xpr_size_t         aPos,
-        xpr_size_t         aLength,
-        xpr_bool_t         aNotReplaceExt,
-        xpr_bool_t         aByResult);
-    void renameCase(
-        xpr_sint_t         aType,
-        xpr_sint_t         aCase,
-        const xpr_tchar_t *aSkipSpecChar,
-        xpr_bool_t         aByResult);
+public:
+    Result     renameFormat(const xpr_tchar_t *aFormat,
+                            xpr_uint_t         aNumber,
+                            xpr_uint_t         aIncrease);
 
-    xpr_bool_t addBatchFormat(const xpr_tchar_t *aBatchFormat);
-    xpr_bool_t setBatchFormat(const xpr_tchar_t *aBatchFormat, xpr_bool_t aHistory = XPR_TRUE);
-    xpr_bool_t setBatchFormat(const xpr::tstring &aBatchFormat, xpr_bool_t aHistory = XPR_TRUE);
-    const xpr_tchar_t *getBatchFormat(void);
-    void getBatchFormat(xpr::tstring &aBatchFormat);
-    xpr_bool_t renameBatchFormat(const xpr_tchar_t *aFormat);
-    void getBatchFormatFlags(xpr_uint_t aFlags, xpr::tstring &aBatchFormat);
-    void setBatchFormatFlags(xpr_uint_t aFlags = 0xffffffff);
-    void clearBatchFormat(void);
+    xpr_bool_t renameReplace(const xpr_tchar_t *aOld,
+                             const xpr_tchar_t *aNew,
+                             xpr_sint_t         aRepeat,
+                             xpr_bool_t         aCaseSensitivity);
 
-    xpr_bool_t isFlag(xpr_uint_t aFlag);
-    xpr_uint_t getFlags(void);
-    void setFlags(xpr_uint_t aFlags, xpr_bool_t aWriteBatchFormat = XPR_TRUE);
+    xpr_bool_t renameInsert(Format::InsertPosType  aPosType,
+                            xpr_sint_t             aPos,
+                            const xpr_tchar_t     *aInsert);
 
-    void init(void);
+    xpr_bool_t renameDelete(Format::DeletePosType aPosType,
+                            xpr_sint_t            aPos,
+                            xpr_sint_t            aLength);
 
-    xpr_size_t getBackwardCount(void);
-    xpr_size_t getForwardCount(void);
-    xpr_bool_t goBackward(const xpr_tchar_t *aBatchFormat, xpr::tstring &aNewBatchFormat);
-    xpr_bool_t goForward(const xpr_tchar_t *aBatchFormat, xpr::tstring &aNewBatchFormat);
+    xpr_bool_t renameCase(Format::CaseTargetType  aTargetType,
+                          Format::CaseType        aCaseType,
+                          const xpr_tchar_t      *aSkipChars);
+
+public:
+    xpr_size_t getBackwardCount(void) const;
+    xpr_size_t getForwardCount(void) const;
+    void goBackward(void);
+    void goForward(void);
+    void clearHistory(void);
     void clearBackward(void);
     void clearForward(void);
+
+public:
+    xpr_bool_t load(const xpr::tstring &aFilePath);
+    xpr_bool_t save(const xpr::tstring &aFilePath) const;
 
 public:
     xpr_bool_t start(void);
     void stop(void);
 
-    MultiRename::Status getStatus(xpr_size_t *aPreparedCount = XPR_NULL, xpr_size_t *aValidatedCount = XPR_NULL, xpr_size_t *aRenamedCount = XPR_NULL);
-    MultiRename::Result getItemResult(xpr_size_t aIndex);
-    xpr_sint_t getInvalidItem(void);
+    MultiRename::Status getStatus(xpr_size_t *aPreparedCount = XPR_NULL, xpr_size_t *aValidatedCount = XPR_NULL, xpr_size_t *aRenamedCount = XPR_NULL) const;
+    MultiRename::Result getItemResult(xpr_size_t aIndex) const;
+    xpr_sint_t getInvalidItem(void) const;
 
-protected:
-    void beginExtProc(xpr_bool_t aNotReplaceExt, xpr::tstring &aPath, xpr::tstring &aExt, xpr_bool_t aFolder);
-    void endExtProc(xpr::tstring &aPath, const xpr::tstring &aExt);
+private:
+    struct History
+    {
+    public:
+        History(FileNameFormat *aFileNameFormat)
+            : mFileNameFormat(aFileNameFormat)
+        {
+        }
 
-protected:
-    HWND       mHwnd;
-    xpr_uint_t mMsg;
+        ~History(void)
+        {
+            XPR_SAFE_DELETE(mFileNameFormat);
+        }
 
-    xpr::tstring mExcessMaxLengthString;
-    xpr::tstring mMaxPathLengthString;
-    xpr::tstring mWrongFormatString;
+    public:
+        FileNameFormat *mFileNameFormat;
+    };
 
+    typedef std::deque<History *> HistoryDeque;
+
+    xpr_bool_t rename(const FileNameFormat &aFileNameFormat, xpr_bool_t aAddHistory = XPR_TRUE);
+    xpr_bool_t rename(const HistoryDeque &aHistoryDeque);
+
+    void getFileNameFormatFromHistory(FileNameFormat &aFileNameFormat, const HistoryDeque &aHistoryDeque) const;
+
+    void addHistory(const FileNameFormat &aFileNameFormat);
+
+private:
+    HWND         mHwnd;
+    xpr_uint_t   mMsg;
+    xpr_uint_t   mFlags;
+    xpr::tstring mBackup;
+
+    ItemDeque    mItemDeque;
     MultiRename *mMultiRename;
 
-    BatRenDeque mBatRenDeque;
-
-    xpr::tstring mBackup;
-    xpr_uint_t mFlags;
-    xpr_bool_t mInitBatchFormat;
-    xpr::tstring mBatchFormat;
-
-    typedef std::deque<xpr::tstring> HistoryDeque;
-    HistoryDeque mBackwardDeque;
-    HistoryDeque mForwardDeque;
+    HistoryDeque mBackwardHistory;
+    HistoryDeque mForwardHistory;
 };
 } // namespace cmd
 } // namespace fxfile

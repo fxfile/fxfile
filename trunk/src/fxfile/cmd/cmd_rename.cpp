@@ -113,14 +113,14 @@ static void doBatchRename(FolderCtrl &aFolderCtrl, xpr_bool_t aWithFile, xpr_boo
         xpr_size_t sOffset = sPath.rfind(XPR_STRING_LITERAL('\\'));
         if (sOffset != xpr::tstring::npos)
         {
-            BatRenItem *sBatRenItem = new BatRenItem;
-            sBatRenItem->mDir    = sPath.substr(0, sOffset);
-            sBatRenItem->mOld    = sPath.substr(sOffset + 1);
-            sBatRenItem->mNew    = sBatRenItem->mOld;
-            sBatRenItem->mFolder = sFolder;
+            BatchRename::Item *sBatchRenameItem = new BatchRename::Item;
+            sBatchRenameItem->mDir    = sPath.substr(0, sOffset);
+            sBatchRenameItem->mOld    = sPath.substr(sOffset + 1);
+            sBatchRenameItem->mNew    = sBatchRenameItem->mOld;
+            sBatchRenameItem->mFolder = sFolder;
 
             BatchRenameDlg sDlg;
-            sDlg.addPath(sBatRenItem);
+            sDlg.addPath(sBatchRenameItem);
             xpr_sintptr_t sId = sDlg.DoModal();
             if (sId == IDOK)
             {
@@ -166,7 +166,7 @@ static void doBatchRename(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aWithFile, xpr
     {
         xpr::tstring sPath;
         xpr_bool_t sFolder;
-        BatRenItem *sBatRenItem;
+        BatchRename::Item *sBatchRenameItem;
         BatchRenameDlg sDlg;
 
         FileSysItemDeque::const_iterator sIterator = aFileSysItemList->begin();
@@ -181,13 +181,13 @@ static void doBatchRename(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aWithFile, xpr
             if (sOffset == xpr::tstring::npos)
                 return;
 
-            sBatRenItem = new BatRenItem;
-            sBatRenItem->mDir    = sPath.substr(0, sOffset);
-            sBatRenItem->mOld    = sPath.substr(sOffset + 1);
-            sBatRenItem->mNew    = sBatRenItem->mOld;
-            sBatRenItem->mFolder = sFolder;
+            sBatchRenameItem = new BatchRename::Item;
+            sBatchRenameItem->mDir    = sPath.substr(0, sOffset);
+            sBatchRenameItem->mOld    = sPath.substr(sOffset + 1);
+            sBatchRenameItem->mNew    = sBatchRenameItem->mOld;
+            sBatchRenameItem->mFolder = sFolder;
 
-            sDlg.addPath(sBatRenItem);
+            sDlg.addPath(sBatchRenameItem);
         }
 
         clear(*aFileSysItemList);
@@ -254,7 +254,7 @@ static void doBatchRename(SearchResultCtrl &mSearchResultCtrl, FileSysItemDeque 
 {
     xpr::tstring sPath;
     xpr_bool_t sFolder;
-    BatRenItem *sBatRenItem;
+    BatchRename::Item *sBatchRenameItem;
     BatchRenameDlg sDlg;
 
     FileSysItemDeque::const_iterator sIterator = aFileSysItemList.begin();
@@ -269,13 +269,13 @@ static void doBatchRename(SearchResultCtrl &mSearchResultCtrl, FileSysItemDeque 
         if (sOffset == xpr::tstring::npos)
             return;
 
-        sBatRenItem = new BatRenItem;
-        sBatRenItem->mDir    = sPath.substr(0, sOffset);
-        sBatRenItem->mOld    = sPath.substr(sOffset + 1);
-        sBatRenItem->mNew    = sBatRenItem->mOld;
-        sBatRenItem->mFolder = sFolder;
+        sBatchRenameItem = new BatchRename::Item;
+        sBatchRenameItem->mDir    = sPath.substr(0, sOffset);
+        sBatchRenameItem->mOld    = sPath.substr(sOffset + 1);
+        sBatchRenameItem->mNew    = sBatchRenameItem->mOld;
+        sBatchRenameItem->mFolder = sFolder;
 
-        sDlg.addPath(sBatRenItem);
+        sDlg.addPath(sBatchRenameItem);
     }
 
     xpr_sintptr_t sId = sDlg.DoModal();

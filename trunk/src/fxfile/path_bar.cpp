@@ -64,6 +64,8 @@ xpr_bool_t PathBar::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
     DWORD sStyle = 0;
     sStyle |= WS_VISIBLE;
     sStyle |= WS_CHILD;
+    sStyle |= WS_CLIPSIBLINGS;
+    sStyle |= WS_CLIPCHILDREN;
 
     WNDCLASS sWndClass = {0};
     HINSTANCE sInstance = AfxGetInstanceHandle();
@@ -631,5 +633,20 @@ xpr_sint_t PathBar::getHeight(void)
     sClientDC.SelectObject(sOldFont);
 
     return sPathRect.Height() + 6;
+}
+
+LRESULT PathBar::WindowProc(xpr_uint_t aMsg, WPARAM aWParam, LPARAM aLParam)
+{
+    switch (aMsg)
+    {
+    case WM_LBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_XBUTTONDOWN:
+        SendMessage(WM_ACTIVATE, WA_CLICKACTIVE); // activate on mouse capture
+        break;
+    }
+
+    return CWnd::WindowProc(aMsg, aWParam, aLParam);
 }
 } // namespace fxfile

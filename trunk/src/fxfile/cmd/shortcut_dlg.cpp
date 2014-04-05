@@ -106,7 +106,7 @@ void ShortcutDlg::OnOK(void)
 
     if (VerifyFileName(sName) == XPR_FALSE)
     {
-        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.wrong_filename"));
+        const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.create_shortcut.msg.invalid_filename"));
         MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
         return;
     }

@@ -80,6 +80,7 @@ protected:
     afx_msg void OnContextMenu(CWnd *aWnd, CPoint aPoint);
     afx_msg void OnDestroy(void);
     afx_msg void OnCaptureChanged(CWnd *aWnd);
+    virtual LRESULT WindowProc(xpr_uint_t aMessage, WPARAM aWParam, LPARAM aLParam);
     DECLARE_MESSAGE_MAP()
 };
 } // namespace fxfile

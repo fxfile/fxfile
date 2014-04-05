@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_RENAME_EDIT_DLG_H__
-#define __FXFILE_RENAME_EDIT_DLG_H__ 1
+#ifndef __FXFILE_BATCH_RENAME_EDIT_DLG_H__
+#define __FXFILE_BATCH_RENAME_EDIT_DLG_H__ 1
 #pragma once
 
 #include "gui/ResizingDialog.h"
@@ -20,13 +20,13 @@ class DlgState;
 
 namespace cmd
 {
-class RenameEditDlg : public CResizingDialog
+class BatchRenameEditDlg : public CResizingDialog
 {
     typedef CResizingDialog super;
 
 public:
-    RenameEditDlg(void);
-    virtual ~RenameEditDlg(void);
+    BatchRenameEditDlg(void);
+    virtual ~BatchRenameEditDlg(void);
 
 public:
     void add(const xpr_tchar_t *aOld, const xpr_tchar_t *aNew);
@@ -72,4 +72,4 @@ protected:
 } // namespace cmd
 } // namespace fxfile
 
-#endif // __FXFILE_RENAME_EDIT_DLG_H__
+#endif // __FXFILE_BATCH_RENAME_EDIT_DLG_H__

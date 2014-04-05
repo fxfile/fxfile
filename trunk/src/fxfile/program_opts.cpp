@@ -59,7 +59,7 @@ void ProgramOpts::parse(void)
 
     while (true)
     {
-        sChar = getopt_long(__argc, __targv, _T("-w:1:2:3:4:5:6:shv"), sLongOptions, &sOptionIndex);
+        sChar = getopt_long(__argc, __targv, XPR_STRING_LITERAL("-w:1:2:3:4:5:6:shv"), sLongOptions, &sOptionIndex);
 
         if (sChar == -1)
         {

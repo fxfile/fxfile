@@ -45,18 +45,14 @@ LPITEMIDLIST GetFullPidl(const xpr::tstring &aFullPath);
 
 void         GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath);
 void         GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath);
-void         GetDispFullPath(LPCITEMIDLIST aFullPidl, CString &aPath);
-CString      GetDispFullPath(LPCITEMIDLIST aFullPidl);
 xpr_bool_t   GetDispFullPidl(const xpr_tchar_t *aFullPath, LPITEMIDLIST *aFullPidl);
 LPITEMIDLIST GetDispFullPidl(const xpr_tchar_t *aFullPath);
 
 //
 // name
 //
-xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, CString &aFriendlyName);
 xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aFriendlyName);
 xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr_tchar_t *aFriendlyName);
-xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, CString &aFriendlyName);
 xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aFriendlyName);
 xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aFriendlyName);
 void       PathToNormal(xpr_tchar_t *aPath);
@@ -67,7 +63,7 @@ void       PathToNormal(const xpr_tchar_t *aPath, xpr_tchar_t *aNormal);
 //
 xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, xpr_tchar_t *aLastWriteDateTime);
 xpr_bool_t GetFileTime(const FILETIME &aFileTime, xpr_tchar_t *aFileTimeText);
-xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aModifiedFileTime);
+xpr_bool_t GetFileTime(const xpr_tchar_t *aPath, FILETIME *aCreationFileTime, FILETIME *aModifiedFileTime, FILETIME *aLastAccessFileTime);
 xpr_bool_t SetFileTime(const xpr_tchar_t *aPath,
                        FILETIME          *aCreatedFileTime = XPR_NULL,
                        FILETIME          *aLastAccessFileTime = XPR_NULL,
