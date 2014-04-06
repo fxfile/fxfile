@@ -18,6 +18,7 @@
 #include "format_delete.h"
 #include "format_case.h"
 #include "format_ext_remove.h"
+#include "format_clear.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -202,6 +203,8 @@ BatchRename::Result BatchRename::renameFormat(const xpr_tchar_t *aFormat,
     {
         sFormatSequence->add(new FormatExtRemove);
     }
+
+    sFormatSequence->add(new FormatClear);
 
     if (sShortFormatParser.parse(aFormat, *sFormatSequence) == XPR_FALSE)
     {

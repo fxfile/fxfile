@@ -216,7 +216,7 @@ xpr_bool_t FormatNowTime::parseXml(const base::XmlReader &aXmlReader, base::XmlR
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatNowTime::write(base::XmlWriter &aXmlWriter) const
@@ -301,7 +301,7 @@ xpr_bool_t FormatCTime::parseXml(const base::XmlReader &aXmlReader, base::XmlRea
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatCTime::write(base::XmlWriter &aXmlWriter) const
@@ -386,7 +386,7 @@ xpr_bool_t FormatMTime::parseXml(const base::XmlReader &aXmlReader, base::XmlRea
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatMTime::write(base::XmlWriter &aXmlWriter) const
