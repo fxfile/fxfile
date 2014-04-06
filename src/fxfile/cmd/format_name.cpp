@@ -161,7 +161,7 @@ xpr_bool_t FormatBaseFileName::parseXml(const base::XmlReader &aXmlReader, base:
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatBaseFileName::write(base::XmlWriter &aXmlWriter) const
@@ -247,7 +247,7 @@ xpr_bool_t FormatFileExt::parseXml(const base::XmlReader &aXmlReader, base::XmlR
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatFileExt::write(base::XmlWriter &aXmlWriter) const
@@ -328,7 +328,7 @@ xpr_bool_t FormatFileName::parseXml(const base::XmlReader &aXmlReader, base::Xml
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatFileName::write(base::XmlWriter &aXmlWriter) const
@@ -414,7 +414,7 @@ xpr_bool_t FormatOrgBaseFileName::parseXml(const base::XmlReader &aXmlReader, ba
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatOrgBaseFileName::write(base::XmlWriter &aXmlWriter) const
@@ -500,7 +500,7 @@ xpr_bool_t FormatOrgFileExt::parseXml(const base::XmlReader &aXmlReader, base::X
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatOrgFileExt::write(base::XmlWriter &aXmlWriter) const
@@ -581,7 +581,7 @@ xpr_bool_t FormatOrgFileName::parseXml(const base::XmlReader &aXmlReader, base::
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    return XPR_TRUE;
+    return super::parseXml(aXmlReader, aElement);
 }
 
 xpr_bool_t FormatOrgFileName::write(base::XmlWriter &aXmlWriter) const

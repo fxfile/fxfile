@@ -110,14 +110,7 @@ xpr_bool_t ShortFormatParser::parse(const xpr::tstring &aFormat, FormatSequence 
         aFormatSequence.add(sFormat);
     }
 
-    if (XPR_IS_TRUE(sSuccess))
-    {
-        if (aFormatSequence.isEmpty() == XPR_FALSE)
-        {
-            aFormatSequence.addFront(new FormatClear);
-        }
-    }
-    else
+    if (XPR_IS_FALSE(sSuccess))
     {
         aFormatSequence.clear();
     }

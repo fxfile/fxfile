@@ -18,6 +18,7 @@
 #include "format_delete.h"
 #include "format_case.h"
 #include "format_ext_remove.h"
+#include "format_clear.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -56,6 +57,7 @@ FormatFactory::FormatFactory(void)
     addXmlParseFuncTable<FormatDelete         >();
     addXmlParseFuncTable<FormatCase           >();
     addXmlParseFuncTable<FormatExtRemove      >();
+    addXmlParseFuncTable<FormatClear          >();
 }
 
 FormatFactory::~FormatFactory(void)
