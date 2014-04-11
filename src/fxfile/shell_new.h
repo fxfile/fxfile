@@ -35,11 +35,11 @@ public:
     typedef struct Item
     {
         Type         mType;
-        xpr::tstring mExt;
+        xpr::string  mExt;
         xpr_sint_t   mIconIndex;
-        xpr::tstring mFileType;
-        xpr::tstring mRegKey;
-        xpr::tstring mRegValue;
+        xpr::string  mFileType;
+        xpr::string  mRegKey;
+        xpr::string  mRegValue;
         DWORD        mRegValueType;
     } Item;
 
@@ -55,9 +55,9 @@ public:
     xpr_bool_t doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tchar_t *aPath);
 
 protected:
-    xpr_uint_t   mBaseId;
-    xpr::tstring mPrefix;
-    xpr::tstring mSuffix;
+    xpr_uint_t  mBaseId;
+    xpr::string mPrefix;
+    xpr::string mSuffix;
 
     typedef std::map<xpr_uint_t, Item *> ShellNewMap;
     typedef std::deque<Item *> ShellNewDeque;

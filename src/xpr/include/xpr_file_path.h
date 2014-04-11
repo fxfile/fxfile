@@ -9,7 +9,7 @@
 #pragma once
 
 #include "xpr_config.h"
-#include "xpr_tstring.h"
+#include "xpr_string.h"
 
 #if defined(XPR_CFG_STL_TR1)
 #include <functional>
@@ -31,7 +31,7 @@ public:
 public:
     FilePath(void);
     FilePath(const xpr_tchar_t *aFilePath);
-    FilePath(const xpr::tstring &aFilePath);
+    FilePath(const xpr::string &aFilePath);
     FilePath(const FilePath &aFilePath);
     virtual ~FilePath(void);
 
@@ -47,38 +47,38 @@ public:
     // modifier
     FilePath& operator= (const xpr_tchar_t aFilePath);
     FilePath& operator= (const xpr_tchar_t *aFilePath);
-    FilePath& operator= (const xpr::tstring &aFilePath);
+    FilePath& operator= (const xpr::string &aFilePath);
     FilePath& operator= (const FilePath &aFilePath);
 
     FilePath& operator+=(const xpr_tchar_t aFilePath);
     FilePath& operator+=(const xpr_tchar_t *aFilePath);
-    FilePath& operator+=(const xpr::tstring &aFilePath);
+    FilePath& operator+=(const xpr::string &aFilePath);
     FilePath& operator+=(const FilePath &aFilePath);
 
     void assign(const xpr_tchar_t aFilePath);
     void assign(const xpr_tchar_t *aFilePath);
-    void assign(const xpr::tstring &aFilePath);
+    void assign(const xpr::string &aFilePath);
     void assign(const FilePath &aFilePath);
 
     void append(const xpr_tchar_t aFilePath);
     void append(const xpr_tchar_t *aFilePath);
-    void append(const xpr::tstring &aFilePath);
+    void append(const xpr::string &aFilePath);
     void append(const FilePath &aFilePath);
 
     void setDir(const xpr_tchar_t *aDir);
-    void setDir(const xpr::tstring &aDir);
+    void setDir(const xpr::string &aDir);
 
     void setRootDir(const xpr_tchar_t *aRootDir);
-    void setRootDir(const xpr::tstring &aRootDir);
+    void setRootDir(const xpr::string &aRootDir);
 
     void setParentDir(const xpr_tchar_t *aParentDir);
-    void setParentDir(const xpr::tstring &aParentDir);
+    void setParentDir(const xpr::string &aParentDir);
 
     xpr_bool_t setFileName(const xpr_tchar_t *aFileName, xpr_bool_t aWithExt = XPR_TRUE);
-    xpr_bool_t setFileName(const xpr::tstring &aFileName, xpr_bool_t aWithExt = XPR_TRUE);
+    xpr_bool_t setFileName(const xpr::string &aFileName, xpr_bool_t aWithExt = XPR_TRUE);
 
     xpr_bool_t setExt(const xpr_tchar_t *aExt);
-    xpr_bool_t setExt(const xpr::tstring &aExt);
+    xpr_bool_t setExt(const xpr::string &aExt);
 
     void swap(FilePath &aFilePath);
 
@@ -89,42 +89,42 @@ public:
 
 public:
     // operations
-    const xpr::tstring &getPath(void) const;
+    const xpr::string &getPath(void) const;
     xpr_bool_t getPath(xpr_tchar_t *aFilePath, xpr_size_t aMaxLen) const;
-    void getPath(xpr::tstring &aFilePath) const;
+    void getPath(xpr::string &aFilePath) const;
 
     xpr_size_t getPathType(void) const;
     xpr_bool_t isPathType(xpr_size_t aPathType) const;
 
     xpr_bool_t getScheme(xpr_tchar_t *aScheme, xpr_size_t aMaxLen) const;
-    xpr_bool_t getScheme(xpr::tstring &aScheme) const;
+    xpr_bool_t getScheme(xpr::string &aScheme) const;
     xpr_bool_t hasScheme(void) const;
 
     xpr_bool_t getRootDir(xpr_tchar_t *aRootDir, xpr_size_t aMaxLen) const;
-    xpr_bool_t getRootDir(xpr::tstring &aRootDir) const;
+    xpr_bool_t getRootDir(xpr::string &aRootDir) const;
     xpr_bool_t getRootDir(xpr::FilePath &aFilePath) const;
     xpr_bool_t isRootDir(void) const;
 
     xpr_bool_t getParentDir(xpr_tchar_t *aParentDir, xpr_size_t aMaxLen) const;
-    xpr_bool_t getParentDir(xpr::tstring &aParentDir) const;
+    xpr_bool_t getParentDir(xpr::string &aParentDir) const;
     xpr_bool_t getParentDir(xpr::FilePath &aFilePath) const;
 
     xpr_bool_t getFileName(xpr_tchar_t *aFileName, xpr_size_t aMaxLen, xpr_bool_t aWithExt = XPR_TRUE) const;
-    xpr_bool_t getFileName(xpr::tstring &aFileName, xpr_bool_t aWithExt = XPR_TRUE) const;
+    xpr_bool_t getFileName(xpr::string &aFileName, xpr_bool_t aWithExt = XPR_TRUE) const;
     xpr_bool_t getFileName(xpr::FilePath &aFilePath, xpr_bool_t aWithExt = XPR_TRUE) const;
 
     xpr_bool_t getExt(xpr_tchar_t *aExt, xpr_size_t aMaxLen) const;
-    xpr_bool_t getExt(xpr::tstring &aExt) const;
+    xpr_bool_t getExt(xpr::string &aExt) const;
     xpr_bool_t equalExt(const xpr_tchar_t *aExt) const;
-    xpr_bool_t equalExt(xpr::tstring &aExt) const;
+    xpr_bool_t equalExt(xpr::string &aExt) const;
     xpr_bool_t hasExt(void) const;
 
     xpr_sint_t compare(const xpr_tchar_t *aFilePath) const;
-    xpr_sint_t compare(const xpr::tstring &aFilePath) const;
+    xpr_sint_t compare(const xpr::string &aFilePath) const;
     xpr_sint_t compare(const FilePath &aFilePath) const;
 
     xpr_sint_t compareCase(const xpr_tchar_t *aFilePath, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
-    xpr_sint_t compareCase(const xpr::tstring &aFilePath, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
+    xpr_sint_t compareCase(const xpr::string &aFilePath, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
     xpr_sint_t compareCase(const FilePath &aFilePath, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
 
     xpr_bool_t isAbsolute(void) const;
@@ -132,11 +132,11 @@ public:
     xpr_bool_t isLong(void) const;
 
     xpr_bool_t toUri(xpr_tchar_t *aUri, xpr_size_t aMaxLen) const;
-    xpr_bool_t toUri(xpr::tstring &aUri) const;
+    xpr_bool_t toUri(xpr::string &aUri) const;
     xpr_bool_t toUri(FilePath &aFilePath) const;
 
     static xpr_bool_t getInvalidChars(xpr_tchar_t *aInvalidChars, xpr_size_t aMaxLen);
-    static void getInvalidChars(xpr::tstring &aInvalidChars);
+    static void getInvalidChars(xpr::string &aInvalidChars);
 
     static xpr_tchar_t getFileSeparator(void);
     static xpr_tchar_t getPathSeparator(void);
@@ -150,7 +150,7 @@ protected:
 
     void removeLastCharSeparator(void);
 
-    void getLastName(xpr::tstring &aLastName) const;
+    void getLastName(xpr::string &aLastName) const;
 
     xpr_sint_t compareCase(const xpr_tchar_t *aFilePath, xpr_size_t aLength, xpr_bool_t aCaseSensitivity) const;
 
@@ -159,11 +159,11 @@ protected:
     xpr_size_t getSeparatorCount(void) const;
 
 protected:
-    xpr::tstring mFilePath;
-    xpr_size_t   mPathType;
+    xpr::string mFilePath;
+    xpr_size_t  mPathType;
 };
 
-XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const xpr::tstring &aFilePath2)
+XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const xpr::string &aFilePath2)
 {
     return FilePath(aFilePath1) += aFilePath2;
 }
@@ -175,7 +175,7 @@ XPR_INLINE FilePath operator+ (const xpr_tchar_t *aFilePath1, const FilePath &aF
 
 XPR_INLINE FilePath operator+ (xpr_tchar_t aChar, const FilePath &aFilePath2)
 {
-    return FilePath(xpr::tstring(1, aChar)) += aFilePath2;
+    return FilePath(xpr::string(1, aChar)) += aFilePath2;
 }
 
 XPR_INLINE FilePath operator+ (const FilePath &aFilePath1, const xpr_tchar_t *aFilePath2)
@@ -295,8 +295,8 @@ namespace tr1
             xpr_size_t sLast      = aValue.size();
             xpr_size_t sStride    = 1 + sLast / 10;
 
-            const xpr::tstring &sValue1 = aValue.getPath();
-            xpr_size_t          sValue2 = aValue.getPathType();
+            const xpr::string &sValue1 = aValue.getPath();
+            xpr_size_t         sValue2 = aValue.getPathType();
 
             if (sStride < sLast)
             {

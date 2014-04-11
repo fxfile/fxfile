@@ -50,6 +50,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // user defined timer
 //
@@ -117,10 +119,11 @@ enum
     WM_ADV_FILE_CHANGE_NOTIFY    = WM_USER + 1502,
 };
 
-static const xpr_tchar_t kViewSetComputerFolder[] = XPR_STRING_LITERAL("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}");
-static const xpr_tchar_t kViewSetVirtualFolder [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0001-000000000000}");
-static const xpr_tchar_t kViewSetDefault       [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-0000%08x}");
-static const xpr_tchar_t kViewSetAllOfSame     [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-000000000000}");
+const xpr_tchar_t kViewSetComputerFolder[] = XPR_STRING_LITERAL("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}");
+const xpr_tchar_t kViewSetVirtualFolder [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0001-000000000000}");
+const xpr_tchar_t kViewSetDefault       [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-0000%08x}");
+const xpr_tchar_t kViewSetAllOfSame     [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-000000000000}");
+} // namespace anonymous
 
 //
 // folder type
@@ -791,7 +794,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItemComputer(const ColumnId &aColumnI
 
     case 1: // type
         {
-            xpr::tstring sPath;
+            xpr::string sPath;
             GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
             if (sPath.length() <= 3)
@@ -1255,7 +1258,7 @@ xpr_bool_t ExplorerCtrl::getItemName(LPSHELLFOLDER  aShellFolder,
     if (!XPR_TEST_BITS(aShellAttributes, SFGAO_FOLDER) &&
          XPR_TEST_BITS(aShellAttributes, SFGAO_FILESYSTEM))
     {
-        xpr::tstring sFileName;
+        xpr::string sFileName;
         if (GetName(aShellFolder, aPidl, SHGDN_INFOLDER | SHGDN_FORPARSING, sFileName) == XPR_FALSE)
             return XPR_FALSE;
 
@@ -1550,7 +1553,7 @@ void ExplorerCtrl::getFileExtension(LPLVITEMDATA aLvItemData, xpr_tchar_t *aExt,
         if (!XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FOLDER) &&
              XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
         {
-            xpr::tstring sPath;
+            xpr::string sPath;
             GetName(aLvItemData->mShellFolder, aLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
             const xpr_tchar_t *sExt = GetFileExt(sPath);
@@ -5532,7 +5535,7 @@ LRESULT ExplorerCtrl::OnPasteSelItem(WPARAM wParam, LPARAM lParam)
 
     xpr_sint_t i, sIndex;
     const xpr_size_t sLen = _tcslen(sTarget);
-    xpr::tstring sPath;
+    xpr::string sPath;
     xpr_tchar_t *sSplit;
     const xpr_tchar_t *sParsing = sSource;
 
@@ -5658,7 +5661,7 @@ void ExplorerCtrl::OnBeginlabeledit(NMHDR *aNmHdr, LRESULT *aResult)
         {
             //if (XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
             //{
-            //    xpr::tstring sCurPath;
+            //    xpr::string sCurPath;
             //    getCurPath(sCurPath);
 
             //    if (sCurPath[sCurPath.length() - 1] != '\\')
@@ -5829,7 +5832,7 @@ void ExplorerCtrl::OnInsertitem(NMHDR *aNmHdr, LRESULT *aResult)
         LPLVITEMDATA sLvItemData = (LPLVITEMDATA)GetItemData(sIndex);
         if (XPR_IS_NOT_NULL(sLvItemData))
         {
-            xpr::tstring sPath;
+            xpr::string sPath;
             GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
             if (_tcsicmp(mInsSel.c_str(), sPath.c_str()) == 0)
@@ -5860,7 +5863,7 @@ void ExplorerCtrl::OnInsertitem(NMHDR *aNmHdr, LRESULT *aResult)
     *aResult = 0;
 }
 
-void ExplorerCtrl::createFolder(const xpr::tstring &aNewFolder, xpr_bool_t aEditDirectly)
+void ExplorerCtrl::createFolder(const xpr::string &aNewFolder, xpr_bool_t aEditDirectly)
 {
     if (mFolderType != FOLDER_DEFAULT)
         return;
@@ -5880,7 +5883,7 @@ void ExplorerCtrl::createFolder(const xpr::tstring &aNewFolder, xpr_bool_t aEdit
     COM_FREE(sFullPidl);
 }
 
-void ExplorerCtrl::createTextFile(const xpr::tstring &aNewTextFile, xpr_bool_t aEditDirectly)
+void ExplorerCtrl::createTextFile(const xpr::string &aNewTextFile, xpr_bool_t aEditDirectly)
 {
     if (mFolderType != FOLDER_DEFAULT)
         return;
@@ -5893,7 +5896,7 @@ void ExplorerCtrl::createTextFile(const xpr::tstring &aNewTextFile, xpr_bool_t a
     xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
     xpr::FileIo sFileIo;
 
-    sRcode = sFileIo.open(aNewTextFile.c_str(), sOpenMode);
+    sRcode = sFileIo.open(aNewTextFile, sOpenMode);
     if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
@@ -5906,7 +5909,7 @@ void ExplorerCtrl::createTextFile(const xpr::tstring &aNewTextFile, xpr_bool_t a
     COM_FREE(sFullPidl);
 }
 
-void ExplorerCtrl::createGeneralFile(const xpr::tstring &aNewGeneralFile, xpr_bool_t aEditDirectly)
+void ExplorerCtrl::createGeneralFile(const xpr::string &aNewGeneralFile, xpr_bool_t aEditDirectly)
 {
     if (mFolderType != FOLDER_DEFAULT)
         return;
@@ -5919,7 +5922,7 @@ void ExplorerCtrl::createGeneralFile(const xpr::tstring &aNewGeneralFile, xpr_bo
     xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
     xpr::FileIo sFileIo;
 
-    sRcode = sFileIo.open(aNewGeneralFile.c_str(), sOpenMode);
+    sRcode = sFileIo.open(aNewGeneralFile, sOpenMode);
     if (XPR_RCODE_IS_ERROR(sRcode))
         return;
 
@@ -6243,7 +6246,7 @@ void ExplorerCtrl::getAllFileSysItems(FileSysItemDeque &aFileSysItemDeque, xpr_b
             if (XPR_IS_TRUE(aOnlyFileName))
             {
                 sOffset = sFileSysItem->mPath.rfind(XPR_STRING_LITERAL('\\'));
-                if (sOffset == xpr::tstring::npos)
+                if (sOffset == xpr::string::npos)
                 {
                     XPR_SAFE_DELETE(sFileSysItem);
                     continue;
@@ -6286,7 +6289,7 @@ xpr_bool_t ExplorerCtrl::getSelFileSysItems(FileSysItemDeque &aFileSysItemDeque,
                 if (XPR_IS_TRUE(aOnlyFileName))
                 {
                     sOffset = sFileSysItem->mPath.rfind(XPR_STRING_LITERAL('\\'));
-                    if (sOffset == xpr::tstring::npos)
+                    if (sOffset == xpr::string::npos)
                     {
                         XPR_SAFE_DELETE(sFileSysItem);
                         continue;
@@ -7288,7 +7291,7 @@ LRESULT ExplorerCtrl::OnShellChangeNotify(WPARAM wParam, LPARAM lParam)
         return 0;
 
 #ifdef XPR_CFG_BUILD_DEBUG
-    xpr::tstring sMsg(XPR_STRING_LITERAL(""));
+    xpr::string sMsg(XPR_STRING_LITERAL(""));
 #endif
 
     if (beginShcn(sEventId))
@@ -7413,7 +7416,7 @@ LRESULT ExplorerCtrl::OnAdvFileChangeNotify(WPARAM wParam, LPARAM lParam)
 
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     CombinePath(sPath, sNotifyInfo->mDir, sNotifyInfo->mFileName);
 
     switch (sNotifyInfo->mEvent)
@@ -7461,7 +7464,7 @@ LRESULT ExplorerCtrl::OnAdvFileChangeNotify(WPARAM wParam, LPARAM lParam)
                 }
             }
 
-            xpr::tstring sOldPath;
+            xpr::string sOldPath;
             CombinePath(sOldPath, sNotifyInfo->mDir, sNotifyInfo->mOldFileName);
 
             if (XPR_IS_NULL(sFullPidl))
@@ -7603,7 +7606,7 @@ xpr_bool_t ExplorerCtrl::updateShcnPidlItem(LPSHELLFOLDER aShellFolder, LPITEMID
 
     if (aShNotifyInfo->mEventId == SHCNE_NETSHARE || aShNotifyInfo->mEventId == SHCNE_NETUNSHARE)
     {
-        static xpr::tstring sName;
+        static xpr::string sName;
         GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER, sName);
 
         if (_tcsicmp(sName.c_str(), aShNotifyInfo->mNewName) == 0)
@@ -8483,12 +8486,12 @@ void ExplorerCtrl::getCurFullPath(xpr_tchar_t *aCurFullPath) const
     }
 }
 
-void ExplorerCtrl::getCurPath(xpr::tstring &aCurPath) const
+void ExplorerCtrl::getCurPath(xpr::string &aCurPath) const
 {
     aCurPath = mCurPath;
 }
 
-void ExplorerCtrl::getCurFullPath(xpr::tstring &aCurFullPath) const
+void ExplorerCtrl::getCurFullPath(xpr::string &aCurFullPath) const
 {
     aCurFullPath = mCurFullPath;
 }
@@ -8797,10 +8800,10 @@ LRESULT ExplorerCtrl::OnDriveShellChangeNotify(WPARAM wParam, LPARAM lParam)
     case SHCNE_DRIVEREMOVED:
     case SHCNE_MEDIAREMOVED:
         {
-            xpr::tstring sDrive;
+            xpr::string sDrive;
             GetName(sShcn->mPidl1, SHGDN_FORPARSING, sDrive);
 
-            xpr::tstring sCurPath;
+            xpr::string sCurPath;
             getCurPath(sCurPath);
 
             if (sDrive.empty() == XPR_FALSE && sCurPath.empty() == XPR_FALSE && sCurPath[0] == sDrive[0])
@@ -8927,7 +8930,7 @@ void ExplorerCtrl::doShChangeNotifyUpdateDir(xpr_bool_t aPidl, xpr_bool_t aFlush
     ::SHChangeNotify(SHCNE_UPDATEDIR, sFlags, (LPCVOID)sItem1, XPR_NULL);
 }
 
-void ExplorerCtrl::setChangeNotify(xpr::tstring aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable)
+void ExplorerCtrl::setChangeNotify(xpr::string aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable)
 {
     if (isFileSystemFolder() == XPR_FALSE)
         return;
@@ -8935,7 +8938,7 @@ void ExplorerCtrl::setChangeNotify(xpr::tstring aPath, xpr_bool_t aAllSubTree, x
     if (aPath.length() < 2)
         return;
 
-    xpr::tstring sCurPath;
+    xpr::string sCurPath;
     getCurPath(sCurPath);
 
     RemoveLastSplit(aPath);

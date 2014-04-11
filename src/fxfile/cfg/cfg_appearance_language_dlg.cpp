@@ -55,7 +55,7 @@ xpr_bool_t CfgAppearanceLanguageDlg::OnInitDialog(void)
         sLanguagePackDesc = sLanguageTable->getLanguageDesc(i);
         XPR_ASSERT(sLanguagePackDesc != XPR_NULL);
 
-        sLanguagePackComboBox->AddString(sLanguagePackDesc->mLanguage);
+        sLanguagePackComboBox->AddString(sLanguagePackDesc->mLanguage.c_str());
     }
 
     SetDlgItemText(IDC_CFG_LANGUAGE_LABEL_CHOOSE,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.language.label.choose_language_pack")));
@@ -146,12 +146,12 @@ void CfgAppearanceLanguageDlg::chooseLanguagePack(const xpr_tchar_t *aLanguage)
 
     if (XPR_IS_NOT_NULL(sLanguagePackDesc))
     {
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_LANGUAGE,  sLanguagePackDesc->mLanguage);
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_FILE_PATH, sLanguagePackDesc->mFilePath);
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_AUTHOR,    sLanguagePackDesc->mAuthor);
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_HOMEPAGE,  sLanguagePackDesc->mHomepage);
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_EMAIL,     sLanguagePackDesc->mEmail);
-        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_DESC,      sLanguagePackDesc->mDescription);
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_LANGUAGE,  sLanguagePackDesc->mLanguage.c_str());
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_FILE_PATH, sLanguagePackDesc->mFilePath.c_str());
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_AUTHOR,    sLanguagePackDesc->mAuthor.c_str());
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_HOMEPAGE,  sLanguagePackDesc->mHomepage.c_str());
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_EMAIL,     sLanguagePackDesc->mEmail.c_str());
+        SetDlgItemText(IDC_CFG_LANGUAGE_DESC_DESC,      sLanguagePackDesc->mDescription.c_str());
     }
     else
     {

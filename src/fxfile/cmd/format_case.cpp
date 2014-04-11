@@ -50,7 +50,7 @@ FormatCase::FormatCase(CaseTargetType aTargetType, CaseType aCaseType)
 {
 }
 
-FormatCase::FormatCase(CaseTargetType aTargetType, CaseType aCaseType, const xpr::tstring &aSkipChars)
+FormatCase::FormatCase(CaseTargetType aTargetType, CaseType aCaseType, const xpr::string &aSkipChars)
     : mTargetType(aTargetType), mCaseType(aCaseType), mSkipChars(aSkipChars)
 {
 }
@@ -61,8 +61,8 @@ FormatCase::~FormatCase(void)
 
 void FormatCase::rename(RenameContext &aContext) const
 {
-    xpr::tstring sBaseFileName;
-    xpr::tstring sExtWithoutDot;
+    xpr::string sBaseFileName;
+    xpr::string sExtWithoutDot;
 
     RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mNewFileName, sBaseFileName, sExtWithoutDot);
     if (sExtWithoutDot.empty() == XPR_FALSE)
@@ -129,7 +129,7 @@ void FormatCase::rename(RenameContext &aContext) const
     }
 }
 
-void FormatCase::convertUpperAtFirstChar(xpr::tstring &aName, const xpr::tstring &aSkipChars)
+void FormatCase::convertUpperAtFirstChar(xpr::string &aName, const xpr::string &aSkipChars)
 {
     if (aName.empty() == XPR_TRUE)
     {
@@ -139,7 +139,7 @@ void FormatCase::convertUpperAtFirstChar(xpr::tstring &aName, const xpr::tstring
     aName.lower_case();
 
     xpr_size_t sOffset = aName.find_first_not_of(aSkipChars, 0);
-    if (sOffset == xpr::tstring::npos)
+    if (sOffset == xpr::string::npos)
     {
         return;
     }
@@ -149,22 +149,22 @@ void FormatCase::convertUpperAtFirstChar(xpr::tstring &aName, const xpr::tstring
         return;
     }
 
-    xpr::tstring sChar(1, aName[sOffset]);
+    xpr::string sChar(1, aName[sOffset]);
     sChar.upper_case();
 
     aName.replace(sOffset, 1, sChar);
 }
 
-void FormatCase::convertUpperAtFirstCharOnEveryWord(xpr::tstring &aName, const xpr::tstring &aSkipChars)
+void FormatCase::convertUpperAtFirstCharOnEveryWord(xpr::string &aName, const xpr::string &aSkipChars)
 {
     if (aName.empty() == XPR_TRUE)
     {
         return;
     }
 
-    xpr_size_t   sOffset = 0;
-    xpr::tstring sSkipChars(aSkipChars);
-    xpr::tstring sChar;
+    xpr_size_t  sOffset = 0;
+    xpr::string sSkipChars(aSkipChars);
+    xpr::string sChar;
 
     sSkipChars += XPR_MBCS_STRING_LITERAL(' ');
 
@@ -173,7 +173,7 @@ void FormatCase::convertUpperAtFirstCharOnEveryWord(xpr::tstring &aName, const x
     while (true)
     {
         sOffset = aName.find_first_not_of(sSkipChars, sOffset);
-        if (sOffset == xpr::tstring::npos)
+        if (sOffset == xpr::string::npos)
         {
             break;
         }
@@ -184,14 +184,14 @@ void FormatCase::convertUpperAtFirstCharOnEveryWord(xpr::tstring &aName, const x
         aName.replace(sOffset, 1, sChar);
 
         sOffset = aName.find_first_of(sSkipChars, sOffset);
-        if (sOffset == xpr::tstring::npos)
+        if (sOffset == xpr::string::npos)
         {
             break;
         }
     }
 }
 
-xpr_bool_t FormatCase::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatCase::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatCaseElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -200,11 +200,11 @@ xpr_bool_t FormatCase::parseXml(const base::XmlReader &aXmlReader, base::XmlRead
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring   sName;
-    xpr::tstring   sValue;
+    xpr::string    sName;
+    xpr::string    sValue;
     CaseTargetType sTargetType = kDefaultTargetType;
     CaseType       sCaseType   = kDefaultCaseType;
-    xpr::tstring   sSkipChars;
+    xpr::string    sSkipChars;
 
     base::XmlReader::Attribute *sAttribute = aXmlReader.getFirstAttribute(aElement);
     while (XPR_IS_NOT_NULL(sAttribute))
@@ -255,8 +255,8 @@ xpr_bool_t FormatCase::write(base::XmlWriter &aXmlWriter) const
 
     if (aXmlWriter.beginElement(kXmlFormatCaseElement) == XPR_TRUE)
     {
-        xpr::tstring sTargetTypeString;
-        xpr::tstring sCaseTypeString;
+        xpr::string sTargetTypeString;
+        xpr::string sCaseTypeString;
 
         toString(mTargetType, sTargetTypeString);
         toString(mCaseType,   sCaseTypeString);
@@ -286,7 +286,7 @@ Format *FormatCase::newClone(void) const
     return sNewFormat;
 }
 
-void FormatCase::toString(const CaseTargetType &aTargetType, xpr::tstring &aString)
+void FormatCase::toString(const CaseTargetType &aTargetType, xpr::string &aString)
 {
     switch (aTargetType)
     {
@@ -296,7 +296,7 @@ void FormatCase::toString(const CaseTargetType &aTargetType, xpr::tstring &aStri
     }
 }
 
-void FormatCase::toString(const CaseType &aCaseType, xpr::tstring &aString)
+void FormatCase::toString(const CaseType &aCaseType, xpr::string &aString)
 {
     switch (aCaseType)
     {
@@ -307,7 +307,7 @@ void FormatCase::toString(const CaseType &aCaseType, xpr::tstring &aString)
     }
 }
 
-void FormatCase::toType(const xpr::tstring &aString, CaseTargetType &aTargetType)
+void FormatCase::toType(const xpr::string &aString, CaseTargetType &aTargetType)
 {
     if (aString.compare(kXmlBaseFileNameValue) == 0)
     {
@@ -327,7 +327,7 @@ void FormatCase::toType(const xpr::tstring &aString, CaseTargetType &aTargetType
     }
 }
 
-void FormatCase::toType(const xpr::tstring &aString, CaseType &aCaseType)
+void FormatCase::toType(const xpr::string &aString, CaseType &aCaseType)
 {
     if (aString.compare(kXmlLowerValue) == 0)
     {

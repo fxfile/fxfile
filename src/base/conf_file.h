@@ -34,7 +34,7 @@ protected:
     typedef std::list<Section *> SectionList;
     typedef std::list<Key     *> KeyList;
     typedef std::list<Comment *> CommentList;
-    typedef std::tr1::unordered_map<xpr::tstring, Key *> KeyMap;
+    typedef std::tr1::unordered_map<xpr::string, Key *> KeyMap;
 
 public:
     class SectionIterator
@@ -77,13 +77,13 @@ public:
 public:
     ConfFile(void);
     explicit ConfFile(const xpr_tchar_t *aFilePath);
-    explicit ConfFile(const xpr::tstring &aFilePath);
+    explicit ConfFile(const xpr::string &aFilePath);
     virtual ~ConfFile(void);
 
 public:
     const xpr_tchar_t *getFilePath(void) const;
     void setFilePath(const xpr_tchar_t *aFilePath);
-    void setFilePath(const xpr::tstring &aFilePath);
+    void setFilePath(const xpr::string &aFilePath);
 
     xpr_uint_t getFlags(void) const;
     void setFlags(xpr_uint_t aFlags);
@@ -138,8 +138,8 @@ public:
     void               clearComment(void);
 
 protected:
-    xpr::tstring mFilePath;
-    xpr_uint_t   mFlags;
+    xpr::string mFilePath;
+    xpr_uint_t  mFlags;
 
     SectionList mSectionList;
     CommentList mCommentList;

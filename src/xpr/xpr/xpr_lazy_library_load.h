@@ -10,6 +10,8 @@
 
 #include "xpr_types.h"
 
+#pragma warning (disable : 4819)
+
 #include <iconv.h>
 
 typedef iconv_t (* LIBICON_OPEN_FUNC )(const char* tocode, const char* fromcode);

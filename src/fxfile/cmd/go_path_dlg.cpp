@@ -197,7 +197,7 @@ void GoPathDlg::OnGoPathBrowse(void)
 
 void GoPathDlg::OnBnClickedExp1Path(void)
 {
-    xpr::tstring strPath;
+    xpr::string strPath;
     if (IsParentVirtualItem(mPidl1) == XPR_TRUE)
         GetFullPath(mPidl1, strPath);
     else
@@ -208,7 +208,7 @@ void GoPathDlg::OnBnClickedExp1Path(void)
 
 void GoPathDlg::OnBnClickedExp2Path(void)
 {
-    xpr::tstring strPath;
+    xpr::string strPath;
     if (IsParentVirtualItem(mPidl2) == XPR_TRUE)
         GetFullPath(mPidl2, strPath);
     else

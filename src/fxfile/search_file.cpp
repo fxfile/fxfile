@@ -83,14 +83,14 @@ void SearchFile::setFlags(xpr_uint_t aFlags)
     mFlags = aFlags;
 }
 
-static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::tstring> &aStringDeque)
+static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::string> &aStringDeque)
 {
     if (XPR_IS_NULL(aMultiStr))
         return 0;
 
     xpr_sint_t i;
-    xpr::tstring sString;
-    xpr::tstring::iterator sIterator;
+    xpr::string sString;
+    xpr::string::iterator sIterator;
 
     xpr_tchar_t *sStringEnum = aMultiStr;
 
@@ -134,11 +134,11 @@ void SearchFile::setName(const xpr_tchar_t *aName, xpr_bool_t aNoWildcard)
             NameDeque::iterator sIterator = mNameDeque.begin();
             for (; sIterator != mNameDeque.end(); ++sIterator)
             {
-                xpr::tstring &sName = *sIterator;
+                xpr::string &sName = *sIterator;
 
                 sName.trim();
 
-                if (sName.find(XPR_STRING_LITERAL('*')) == xpr::tstring::npos && sName.find(XPR_STRING_LITERAL('?')) == xpr::tstring::npos)
+                if (sName.find(XPR_STRING_LITERAL('*')) == xpr::string::npos && sName.find(XPR_STRING_LITERAL('?')) == xpr::string::npos)
                 {
                     sName.insert(0, XPR_STRING_LITERAL("*"));
                     sName.append(XPR_STRING_LITERAL("*"));
@@ -326,7 +326,7 @@ void SearchFile::searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, 
                 sIterator = mNameDeque.begin();
                 for (; sIterator != mNameDeque.end(); ++sIterator)
                 {
-                    xpr::tstring &sName = *sIterator;
+                    xpr::string &sName = *sIterator;
 
                     if (fnmatch(sName.c_str(), mWin32FindData.cFileName, mMatchFlags) != FNM_NOMATCH)
                     {

@@ -88,7 +88,7 @@ void MultiRename::addPath(const xpr_tchar_t *aDir, const xpr_tchar_t *aOld, cons
     mRenDeque.push_back(sRenItem);
 }
 
-void MultiRename::addPath(const xpr::tstring &aDir, const xpr::tstring &aOld, const xpr::tstring &aNew)
+void MultiRename::addPath(const xpr::string &aDir, const xpr::string &aOld, const xpr::string &aNew)
 {
     addPath(aDir.c_str(), aOld.c_str(), aNew.c_str());
 }
@@ -107,10 +107,10 @@ unsigned MultiRename::OnEntryProc(void)
 {
     xpr_bool_t sReadOnlyRename = isFlag(FlagReadOnlyRename);
 
-    xpr::tstring sSrc;
-    xpr::tstring sDst;
-    xpr::tstring sTemp;
-    xpr::tstring sTempFileName;
+    xpr::string sSrc;
+    xpr::string sDst;
+    xpr::string sTemp;
+    xpr::string sTempFileName;
     DWORD sAttributes;
 
     xpr_sint_t sInvalidItem = -1;
@@ -123,7 +123,7 @@ unsigned MultiRename::OnEntryProc(void)
     RenDeque::iterator sIterator;
     RenDeque::iterator sIterator2;
 
-    typedef std::tr1::unordered_multimap<xpr::tstring, RenItem *> HashPathMap;
+    typedef std::tr1::unordered_multimap<xpr::string, RenItem *> HashPathMap;
     typedef std::pair<HashPathMap::iterator, HashPathMap::iterator> HashPathPairIterator;
     HashPathMap sHashOldPathMap;
     HashPathMap sHashNewPathMap;

@@ -79,9 +79,9 @@ protected:
     void clear(void);
 
 protected:
-    xpr::tstring mConfDir;
-    xpr::tstring mOldConfDir;
-    xpr_bool_t   mReadOnly;
+    xpr::string mConfDir;
+    xpr::string mOldConfDir;
+    xpr_bool_t  mReadOnly;
 };
 } // namespace fxfile
 

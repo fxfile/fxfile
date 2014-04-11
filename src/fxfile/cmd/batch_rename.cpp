@@ -332,7 +332,7 @@ xpr_bool_t BatchRename::rename(const FileNameFormat &aFileNameFormat, xpr_bool_t
     xpr_size_t   sMaxNewLen;
     xpr_bool_t   sByResult = isFlag(FlagResultRename);
     xpr_bool_t   sAtLeastOneError = XPR_FALSE;
-    xpr::tstring sOrgFilePath;
+    xpr::string  sOrgFilePath;
     SYSTEMTIME   sNowTime = {0,};
     Item        *sItem;
     ItemDeque::iterator sIterator;
@@ -589,7 +589,7 @@ xpr_sint_t BatchRename::getInvalidItem(void) const
     return mMultiRename->getInvalidItem();
 }
 
-xpr_bool_t BatchRename::load(const xpr::tstring &aFilePath)
+xpr_bool_t BatchRename::load(const xpr::string &aFilePath)
 {
     FileNameFormat sFileNameFormat;
     if (sFileNameFormat.load(aFilePath) == XPR_FALSE)
@@ -602,7 +602,7 @@ xpr_bool_t BatchRename::load(const xpr::tstring &aFilePath)
     return XPR_TRUE;
 }
 
-xpr_bool_t BatchRename::save(const xpr::tstring &aFilePath) const
+xpr_bool_t BatchRename::save(const xpr::string &aFilePath) const
 {
     FileNameFormat sFileNameFormat;
     getFileNameFormatFromHistory(sFileNameFormat, mBackwardHistory);

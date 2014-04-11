@@ -140,7 +140,7 @@ void BookmarkItemEditDlg::add(LPITEMIDLIST aFullPidl)
     mBookmark.destroyIcon();
 }
 
-void BookmarkItemEditDlg::getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::tstring &aPath)
+void BookmarkItemEditDlg::getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::string &aPath)
 {
     xpr_bool_t sOnlyFileSystemPath = XPR_FALSE;
 
@@ -153,8 +153,8 @@ void BookmarkItemEditDlg::getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::tstring &
         xpr_bool_t sParentVirtualItem = IsParentVirtualItem(aFullPidl);
         if (sParentVirtualItem == XPR_TRUE && IsFileSystem(aFullPidl) == XPR_TRUE)
         {
-            xpr::tstring sPath;
-            xpr::tstring sFullPath;
+            xpr::string sPath;
+            xpr::string sFullPath;
 
             GetName(aFullPidl, SHGDN_FORPARSING, sPath);
             GetFullPath(aFullPidl, sFullPath);
@@ -220,7 +220,7 @@ void BookmarkItemEditDlg::fillItem(void)
         {
             if (mBookmark.mIconPath[0] == XPR_STRING_LITERAL('%'))
             {
-                xpr::tstring sRealIcon;
+                xpr::string sRealIcon;
                 GetEnvRealPath(mBookmark.mIconPath, sRealIcon);
 
                 ::ExtractIconEx(
@@ -411,10 +411,10 @@ void BookmarkItemEditDlg::OnIconBrowse(void)
     GetDlgItemText(IDC_BMK_ITEM_EDIT_ICON_PATH, sIcon, XPR_MAX_PATH);
     xpr_sint_t sIconIndex = GetDlgItemInt(IDC_BMK_ITEM_EDIT_ICON_INDEX, XPR_NULL, XPR_TRUE);
 
-    xpr::tstring sRealIcon = sIcon;
+    xpr::string sRealIcon = sIcon;
     if (sIcon[0] == XPR_STRING_LITERAL('%'))
     {
-        xpr::tstring strIcon = sIcon;
+        xpr::string strIcon = sIcon;
         GetEnvRealPath(strIcon, sRealIcon);
         _tcscpy(sIcon, sRealIcon.c_str());
     }

@@ -37,10 +37,10 @@ protected:
     void setStatus(const xpr_tchar_t *sStatus);
 
 protected:
-    typedef std::deque<xpr::tstring> PathDeque;
-    PathDeque    mPathDeque;
-    xpr::tstring mDir;
-    xpr::tstring mDestPath;
+    typedef std::deque<xpr::string> PathDeque;
+    PathDeque   mPathDeque;
+    xpr::string mDir;
+    xpr::string mDestPath;
 
     FileMerge *mFileMerge;
 

@@ -199,7 +199,7 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
     const xpr_tchar_t *sTarget = aShFileOpStruct->pTo;
     HandleToMappings *sHandleToMappings = (HandleToMappings *)aShFileOpStruct->hNameMappings;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     const xpr_tchar_t *sParsing = sSource;
     xpr_sint_t nLen = XPR_IS_NOT_NULL(sTarget) ? (xpr_sint_t)_tcslen(sTarget) : 4;
 
@@ -344,7 +344,7 @@ void FileOpUndo::addOperation(SHFILEOPSTRUCT *aShFileOpStruct)
     endAddFile(sFileIo);
 }
 
-void FileOpUndo::addRename(const xpr::tstring &aSource, const xpr::tstring &aTarget)
+void FileOpUndo::addRename(const xpr::string &aSource, const xpr::string &aTarget)
 {
     addRename(aSource.c_str(), aTarget.c_str());
 }

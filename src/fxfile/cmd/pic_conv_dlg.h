@@ -35,7 +35,7 @@ public:
     virtual ~PicConvDlg(void);
 
 public:
-    xpr_bool_t addPath(const xpr::tstring &aPath);
+    xpr_bool_t addPath(const xpr::string &aPath);
 
 protected:
     void enableWindow(xpr_bool_t aEnable);
@@ -46,8 +46,8 @@ protected:
 
     struct PicItem
     {
-        xpr::tstring mPath;
-        xpr_sint_t   mFormatIndex;
+        xpr::string mPath;
+        xpr_sint_t  mFormatIndex;
     };
 
     typedef std::deque<PicItem *> PicDeque;

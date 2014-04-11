@@ -63,7 +63,7 @@ public:
     xpr_bool_t isFlag(xpr_uint_t aFlag);
 
     void addPath(const xpr_tchar_t *aDir, const xpr_tchar_t *aOld, const xpr_tchar_t *aNew);
-    void addPath(const xpr::tstring &aDir, const xpr::tstring &aOld, const xpr::tstring &aNew);
+    void addPath(const xpr::string &aDir, const xpr::string &aOld, const xpr::string &aNew);
 
     Status getStatus(xpr_size_t *aPreparedCount = XPR_NULL, xpr_size_t *aValidatedCount = XPR_NULL, xpr_size_t *aRenamedCount = XPR_NULL);
     Result getItemResult(xpr_size_t aIndex);
@@ -79,16 +79,16 @@ protected:
 
     struct RenItem
     {
-        xpr::tstring mDir;
-        xpr::tstring mOld;
-        xpr::tstring mNew;
-        Result       mResult;
+        xpr::string mDir;
+        xpr::string mOld;
+        xpr::string mNew;
+        Result      mResult;
     };
 
     typedef std::deque<RenItem *> RenDeque;
     RenDeque     mRenDeque;
 
-    xpr::tstring mBackup;
+    xpr::string  mBackup;
     xpr_uint_t   mFlags;
 
     xpr_sint_t   mInvalidItem;

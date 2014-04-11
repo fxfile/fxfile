@@ -10,7 +10,10 @@
 
 namespace xpr
 {
-static SystemInfo gSystemInfo;
+namespace
+{
+SystemInfo gSystemInfo;
+} // namespace anonymous
 
 XPR_INLINE xpr_rcode_t initOsVer(xpr_uint_t &aOsVer);
 
@@ -72,7 +75,7 @@ XPR_INLINE xpr_rcode_t initOsVer(xpr_uint_t &aOsVer)
     }
     else if (sOsVerInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
-        xpr_char_t *sDesc = sOsVerInfo.szCSDVersion;
+        xpr_tchar_t *sDesc = sOsVerInfo.szCSDVersion;
         while (*sDesc != 0 && isDigit((xpr_char_t)(*sDesc)) != XPR_TRUE)
             sDesc++;
 

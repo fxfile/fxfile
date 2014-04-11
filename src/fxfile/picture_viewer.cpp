@@ -31,6 +31,8 @@
 
 namespace fxfile
 {
+namespace
+{
 enum
 {
     LOCK_NONE = 0,
@@ -45,6 +47,7 @@ enum
 {
     WM_LOADED_PICTURE = WM_USER + 0,
 };
+} // namespace anonymous
 
 struct PictureViewer::PictureItem
 {
@@ -695,7 +698,7 @@ void PictureViewer::OnSize(xpr_uint_t aType, xpr_sint_t cx, xpr_sint_t cy)
 
     if (mLock != LOCK_100)
     {
-        xpr::tstring sPath = mPath;
+        xpr::string sPath = mPath;
         setPicture(sPath.c_str());
     }
 
@@ -1083,7 +1086,7 @@ void PictureViewer::zoom100(void)
     GetWindowRect(&sRect);
     CSize sTempSize(sRect.Width()-mImgSize.cx, sRect.Height()-mImgSize.cy);
 
-    xpr::tstring strPath = mPath;
+    xpr::string strPath = mPath;
     setPicture(strPath.c_str(), XPR_TRUE);
 
     SetWindowPos(XPR_NULL, 0, 0, mImgSize.cx+sTempSize.cx, mImgSize.cy+sTempSize.cy, SWP_NOMOVE | SWP_NOACTIVATE);
@@ -1158,7 +1161,7 @@ void PictureViewer::setLockWindow(void)
 
     mLock = LOCK_WINDOW;
 
-    xpr::tstring sPath = mPath;
+    xpr::string sPath = mPath;
     setPicture(sPath.c_str());
 
     Invalidate();
@@ -1171,7 +1174,7 @@ void PictureViewer::setLock100(void)
 
     mLock = LOCK_100;
 
-    xpr::tstring sPath = mPath;
+    xpr::string sPath = mPath;
     setPicture(sPath.c_str(), XPR_TRUE);
 }
 
@@ -1182,7 +1185,7 @@ void PictureViewer::setLockThumbnail(void)
 
     mLock = LOCK_THUMBNAIL;
 
-    xpr::tstring sPath = mPath;
+    xpr::string sPath = mPath;
     setPicture(sPath.c_str(), XPR_TRUE);
 }
 

@@ -35,7 +35,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin/x86-unicode',
-                    'IntermediateDirectory': '../../obj/xpr/dbg-x86-unicode',
+                    'IntermediateDirectory': '../../obj/fxfile/dbg-x86-unicode',
                 },
                 
                 'msvs_settings':
@@ -50,7 +50,7 @@
                         ],
                         'AdditionalDependencies':
                         [
-                            'libxpr_dbg.lib',
+                            'libxprw_dbg.lib',
                         ],
                     },
                 },
@@ -63,7 +63,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin/x86-unicode',
-                    'IntermediateDirectory': '../../obj/xpr/rel-x86-unicode',
+                    'IntermediateDirectory': '../../obj/fxfile/rel-x86-unicode',
                 },
                 
                 'msvs_settings':
@@ -77,7 +77,7 @@
                         ],
                         'AdditionalDependencies':
                         [
-                            'libxpr.lib',
+                            'libxprw.lib',
                         ],
                     },
                 },
@@ -90,7 +90,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin/x86-multibyte',
-                    'IntermediateDirectory': '../../obj/xpr/dbg-x86-multibyte',
+                    'IntermediateDirectory': '../../obj/fxfile/dbg-x86-multibyte',
                 },
                 
                 'msvs_settings':
@@ -118,7 +118,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin/x86-multibyte',
-                    'IntermediateDirectory': '../../obj/xpr/rel-x86-multibyte',
+                    'IntermediateDirectory': '../../obj/fxfile/rel-x86-multibyte',
                 },
                 
                 'msvs_settings':
@@ -149,7 +149,7 @@
                             'msvs_configuration_attributes':
                             {
                                 'OutputDirectory':       '../../bin/x64',
-                                'IntermediateDirectory': '../../obj/xpr/dbg-x64',
+                                'IntermediateDirectory': '../../obj/fxfile/dbg-x64',
                             },
                             
                             'msvs_settings':
@@ -164,7 +164,7 @@
                                     ],
                                     'AdditionalDependencies':
                                     [
-                                        'libxpr_dbg.lib',
+                                        'libxprw_dbg.lib',
                                     ],
                                 },
                             },
@@ -177,7 +177,7 @@
                             'msvs_configuration_attributes':
                             {
                                 'OutputDirectory':       '../../bin/x64',
-                                'IntermediateDirectory': '../../obj/xpr/rel-x64',
+                                'IntermediateDirectory': '../../obj/fxfile/rel-x64',
                             },
                             
                             'msvs_settings':
@@ -191,7 +191,7 @@
                                     ],
                                     'AdditionalDependencies':
                                     [
-                                        'libxpr.lib',
+                                        'libxprw.lib',
                                     ],
                                 },
                             },

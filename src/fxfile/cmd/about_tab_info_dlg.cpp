@@ -36,12 +36,15 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
     kTimerIdUpdateCheckFirst = 100,
     kTimerIdUpdateCheck,
 };
+} // namespace anonymous
 
 AboutTabInfoDlg::AboutTabInfoDlg(void)
     : super(IDD_ABOUT_TAB_ABOUT)
@@ -69,7 +72,7 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
     UserEnv &sUserEnv = UserEnv::instance();
 
     // set program name and version
-    xpr::tstring sProgram;
+    xpr::string sProgram;
     xpr_tchar_t sVersion[0xff] = {0};
 
     getFullAppVer(sVersion);
@@ -131,11 +134,11 @@ void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
             SetTimer(kTimerIdUpdateCheck, 300, XPR_NULL);
         }
 
-        xpr_rcode_t  sRcode;
-        xpr_tchar_t  sStatus[0xff];
-        xpr_tchar_t  sCheckedVersion[0xff];
-        UpdateInfo   sUpdateInfo = {0};
-        xpr::tstring sUpdateHomeDir;
+        xpr_rcode_t sRcode;
+        xpr_tchar_t sStatus[0xff];
+        xpr_tchar_t sCheckedVersion[0xff];
+        UpdateInfo  sUpdateInfo = {0};
+        xpr::string sUpdateHomeDir;
 
         if (XPR_IS_NULL(mUpdateInfoManager))
         {

@@ -9,6 +9,7 @@
 #pragma once
 
 #include "xpr_time.h"
+#include "xpr_string.h"
 
 namespace xpr
 {
@@ -21,23 +22,31 @@ namespace xpr
      ((major) == XPR_MAJOR_VER && (minor) < XPR_MINOR_VER) || \
      ((major) == XPR_MAJOR_VER && (minor) == XPR_MINOR_VER && (patch) <= XPR_PATCH_VER))
 
-#define XPR_VER_STRING_DEFINE(x) #x
-#define XPR_VER_STRING \
-    XPR_VER_STRING_DEFINE(XPR_MAJOR_VER) "." \
-    XPR_VER_STRING_DEFINE(XPR_MINOR_VER) "." \
-    XPR_VER_STRING_DEFINE(XPR_PATCH_VER)
+#define XPR_VER_MBCS_STRING \
+    XPR_NUMBER_TO_MBCS_STRING(XPR_MAJOR_VER) XPR_MBCS_STRING_LITERAL(".") \
+    XPR_NUMBER_TO_MBCS_STRING(XPR_MINOR_VER) XPR_MBCS_STRING_LITERAL(".") \
+    XPR_NUMBER_TO_MBCS_STRING(XPR_PATCH_VER)
+#define XPR_VER_WIDE_STRING \
+    XPR_NUMBER_TO_WIDE_STRING(XPR_MAJOR_VER) XPR_WIDE_STRING_LITERAL(".") \
+    XPR_NUMBER_TO_WIDE_STRING(XPR_MINOR_VER) XPR_WIDE_STRING_LITERAL(".") \
+    XPR_NUMBER_TO_WIDE_STRING(XPR_PATCH_VER)
+#if defined(XPR_CFG_UNICODE)
+#define XPR_VER_STRING XPR_VER_WIDE_STRING
+#else // not XPR_CFG_UNICODE
+#define XPR_VER_STRING XPR_VER_MBCS_STRING
+#endif // XPR_CFG_UNICODE
 
-typedef struct
+struct Ver
 {
     xpr_sint_t mMajor;
     xpr_sint_t mMinor;
     xpr_sint_t mPatch;
-} ver_t;
+};
 
-XPR_DL_API void getVer(ver_t &aVer);
-XPR_DL_API const xpr_char_t *getVer(void);
-XPR_DL_API const xpr_char_t *getBuildTime(void);
+XPR_DL_API void getVer(Ver &aVer);
+XPR_DL_API void getVer(xpr::string &aVer);
 XPR_DL_API void getBuildTime(TimeExpr &aTimeExpr);
+XPR_DL_API void getBuildTime(xpr::string &aBuildTime);
 } // namespace xpr
 
 #endif // __XPR_VER_H__

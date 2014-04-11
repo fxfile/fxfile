@@ -16,7 +16,9 @@
 
 namespace fxfile
 {
-static void getRecursiveFolderSize(const xpr_tchar_t *aFolder, WIN32_FIND_DATA &aWin32FindData, xpr_uint64_t &aFolderSize)
+namespace
+{
+void getRecursiveFolderSize(const xpr_tchar_t *aFolder, WIN32_FIND_DATA &aWin32FindData, xpr_uint64_t &aFolderSize)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     _stprintf(sPath, XPR_STRING_LITERAL("%s\\*.*"), aFolder);
@@ -45,6 +47,7 @@ static void getRecursiveFolderSize(const xpr_tchar_t *aFolder, WIN32_FIND_DATA &
 
         ::FindClose(sFind);
     }
+}
 }
 
 FolderSize::FolderSize(void)
@@ -122,7 +125,7 @@ DWORD FolderSize::OnFolderSize(void)
     sEvents[1] = mStop;
 
     DWORD sWait;
-    xpr::tstring sDir;
+    xpr::string sDir;
     WIN32_FIND_DATA sWin32FindData;
     xpr_uint64_t sFolderSize;
 

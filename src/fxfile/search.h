@@ -17,16 +17,16 @@ namespace fxfile
 
 typedef struct SearchUserLocItem
 {
-    xpr::tstring mPath;
-    xpr_bool_t   mInclude;
-    xpr_bool_t   mSubFolder;
+    xpr::string mPath;
+    xpr_bool_t  mInclude;
+    xpr_bool_t  mSubFolder;
 } SearchUserLocItem;
 
 typedef std::deque<SearchUserLocItem *> UserLocDeque;
 
 typedef struct SearchUserLoc
 {
-    xpr::tstring mName;
+    xpr::string mName;
     UserLocDeque mUserLocDeque;
 
     void clear(void)
@@ -48,8 +48,8 @@ typedef struct SearchUserLoc
 
 typedef std::deque<SearchUserLoc *> SearchUserLocDeque;
 
-typedef std::set<xpr::tstring> SearchUserLocNameSet;
-typedef std::set<xpr::tstring> SearchUserLocPathSet;
+typedef std::set<xpr::string> SearchUserLocNameSet;
+typedef std::set<xpr::string> SearchUserLocPathSet;
 } // namespace fxfile
 
 #endif // __FXFILE_SEARCH_H__

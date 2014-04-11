@@ -32,7 +32,7 @@ protected:
     void loadCommandButtons(void);
 
 protected:
-    typedef std::map<xpr_uint_t, xpr::tstring> CommandStringMap;
+    typedef std::map<xpr_uint_t, xpr::string> CommandStringMap;
     CommandStringMap mCommandString;
     CommandStringMap mCommandButtonString;
 };

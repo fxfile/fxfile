@@ -81,11 +81,11 @@ protected:
 
     typedef struct SearchDir
     {
-        xpr::tstring mPath;
-        xpr_bool_t   mSubFolder;
+        xpr::string mPath;
+        xpr_bool_t  mSubFolder;
     } SearchDir;
 
-    typedef std::deque<xpr::tstring> NameDeque;
+    typedef std::deque<xpr::string> NameDeque;
     typedef std::deque<SearchDir *> SearchDirDeque;
     NameDeque      mNameDeque;
     SearchDirDeque mSearchIncDirDeque;

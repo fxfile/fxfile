@@ -47,7 +47,7 @@ public:
     void setAttributes(xpr_bool_t aAttribute, xpr_sint_t aArchive, xpr_sint_t aReadOnly, xpr_sint_t aHidden, xpr_sint_t aSystem);
     void setTime(LPSYSTEMTIME aCreatedSystemTime, LPSYSTEMTIME aModifiedSystemTime, LPSYSTEMTIME aAccessSystemTime);
 
-    void addPath(const xpr::tstring &aPath);
+    void addPath(const xpr::string &aPath);
 
     xpr_size_t getCount(void);
     const xpr_tchar_t *getPath(xpr_sint_t aIndex);
@@ -57,14 +57,14 @@ protected:
     virtual xpr_bool_t OnPreEntry(void);
     virtual unsigned OnEntryProc(void);
 
-    xpr_bool_t OnRcsvDirAttrTimeProc(const xpr::tstring &aDir, DWORD aAttributes, xpr_sint_t aDepth);
-    xpr_bool_t OnAttrTimeProc(const xpr::tstring &aPath, DWORD aAttributes);
+    xpr_bool_t OnRcsvDirAttrTimeProc(const xpr::string &aDir, DWORD aAttributes, xpr_sint_t aDepth);
+    xpr_bool_t OnAttrTimeProc(const xpr::string &aPath, DWORD aAttributes);
 
 protected:
     HWND       mHwnd;
     xpr_uint_t mMsg;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque  mPathDeque;
 
     Status     mStatus;

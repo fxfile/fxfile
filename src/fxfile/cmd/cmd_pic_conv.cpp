@@ -49,7 +49,7 @@ void PicConvCommand::execute(CommandContext &aContext)
         PicConvDlg sDlg;
 
         xpr_sint_t sIndex;
-        xpr::tstring sPath;
+        xpr::string sPath;
         LPLVITEMDATA sLvItemData;
 
         POSITION sPosition = sExplorerCtrl->GetFirstSelectedItemPosition();

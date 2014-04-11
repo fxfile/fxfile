@@ -17,7 +17,10 @@ namespace fxfile
 {
 namespace base
 {
-static const xpr_tchar_t mNoId[] = XPR_STRING_LITERAL("<<ID don't exist!!!>>");
+namespace
+{
+const xpr_tchar_t mNoId[] = XPR_STRING_LITERAL("<<ID don't exist!!!>>");
+} // namespace anonymous
 
 StringTable::StringTable(void)
 {

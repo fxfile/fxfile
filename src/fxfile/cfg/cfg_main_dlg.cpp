@@ -217,7 +217,7 @@ xpr_bool_t CfgMainDlg::showCfg(xpr_sint_t aCfgIndex)
     sCfgItem->mCfgDlg->ShowWindow(SW_SHOW);
 
     // description (e.g. Configuration > Function > Bookmark)
-    xpr::tstring sDesc(XPR_STRING_LITERAL("  "));
+    xpr::string sDesc(XPR_STRING_LITERAL("  "));
     xpr_sint_t sParent = sCfgItem->mParent;
 
     sDesc += gApp.loadString(XPR_STRING_LITERAL("popup.cfg.title"));

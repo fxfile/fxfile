@@ -30,7 +30,9 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("FolderPane");
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("FolderPane");
 
 //
 // control id
@@ -39,6 +41,7 @@ enum
 {
     CTRL_ID_FOLDER_CTRL = 50,
 };
+} // namespace anonymous
 
 FolderPane::FolderPane(void)
     : mObserver(XPR_NULL)

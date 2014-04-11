@@ -20,40 +20,40 @@ namespace fxfile
 //
 xpr_bool_t   Path2Pidl(const xpr_tchar_t *aPath, LPITEMIDLIST *aFullPidl);
 LPITEMIDLIST Path2Pidl(const xpr_tchar_t *aPath);
-xpr_bool_t   Path2Pidl(const xpr::tstring &aPath, LPITEMIDLIST *aFullPidl);
-LPITEMIDLIST Path2Pidl(const xpr::tstring &aPath);
+xpr_bool_t   Path2Pidl(const xpr::string &aPath, LPITEMIDLIST *aFullPidl);
+LPITEMIDLIST Path2Pidl(const xpr::string &aPath);
 xpr_bool_t   Pidl2Path(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_bool_t aOnlyFileSystemPath = XPR_FALSE);
-xpr_bool_t   Pidl2Path(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath, xpr_bool_t aOnlyFileSystemPath = XPR_FALSE);
+xpr_bool_t   Pidl2Path(LPCITEMIDLIST aFullPidl, xpr::string &aPath, xpr_bool_t aOnlyFileSystemPath = XPR_FALSE);
 
 //
 // folder path (resolved, if pidl is link file)
 //
 xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_ulong_t aShellAttributes = 0);
-xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath, xpr_ulong_t aShellAttributes = 0);
+xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr::string &aPath, xpr_ulong_t aShellAttributes = 0);
 xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aPath, xpr_ulong_t aShellAttributes = 0);
-xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aPath, xpr_ulong_t aShellAttributes = 0);
+xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::string &aPath, xpr_ulong_t aShellAttributes = 0);
 
 //
 // full path
 //
 void         GetFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aFullPath);
-void         GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath);
+void         GetFullPath(LPCITEMIDLIST aFullPidl, xpr::string &aFullPath);
 xpr_bool_t   GetFullPidl(const xpr_tchar_t *aFullPath, LPITEMIDLIST *aFullPidl);
-xpr_bool_t   GetFullPidl(const xpr::tstring &aFullPath, LPITEMIDLIST *aFullPidl);
+xpr_bool_t   GetFullPidl(const xpr::string &aFullPath, LPITEMIDLIST *aFullPidl);
 LPITEMIDLIST GetFullPidl(const xpr_tchar_t *aFullPath);
-LPITEMIDLIST GetFullPidl(const xpr::tstring &aFullPath);
+LPITEMIDLIST GetFullPidl(const xpr::string &aFullPath);
 
 void         GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath);
-void         GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath);
+void         GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::string &aPath);
 xpr_bool_t   GetDispFullPidl(const xpr_tchar_t *aFullPath, LPITEMIDLIST *aFullPidl);
 LPITEMIDLIST GetDispFullPidl(const xpr_tchar_t *aFullPath);
 
 //
 // name
 //
-xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aFriendlyName);
+xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::string &aFriendlyName);
 xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr_tchar_t *aFriendlyName);
-xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aFriendlyName);
+xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::string &aFriendlyName);
 xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aFriendlyName);
 void       PathToNormal(xpr_tchar_t *aPath);
 void       PathToNormal(const xpr_tchar_t *aPath, xpr_tchar_t *aNormal);
@@ -78,7 +78,7 @@ xpr_bool_t   GetFileType(const xpr_tchar_t *aPath, xpr_tchar_t *aTypeName);
 //
 // file size
 //
-xpr_uint64_t GetFileSize(const xpr::tstring &aPath);
+xpr_uint64_t GetFileSize(const xpr::string &aPath);
 xpr_uint64_t GetFileSize(const xpr_tchar_t *aPath);
 xpr_bool_t   GetFileSize(const xpr_tchar_t *aPath, xpr_tchar_t *aFileSize, xpr_size_t aMaxLen);
 xpr_bool_t   GetFileSize(xpr_uint64_t aFileSize, xpr_tchar_t *aFileSizeText, xpr_size_t aMaxLen);
@@ -118,17 +118,17 @@ xpr_bool_t  IsFileSystem(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
 xpr_bool_t  IsFileSystem(const xpr_tchar_t *aPath);
 xpr_bool_t  IsFileSystemFolder(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsFileSystemFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
-xpr_bool_t  IsFileSystemFolder(const xpr::tstring &aPath);
+xpr_bool_t  IsFileSystemFolder(const xpr::string &aPath);
 xpr_bool_t  IsFileSystemFolder(const xpr_tchar_t *aPath);
 xpr_bool_t  IsNetItem(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsNetItem(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
 xpr_bool_t  IsNetItem(const xpr_tchar_t *aPath);
-xpr_bool_t  IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFullPath);
+xpr_bool_t  IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::string &aFullPath);
 xpr_bool_t  IsParentVirtualItem(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsVirtualItem(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
 xpr_bool_t  IsVirtualItem(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsExistFile(const xpr_tchar_t *aPath);
-xpr_bool_t  IsExistFile(const xpr::tstring &aPath);
+xpr_bool_t  IsExistFile(const xpr::string &aPath);
 
 xpr_bool_t  IsLibrariesSubFolder(LPCITEMIDLIST aFullPidl);
 xpr_bool_t  IsLibrariesSubFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
@@ -163,7 +163,7 @@ xpr_bool_t IsDriveSecure(xpr_tchar_t aDriveChar);
 // file extension
 //
 xpr_bool_t         IsEqualFileExt(const xpr_tchar_t *aPath, const xpr_tchar_t *aExt);
-const xpr_tchar_t *GetFileExt(const xpr::tstring &aPath);
+const xpr_tchar_t *GetFileExt(const xpr::string &aPath);
 const xpr_tchar_t *GetFileExt(const xpr_tchar_t *aPath);
 xpr_bool_t         IsFileKnownExt(const xpr_tchar_t *aExt);
 

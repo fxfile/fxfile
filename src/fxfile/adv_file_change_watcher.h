@@ -44,10 +44,10 @@ public:
         xpr_uint_t   mMsg;
         AdvWatchId   mAdvWatchId;
         Event        mEvent;
-        xpr::tstring mDir;
-        xpr::tstring mFileName;
-        xpr::tstring mOldDir;
-        xpr::tstring mOldFileName;
+        xpr::string  mDir;
+        xpr::string  mFileName;
+        xpr::string  mOldDir;
+        xpr::string  mOldFileName;
         xpr_size_t   mNotifyCount;
         xpr_sint64_t mTime;
     };
@@ -66,11 +66,11 @@ public:
         xpr_bool_t isValidate(void);
 
     public:
-        HWND         mHwnd;
-        xpr_uint_t   mMsg;
-        xpr::tstring mPath;
-        xpr_bool_t   mSubPath;
-        LPARAM       mParam;
+        HWND        mHwnd;
+        xpr_uint_t  mMsg;
+        xpr::string mPath;
+        xpr_bool_t  mSubPath;
+        LPARAM      mParam;
 
     protected:
         AdvWatchId   mAdvWatchId;
@@ -82,7 +82,7 @@ protected:
     typedef std::list<Task *> TaskList;
 
     class DriveWatchItem;
-    typedef std::map<xpr::tstring, DriveWatchItem *> DriveWatchMap;
+    typedef std::map<xpr::string, DriveWatchItem *> DriveWatchMap;
     typedef std::map<AdvWatchId, DriveWatchItem *> IdDriveWatchMap;
 
     typedef std::list<NotifyInfo *> NotifyList;
@@ -108,7 +108,7 @@ protected:
     unsigned OnNotifyThreadEntryProc(void);
 
 protected:
-    xpr_bool_t getRootPath(const xpr::tstring &aPath, xpr::tstring &aRootPath);
+    xpr_bool_t getRootPath(const xpr::string &aPath, xpr::string &aRootPath);
 
     void processTasks(TaskList &aTaskList);
     void registerTask(Task &aTask);

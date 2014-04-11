@@ -44,12 +44,12 @@ protected:
     const xpr_tchar_t *getMsg(xpr_uint_t aId);
 
 protected:
-    xpr::tstring mPath;
-    xpr::tstring mDir;
-    xpr::tstring mExt;
-    xpr_bool_t   mExistCheck;
+    xpr::string mPath;
+    xpr::string mDir;
+    xpr::string mExt;
+    xpr_bool_t  mExistCheck;
 
-    typedef std::map<xpr_uint_t, xpr::tstring> MsgMap;
+    typedef std::map<xpr_uint_t, xpr::string> MsgMap;
     MsgMap mMsgMap;
 
 protected:

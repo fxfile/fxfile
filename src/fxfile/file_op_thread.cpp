@@ -21,6 +21,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // timer id
 //
@@ -36,6 +38,7 @@ enum
 {
     WM_POST_END = WM_USER+100,
 };
+} // namespace anonymous
 
 xpr_sint_t FileOpThread::mRefCount      = 0;
 xpr_bool_t FileOpThread::mCompleteFlash = XPR_FALSE;

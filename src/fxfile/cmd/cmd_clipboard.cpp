@@ -35,7 +35,9 @@ namespace fxfile
 {
 namespace cmd
 {
-static xpr_bool_t isFocusEditCtrl(void)
+namespace
+{
+xpr_bool_t isFocusEditCtrl(void)
 {
     HWND sHwnd = ::GetFocus();
 
@@ -45,6 +47,7 @@ static xpr_bool_t isFocusEditCtrl(void)
 
     return (_tcsicmp(sClassName, XPR_STRING_LITERAL("Edit")) == 0) ? XPR_TRUE : XPR_FALSE;
 }
+} // namespace anonymous
 
 xpr_sint_t ClipboardFileCutCommand::canExecute(CommandContext &aContext)
 {
@@ -1091,7 +1094,7 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sTvItemData))
             return;
 
-        xpr::tstring sName;
+        xpr::string sName;
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
 
         SetTextClipboard(sFolderCtrl->GetSafeHwnd(), sName.c_str());
@@ -1143,8 +1146,8 @@ void ClipboardNameCopyCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sClipText;
-        xpr::tstring sName;
+        xpr::string sClipText;
+        xpr::string sName;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1235,7 +1238,7 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sTvItemData))
             return;
 
-        xpr::tstring sName;
+        xpr::string sName;
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
 
         SetTextClipboard(sFolderCtrl->GetSafeHwnd(), sName.c_str());
@@ -1284,8 +1287,8 @@ void ClipboardFileNameCopyCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sClipText;
-        xpr::tstring sFileName;
+        xpr::string sClipText;
+        xpr::string sFileName;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1407,7 +1410,7 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sTvItemData))
             return;
 
-        xpr::tstring sPath;
+        xpr::string sPath;
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
         SetTextClipboard(sFolderCtrl->GetSafeHwnd(), sPath.c_str());
@@ -1451,8 +1454,8 @@ void ClipboardPathCopyCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sClipText;
-        xpr::tstring sPath;
+        xpr::string sClipText;
+        xpr::string sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1533,7 +1536,7 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sTvItemData))
             return;
 
-        xpr::tstring sDevPath;
+        xpr::string sDevPath;
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sDevPath);
 
         ConvDevPath(sDevPath);
@@ -1595,8 +1598,8 @@ void ClipboardDevPathCopyCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sClipText;
-        xpr::tstring sPath;
+        xpr::string sClipText;
+        xpr::string sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1680,7 +1683,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
         if (XPR_IS_NULL(sTvItemData))
             return;
 
-        xpr::tstring sUrlPath;
+        xpr::string sUrlPath;
         GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sUrlPath);
 
         ConvUrlPath(sUrlPath);
@@ -1694,8 +1697,8 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
             return;
 
         xpr_size_t sFind;
-        xpr::tstring sClipText;
-        xpr::tstring sPath;
+        xpr::string sClipText;
+        xpr::string sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1717,7 +1720,7 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
                     sClipText += sClipSeperatorText;
 
                 sFind = 0;
-                while ((sFind = sPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::tstring::npos)
+                while ((sFind = sPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::string::npos)
                 {
                     sPath.replace(sFind, 1, 1, XPR_STRING_LITERAL('/'));
                     sFind++;
@@ -1732,8 +1735,8 @@ void ClipboardUrlCopyCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sClipText;
-        xpr::tstring sPath;
+        xpr::string sClipText;
+        xpr::string sPath;
 
         xpr_tchar_t sClipSeperatorText[31] = {0};
         ConvertStringToFormat(gOpt->mConfig.mClipboardSeparator, sClipSeperatorText);
@@ -1832,7 +1835,7 @@ xpr_sint_t pasteNewBitmapFile(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aD
 
     HICON sIcon = GetFileExtIcon(XPR_STRING_LITERAL(".bmp"), XPR_TRUE);
 
-    xpr::tstring sCurDir;
+    xpr::string sCurDir;
     aExplorerCtrl.getCurPath(sCurDir);
 
     CreateItemDlg sDlg;

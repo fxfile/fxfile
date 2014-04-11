@@ -89,10 +89,10 @@ public:
 
     LPARAM GetItemData(HTREEITEM aTreeItem) const;
 
-    void getFullPath(HTREEITEM aTreeItem, xpr::tstring &aFullPath) const;
+    void getFullPath(HTREEITEM aTreeItem, xpr::string &aFullPath) const;
     void getFullPath(HTREEITEM aTreeItem, xpr_tchar_t *aFullPath, xpr_size_t aMaxLen) const;
     void getCurPath(xpr_tchar_t *aPath) const;
-    void getCurPath(xpr::tstring &aPath) const;
+    void getCurPath(xpr::string &aPath) const;
 
     void setHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModifiedSystem);
 
@@ -117,7 +117,7 @@ public:
     void setCustomFont(xpr_bool_t aCustomFont, CFont *aFont);
 
     void setDragContents(xpr_bool_t aDragContents = XPR_TRUE);
-    void setChangeNotify(xpr::tstring aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable = XPR_TRUE);
+    void setChangeNotify(xpr::string aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable = XPR_TRUE);
     void changeRecursiveNotify(HTREEITEM aTreeItem, xpr_bool_t aAllSubTree, xpr_bool_t aEnable);
 
     xpr_sint_t getClipFormatCount(void) const;

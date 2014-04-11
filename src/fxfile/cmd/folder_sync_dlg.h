@@ -58,7 +58,7 @@ protected:
     BCMenu         mMenu;
     CImageList     mSyncImgList;
 
-    xpr::tstring   mDir[2];
+    xpr::string    mDir[2];
     SyncDirs      *mSyncDirs;
     xpr_bool_t     mStop;
 

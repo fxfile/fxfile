@@ -34,7 +34,7 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };

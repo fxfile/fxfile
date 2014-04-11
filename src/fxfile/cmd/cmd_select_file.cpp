@@ -24,7 +24,9 @@ namespace fxfile
 {
 namespace cmd
 {
-static void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
+namespace
+{
+void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
 {
     SelNameDlg sDlg(aSelect);
     if (sDlg.DoModal() != IDOK)
@@ -133,7 +135,7 @@ static void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
     XPR_SAFE_DELETE_ARRAY(sPattern);
 }
 
-static void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
+void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
 {
     SelNameDlg sDlg(aSelect);
     if (sDlg.DoModal() != IDOK)
@@ -224,6 +226,7 @@ static void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
 
     aSearchResultCtrl.SetFocus();
 }
+} // namespace anonymous
 
 xpr_sint_t SelectNameCommand::canExecute(CommandContext &aContext)
 {
@@ -745,7 +748,7 @@ static void selectFilter(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
     xpr_sint_t i;
     xpr_sint_t sCount;
     LPLVITEMDATA sLvItemData;
-    xpr::tstring sPath;
+    xpr::string sPath;
     const xpr_tchar_t *sExt;
 
     sCount = aExplorerCtrl.GetItemCount();
@@ -815,7 +818,7 @@ static void selectFilter(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect
     xpr_sint_t i;
     xpr_sint_t sCount;
     SrItemData *sSrItemData;
-    xpr::tstring sPath;
+    xpr::string sPath;
     const xpr_tchar_t *sExt;
 
     sCount = aSearchResultCtrl.GetItemCount();

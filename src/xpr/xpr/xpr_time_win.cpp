@@ -13,17 +13,45 @@
 namespace xpr
 {
 #if defined(XPR_CFG_OS_WINDOWS)
-static const xpr_time_t k1601to1970Offset = XPR_SINT64_LITERAL(116444736000000000); // offset from Jan 1, 1601 (UTC) to Jan 1, 1970
+namespace
+{
+const xpr_time_t k1601to1970Offset = XPR_SINT64_LITERAL(116444736000000000); // offset from Jan 1, 1601 (UTC) to Jan 1, 1970
 
-static const xpr_time_t kDeltaNanoUnit = 100; // FILETIME structure represent 100 nano-second unit
+const xpr_time_t kDeltaNanoUnit = 100; // FILETIME structure represent 100 nano-second unit
 
-static Mutex      gMutex; // TODO: change to spin lock
-static xpr_time_t gPrevTime = XPR_SINT64_LITERAL(0);
-static xpr_time_t gTimer1   = XPR_SINT64_LITERAL(0);
-static xpr_time_t gTimer2   = XPR_SINT64_LITERAL(0);
+Mutex      gMutex; // TODO: change to spin lock
+xpr_time_t gPrevTime = XPR_SINT64_LITERAL(0);
+xpr_time_t gTimer1   = XPR_SINT64_LITERAL(0);
+xpr_time_t gTimer2   = XPR_SINT64_LITERAL(0);
 
-static const xpr_sint_t kMonthTable    [12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-static const xpr_sint_t kMonthTableLeap[12] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const xpr_sint_t kMonthTable    [12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const xpr_sint_t kMonthTableLeap[12] = {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+xpr_sint_t getDaysSince1980(xpr_sint_t aYear, xpr_sint_t aMonth, xpr_sint_t aDay)
+{
+    if (aYear < 1980 || XPR_IS_OUT_OF_RANGE(1, aMonth, 12) || XPR_IS_OUT_OF_RANGE(1, aDay, 31))
+    {
+        return 0;
+    }
+
+    xpr_sint_t sDays = aDay;
+
+    const xpr_sint_t *sMonthTable = isLeapYear(aYear) ? kMonthTableLeap : kMonthTable;
+
+    xpr_sint_t i;
+    for (i = 0; i < aMonth - 1; ++i)
+    {
+        sDays += sMonthTable[i];
+    }
+
+    for (i = 1980; i < aYear; ++i)
+    {
+        sDays += isLeapYear(i) ? 366 : 365;
+    }
+
+    return sDays;
+}
+} // namespace anonymous
 
 XPR_INLINE void convertFileTimeToXprTime(const FILETIME &aFileTime, xpr_time_t &aTime)
 {
@@ -171,12 +199,22 @@ XPR_DL_API void getLocalTimeNow(TimeExpr &aLocalTimeExprNow)
 
     xpr_bool_t sResult = toTimeExpr(sLocalTimeNow, aLocalTimeExprNow, 0);
 
+    aLocalTimeExprNow.mUtcOffset = getTimeZoneOffset();
+
     XPR_ASSERT(sResult == XPR_TRUE);
 }
 
 XPR_DL_API void getTimeFromAnsiTime(time_t aAnsiTime, xpr_time_t &aTime)
 {
     aTime = (xpr_time_t)aAnsiTime * kNanosecondPerSecond;
+}
+
+XPR_DL_API xpr_sint_t getTimeZoneOffset(void)
+{
+    TIME_ZONE_INFORMATION sTimeZoneInformation;
+    ::GetTimeZoneInformation(&sTimeZoneInformation);
+
+    return (xpr_sint_t)sTimeZoneInformation.Bias;
 }
 
 XPR_DL_API xpr_bool_t toTimeExpr(xpr_time_t aTime, TimeExpr &aTimeExpr, xpr_sint_t aOffset)
@@ -202,8 +240,8 @@ XPR_DL_API xpr_bool_t toTimeExpr(xpr_time_t aTime, TimeExpr &aTimeExpr, xpr_sint
     aTimeExpr.mNanosecond = ((xpr_sint32_t)sSystemTime.wMilliseconds * kMillisecond) + (aTime % kMillisecond);
 
     aTimeExpr.mDayOfWeek  = getDayOfWeek(aTimeExpr.mYear, aTimeExpr.mMonth, aTimeExpr.mDay);
-    aTimeExpr.mIsDst      = XPR_FALSE;
-    aTimeExpr.mGmtOff     = aOffset;
+    aTimeExpr.mIsDst      = DstUnknown;
+    aTimeExpr.mUtcOffset  = aOffset;
 
     return XPR_TRUE;
 }
@@ -231,7 +269,7 @@ XPR_DL_API xpr_bool_t toTime(const TimeExpr &aTimeExpr, xpr_time_t &aTime)
     convertFileTimeToXprTime(sFileTime, aTime);
 
     aTime += aTimeExpr.mNanosecond % kMillisecond;
-    aTime -= aTimeExpr.mGmtOff * kNanosecondPerSecond;
+    aTime -= aTimeExpr.mUtcOffset * kNanosecondPerSecond;
 
     return XPR_TRUE;
 }
@@ -263,31 +301,6 @@ XPR_DL_API xpr_bool_t isValidDate(xpr_sint_t aYear, xpr_sint_t aMonth, xpr_sint_
     }
 
     return XPR_TRUE;
-}
-
-static xpr_sint_t getDaysSince1980(xpr_sint_t aYear, xpr_sint_t aMonth, xpr_sint_t aDay)
-{
-    if (aYear < 1980 || XPR_IS_OUT_OF_RANGE(1, aMonth, 12) || XPR_IS_OUT_OF_RANGE(1, aDay, 31))
-    {
-        return 0;
-    }
-
-    xpr_sint_t sDays = aDay;
-
-    const xpr_sint_t *sMonthTable = isLeapYear(aYear) ? kMonthTableLeap : kMonthTable;
-
-    xpr_sint_t i;
-    for (i = 0; i < aMonth - 1; ++i)
-    {
-        sDays += sMonthTable[i];
-    }
-
-    for (i = 1980; i < aYear; ++i)
-    {
-        sDays += isLeapYear(i) ? 366 : 365;
-    }
-
-    return sDays;
 }
 
 XPR_DL_API xpr_sint_t getDayOfWeek(xpr_sint_t aYear, xpr_sint_t aMonth, xpr_sint_t aDay)
@@ -485,7 +498,10 @@ public:
     xpr_bool_t   mEnable;
 };
 
-static HighResTimer gHighResTimer; // TODO: change to thread once
+namespace
+{
+HighResTimer gHighResTimer; // TODO: change to thread once
+} // namespace anonymous
 
 #define XPR_CALC_HIGH_RES_TIMER(aCur, aFreq, aUnit) \
     (((aCur / aFreq) * aUnit) + ((aCur % aFreq) * aUnit / aFreq))

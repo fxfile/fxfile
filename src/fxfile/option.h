@@ -86,16 +86,16 @@ public:
 
         struct Tab;
         struct View;
-        typedef std::list <xpr::tstring> HistoryList;
-        typedef std::deque<Tab        *> TabDeque;
-        typedef std::deque<View       *> ViewDeque;
+        typedef std::list <xpr::string> HistoryList;
+        typedef std::deque<Tab       *> TabDeque;
+        typedef std::deque<View      *> ViewDeque;
 
         struct Tab
         {
-            xpr::tstring mPath;
-            HistoryList  mBackwardList;
-            HistoryList  mForwardList;
-            HistoryList  mHistoryList;
+            xpr::string mPath;
+            HistoryList mBackwardList;
+            HistoryList mForwardList;
+            HistoryList mHistoryList;
         };
 
         struct View

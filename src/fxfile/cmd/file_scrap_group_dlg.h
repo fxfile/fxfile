@@ -22,12 +22,12 @@ public:
     virtual ~FileScrapGroupDlg(void);
 
 public:
-    void setTitle(const xpr::tstring &aTitle);
+    void setTitle(const xpr::string &aTitle);
     xpr_uint_t getSelGroupId(void);
 
 protected:
-    xpr::tstring mTitle;
-    xpr_uint_t   mSelGroupId;
+    xpr::string mTitle;
+    xpr_uint_t  mSelGroupId;
 
 protected:
     CListBox mListBox;

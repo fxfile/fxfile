@@ -20,7 +20,10 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ActivateBar");
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ActivateBar");
+} // namespace anonymous
 
 ActivateBar::ActivateBar(void)
     : mActivate(XPR_FALSE), mLastActivated(XPR_FALSE)

@@ -50,7 +50,9 @@
 
 namespace fxfile
 {
-static const xpr_sint_t kTabHeight = 27;
+namespace
+{
+const xpr_sint_t kTabHeight = 27;
 
 //
 // control id
@@ -62,6 +64,7 @@ enum
     CTRL_ID_ACTIVATE_BAR,
     CTRL_ID_TAB_PANE = 200,
 };
+} // namespace anonymous
 
 class ExplorerView::TabData
 {
@@ -242,7 +245,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
 
     FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mBackwardList)
     {
-        const xpr::tstring &sHistoryPath = *sHistoryIterator;
+        const xpr::string &sHistoryPath = *sHistoryIterator;
 
         sFullPidl = Path2Pidl(sHistoryPath);
         if (XPR_IS_NOT_NULL(sFullPidl))
@@ -253,7 +256,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
 
     FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mForwardList)
     {
-        const xpr::tstring &sHistoryPath = *sHistoryIterator;
+        const xpr::string &sHistoryPath = *sHistoryIterator;
 
         sFullPidl = Path2Pidl(sHistoryPath);
         if (XPR_IS_NOT_NULL(sFullPidl))
@@ -264,7 +267,7 @@ XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplor
 
     FXFILE_STL_FOR_EACH(sHistoryIterator, aTabOption.mHistoryList)
     {
-        const xpr::tstring &sHistoryPath = *sHistoryIterator;
+        const xpr::string &sHistoryPath = *sHistoryIterator;
 
         sFullPidl = Path2Pidl(sHistoryPath);
         if (XPR_IS_NOT_NULL(sFullPidl))
@@ -401,13 +404,13 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     return 0;
 }
 
-LPITEMIDLIST ExplorerView::getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::tstring &aSelFile) const
+LPITEMIDLIST ExplorerView::getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::string &aSelFile) const
 {
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
     ProgramOpts &sProgramOpts = SingletonManager::get<ProgramOpts>();
 
-    xpr::tstring sPathArg = sProgramOpts.getDir(aIndex);
+    xpr::string sPathArg = sProgramOpts.getDir(aIndex);
     if (sPathArg.empty() == XPR_FALSE)
     {
         if (sPathArg.length() == 2)
@@ -415,12 +418,12 @@ LPITEMIDLIST ExplorerView::getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::
 
         if (xpr::FileSys::exist(sPathArg.c_str()) == XPR_TRUE)
         {
-            xpr::tstring sDirArg;
+            xpr::string sDirArg;
 
             if (IsFileSystemFolder(sPathArg.c_str()) == XPR_FALSE)
             {
                 xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
-                if (sFind != xpr::tstring::npos)
+                if (sFind != xpr::string::npos)
                 {
                     aSelFile = sPathArg.substr(sFind + 1);
                     sDirArg = sPathArg.substr(0, sFind);
@@ -431,7 +434,7 @@ LPITEMIDLIST ExplorerView::getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::
                 if (sProgramOpts.isSelect() == XPR_TRUE)
                 {
                     xpr_size_t sFind = sPathArg.rfind(XPR_STRING_LITERAL('\\'));
-                    if (sFind != xpr::tstring::npos)
+                    if (sFind != xpr::string::npos)
                     {
                         aSelFile = sPathArg.substr(sFind + 1);
                         sDirArg = sPathArg.substr(0, sFind);
@@ -623,7 +626,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
         const HistoryDeque *sHistoryDeque  = aExplorerCtrl.getHistoryDeque();
 
         LPITEMIDLIST sFullPidl;
-        xpr::tstring sHistoryPath;
+        xpr::string sHistoryPath;
         HistoryDeque::const_iterator sIterator;
 
         if (XPR_IS_NOT_NULL(sBackwardDeque))
@@ -1155,7 +1158,7 @@ xpr_sint_t ExplorerView::newTab(TabType aTabType)
     return -1;
 }
 
-xpr_sint_t ExplorerView::newTab(const xpr::tstring &aInitFolder)
+xpr_sint_t ExplorerView::newTab(const xpr::string &aInitFolder)
 {
     LPITEMIDLIST sFullPidl = Path2Pidl(aInitFolder);
 
@@ -1231,7 +1234,7 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
     // initailize folder location
     xpr_bool_t sExplored = XPR_FALSE;
 
-    xpr::tstring sSelFile;
+    xpr::string sSelFile;
 
     if (XPR_IS_TRUE(mInit))
     {
@@ -1445,7 +1448,7 @@ xpr_sint_t ExplorerView::duplicateTab(xpr_sint_t aTab)
             LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
             if (XPR_IS_NOT_NULL(sTvItemData))
             {
-                xpr::tstring sTabPath;
+                xpr::string sTabPath;
                 Pidl2Path(sTvItemData->mFullPidl, sTabPath);
 
                 xpr_sint_t sNewTab = newTab(sTabPath);
@@ -1705,7 +1708,7 @@ xpr_bool_t ExplorerView::getTabText(xpr_sint_t aTab, xpr_tchar_t *aText, xpr_siz
     return mTabCtrl->getTabText(sTab, aText, aMaxLen);
 }
 
-xpr_bool_t ExplorerView::getTabText(xpr_sint_t aTab, xpr::tstring &aText) const
+xpr_bool_t ExplorerView::getTabText(xpr_sint_t aTab, xpr::string &aText) const
 {
     if (XPR_IS_NULL(mTabCtrl))
         return XPR_FALSE;
@@ -2209,7 +2212,7 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                     }
 
                     // update tab text and image
-                    xpr::tstring sName;
+                    xpr::string sName;
                     xpr_sint_t sImageIndex = -1;
                     GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
 
@@ -2217,7 +2220,7 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                     {
                         if (IsFileSystem(sTvItemData->mShellFolder, sTvItemData->mPidl))
                         {
-                            xpr::tstring sPath;
+                            xpr::string sPath;
                             GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
                             if (sPath.length() > 3)
@@ -2349,7 +2352,7 @@ void ExplorerView::onTabNewButton(TabCtrl &aTabCtrl)
     gFrame->executeCommand(ID_WINDOW_TAB_NEW);
 }
 
-xpr_bool_t ExplorerView::onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::tstring &aToolTipText)
+xpr_bool_t ExplorerView::onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::string &aToolTipText)
 {
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl((xpr_sint_t)aTab);
     if (XPR_IS_NULL(sExplorerCtrl))
@@ -2676,7 +2679,7 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
 
     if (sTab >= 0)
     {
-        xpr::tstring sName;
+        xpr::string sName;
         xpr_sint_t sImageIndex = -1;
         GetName(aFullPidl, SHGDN_INFOLDER, sName);
 
@@ -2684,7 +2687,7 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
         {
             if (IsFileSystem(aFullPidl))
             {
-                xpr::tstring sPath;
+                xpr::string sPath;
                 GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
                 if (sPath.length() > 3)

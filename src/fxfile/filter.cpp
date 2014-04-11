@@ -21,6 +21,15 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
+namespace
+{
+const xpr_tchar_t kFilterSection[] = XPR_STRING_LITERAL("filter");
+const xpr_tchar_t kNameKey      [] = XPR_STRING_LITERAL("filter.item%d_name");
+const xpr_tchar_t kExtensionKey [] = XPR_STRING_LITERAL("filter.item%d_extension");
+const xpr_tchar_t kColorKey     [] = XPR_STRING_LITERAL("filter.item%d_color");
+const xpr_tchar_t kIconIndexKey [] = XPR_STRING_LITERAL("filter.item%d_icon_index");
+} // namespace anonymous
+
 const xpr_tchar_t *Filter::mFolderString          = XPR_NULL;
 const xpr_tchar_t *Filter::mGeneralFileString     = XPR_NULL;
 const xpr_tchar_t *Filter::mExecutableFileString  = XPR_NULL;
@@ -32,12 +41,6 @@ const xpr_tchar_t *Filter::mMovieFileString       = XPR_NULL;
 const xpr_tchar_t *Filter::mWebFileString         = XPR_NULL;
 const xpr_tchar_t *Filter::mProgrammingFileString = XPR_NULL;
 const xpr_tchar_t *Filter::mTemporaryFileString   = XPR_NULL;
-
-static const xpr_tchar_t kFilterSection[] = XPR_STRING_LITERAL("filter");
-static const xpr_tchar_t kNameKey      [] = XPR_STRING_LITERAL("filter.item%d_name");
-static const xpr_tchar_t kExtensionKey [] = XPR_STRING_LITERAL("filter.item%d_extension");
-static const xpr_tchar_t kColorKey     [] = XPR_STRING_LITERAL("filter.item%d_color");
-static const xpr_tchar_t kIconIndexKey [] = XPR_STRING_LITERAL("filter.item%d_icon_index");
 
 Filter::Filter(void)
 {
@@ -89,7 +92,7 @@ FilterItem *Filter::getFilterFromName(const xpr_tchar_t *aName)
     return XPR_NULL;
 }
 
-FilterItem *Filter::getFilterFromName(const xpr::tstring &aName)
+FilterItem *Filter::getFilterFromName(const xpr::string &aName)
 {
     return getFilterFromName(aName.c_str());
 }

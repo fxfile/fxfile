@@ -45,7 +45,7 @@ protected:
     xpr_tchar_t mSaveDefaultPath[XPR_MAX_PATH + 1];
     xpr_tchar_t mPath[XPR_MAX_PATH + 1];
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque mListDeque;
 
 protected:

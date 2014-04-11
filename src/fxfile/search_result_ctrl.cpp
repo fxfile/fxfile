@@ -38,6 +38,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // timer id
 //
@@ -54,6 +56,7 @@ enum
     WM_SHELL_ASYNC_ICON    = WM_USER + 11,
     WM_SHELL_CHANGE_NOTIFY = WM_USER + 1500,
 };
+} // namespace anonymous
 
 xpr_uint_t SearchResultCtrl::mCodeMgr = 0;
 
@@ -717,7 +720,7 @@ xpr_bool_t SearchResultCtrl::getSelPidls(LPSHELLFOLDER *aShellFolder, LPITEMIDLI
         SrItemData *sSrItemData = (SrItemData *)GetItemData(sIndex);
         if (XPR_IS_NOT_NULL(sSrItemData))
         {
-            xpr::tstring sPath;
+            xpr::string sPath;
             sSrItemData->getPath(sPath);
 
             LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sPath.c_str());
@@ -2041,7 +2044,7 @@ LRESULT SearchResultCtrl::OnShellAsyncIcon(WPARAM wParam, LPARAM lParam)
                         sState = INDEXTOOVERLAYMASK(sAsyncIcon->mResult.mIconIndex);
                     else
                     {
-                        xpr::tstring sPath;
+                        xpr::string sPath;
                         sSrItemData->getPath(sPath);
 
                         const xpr_tchar_t *sExt = GetFileExt(sPath);

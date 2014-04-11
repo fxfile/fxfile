@@ -40,13 +40,13 @@ public:
     inline xpr_sint_t getLength(void) const { return mLength; }
 
 public:
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 
 private:
-    static void toString(const DeletePosType &aPosType, xpr::tstring &aString);
-    static void toType(const xpr::tstring &aString, DeletePosType &aPosType);
+    static void toString(const DeletePosType &aPosType, xpr::string &aString);
+    static void toType(const xpr::string &aString, DeletePosType &aPosType);
 
 private:
     DeletePosType mPosType;

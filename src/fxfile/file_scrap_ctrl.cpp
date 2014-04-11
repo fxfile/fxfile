@@ -38,6 +38,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // user defined message
 //
@@ -46,6 +48,7 @@ enum
     WM_SHELL_ASYNC_ICON    = WM_USER + 11,
     WM_SHELL_CHANGE_NOTIFY = WM_USER + 1500,
 };
+} // namespace anonymous
 
 class FileScrapCtrl::ItemData
 {
@@ -72,7 +75,7 @@ public:
 
     xpr_uint_t         mSignature;
     xpr_bool_t         mFileExist;
-    xpr::tstring       mDir;
+    xpr::string        mDir;
     const xpr_tchar_t *mFileName;
     xpr_uint64_t       mFileSize;
     FILETIME           mModifiedFileTime;
@@ -228,7 +231,7 @@ void FileScrapCtrl::initList(FileScrap::Group *aGroup, xpr_bool_t aRedraw)
         sItemData->mFileExist       = XPR_TRUE;
 
         xpr_size_t sFind = sItemData->mFileScrapItem->mPath.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
         {
             sItemData->mDir      = sItemData->mFileScrapItem->mPath.substr(0, sFind).c_str();
             sItemData->mFileName = sItemData->mFileScrapItem->mPath.c_str() + sFind + 1;

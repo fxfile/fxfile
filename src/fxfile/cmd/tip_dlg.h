@@ -26,7 +26,7 @@ protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 protected:
-    typedef std::deque<xpr::tstring> TipDeque;
+    typedef std::deque<xpr::string> TipDeque;
     TipDeque   mTipDeque;
     xpr_sint_t mIndex;
 

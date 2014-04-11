@@ -26,11 +26,14 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kUpdaterProgramDebug          [] = XPR_STRING_LITERAL("updater\\fxfile-updater_dbg.exe");
-static const xpr_tchar_t kUpdaterProgram               [] = XPR_STRING_LITERAL("updater\\fxfile-updater.exe");
-static const xpr_tchar_t kUpdaterSection               [] = XPR_STRING_LITERAL("config");
-static const xpr_tchar_t kUpdaterRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-static const xpr_tchar_t kUpdaterRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-updater");
+namespace
+{
+const xpr_tchar_t kUpdaterProgramDebug          [] = XPR_STRING_LITERAL("updater\\fxfile-updater_dbg.exe");
+const xpr_tchar_t kUpdaterProgram               [] = XPR_STRING_LITERAL("updater\\fxfile-updater.exe");
+const xpr_tchar_t kUpdaterSection               [] = XPR_STRING_LITERAL("config");
+const xpr_tchar_t kUpdaterRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+const xpr_tchar_t kUpdaterRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-updater");
+} // namespace anonymous
 
 static HWND findUpdaterWindow(void)
 {
@@ -67,18 +70,18 @@ void UpdaterManager::startupProcess(void)
     HWND sHwnd = findUpdaterWindow();
     if (XPR_IS_NULL(sHwnd))
     {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+        xpr::string sPath;
+        xpr::FileSys::getExeDir(sPath);
 
-        _tcscat(sPath, XPR_STRING_LITERAL("\\"));
+        sPath += XPR_STRING_LITERAL("\\");
 
 #ifdef XPR_CFG_BUILD_DEBUG
-        _tcscat(sPath, kUpdaterProgramDebug);
+        sPath += kUpdaterProgramDebug;
 #else
-        _tcscat(sPath, kUpdaterProgram);
+        sPath += kUpdaterProgram;
 #endif
 
-        ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sPath, XPR_NULL, XPR_NULL, 0);
+        ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sPath.c_str(), XPR_NULL, XPR_NULL, 0);
     }
     else
     {
@@ -116,18 +119,18 @@ void UpdaterManager::registerWinStartup(void)
     CRegKey sRegKey;
     if (sRegKey.Open(HKEY_CURRENT_USER, kUpdaterRegKey) == ERROR_SUCCESS)
     {
-        xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-        xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+        xpr::string sPath;
+        xpr::FileSys::getExeDir(sPath);
 
-        _tcscat(sPath, XPR_FILE_SEPARATOR_STRING);
+        sPath += XPR_FILE_SEPARATOR_STRING;
 
 #ifdef XPR_CFG_BUILD_DEBUG
-        _tcscat(sPath, kUpdaterProgramDebug);
+        sPath += kUpdaterProgramDebug;
 #else
-        _tcscat(sPath, kUpdaterProgram);
+        sPath += kUpdaterProgram;
 #endif
 
-        sRegKey.SetStringValue(kUpdaterRegValueNameWinStartup, sPath);
+        sRegKey.SetStringValue(kUpdaterRegValueNameWinStartup, sPath.c_str());
     }
 
     sRegKey.Close();

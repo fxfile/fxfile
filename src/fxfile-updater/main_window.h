@@ -38,19 +38,19 @@ public:
 protected:
     xpr_bool_t registerWindowClass(void);
 
-    xpr_bool_t getConfHomeDir(xpr::tstring &aDir);
-    xpr_bool_t getConfHomeDirFromConfFile(const xpr::tstring &aConfPath, xpr::tstring &aDir);
+    xpr_bool_t getConfHomeDir(xpr::string &aDir);
+    xpr_bool_t getConfHomeDirFromConfFile(const xpr::string &aConfPath, xpr::string &aDir);
     xpr_bool_t loadConfig(void);
 
-    xpr_bool_t getUpdateHomeDir(xpr::tstring &aUpdateHomeDir) const;
+    xpr_bool_t getUpdateHomeDir(xpr::string &aUpdateHomeDir) const;
 
 protected:
     struct Config
     {
-        xpr_sint_t   mEnable;
-        xpr::tstring mCurVer;
-        xpr_sint_t   mCheckMinorVer;
-        xpr_sint_t   mCheckPeriodTime; // unit: hour
+        xpr_sint_t  mEnable;
+        xpr::string mCurVer;
+        xpr_sint_t  mCheckMinorVer;
+        xpr_sint_t  mCheckPeriodTime; // unit: hour
     };
 
     Config mConfig;

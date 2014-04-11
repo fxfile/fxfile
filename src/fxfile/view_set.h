@@ -19,7 +19,6 @@ namespace base
 {
 class ConfFileEx;
 } // namespace base
-} // namespace fxfile
 
 #define MAX_COLUMN          (5)
 #define DEF_COLUMN_SIZE     (200)  // pixel
@@ -85,7 +84,7 @@ typedef struct ColumnInfo : public ColumnId
     xpr_sint_t     mColumn;
     xpr_sint_t     mWidth;
     xpr_sint_t     mAlign;
-    xpr::tstring   mName;
+    xpr::string    mName;
 } ColumnInfo;
 
 typedef struct ColumnItemData : public ColumnInfo
@@ -146,9 +145,9 @@ protected:
     void       saveViewSet(fxfile::base::ConfFileEx &aConfFile, const xpr_tchar_t *aSection, const FolderViewSet &aFolderViewSet) const;
 
 protected:
-    typedef std::tr1::unordered_set<xpr::tstring> SubSet;                   // key = path
-    typedef std::tr1::unordered_map<xpr::tstring, xpr::tstring> IndexMap;   // key = path
-    typedef std::tr1::unordered_map<xpr::tstring, FolderViewSet *> HashMap; // key = hash
+    typedef std::tr1::unordered_set<xpr::string> SubSet;                   // key = path
+    typedef std::tr1::unordered_map<xpr::string, xpr::string> IndexMap;    // key = path
+    typedef std::tr1::unordered_map<xpr::string, FolderViewSet *> HashMap; // key = hash
 
     SubSet   mSubSet;
     IndexMap mIndexMap;
@@ -156,5 +155,6 @@ protected:
 
     xpr_bool_t mInstalledPath;                           // installed path
 };
+} // namespace fxfile
 
 #endif // __FXFILE_VIEW_SET_H__

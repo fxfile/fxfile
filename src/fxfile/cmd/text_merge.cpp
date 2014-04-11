@@ -21,7 +21,10 @@ namespace fxfile
 {
 namespace cmd
 {
-static const xpr_size_t kTextBufferSize = 16 * 1024; // 16KB
+namespace
+{
+const xpr_size_t kTextBufferSize = 16 * 1024; // 16KB
+} // namespace anonymous
 
 TextMerge::TextMerge(void)
     : mHwnd(NULL), mMsg(NULL)
@@ -75,7 +78,7 @@ unsigned TextMerge::OnEntryProc(void)
     xpr::FileIo sMergeFileIo;
 
     sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-    sRcode = sMergeFileIo.open(mTextFile.c_str(), sOpenMode);
+    sRcode = sMergeFileIo.open(mTextFile, sOpenMode);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         xpr::TextFileWriter sTextFileWriter(sMergeFileIo);
@@ -85,7 +88,7 @@ unsigned TextMerge::OnEntryProc(void)
         sTextFileWriter.writeBom();
 
         PathDeque::iterator sIterator;
-        xpr::tstring sPath;
+        xpr::string sPath;
         xpr_tchar_t *sText = new xpr_tchar_t[kTextBufferSize + 1];
         xpr_ssize_t sTextReadLen;
 
@@ -99,7 +102,7 @@ unsigned TextMerge::OnEntryProc(void)
 
             xpr::FileIo sFileIo;
 
-            sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+            sRcode = sFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
             if (XPR_RCODE_IS_ERROR(sRcode))
                 continue;
 

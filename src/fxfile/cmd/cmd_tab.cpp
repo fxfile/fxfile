@@ -156,10 +156,10 @@ void closeTab(MainFrame *aMainFrame, ExplorerView *aExplorerView, xpr_sint_t aTa
 
             if (XPR_IS_TRUE(gOpt->mConfig.mTabConfirmToClose))
             {
-                xpr::tstring sTabText;
+                xpr::string sTabText;
                 aExplorerView->getTabText(aTab, sTabText);
 
-                xpr::tstring sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close")));
+                xpr::string sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close")));
                 sMsg += XPR_STRING_LITERAL("\r\n\r\n");
                 sMsg += sTabText;
 
@@ -202,10 +202,10 @@ void closeOthers(MainFrame *aMainFrame, ExplorerView *aExplorerView, xpr_sint_t 
 
     if (XPR_IS_TRUE(gOpt->mConfig.mTabConfirmToClose))
     {
-        xpr::tstring sTabText;
+        xpr::string sTabText;
         aExplorerView->getTabText(aTab, sTabText);
 
-        xpr::tstring sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close_others")));
+        xpr::string sMsg(gApp.loadString(XPR_STRING_LITERAL("tab.msg.confirm_to_close_others")));
         sMsg += XPR_STRING_LITERAL("\r\n\r\n");
         sMsg += sTabText;
 
@@ -239,7 +239,7 @@ void CloseTabCommand::execute(CommandContext &aContext)
         xpr_sint_t sTab = -1;
         if (sParameters != XPR_NULL)
         {
-            sTab = (xpr_sint_t)sParameters->get(CommandParameterIdTab);
+            sTab = (xpr_sint_t)(xpr_sintptr_t)sParameters->get(CommandParameterIdTab);
             if (XPR_IS_OUT_OF_RANGE(0, sTab, sTabCount - 1))
             {
                 return;

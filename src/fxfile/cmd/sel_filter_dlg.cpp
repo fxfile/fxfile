@@ -67,7 +67,7 @@ xpr_bool_t SelFilterDlg::OnInitDialog(void)
     // dialog state
     const xpr_tchar_t *sSection = (mSelect == XPR_TRUE) ? XPR_STRING_LITERAL("SelFilter") : XPR_STRING_LITERAL("UnSelFilter"); 
 
-    xpr::tstring sPrevFilter;
+    xpr::string sPrevFilter;
     xpr_bool_t sOnlySel = XPR_FALSE;
 
     mDlgState = DlgStateManager::instance().getDlgState(sSection);
@@ -154,7 +154,7 @@ void SelFilterDlg::OnOK(void)
 
 void SelFilterDlg::OnSelchangeFilter(void)
 {
-    xpr::tstring sExts;
+    xpr::string sExts;
 
     xpr_sint_t sIndex = mComboBox.GetCurSel();
     if (sIndex != CB_ERR)

@@ -34,8 +34,8 @@ class ExplorerCtrlObserver;
 
 struct FileSysItem
 {
-    xpr::tstring mPath;
-    xpr_ulong_t  mFileAttributes;
+    xpr::string mPath;
+    xpr_ulong_t mFileAttributes;
 };
 
 typedef std::deque<FileSysItem *> FileSysItemDeque;
@@ -138,8 +138,8 @@ public:
     const xpr_tchar_t *getCurFullPath(void) const;
     void               getCurPath(xpr_tchar_t *aCurPath) const;
     void               getCurFullPath(xpr_tchar_t *aCurFullPath) const;
-    void               getCurPath(xpr::tstring &aCurPath) const;
-    void               getCurFullPath(xpr::tstring &aCurFullPath) const;
+    void               getCurPath(xpr::string &aCurPath) const;
+    void               getCurFullPath(xpr::string &aCurFullPath) const;
     LPITEMIDLIST       getFolderGroup(void) const;
 
     static LPITEMIDLIST getDefInitFolder(void);
@@ -151,9 +151,9 @@ public:
     void saveOption(void);
 
     // file processing
-    void createFolder(const xpr::tstring &aNewFolder, xpr_bool_t aEditDirectly);
-    void createTextFile(const xpr::tstring &aNewTextFile, xpr_bool_t aEditDirectly);
-    void createGeneralFile(const xpr::tstring &aNewGeneralFile, xpr_bool_t aEditDirectly);
+    void createFolder(const xpr::string &aNewFolder, xpr_bool_t aEditDirectly);
+    void createTextFile(const xpr::string &aNewTextFile, xpr_bool_t aEditDirectly);
+    void createGeneralFile(const xpr::string &aNewGeneralFile, xpr_bool_t aEditDirectly);
 
     LPITEMIDLIST getCopyToPidl(void) const;
     LPITEMIDLIST getMoveToPidl(void) const;
@@ -282,7 +282,7 @@ public:
 
     void setHiddenSystem(xpr_bool_t aModifiedHidden, xpr_bool_t aModifiedSystem);
     void doShChangeNotifyUpdateDir(xpr_bool_t aPidl = XPR_TRUE, xpr_bool_t aFlush = XPR_TRUE);
-    void setChangeNotify(xpr::tstring aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable = XPR_TRUE);
+    void setChangeNotify(xpr::string aPath, xpr_bool_t aAllSubTree, xpr_bool_t aEnable = XPR_TRUE);
     void enableChangeNotify(xpr_bool_t aNotify);
 
     xpr_bool_t doPasteSelect(HWND aHwnd, COleDataObject *aOleDataObject, xpr_bool_t aDragDrop, CLIPFORMAT aShellIDListClipForamt, DROPEFFECT aDropEffect, xpr_tchar_t *aTarget);
@@ -436,10 +436,10 @@ protected:
 
     // folder information
     LPTVITEMDATA mTvItemData;    // current folder data
-    xpr::tstring mCurFullPath;   // virtual full path
-    xpr::tstring mCurPath;       // file system path
+    xpr::string  mCurFullPath;   // virtual full path
+    xpr::string  mCurPath;       // file system path
     FolderType   mFolderType;
-    xpr::tstring mSubFolder;
+    xpr::string  mSubFolder;
     xpr_bool_t   mSorted;
     xpr_bool_t   mUpdated;
     xpr_bool_t   mVisible;
@@ -454,13 +454,13 @@ protected:
     AdvFileChangeWatcher::AdvWatchId mAdvWatchId;
     xpr_bool_t                       mNotify;
 
-    typedef std::tr1::unordered_multimap<xpr::tstring, LPLVITEMDATA> NameMap;
+    typedef std::tr1::unordered_multimap<xpr::string, LPLVITEMDATA> NameMap;
     typedef std::pair<NameMap::iterator, NameMap::iterator> NameMapPairIterator;
     typedef std::pair<NameMap::const_iterator, NameMap::const_iterator> NameMapPairConstIterator;
     NameMap mNameMap;
 
     // edit and insert
-    xpr::tstring  mInsSel;           // Create Folder/Text File and Edit
+    xpr::string   mInsSel;           // Create Folder/Text File and Edit
     xpr_bool_t    mInsUnsellAll;
     xpr_bool_t    mInsSelEdit;
     RenameHelper *mRenameHelper;

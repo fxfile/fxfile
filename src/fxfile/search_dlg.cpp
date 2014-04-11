@@ -37,6 +37,8 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
+namespace
+{
 enum SearchLocType
 {
     SearchLocTypeNone = 0,
@@ -71,13 +73,14 @@ enum
     WM_FINALIZE = WM_USER + 100,
 };
 
-static const xpr_size_t kPaneWidth[] = { 150, 150 };
-static const CPoint     kAnimationOffset = CPoint(0, 40);
+const xpr_size_t kPaneWidth[] = { 150, 150 };
+const CPoint     kAnimationOffset = CPoint(0, 40);
 
-static const xpr_tchar_t kDirCountKey [] = XPR_STRING_LITERAL("search_dir.dir_count");
-static const xpr_tchar_t kDirKey      [] = XPR_STRING_LITERAL("search_dir.dir%d");
-static const xpr_tchar_t kIncludeKey  [] = XPR_STRING_LITERAL("search_dir.dir%d_include");
-static const xpr_tchar_t kSubFolderKey[] = XPR_STRING_LITERAL("search_dir.dir%d_sub_folder");
+const xpr_tchar_t kDirCountKey [] = XPR_STRING_LITERAL("search_dir.dir_count");
+const xpr_tchar_t kDirKey      [] = XPR_STRING_LITERAL("search_dir.dir%d");
+const xpr_tchar_t kIncludeKey  [] = XPR_STRING_LITERAL("search_dir.dir%d_include");
+const xpr_tchar_t kSubFolderKey[] = XPR_STRING_LITERAL("search_dir.dir%d_sub_folder");
+} // namespace anonymous
 
 SearchDlg::SearchDlg(void)
     : super(IDD_SEARCH, XPR_NULL)
@@ -911,11 +914,11 @@ xpr_sint_t SearchDlg::insertLocation(const xpr_tchar_t *aPaths)
     return sIndex;
 }
 
-static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::tstring> &aStrDeque)
+static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::string> &aStrDeque)
 {
     xpr_sint_t i;
-    xpr::tstring sStr;
-    xpr::tstring::iterator sIterator;
+    xpr::string sStr;
+    xpr::string::iterator sIterator;
 
     xpr_tchar_t *sMultiStr = aMultiStr;
 
@@ -942,11 +945,11 @@ static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::tstring>
     return aStrDeque.size();
 }
 
-static xpr_size_t ValidateTarget(std::deque<xpr::tstring> &aTargetDeque)
+static xpr_size_t ValidateTarget(std::deque<xpr::string> &aTargetDeque)
 {
     xpr_sint_t sLen;
-    std::deque<xpr::tstring>::iterator sIterator;
-    xpr::tstring::iterator sStrIterator;
+    std::deque<xpr::string>::iterator sIterator;
+    xpr::string::iterator sStrIterator;
 
     sIterator = aTargetDeque.begin();
     while (sIterator != aTargetDeque.end())
@@ -1097,15 +1100,15 @@ void SearchDlg::OnStart(void)
 
         if (sSearchLoc == XPR_NULL)
         {
-            std::deque<xpr::tstring> sPathDeque;
+            std::deque<xpr::string> sPathDeque;
 
             MultiStr2List(sPath, sPathDeque);
             ValidateTarget(sPathDeque);
 
             if (sPathDeque.empty() == false)
             {
-                xpr::tstring strPaths;
-                std::deque<xpr::tstring>::iterator sIterator;
+                xpr::string strPaths;
+                std::deque<xpr::string>::iterator sIterator;
 
                 sIterator = sPathDeque.begin();
                 for (; sIterator != sPathDeque.end(); ++sIterator)
@@ -1200,12 +1203,12 @@ void SearchDlg::OnStart(void)
 
         case SearchLocTypeAllLocalDrive:
             {
-                std::deque<xpr::tstring> sPathDeque;
+                std::deque<xpr::string> sPathDeque;
                 MultiStr2List(sSearchLoc->mPaths, sPathDeque);
 
                 ValidateTarget(sPathDeque);
 
-                std::deque<xpr::tstring>::iterator sIterator = sPathDeque.begin();
+                std::deque<xpr::string>::iterator sIterator = sPathDeque.begin();
                 for (; sIterator != sPathDeque.end(); ++sIterator)
                 {
                     sSearchDir = new SearchDir;
@@ -1244,12 +1247,12 @@ void SearchDlg::OnStart(void)
 
         case SearchLocTypeCustom:
             {
-                std::deque<xpr::tstring> sPathDeque;
+                std::deque<xpr::string> sPathDeque;
                 MultiStr2List(sSearchLoc->mPaths, sPathDeque);
 
                 ValidateTarget(sPathDeque);
 
-                std::deque<xpr::tstring>::iterator sIterator = sPathDeque.begin();
+                std::deque<xpr::string>::iterator sIterator = sPathDeque.begin();
                 for (; sIterator != sPathDeque.end(); ++sIterator)
                 {
                     sSearchDir = new SearchDir;
@@ -1372,7 +1375,7 @@ LRESULT SearchDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
         sElapsedMinuteTimeText, XPR_COUNT_OF(sElapsedMinuteTimeText) - 1,
         sElapsedSecondTimeText, XPR_COUNT_OF(sElapsedSecondTimeText) - 1);
 
-    xpr::tstring sMsg;
+    xpr::string sMsg;
     if (sElapsedMinuteTimeText[0] == 0)
     {
         sMsg.format(

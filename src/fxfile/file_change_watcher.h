@@ -56,11 +56,11 @@ public:
         }
 
     public:
-        HWND         mHwnd;
-        xpr_uint_t   mMsg;
-        xpr::tstring mPath;
-        xpr_bool_t   mSubPath;
-        LPARAM       mParam;
+        HWND        mHwnd;
+        xpr_uint_t  mMsg;
+        xpr::string mPath;
+        xpr_bool_t  mSubPath;
+        LPARAM      mParam;
 
     protected:
         xpr_sint64_t mTime;

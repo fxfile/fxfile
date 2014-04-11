@@ -40,7 +40,7 @@ FormatInsert::FormatInsert(void)
 {
 }
 
-FormatInsert::FormatInsert(InsertPosType aPosType, xpr_sint_t aPos, const xpr::tstring &aString)
+FormatInsert::FormatInsert(InsertPosType aPosType, xpr_sint_t aPos, const xpr::string &aString)
     : mPosType(aPosType), mPos(aPos), mString(aString)
 {
 }
@@ -98,7 +98,7 @@ void FormatInsert::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatInsert::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatInsert::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatInsertElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -107,11 +107,11 @@ xpr_bool_t FormatInsert::parseXml(const base::XmlReader &aXmlReader, base::XmlRe
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring  sName;
-    xpr::tstring  sValue;
+    xpr::string   sName;
+    xpr::string   sValue;
     InsertPosType sPosType = kDefaultPosType;
     xpr_sint_t    sPos     = kDefaultPos;
-    xpr::tstring  sString;
+    xpr::string   sString;
 
     base::XmlReader::Attribute *sAttribute = aXmlReader.getFirstAttribute(aElement);
     while (XPR_IS_NOT_NULL(sAttribute))
@@ -162,7 +162,7 @@ xpr_bool_t FormatInsert::write(base::XmlWriter &aXmlWriter) const
 
     if (aXmlWriter.beginElement(kXmlFormatInsertElement) == XPR_TRUE)
     {
-        xpr::tstring sPosTypeString;
+        xpr::string sPosTypeString;
 
         toString(mPosType, sPosTypeString);
 
@@ -179,7 +179,7 @@ xpr_bool_t FormatInsert::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-void FormatInsert::toString(const InsertPosType &aPosType, xpr::tstring &aString)
+void FormatInsert::toString(const InsertPosType &aPosType, xpr::string &aString)
 {
     switch (aPosType)
     {
@@ -190,7 +190,7 @@ void FormatInsert::toString(const InsertPosType &aPosType, xpr::tstring &aString
     }
 }
 
-void FormatInsert::toType(const xpr::tstring &aString, InsertPosType &aPosType)
+void FormatInsert::toType(const xpr::string &aString, InsertPosType &aPosType)
 {
     if (aString.compare(kXmlAtFirstValue) == 0)
     {

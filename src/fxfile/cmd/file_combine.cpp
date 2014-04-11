@@ -21,11 +21,14 @@ namespace fxfile
 {
 namespace cmd
 {
-static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+namespace
+{
+const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
 
-static const xpr_tchar_t kFileNameKey[] = XPR_STRING_LITERAL("filename");
-static const xpr_tchar_t kSizeKey    [] = XPR_STRING_LITERAL("size");
-static const xpr_tchar_t kCrc32Key   [] = XPR_STRING_LITERAL("crc32");
+const xpr_tchar_t kFileNameKey[] = XPR_STRING_LITERAL("filename");
+const xpr_tchar_t kSizeKey    [] = XPR_STRING_LITERAL("size");
+const xpr_tchar_t kCrc32Key   [] = XPR_STRING_LITERAL("crc32");
+} // namespace anonymous
 
 FileCombine::FileCombine(void)
     : mHwnd(XPR_NULL), mMsg(0)
@@ -99,16 +102,16 @@ unsigned FileCombine::OnEntryProc(void)
 
     if (sIndex >= 0)
     {
-        xpr::tstring sBasePath = mPath;
+        xpr::string sBasePath = mPath;
         sBasePath.erase(sBasePath.length()-_tcslen(sExt));
 
-        xpr::tstring sCrcFile = sBasePath;
+        xpr::string sCrcFile = sBasePath;
         sCrcFile += XPR_STRING_LITERAL(".crc");
 
-        xpr::tstring sFileName = sBasePath;
+        xpr::string sFileName = sBasePath;
         sFileName = sFileName.substr(sFileName.rfind(XPR_STRING_LITERAL('\\'))+1);
 
-        xpr::tstring sDestPath;
+        xpr::string sDestPath;
         sDestPath = mDestDir + XPR_STRING_LITERAL('\\') + sFileName;
 
         xpr_rcode_t sRcode;
@@ -119,14 +122,14 @@ unsigned FileCombine::OnEntryProc(void)
         xpr_ssize_t sRead;
         xpr_ssize_t sWritten;
         xpr_tchar_t sIndexText[0xff] = {0};
-        xpr::tstring sPath;
+        xpr::string sPath;
         xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
 
         sBuffer = new xpr_char_t[mBufferSize];
 
         sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-        sRcode = sDestFileIo.open(sDestPath.c_str(), sOpenMode);
+        sRcode = sDestFileIo.open(sDestPath, sOpenMode);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
             for (; IsStop() == XPR_FALSE; ++sIndex)
@@ -134,7 +137,7 @@ unsigned FileCombine::OnEntryProc(void)
                 _stprintf(sIndexText, XPR_STRING_LITERAL(".%03d"), sIndex);
                 sPath = sBasePath + sIndexText;
 
-                sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+                sRcode = sFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
                 if (XPR_RCODE_IS_ERROR(sRcode))
                     break;
 

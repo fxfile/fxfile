@@ -58,8 +58,8 @@ void CrcVerify::init(void)
     xpr_tchar_t *sFileName;
     xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
-    xpr::tstring sCrcDir;
-    xpr::tstring sCrcFileName;
+    xpr::string sCrcDir;
+    xpr::string sCrcFileName;
     const xpr_size_t sMaxTextLineLen = 1024;
     xpr_tchar_t sTextLine[sMaxTextLineLen + 1];
     xpr_ssize_t sTextReadLen = 0;
@@ -79,7 +79,7 @@ void CrcVerify::init(void)
         sCrcDir      = sCrcFile.mPath.substr(0, sFind);
         sCrcFileName = sCrcFile.mPath.substr(sFind + 1);
 
-        sRcode = sFileIo.open(sCrcFile.mPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+        sRcode = sFileIo.open(sCrcFile.mPath, xpr::FileIo::OpenModeReadOnly);
         if (XPR_RCODE_IS_ERROR(sRcode))
             continue;
 
@@ -226,7 +226,7 @@ xpr_bool_t CrcVerify::OnPreEntry(void)
 
 unsigned CrcVerify::OnEntryProc(void)
 {
-    xpr::tstring sFile;
+    xpr::string sFile;
     xpr_char_t *sCode;
     xpr_sint_t sMethod;
     xpr_rcode_t sRcode;

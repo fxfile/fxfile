@@ -38,11 +38,11 @@ public:
     static xpr_bool_t   isDesktopFolder(LPCITEMIDLIST aPidl);
     static xpr_bool_t   isSimplePidl(LPCITEMIDLIST aPidl);
     static LPITEMIDLIST create(const xpr_tchar_t *aPath);
-    static LPITEMIDLIST create(const xpr::tstring &aPath);
+    static LPITEMIDLIST create(const xpr::string &aPath);
     static LPITEMIDLIST create(xpr_sint_t aSpecialFolder);
     static LPITEMIDLIST create(const KNOWNFOLDERID &aKnownFolderId);
     static HRESULT      create(const xpr_tchar_t *aPath, LPITEMIDLIST &aFullPidl);
-    static HRESULT      create(const xpr::tstring &aPath, LPITEMIDLIST &aFullPidl);
+    static HRESULT      create(const xpr::string &aPath, LPITEMIDLIST &aFullPidl);
     static HRESULT      create(xpr_sint_t aSpecialFolder, LPITEMIDLIST &aFullPidl);
     static HRESULT      create(const KNOWNFOLDERID &aKnownFolderId, LPITEMIDLIST &aFullPidl);
     static LPITEMIDLIST getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimplePidl);
@@ -51,9 +51,9 @@ public:
     static xpr_bool_t   getShellFolder(LPCITEMIDLIST aFullPidl, LPSHELLFOLDER &aShellFolder);
 
     static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen);
-    static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aName);
+    static xpr_bool_t   getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::string &aName);
     static xpr_bool_t   getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr_tchar_t *aName, xpr_size_t aMaxLen);
-    static xpr_bool_t   getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aName);
+    static xpr_bool_t   getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::string &aName);
     static xpr_ulong_t  getAttributes(LPCITEMIDLIST aFullPidl);
     static xpr_bool_t   getAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t &aAttributes);
     static xpr_ulong_t  getAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl);
@@ -61,7 +61,7 @@ public:
     static xpr_bool_t   hasAttributes(LPCITEMIDLIST aFullPidl, xpr_ulong_t aAttributes);
     static xpr_bool_t   hasAttributes(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_ulong_t aAttributes);
     static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tchar_t *aInfotip, xpr_size_t aMaxLen);
-    static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aInfotip);
+    static xpr_bool_t   getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::string &aInfotip);
 };
 } // namespace base
 } // namespace fxfile

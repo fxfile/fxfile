@@ -27,13 +27,16 @@
 
 namespace fxfile
 {
+namespace
+{
 #define GAP         10
 #define GAP_ICON    4
 
 #define SEL_ELLIPSIS_LAST   0xff00ff00
 #define SEL_ELLIPSIS        0xff00ff01
 
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("PathBar");
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("PathBar");
+} // namespace anonymous
 
 PathBar::PathBar(void)
     : mObserver(XPR_NULL)

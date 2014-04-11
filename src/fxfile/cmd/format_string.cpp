@@ -29,7 +29,7 @@ FormatString::FormatString(void)
 {
 }
 
-FormatString::FormatString(const xpr::tstring &aString)
+FormatString::FormatString(const xpr::string &aString)
     : mString(aString)
 {
 }
@@ -55,7 +55,7 @@ void FormatString::rename(RenameContext &aContext) const
     aContext.mNewFileName += mString;
 }
 
-xpr_bool_t FormatString::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatString::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatStringElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -64,9 +64,9 @@ xpr_bool_t FormatString::parseXml(const base::XmlReader &aXmlReader, base::XmlRe
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring sName;
-    xpr::tstring sValue;
-    xpr::tstring sString;
+    xpr::string sName;
+    xpr::string sValue;
+    xpr::string sString;
 
     base::XmlReader::Element *sFormatElement = aXmlReader.childElement(aElement);
     while (XPR_IS_NOT_NULL(sFormatElement))
@@ -105,12 +105,12 @@ xpr_bool_t FormatString::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatString::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatString::canParseShort(const xpr::string &aFormatString)
 {
     return XPR_TRUE;
 }
 
-void FormatString::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatString::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     aFormat = new FormatString(aFormatString);
 }

@@ -21,8 +21,11 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kRecentFileListSection[] = XPR_STRING_LITERAL("recent_file_list");
-static const xpr_tchar_t kFileKey              [] = XPR_STRING_LITERAL("recent_file%d");
+namespace
+{
+const xpr_tchar_t kRecentFileListSection[] = XPR_STRING_LITERAL("recent_file_list");
+const xpr_tchar_t kFileKey              [] = XPR_STRING_LITERAL("recent_file%d");
+} // namespace anonymous
 
 RecentFileList::RecentFileList(void)
 {
@@ -97,7 +100,7 @@ void RecentFileList::save(fxfile::base::ConfFileEx &aConfFile) const
     sIterator = mFileDeque.begin();
     for (i = 0; sIterator != mFileDeque.end(); ++sIterator, ++i)
     {
-        const xpr::tstring &sPath = *sIterator;
+        const xpr::string &sPath = *sIterator;
 
         _stprintf(sKey, kFileKey, i + 1);
 

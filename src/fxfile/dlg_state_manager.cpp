@@ -128,7 +128,7 @@ void DlgStateManager::save(void) const
         if (XPR_IS_NULL(sDlgState))
             continue;
 
-        const xpr::tstring &sSectionName = sDlgState->getSection();
+        const xpr::string &sSectionName = sDlgState->getSection();
         const DlgState::ValueMap &sValueMap = sDlgState->getValueMap();
 
         sSection = sConfFile.addSection(sSectionName.c_str());
@@ -137,8 +137,8 @@ void DlgStateManager::save(void) const
         sValueIterator = sValueMap.begin();
         for (; sValueIterator != sValueMap.end(); ++sValueIterator)
         {
-            const xpr::tstring &sKey   = sValueIterator->first;
-            const xpr::tstring &sValue = sValueIterator->second;
+            const xpr::string &sKey   = sValueIterator->first;
+            const xpr::string &sValue = sValueIterator->second;
 
             sConfFile.setValueS(sSection, sKey.c_str(), sValue);
         }

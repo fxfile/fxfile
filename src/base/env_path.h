@@ -32,16 +32,16 @@ protected: EnvPath(void);
 public:   ~EnvPath(void);
 
 public:
-    xpr_bool_t getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xpr_uint_t *aCSIDL = XPR_NULL) const;
-    xpr_bool_t getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_uint_t *aCSIDL = XPR_NULL) const;
+    xpr_bool_t getPidl(const xpr::string &aSpec, ShellItem *aShellItem, xpr_uint_t *aCSIDL = XPR_NULL) const;
+    xpr_bool_t getPath(const xpr::string &aSpec, xpr::string &aPath, xpr_uint_t *aCSIDL = XPR_NULL) const;
 
-    void resolve(const xpr::tstring &aEnvPath, xpr::tstring &aResolvedPath) const;
+    void resolve(const xpr::string &aEnvPath, xpr::string &aResolvedPath) const;
 
 protected:
     void addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL);
 
 protected:
-    typedef std::tr1::unordered_map<xpr::tstring, xpr_uint_t> SpecMap;
+    typedef std::tr1::unordered_map<xpr::string, xpr_uint_t> SpecMap;
     SpecMap mSpecMap;
 };
 } // namespace base

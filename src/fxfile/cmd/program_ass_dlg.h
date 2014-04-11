@@ -29,7 +29,7 @@ public:
     virtual ~ProgramAssDlg(void);
 
 public:
-    void setPath(const xpr::tstring &aPath);
+    void setPath(const xpr::string &aPath);
     void setList(const ProgramAssDeque &aList);
     ProgramAssItem *getSelProgramAssItem(void);
 
@@ -37,7 +37,7 @@ protected:
     void getContextMenu(xpr_bool_t aRightClick);
 
 protected:
-    xpr::tstring     mPath;
+    xpr::string      mPath;
     ProgramAssDeque  mList;
     ProgramAssItem  *mProgramAssItem;
 

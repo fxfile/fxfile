@@ -23,7 +23,7 @@ class FormatTime : public Format
 
 protected:
     FormatTime(void);
-    FormatTime(const xpr::tstring &aFormat);
+    FormatTime(const xpr::string &aFormat);
 
 public:
     virtual ~FormatTime(void);
@@ -32,15 +32,15 @@ public:
     virtual xpr_bool_t parseXml(const base::XmlReader &aXmlReader, base::XmlReader::Element *aElement);
 
 public:
-    inline const xpr::tstring &getFormat(void) const { return mFormat; }
+    inline const xpr::string &getFormat(void) const { return mFormat; }
 
 protected:
-    static void parseShort(const xpr::tstring &aFormatString, xpr::tstring &aFormat);
-    static void toString(const xpr::tstring &aFormat, const SYSTEMTIME &aSystemTime, xpr::tstring &aString);
-    static void resolveTimeFormat(const xpr::tstring &aFormat, const SYSTEMTIME &aSystemTime, xpr::tstring &aString);
+    static void parseShort(const xpr::string &aFormatString, xpr::string &aFormat);
+    static void toString(const xpr::string &aFormat, const SYSTEMTIME &aSystemTime, xpr::string &aString);
+    static void resolveTimeFormat(const xpr::string &aFormat, const SYSTEMTIME &aSystemTime, xpr::string &aString);
 
 protected:
-    xpr::tstring mFormat;
+    xpr::string mFormat;
 };
 
 class FormatNowTime : public FormatTime
@@ -49,7 +49,7 @@ class FormatNowTime : public FormatTime
 
 public:
     FormatNowTime(void);
-    FormatNowTime(const xpr::tstring &aFormat);
+    FormatNowTime(const xpr::string &aFormat);
     virtual ~FormatNowTime(void);
 
 public:
@@ -61,10 +61,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -75,7 +75,7 @@ class FormatCTime : public FormatTime
 
 public:
     FormatCTime(void);
-    FormatCTime(const xpr::tstring &aFormat);
+    FormatCTime(const xpr::string &aFormat);
     virtual ~FormatCTime(void);
 
 public:
@@ -87,10 +87,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -101,7 +101,7 @@ class FormatMTime : public FormatTime
 
 public:
     FormatMTime(void);
-    FormatMTime(const xpr::tstring &aFormat);
+    FormatMTime(const xpr::string &aFormat);
     virtual ~FormatMTime(void);
 
 public:
@@ -113,10 +113,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };

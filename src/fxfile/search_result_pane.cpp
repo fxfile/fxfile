@@ -23,8 +23,10 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("SearchResultPane");
-static const xpr_size_t  kPaneWidth[] = { 150, 90 };
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("SearchResultPane");
+const xpr_size_t  kPaneWidth[] = { 150, 90 };
 
 //
 // control id
@@ -43,6 +45,7 @@ enum
     kPaneIdNormal = 10,
     kPaneIdSize,
 };
+} // namespace anonymous
 
 SearchResultPane::SearchResultPane(void)
     : TabPane(TabTypeSearchResult)

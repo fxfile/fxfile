@@ -68,7 +68,7 @@ protected:
     xpr_uint_t mMsg;
     xpr_uint_t mMsgClr;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque mPathDeque;
 
     HANDLE     mEvent;

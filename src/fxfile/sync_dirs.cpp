@@ -19,6 +19,11 @@
 
 namespace fxfile
 {
+namespace
+{
+const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+} // namespace anonymous
+
 SyncItem::SyncItem(void)
 {
     clear();
@@ -58,12 +63,12 @@ const xpr_tchar_t *SyncItem::getSubPath(void)
     return mSubPath.c_str();
 }
 
-void SyncItem::getSubPath(xpr::tstring &aSubPath)
+void SyncItem::getSubPath(xpr::string &aSubPath)
 {
     aSubPath = mSubPath;
 }
 
-xpr_bool_t SyncItem::getPath(const xpr::tstring &aDir, xpr::tstring &aPath)
+xpr_bool_t SyncItem::getPath(const xpr::string &aDir, xpr::string &aPath)
 {
     if (aDir.empty() == XPR_TRUE)
         return XPR_FALSE;
@@ -76,12 +81,12 @@ xpr_bool_t SyncItem::getPath(const xpr::tstring &aDir, xpr::tstring &aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t SyncItem::getPath(const xpr_tchar_t *aDir, xpr::tstring &aPath)
+xpr_bool_t SyncItem::getPath(const xpr_tchar_t *aDir, xpr::string &aPath)
 {
     if (XPR_IS_NULL(aDir))
         return XPR_FALSE;
 
-    xpr::tstring sDir = aDir;
+    xpr::string sDir = aDir;
     return getPath(sDir, aPath);
 }
 
@@ -90,8 +95,8 @@ xpr_bool_t SyncItem::getPath(const xpr_tchar_t *aDir, xpr_tchar_t *aPath)
     if (XPR_IS_NULL(aDir) || XPR_IS_NULL(aPath))
         return XPR_FALSE;
 
-    xpr::tstring sDir = aDir;
-    xpr::tstring sPath;
+    xpr::string sDir = aDir;
+    xpr::string sPath;
 
     if (getPath(sDir, sPath) == XPR_FALSE)
         return XPR_FALSE;
@@ -297,8 +302,8 @@ SyncItem::Result SyncItem::compare(CompareFlags &aCompareFlags)
             xpr::FileIo sFileIo1;
             xpr::FileIo sFileIo2;
 
-            sRcode1 = sFileIo1.open(aCompareFlags.mPath[0].c_str(), xpr::FileIo::OpenModeReadOnly);
-            sRcode2 = sFileIo2.open(aCompareFlags.mPath[1].c_str(), xpr::FileIo::OpenModeReadOnly);
+            sRcode1 = sFileIo1.open(aCompareFlags.mPath[0], xpr::FileIo::OpenModeReadOnly);
+            sRcode2 = sFileIo2.open(aCompareFlags.mPath[1], xpr::FileIo::OpenModeReadOnly);
 
             if (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2))
             {
@@ -413,10 +418,10 @@ SyncItem::Result SyncItem::synchronize(SyncFlags &aSyncFlags, CompareFlags &aCom
         xpr::FileIo sFileIo1;
         xpr::FileIo sFileIo2;
 
-        sRcode1 = sFileIo1.open(aSyncFlags.mPath[0].c_str(), xpr::FileIo::OpenModeReadOnly);
+        sRcode1 = sFileIo1.open(aSyncFlags.mPath[0], xpr::FileIo::OpenModeReadOnly);
 
         sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-        sRcode2 = sFileIo2.open(aSyncFlags.mPath[1].c_str(), sOpenMode);
+        sRcode2 = sFileIo2.open(aSyncFlags.mPath[1], sOpenMode);
 
         if (XPR_RCODE_IS_SUCCESS(sRcode1) && XPR_RCODE_IS_SUCCESS(sRcode2))
         {
@@ -471,8 +476,6 @@ SyncItem::Result SyncItem::synchronize(SyncFlags &aSyncFlags, CompareFlags &aCom
 
     return sResult;
 }
-
-static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
 
 SyncDirs::SyncDirs(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2)
     : mThread(XPR_NULL), mThreadId(0)
@@ -533,11 +536,11 @@ void SyncDirs::setOwner(HWND aHwnd, xpr_uint_t aMsg)
     mMsg  = aMsg;
 }
 
-void SyncDirs::scanRecursiveDir(SyncMap            &aSyncMap,
-                                const xpr_sint_t    aIndex,
-                                xpr_uint_t          aLevel,
-                                const xpr::tstring &aDir,
-                                const xpr::tstring &aBaseDir)
+void SyncDirs::scanRecursiveDir(SyncMap           &aSyncMap,
+                                const xpr_sint_t   aIndex,
+                                xpr_uint_t         aLevel,
+                                const xpr::string &aDir,
+                                const xpr::string &aBaseDir)
 {
     if (isStopThread() == XPR_TRUE)
         return;
@@ -550,11 +553,11 @@ void SyncDirs::scanRecursiveDir(SyncMap            &aSyncMap,
         mScanDirCount++;
     }
 
-    xpr::tstring sPath = aDir + XPR_STRING_LITERAL("\\*.*");
+    xpr::string sPath = aDir + XPR_STRING_LITERAL("\\*.*");
 
     HANDLE sFindFile;
     WIN32_FIND_DATA sWin32FindData = {0};
-    xpr::tstring sSubPath;
+    xpr::string sSubPath;
 
     SyncItem *sSyncItem;
     SyncMapPairIterator sPairRangeIterator;
@@ -674,8 +677,8 @@ bool SyncDirs::sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2)
 {
     xpr_size_t sOffset = aSyncItem1->mSubLevel - aSyncItem2->mSubLevel;
 
-    static xpr::tstring sDir1;
-    static xpr::tstring sDir2;
+    static xpr::string sDir1;
+    static xpr::string sDir2;
 
     sDir1.clear();
     sDir2.clear();
@@ -696,7 +699,7 @@ bool SyncDirs::sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2)
         if (aSyncItem1->mSubLevel > 0)
         {
             xpr_size_t sFind = aSyncItem1->mSubPath.rfind(XPR_STRING_LITERAL('\\'));
-            if (sFind != xpr::tstring::npos)
+            if (sFind != xpr::string::npos)
                 sDir1 = aSyncItem1->mSubPath.substr(0, sFind);
         }
     }
@@ -708,7 +711,7 @@ bool SyncDirs::sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2)
         if (aSyncItem2->mSubLevel > 0)
         {
             xpr_size_t sFind = aSyncItem2->mSubPath.rfind(XPR_STRING_LITERAL('\\'));
-            if (sFind != xpr::tstring::npos)
+            if (sFind != xpr::string::npos)
                 sDir2 = aSyncItem2->mSubPath.substr(0, sFind);
         }
     }
@@ -1233,7 +1236,7 @@ void SyncDirs::getDir(xpr_tchar_t *aDir1, xpr_tchar_t *aDir2)
     if (XPR_IS_NOT_NULL(aDir2)) _tcscpy(aDir2, mDir[1].c_str());
 }
 
-void SyncDirs::getDir(xpr::tstring &aDir1, xpr::tstring &aDir2)
+void SyncDirs::getDir(xpr::string &aDir1, xpr::string &aDir2)
 {
     aDir1 = mDir[0];
     aDir2 = mDir[1];
@@ -1247,7 +1250,7 @@ void SyncDirs::setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2)
     xpr_sint_t i;
     for (i = 0; i < 2; ++i)
     {
-        xpr::tstring &sDir = mDir[i];
+        xpr::string &sDir = mDir[i];
         if (sDir.length() > 2)
         {
             if (sDir[sDir.length()-1] == XPR_STRING_LITERAL('\\'))
@@ -1279,14 +1282,14 @@ static void getFilterList(const xpr_tchar_t *aFilter, FilterDeque &aFilterDeque)
     aFilterDeque.clear();
 
     xpr_size_t sOffset = 0;
-    xpr_size_t sFind = xpr::tstring::npos;
-    xpr::tstring sFilter = aFilter;
-    xpr::tstring sString;
+    xpr_size_t sFind = xpr::string::npos;
+    xpr::string sFilter = aFilter;
+    xpr::string sString;
 
     while (true)
     {
         sFind = sFilter.find(XPR_STRING_LITERAL(';'), sOffset);
-        if (sFind == xpr::tstring::npos)
+        if (sFind == xpr::string::npos)
             break;
 
         sString = sFilter.substr(sOffset, sFind-sOffset);
@@ -1350,7 +1353,7 @@ void SyncDirs::addItem(xpr_sint_t aIndex, const xpr_tchar_t *aPath)
     if (_tcsnicmp(mDir[aIndex].c_str(), aPath, mDir[aIndex].length()) != 0)
         return;
 
-    xpr::tstring sSubPath;
+    xpr::string sSubPath;
     sSubPath = aPath + mDir[aIndex].length();
 
     SyncMap::iterator sIterator;

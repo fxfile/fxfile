@@ -53,7 +53,7 @@ xpr_bool_t FileScrapGroupDlg::OnInitDialog(void)
 
     xpr_sint_t sIndex;
     xpr_size_t i, sCount;
-    xpr::tstring sText;
+    xpr::string sText;
     FileScrap::Group *sGroup;
 
     sCount = sFileScrap.getGroupCount();
@@ -86,7 +86,7 @@ xpr_bool_t FileScrapGroupDlg::OnInitDialog(void)
     return XPR_TRUE;
 }
 
-void FileScrapGroupDlg::setTitle(const xpr::tstring &aTitle)
+void FileScrapGroupDlg::setTitle(const xpr::string &aTitle)
 {
     mTitle = aTitle;
 }

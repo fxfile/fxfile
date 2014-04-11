@@ -29,6 +29,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
@@ -40,6 +42,7 @@ enum
 {
     TM_SYNC_STATUS = 100,
 };
+} // namespace anonymous
 
 FolderSyncDlg::FolderSyncDlg(void)
     : super(IDD_FOLDER_SYNC)
@@ -454,12 +457,12 @@ void FolderSyncDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
                 _tcscpy(sLvItem.pszText, sSyncItem->mSubPath.c_str());
             else
             {
-                xpr_size_t sFind = xpr::tstring::npos;
+                xpr_size_t sFind = xpr::string::npos;
 
                 if (sSyncItem->mSubLevel > 0)
                     sFind = sSyncItem->mSubPath.rfind(XPR_STRING_LITERAL('\\'));
 
-                if (sFind == xpr::tstring::npos)
+                if (sFind == xpr::string::npos)
                     sFind = 0;
                 else
                     sFind++;
@@ -589,8 +592,8 @@ void FolderSyncDlg::scan(void)
     GetDlgItemText(IDC_FOLDER_SYNC_SCAN_INCLUDE_FILTER, sTempIncFilter, XPR_MAX_PATH);
     GetDlgItemText(IDC_FOLDER_SYNC_SCAN_EXCLUDE_FILTER, sTempExcFilter, XPR_MAX_PATH);
 
-    xpr::tstring sIncFilter = sTempIncFilter;
-    xpr::tstring sExcFilter = sTempExcFilter;
+    xpr::string sIncFilter = sTempIncFilter;
+    xpr::string sExcFilter = sTempExcFilter;
     sIncFilter.trim(); // TODO remove all white space
     sExcFilter.trim(); // TODO remove all white space
 

@@ -92,8 +92,8 @@ void CfgGeneralStartupDlg::onInit(const Option::Config &aConfig)
     XPR_ASSERT(sViewStartupComboBox != XPR_NULL);
 
     xpr_sint_t i;
-    xpr::tstring sStringId;
-    xpr::tstring sViewText;
+    xpr::string sStringId;
+    xpr::string sViewText;
     ViewStartup *pViewStartup;
 
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)

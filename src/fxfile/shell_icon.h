@@ -44,8 +44,8 @@ public:
         xpr_uint_t    mSignature;
         LPSHELLFOLDER mShellFolder;
         LPITEMIDLIST  mPidl;
-        xpr::tstring  mPath;
-        xpr::tstring  mIconPath;
+        xpr::string   mPath;
+        xpr::string   mIconPath;
         xpr_sint_t    mIconIndex;
 
         struct
@@ -87,8 +87,8 @@ public:
     void clear(void);
 
 public:
-    static HICON getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, const xpr::tstring &aPath, xpr_bool_t aFastNetIcon, xpr_bool_t aLarge = XPR_FALSE);
-    static HICON extractIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, xpr_bool_t aLarge = XPR_FALSE);
+    static HICON getIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, const xpr::string &aPath, xpr_bool_t aFastNetIcon, xpr_bool_t aLarge = XPR_FALSE);
+    static HICON extractIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, xpr_bool_t aLarge = XPR_FALSE);
 
 protected:
     virtual xpr_bool_t OnPreEntry(void);

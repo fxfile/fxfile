@@ -133,7 +133,7 @@ void SysImgListMgr::getCustomImgList(const xpr_tchar_t *aCustomImagePath16, cons
     CSize sIconSize[] = { CSize(16,16), CSize(32,32), CSize(0,0) };
 
     xpr_sint_t i;
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     for (i = 0; sImgList[i]; ++i)
     {

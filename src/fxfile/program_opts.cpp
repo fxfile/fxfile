@@ -135,7 +135,7 @@ void ProgramOpts::parse(void)
 
 void ProgramOpts::showUsage(void)
 {
-    xpr::tstring sMsg;
+    xpr::string sMsg;
     sMsg += XPR_STRING_LITERAL("Usage: fxfile.exe path\r\n");
     sMsg += XPR_STRING_LITERAL("\r\n");
     sMsg += XPR_STRING_LITERAL("Available options (use --help for help):\r\n");
@@ -151,7 +151,7 @@ void ProgramOpts::showUsage(void)
 
 void ProgramOpts::showVersion(void)
 {
-    xpr::tstring sMsg;
+    xpr::string sMsg;
     sMsg = FXFILE_PROGRAM_NAME;
 
     xpr_tchar_t sFullVer[0xff] = {0};

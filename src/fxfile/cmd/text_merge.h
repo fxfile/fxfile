@@ -51,10 +51,10 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque    mPathDeque;
 
-    xpr::tstring mTextFile;
+    xpr::string  mTextFile;
     xpr_bool_t   mEncoding;
 
     xpr_size_t   mSucceededCount;

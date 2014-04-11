@@ -126,13 +126,13 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
     XPR_TCS_TO_UTF16(mNewName.c_str(), &sInputBytes, sUtf16NewName, &sOutputBytes);
     sUtf16NewName[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
-    xpr::tstring sOldPath;
-    xpr::tstring sNewPath;
+    xpr::string sOldPath;
+    xpr::string sNewPath;
     GetName(mShellFolder, mPidl, SHGDN_FORPARSING, sOldPath);
     GetName(mShellFolder, mPidl, SHGDN_FORPARSING, sNewPath);
 
     xpr_size_t sFind = sNewPath.rfind(XPR_STRING_LITERAL('\\'));
-    if (sFind != xpr::tstring::npos)
+    if (sFind != xpr::string::npos)
     {
         sNewPath.erase(sFind+1);
 
@@ -174,14 +174,14 @@ RenameHelper::Result RenameHelper::rename(HWND aHwnd, const xpr_tchar_t *aNewNam
         }
         else if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_SYSTEM) || XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_READONLY))
         {
-            xpr::tstring sAttributes;
+            xpr::string sAttributes;
             if (XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_READONLY))
                 sAttributes = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.read_only_file"));
             else
                 sAttributes = gApp.loadString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename.system_file"));
 
-            xpr::tstring sOldFileName = sOldPath.substr(sOldPath.rfind(XPR_STRING_LITERAL('\\'))+1);
-            xpr::tstring sNewFileName = sNewPath.substr(sNewPath.rfind(XPR_STRING_LITERAL('\\'))+1);
+            xpr::string sOldFileName = sOldPath.substr(sOldPath.rfind(XPR_STRING_LITERAL('\\'))+1);
+            xpr::string sNewFileName = sNewPath.substr(sNewPath.rfind(XPR_STRING_LITERAL('\\'))+1);
 
             xpr_tchar_t sMsg[XPR_MAX_PATH * 3 + 1] = {0};
             _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.msg.confirm_file_rename"), XPR_STRING_LITERAL("%s,%s,%s")), sOldFileName.c_str(), sAttributes.c_str(), sNewFileName.c_str());

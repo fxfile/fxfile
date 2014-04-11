@@ -24,6 +24,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user timer
 enum
 {
@@ -35,6 +37,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 BatchCreateDlg::BatchCreateDlg(const xpr_tchar_t *aPath)
     : super(IDD_BATCH_CREATE, XPR_NULL)
@@ -422,8 +425,8 @@ void BatchCreateDlg::OnOK(void)
             BatchCreateTabTextDlg *sDlg = (BatchCreateTabTextDlg *)getDialog(sCurTab);
 
             xpr_sint_t i;
-            xpr::tstring sDir;
-            xpr::tstring sPath;
+            xpr::string sDir;
+            xpr::string sPath;
             xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
             xpr_sint_t sLineCount = sDlg->getLineCount();
 
@@ -480,7 +483,7 @@ void BatchCreateDlg::OnOK(void)
     }
     else if (sCount > FXFILE_BATCH_CREATE_FORMAT_COUNT_MAX)
     {
-        xpr::tstring sMsg;
+        xpr::string sMsg;
         sMsg.format(gApp.loadFormatString(XPR_STRING_LITERAL("popup.batch_create.msg.excess_max_count"), XPR_STRING_LITERAL("%d")), FXFILE_BATCH_CREATE_FORMAT_COUNT_MAX);
         MessageBox(sMsg.c_str(), XPR_NULL, MB_OK | MB_ICONSTOP);
         return;

@@ -23,7 +23,7 @@ class FormatString : public Format
 
 public:
     FormatString(void);
-    FormatString(const xpr::tstring &aString);
+    FormatString(const xpr::string &aString);
     virtual ~FormatString(void);
 
 public:
@@ -35,18 +35,18 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 
 public:
-    inline const xpr::tstring &getString(void) const { return mString; }
+    inline const xpr::string &getString(void) const { return mString; }
 
 private:
-    xpr::tstring mString;
+    xpr::string mString;
 };
 } // namespace cmd
 } // namespace fxfile

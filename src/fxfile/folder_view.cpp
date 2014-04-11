@@ -24,6 +24,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // control id
 //
@@ -31,6 +33,7 @@ enum
 {
     CTRL_ID_FOLDER_PANE = 50,
 };
+} // namespace anonymous
 
 FolderView::FolderView(void)
     : mObserver(XPR_NULL)

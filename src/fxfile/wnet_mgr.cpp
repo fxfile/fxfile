@@ -213,7 +213,7 @@ xpr_bool_t WnetMgr::getNetDesc(const xpr_tchar_t *aServer, xpr_tchar_t *aDesc)
 
 DWORD WnetMgr::connectNetDrive(HWND aHwnd)
 {
-    xpr::tstring sFullPath;
+    xpr::string sFullPath;
     getNetFullPath(sFullPath);
 
     return ::WNetConnectionDialog(aHwnd, RESOURCETYPE_DISK);
@@ -224,7 +224,7 @@ DWORD WnetMgr::disconnectNetDrive(HWND aHwnd)
     return ::WNetDisconnectDialog(aHwnd, RESOURCETYPE_DISK);
 }
 
-xpr_bool_t WnetMgr::isConnectedServer(const xpr::tstring &aNetPath)
+xpr_bool_t WnetMgr::isConnectedServer(const xpr::string &aNetPath)
 {
     if (aNetPath.length() <= 2)
         return XPR_FALSE;
@@ -249,9 +249,9 @@ xpr_bool_t WnetMgr::isConnectedServer(const xpr::tstring &aNetPath)
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    xpr::tstring sServer = aNetPath;
+    xpr::string sServer = aNetPath;
     xpr_size_t nFind = sServer.find(XPR_STRING_LITERAL('\\'), 2);
-    if (nFind != xpr::tstring::npos)
+    if (nFind != xpr::string::npos)
         sServer.erase(nFind);
 
     do
@@ -284,11 +284,11 @@ xpr_bool_t WnetMgr::isConnectedServer(const xpr::tstring &aNetPath)
     return sResult;
 }
 
-void WnetMgr::getNetFullPath(xpr::tstring &aFullPath)
+void WnetMgr::getNetFullPath(xpr::string &aFullPath)
 {
     aFullPath.clear();
 
-    xpr::tstring sPath(XPR_STRING_LITERAL("\\\\127.0.0.1"));
+    xpr::string sPath(XPR_STRING_LITERAL("\\\\127.0.0.1"));
     LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sPath.c_str());
     if (XPR_IS_NOT_NULL(sFullPidl))
         return;
@@ -296,7 +296,7 @@ void WnetMgr::getNetFullPath(xpr::tstring &aFullPath)
     GetDispFullPath(sFullPidl, aFullPath);
 
     xpr_size_t sFind = aFullPath.rfind(XPR_STRING_LITERAL('\\'));
-    if (sFind != xpr::tstring::npos)
+    if (sFind != xpr::string::npos)
         aFullPath.erase(sFind);
 
     COM_FREE(sFullPidl);

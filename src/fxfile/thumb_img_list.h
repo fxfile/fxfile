@@ -17,12 +17,12 @@ class Thumbnail;
 
 typedef struct ThumbImage
 {
-    xpr::tstring  mPath;
-    CBitmap      *mImage;
-    xpr_sint_t    mWidth;
-    xpr_sint_t    mHeight;
-    xpr_sint_t    mDepth;
-    FILETIME      mModifiedFileTime;
+    xpr::string  mPath;
+    CBitmap     *mImage;
+    xpr_sint_t   mWidth;
+    xpr_sint_t   mHeight;
+    xpr_sint_t   mDepth;
+    FILETIME     mModifiedFileTime;
 } ThumbImage;
 
 class ThumbImgList
@@ -32,13 +32,13 @@ class ThumbImgList
 protected:
     typedef struct ThumbElement
     {
-        xpr::tstring mPath;             // path name
-        xpr_sint_t   mImageIndex;       // index of imagelist
-        xpr_uint_t   mThumbImageId;     // thumbnail image id
-        xpr_sint_t   mWidth;            // image width
-        xpr_sint_t   mHeight;           // image height
-        xpr_sint_t   mDepth;            // byte per pixel(color depth)
-        FILETIME     mModifiedFileTime; // image last write time
+        xpr::string mPath;             // path name
+        xpr_sint_t  mImageIndex;       // index of imagelist
+        xpr_uint_t  mThumbImageId;     // thumbnail image id
+        xpr_sint_t  mWidth;            // image width
+        xpr_sint_t  mHeight;           // image height
+        xpr_sint_t  mDepth;            // byte per pixel(color depth)
+        FILETIME    mModifiedFileTime; // image last write time
     } ThumbElement;
 
 public:

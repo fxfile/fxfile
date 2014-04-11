@@ -26,21 +26,24 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kBookmarkSection[] = XPR_STRING_LITERAL("bookmark");
-static const xpr_tchar_t kNameKey[]         = XPR_STRING_LITERAL("bookmark.item%d.name");
-static const xpr_tchar_t kPathKey[]         = XPR_STRING_LITERAL("bookmark.item%d.path");
-static const xpr_tchar_t kIconKey[]         = XPR_STRING_LITERAL("bookmark.item%d.icon");
-static const xpr_tchar_t kIconIndexKey[]    = XPR_STRING_LITERAL("bookmark.item%d.icon_idex");
-static const xpr_tchar_t kParameterKey[]    = XPR_STRING_LITERAL("bookmark.item%d.paramter");
-static const xpr_tchar_t kStartupKey[]      = XPR_STRING_LITERAL("bookmark.item%d.startup");
-static const xpr_tchar_t kShowStatusKey[]   = XPR_STRING_LITERAL("bookmark.item%d.show_status");
-static const xpr_tchar_t kHotKeyKey[]       = XPR_STRING_LITERAL("bookmark.item%d.hotkey");
+namespace
+{
+const xpr_tchar_t kBookmarkSection[] = XPR_STRING_LITERAL("bookmark");
+const xpr_tchar_t kNameKey[]         = XPR_STRING_LITERAL("bookmark.item%d.name");
+const xpr_tchar_t kPathKey[]         = XPR_STRING_LITERAL("bookmark.item%d.path");
+const xpr_tchar_t kIconKey[]         = XPR_STRING_LITERAL("bookmark.item%d.icon");
+const xpr_tchar_t kIconIndexKey[]    = XPR_STRING_LITERAL("bookmark.item%d.icon_idex");
+const xpr_tchar_t kParameterKey[]    = XPR_STRING_LITERAL("bookmark.item%d.paramter");
+const xpr_tchar_t kStartupKey[]      = XPR_STRING_LITERAL("bookmark.item%d.startup");
+const xpr_tchar_t kShowStatusKey[]   = XPR_STRING_LITERAL("bookmark.item%d.show_status");
+const xpr_tchar_t kHotKeyKey[]       = XPR_STRING_LITERAL("bookmark.item%d.hotkey");
 
 // user defined message
 enum
 {
     WM_SHELL_ASYNC_ICON = WM_USER + 100,
 };
+} // namespace anonymous
 
 BookmarkItem::BookmarkItem(void)
     : mSignature(BookmarkMgr::instance().generateSignature())
@@ -341,7 +344,7 @@ xpr_bool_t BookmarkMgr::initDefault(void)
 
 xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &aBookmarkDeque)
 {
-    typedef std::list<xpr::tstring> StringList;
+    typedef std::list<xpr::string> StringList;
     StringList sDefaultPaths;
 
     {
@@ -365,7 +368,7 @@ xpr_bool_t BookmarkMgr::getDefaultBookmark(BookmarkDeque &aBookmarkDeque)
     sIterator = sDefaultPaths.begin();
     for (; sIterator != sDefaultPaths.end(); ++sIterator)
     {
-        const xpr::tstring &sPath = *sIterator;
+        const xpr::string &sPath = *sIterator;
 
         sFullPidl = GetEnvRealPidl(sPath);
         if (sFullPidl == XPR_NULL)

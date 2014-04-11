@@ -38,10 +38,10 @@ public:
     static xpr_sint_t getDefaultEndPos(void);
 
 protected:
-    static void parseShort(const xpr::tstring &aFormatString,
-                           xpr_size_t          aParseBeginPos,
-                           xpr_sint_t         &aBeginPos,
-                           xpr_sint_t         &aEndPos);
+    static void parseShort(const xpr::string &aFormatString,
+                           xpr_size_t         aParseBeginPos,
+                           xpr_sint_t        &aBeginPos,
+                           xpr_sint_t        &aEndPos);
 
 protected:
     xpr_sint_t mBeginPos;
@@ -66,10 +66,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -92,10 +92,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -118,10 +118,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -144,10 +144,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -170,10 +170,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };
@@ -196,10 +196,10 @@ public:
     virtual Format *newClone(void) const;
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 };

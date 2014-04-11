@@ -11,6 +11,7 @@
 #include "xpr_config.h"
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
+#include "xpr_string.h"
 
 namespace xpr
 {
@@ -70,44 +71,33 @@ namespace xpr
 #endif
 #endif
 
+#define XPR_MBCS_FILE_PATH __FILE__
+#define XPR_WIDE_FILE_PATH XPR_WIDEN(__FILE__)
+#define XPR_MBCS_FILE_NAME (strrchr(XPR_MBCS_FILE_PATH, XPR_FILE_SEPARATOR)+1)
+#define XPR_WIDE_FILE_NAME (wcsrchr(XPR_WIDE_FILE_PATH, XPR_FILE_SEPARATOR)+1)
+#if defined(XPR_CFG_UNICODE)
+#define XPR_FILE_PATH XPR_WIDE_FILE_PATH
+#define XPR_FILE_NAME XPR_WIDE_FILE_NAME
+#else // not XPR_CFG_UNICODE
+#define XPR_FILE_PATH XPR_MBCS_FILE_PATH
+#define XPR_FILE_NAME XPR_MBCS_FILE_NAME
+#endif
+
 class XPR_DL_API FileSys
 {
 public:
-    static xpr_bool_t  exist(const xpr_char_t *aFilePath);
-    static xpr_bool_t  exist(const xpr_wchar_t *aFilePath);
-
-    static xpr_rcode_t mkdir(const xpr_char_t  *aDir);
-    static xpr_rcode_t mkdir(const xpr_wchar_t *aDir);
-
-    static xpr_rcode_t mkdir_recursive(const xpr_char_t  *aDir);
-    static xpr_rcode_t mkdir_recursive(const xpr_wchar_t *aDir);
-
-    static xpr_rcode_t rmdir(const xpr_char_t  *aDir);
-    static xpr_rcode_t rmdir(const xpr_wchar_t *aDir);
-
-    static xpr_rcode_t remove(const xpr_char_t  *aFilePath);
-    static xpr_rcode_t remove(const xpr_wchar_t *aFilePath);
-
-    static xpr_rcode_t rename(const xpr_char_t  *aOldFilePath, const xpr_char_t  *aNewFilePath);
-    static xpr_rcode_t rename(const xpr_wchar_t *aOldFilePath, const xpr_wchar_t *aNewFilePath);
-
-    static xpr_uint64_t getFileSize(const xpr_char_t  *aFilePath);
-    static xpr_uint64_t getFileSize(const xpr_wchar_t *aFilePath);
-
-    static xpr_rcode_t chdir(const xpr_char_t  *aCurDir);
-    static xpr_rcode_t chdir(const xpr_wchar_t *aCurDir);
-
-    static xpr_rcode_t getcwd(xpr_char_t  *aCurDir, xpr_size_t aMaxLen);
-    static xpr_rcode_t getcwd(xpr_wchar_t *aCurDir, xpr_size_t aMaxLen);
-
-    static xpr_rcode_t getExePath(xpr_char_t  *aExePath, xpr_size_t aMaxLen);
-    static xpr_rcode_t getExePath(xpr_wchar_t *aExePath, xpr_size_t aMaxLen);
-
-    static xpr_rcode_t getExeDir(xpr_char_t  *aExeDir, xpr_size_t aMaxLen);
-    static xpr_rcode_t getExeDir(xpr_wchar_t *aExeDir, xpr_size_t aMaxLen);
-
-    static xpr_rcode_t getTempDir(xpr_char_t  *aTempDir, xpr_size_t aMaxLen);
-    static xpr_rcode_t getTempDir(xpr_wchar_t *aTempDir, xpr_size_t aMaxLen);
+    static xpr_bool_t  exist(const xpr::string &aFilePath);
+    static xpr_rcode_t mkdir(const xpr::string &aDir);
+    static xpr_rcode_t mkdir_recursive(const xpr::string &aDir);
+    static xpr_rcode_t rmdir(const xpr::string &aDir);
+    static xpr_rcode_t remove(const xpr::string &aFilePath);
+    static xpr_rcode_t rename(const xpr::string &aOldFilePath, const xpr::string &aNewFilePath);
+    static xpr_uint64_t getFileSize(const xpr::string &aFilePath);
+    static xpr_rcode_t chdir(const xpr::string &aCurDir);
+    static xpr_rcode_t getcwd(xpr::string &aCurDir);
+    static xpr_rcode_t getExePath(xpr::string &aExePath);
+    static xpr_rcode_t getExeDir(xpr::string &aExeDir);
+    static xpr_rcode_t getTempDir(xpr::string &aTempDir);
 };
 } // namespace xpr
 

@@ -27,7 +27,7 @@
 #include "xpr_file_io.h"
 #include "xpr_text_file_io.h"
 #include "xpr_cstr.h"
-#include "xpr_tstring.h"
+#include "xpr_tchar.h"
 #include "xpr_guid.h"
 #include "xpr_xml.h"
 #include "xpr_net_io.h"

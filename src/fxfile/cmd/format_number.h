@@ -43,10 +43,10 @@ public:
     inline xpr_size_t getDigit(void) const { return mDigit; }
 
 public:
-    static xpr_bool_t canParseShort(const xpr::tstring &aFormatString);
-    static void       parseShort(const xpr::tstring &aFormatString, Format *&aFormat);
+    static xpr_bool_t canParseShort(const xpr::string &aFormatString);
+    static void       parseShort(const xpr::string &aFormatString, Format *&aFormat);
 
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 

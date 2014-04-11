@@ -40,7 +40,7 @@ void FolderSyncCommand::execute(CommandContext &aContext)
 {
     FXFILE_COMMAND_DECLARE_CTRL;
 
-    xpr::tstring sDir[2];
+    xpr::string sDir[2];
 
     ExplorerCtrl *sExplorerCtrls[2];
     sExplorerCtrls[0] = sMainFrame->getExplorerCtrl();

@@ -28,14 +28,14 @@ ShortFormatParser::~ShortFormatParser(void)
 {
 }
 
-xpr_bool_t ShortFormatParser::parse(const xpr::tstring &aFormat, FormatSequence &aFormatSequence) const
+xpr_bool_t ShortFormatParser::parse(const xpr::string &aFormat, FormatSequence &aFormatSequence) const
 {
     xpr_bool_t     sSuccess = XPR_TRUE;
     xpr_size_t     i = 0, sLen;
     xpr_size_t     sSeparatedFormatPos1 = -1;
     xpr_size_t     sSeparatedFormatPos2 = -1;
-    xpr::tstring   sSeparatedFormat;
-    xpr::tstring   sString;
+    xpr::string    sSeparatedFormat;
+    xpr::string    sString;
     Format        *sFormat;
     FormatFactory &sFormatFactory = SingletonManager::get<FormatFactory>();
 

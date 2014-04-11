@@ -26,7 +26,7 @@ protected: ShortFormatParser(void);
 public:   ~ShortFormatParser(void);
 
 public:
-    xpr_bool_t parse(const xpr::tstring &aFormat, FormatSequence &aFormatSequence) const;
+    xpr_bool_t parse(const xpr::string &aFormat, FormatSequence &aFormatSequence) const;
 };
 } // namespace cmd
 } // namespace fxfile

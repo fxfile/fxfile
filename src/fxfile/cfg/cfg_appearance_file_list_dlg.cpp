@@ -147,7 +147,7 @@ void CfgAppearanceFileListDlg::onApply(Option::Config &aConfig)
     aConfig.mExplorerNameCaseType = ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->GetCurSel();
 }
 
-xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, xpr::tstring &aPath, xpr_bool_t &aSatisfied)
+xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, xpr::string &aPath, xpr_bool_t &aSatisfied)
 {
     aSatisfied = XPR_FALSE;
 
@@ -163,7 +163,7 @@ xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHe
     xpr_ssize_t sRead;
     xpr::FileIo sFileIo;
 
-    sRcode = sFileIo.open(aPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+    sRcode = sFileIo.open(aPath, xpr::FileIo::OpenModeReadOnly);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         BITMAPINFOHEADER sBitmapInfoHeader = {0};
@@ -184,7 +184,7 @@ xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHe
 void CfgAppearanceFileListDlg::OnCustomIcon16x16Browse(void) 
 {
     xpr_bool_t sSatisfied = XPR_FALSE;
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     if (loadImage(16, 16, sPath, sSatisfied) == XPR_FALSE)
         return;
@@ -204,7 +204,7 @@ void CfgAppearanceFileListDlg::OnCustomIcon16x16Browse(void)
 void CfgAppearanceFileListDlg::OnCustomIcon32x32Browse(void) 
 {
     xpr_bool_t sSatisfied = XPR_FALSE;
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     if (loadImage(32, 32, sPath, sSatisfied) == XPR_FALSE)
         return;

@@ -16,8 +16,11 @@
 
 namespace fxfile
 {
+namespace
+{
 const xpr_tchar_t kDevVer   [] = XPR_STRING_LITERAL("dev");
 const xpr_tchar_t kStableVer[] = XPR_STRING_LITERAL("stable");
+} // namespace anonymous
 
 void getAppVer(xpr_tchar_t *aAppVer)
 {

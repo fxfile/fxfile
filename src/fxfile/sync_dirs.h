@@ -77,10 +77,10 @@ public:
 
 public:
     const xpr_tchar_t *getSubPath(void);
-    void getSubPath(xpr::tstring &aSubPath);
+    void getSubPath(xpr::string &aSubPath);
     xpr_bool_t getPath(const xpr_tchar_t *aDir, xpr_tchar_t *aPath);
-    xpr_bool_t getPath(const xpr_tchar_t *aDir, xpr::tstring &aPath);
-    xpr_bool_t getPath(const xpr::tstring &aDir, xpr::tstring &aPath);
+    xpr_bool_t getPath(const xpr_tchar_t *aDir, xpr::string &aPath);
+    xpr_bool_t getPath(const xpr::string &aDir, xpr::string &aPath);
 
     LPFILETIME getTime(xpr_sint_t aIndex);
 
@@ -113,17 +113,17 @@ public:
         }
 
     public:
-        xpr_bool_t    mEqualDir;
-        xpr::tstring  mDir[2];
-        xpr::tstring  mPath[2];
-        xpr_bool_t    mDateTime;
-        xpr_bool_t    mAttributes;
-        xpr_bool_t    mSize;
-        xpr_uint_t    mContents;
-        xpr_char_t   *mBuffer[2];
-        xpr_size_t    mBufferSize;
-        xpr_char_t    mCrc[2][100];
-        HANDLE        mStopEvent;
+        xpr_bool_t   mEqualDir;
+        xpr::string  mDir[2];
+        xpr::string  mPath[2];
+        xpr_bool_t   mDateTime;
+        xpr_bool_t   mAttributes;
+        xpr_bool_t   mSize;
+        xpr_uint_t   mContents;
+        xpr_char_t  *mBuffer[2];
+        xpr_size_t   mBufferSize;
+        xpr_char_t   mCrc[2][100];
+        HANDLE       mStopEvent;
     };
 
     class SyncFlags
@@ -140,12 +140,12 @@ public:
         }
 
     public:
-        xpr_uint_t    mDirection;
-        xpr::tstring  mDir[2];
-        xpr::tstring  mPath[2];
-        HANDLE        mStopEvent;
-        xpr_char_t   *mBuffer;
-        xpr_size_t    mBufferSize;
+        xpr_uint_t   mDirection;
+        xpr::string  mDir[2];
+        xpr::string  mPath[2];
+        HANDLE       mStopEvent;
+        xpr_char_t  *mBuffer;
+        xpr_size_t   mBufferSize;
     };
 
     enum Result
@@ -161,8 +161,8 @@ public:
     inline Result synchronize(SyncFlags &aSyncFlags, CompareFlags &aCompareFlags);
 
 public:
-    xpr_sint_t   mSubLevel;
-    xpr::tstring mSubPath;
+    xpr_sint_t  mSubLevel;
+    xpr::string mSubPath;
 
 public:
     xpr_sint64_t mFileSize[2];
@@ -179,10 +179,10 @@ public:
     xpr_uint_t mOrgSync;
 };
 
-typedef std::tr1::unordered_multimap<xpr::tstring, SyncItem *> SyncMap;
+typedef std::tr1::unordered_multimap<xpr::string, SyncItem *> SyncMap;
 typedef std::pair<SyncMap::iterator, SyncMap::iterator> SyncMapPairIterator;
 typedef std::deque<SyncItem *> SyncDeque;
-typedef std::deque<xpr::tstring> FilterDeque;
+typedef std::deque<xpr::string> FilterDeque;
 
 class SyncDirs
 {
@@ -210,7 +210,7 @@ public:
 
 public:
     void getDir(xpr_tchar_t *aDir1, xpr_tchar_t *aDir2);
-    void getDir(xpr::tstring &aDir1, xpr::tstring &aDir2);
+    void getDir(xpr::string &aDir1, xpr::string &aDir2);
     void setDir(const xpr_tchar_t *aDir1, const xpr_tchar_t *aDir2);
 
     void setDirection(xpr_uint_t aDirection);
@@ -244,13 +244,13 @@ public:
     xpr_uint_t getStatus(Status &aSatus);
 
 protected:
-    void scanRecursiveDir(SyncMap &aSyncMap, const xpr_sint_t aIndex, xpr_uint_t aLevel, const xpr::tstring &aDir, const xpr::tstring &aBaseDir);
+    void scanRecursiveDir(SyncMap &aSyncMap, const xpr_sint_t aIndex, xpr_uint_t aLevel, const xpr::string &aDir, const xpr::string &aBaseDir);
     static bool sortDir(SyncItem *&aSyncItem1, SyncItem *&aSyncItem2);
 
     void getCompareFlags(SyncItem::CompareFlags &aCompareFlags);
 
 protected:
-    xpr::tstring mDir[2];
+    xpr::string  mDir[2];
 
     xpr_uint_t   mDirection; // [0] <->, (1) ->, (2) <-
     xpr_uint_t   mSubLevel;

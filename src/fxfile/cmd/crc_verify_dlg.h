@@ -39,9 +39,9 @@ protected:
 protected:
     xpr_bool_t mEnable;
 
-    typedef std::deque<xpr::tstring> FileDeque;
+    typedef std::deque<xpr::string> FileDeque;
     FileDeque mFileDeque;
-    xpr::tstring mDir;
+    xpr::string mDir;
 
     CrcVerify *mCrcVerify;
 

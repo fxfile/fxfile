@@ -104,7 +104,7 @@ unsigned FileList::OnEntryProc(void)
     const xpr_tchar_t *sSeparator = mSplitChar.c_str();
 
     sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-    sRcode = sFileIo.open(mTextFilePath.c_str(), sOpenMode);
+    sRcode = sFileIo.open(mTextFilePath, sOpenMode);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         xpr::TextFileWriter sTextFileWriter(sFileIo);
@@ -122,7 +122,7 @@ unsigned FileList::OnEntryProc(void)
         DWORD sFileAttributes;
 
         PathDeque::iterator sIterator;
-        xpr::tstring sPath;
+        xpr::string sPath;
 
         sIterator = mPathDeque.begin();
         for (; sIterator != mPathDeque.end(); ++sIterator)

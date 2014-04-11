@@ -25,6 +25,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
@@ -37,6 +39,7 @@ enum
     WM_FINALIZE  = WM_USER + 100,
     WM_PIC_COLOR = WM_USER + 101,
 };
+} // namespace anonymous
 
 PicConvDlg::PicConvDlg(void)
     : super(IDD_PIC_CONV, XPR_NULL)
@@ -229,7 +232,7 @@ void PicConvDlg::OnDestroy(void)
     }
 }
 
-xpr_bool_t PicConvDlg::addPath(const xpr::tstring &aPath)
+xpr_bool_t PicConvDlg::addPath(const xpr::string &aPath)
 {
     xpr_uint64_t sFileSize = GetFileSize(aPath);
     if (sFileSize >= (xpr_uint64_t)kuint32max)

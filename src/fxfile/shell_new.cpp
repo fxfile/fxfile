@@ -330,9 +330,9 @@ xpr_bool_t ShellNew::doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tcha
                 xpr_tchar_t sExpandValue[XPR_MAX_PATH * 3 + 1] = {0};
                 ::ExpandEnvironmentStrings(sValue, sExpandValue, XPR_MAX_PATH * 3);
 
-                xpr::tstring sExpandValue2 = sExpandValue;
+                xpr::string sExpandValue2 = sExpandValue;
                 xpr_size_t sFind = sExpandValue2.find(XPR_STRING_LITERAL("%1"));
-                if (sFind != xpr::tstring::npos)
+                if (sFind != xpr::string::npos)
                 {
                     sExpandValue2.erase(sFind, 2);
                     sExpandValue2.insert(sFind, sPath);
@@ -341,7 +341,7 @@ xpr_bool_t ShellNew::doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tcha
                 if (XPR_IS_TRUE(sBriefCaseFile))
                 {
                     sFind = sExpandValue2.find(XPR_STRING_LITERAL("%2"));
-                    if (sFind != xpr::tstring::npos)
+                    if (sFind != xpr::string::npos)
                     {
                         xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
                         SplitPathExt(sPath, XPR_NULL, sFileName, XPR_NULL);
@@ -351,11 +351,11 @@ xpr_bool_t ShellNew::doCommand(xpr_uint_t aId, const xpr_tchar_t *aDir, xpr_tcha
                     }
                 }
 
-                xpr::tstring sFile;
+                xpr::string sFile;
                 sFind = sExpandValue2.find(XPR_STRING_LITERAL(' '));
 
                 sFile = sExpandValue2.substr(0, sFind);
-                xpr::tstring sParam = sExpandValue2.substr(sFind + 1);
+                xpr::string sParam = sExpandValue2.substr(sFind + 1);
 
                 ExecFile(sFile.c_str(), XPR_NULL, sParam.c_str());
 

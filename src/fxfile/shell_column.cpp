@@ -180,7 +180,7 @@ xpr_sint_t ShellColumn::getAvgCharWidth(CWnd *aWnd)
     CFont *sFont = aWnd->GetFont();
     CFont *sOldFont = sMemDC.SelectObject(sFont);
 
-    xpr::tstring sText = XPR_STRING_LITERAL("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    xpr::string sText = XPR_STRING_LITERAL("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 
     CRect sRect(0,0,1000,100);
     sMemDC.DrawText(sText.c_str(), (xpr_sint_t)sText.length(), &sRect, DT_SINGLELINE | DT_TOP | DT_LEFT | DT_CALCRECT);

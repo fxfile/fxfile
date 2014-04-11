@@ -115,8 +115,8 @@ int MainWindow::OnCreate(LPCREATESTRUCT aCreateStruct)
     if (CWnd::OnCreate(aCreateStruct) == -1)
         return -1;
 
-    xpr_bool_t   sResult;
-    xpr::tstring sUpdateHomeDir;
+    xpr_bool_t  sResult;
+    xpr::string sUpdateHomeDir;
 
     sResult = getUpdateHomeDir(sUpdateHomeDir);
     if (XPR_IS_FALSE(sResult))
@@ -165,19 +165,19 @@ void MainWindow::OnDestroy(void)
     CWnd::OnDestroy();
 }
 
-xpr_bool_t MainWindow::getUpdateHomeDir(xpr::tstring &aUpdateHomeDir) const
+xpr_bool_t MainWindow::getUpdateHomeDir(xpr::string &aUpdateHomeDir) const
 {
     xpr_bool_t  sResult = XPR_FALSE;
-    xpr_tchar_t sUpdateHomeDir[XPR_MAX_PATH + 1];
+    xpr::string sUpdateHomeDir;
     xpr_rcode_t sRcode;
 
-    sRcode = xpr::getEnv(kEnvAppDataName, sUpdateHomeDir, XPR_MAX_PATH);
+    sRcode = xpr::getEnv(kEnvAppDataName, sUpdateHomeDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kProgramDir);
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kUpdateDir);
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kProgramDir;
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kUpdateDir;
 
         sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
@@ -188,13 +188,13 @@ xpr_bool_t MainWindow::getUpdateHomeDir(xpr::tstring &aUpdateHomeDir) const
         }
     }
 
-    sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir, XPR_MAX_PATH);
+    sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kProgramDir);
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kUpdateDir);
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kProgramDir;
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kUpdateDir;
 
         sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
@@ -219,13 +219,13 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
             SetTimer(kTimerIdCheck, mConfig.mCheckPeriodTime, XPR_NULL);
         }
 
-        xpr_bool_t   sCheck    = XPR_TRUE;
-        xpr_bool_t   sDownload = XPR_TRUE;
-        xpr_rcode_t  sRcode;
-        xpr::tstring sCheckedVersion;
-        xpr::tstring sDownloadedFilePath;
-        xpr_size_t   sInputBytes;
-        xpr_size_t   sOutputBytes;
+        xpr_bool_t  sCheck    = XPR_TRUE;
+        xpr_bool_t  sDownload = XPR_TRUE;
+        xpr_rcode_t sRcode;
+        xpr::string sCheckedVersion;
+        xpr::string sDownloadedFilePath;
+        xpr_size_t  sInputBytes;
+        xpr_size_t  sOutputBytes;
 
         if (XPR_IS_TRUE(mUpdateChecker->isChecked()))
         {
@@ -319,25 +319,25 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
     CWnd::OnTimer(aIdEvent);
 }
 
-xpr_bool_t MainWindow::getConfHomeDir(xpr::tstring &aDir)
+xpr_bool_t MainWindow::getConfHomeDir(xpr::string &aDir)
 {
     xpr_rcode_t sRcode;
-    xpr_tchar_t sConfPath[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sExeConfDir[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sEnvConfDir[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sAppDataConfDir[XPR_MAX_PATH + 1] = {0};
-    xpr_tchar_t sLocalAppDataConfDir[XPR_MAX_PATH + 1] = {0};
+    xpr::string sConfPath;
+    xpr::string sExeConfDir;
+    xpr::string sEnvConfDir;
+    xpr::string sAppDataConfDir;
+    xpr::string sLocalAppDataConfDir;
 
     // [1] .fxfile of program directory
-    sRcode = xpr::FileSys::getExeDir(sExeConfDir, XPR_MAX_PATH);
+    sRcode = xpr::FileSys::getExeDir(sExeConfDir);
     if (XPR_RCODE_IS_ERROR(sRcode))
     {
         return XPR_FALSE;
     }
 
-    _tcscpy(sConfPath, sExeConfDir);
-    _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-    _tcscat(sConfPath, kRootConfFileName);
+    sConfPath  = sExeConfDir;
+    sConfPath += XPR_FILE_SEPARATOR_STRING;
+    sConfPath += kRootConfFileName;
 
     if (XPR_IS_TRUE(xpr::FileSys::exist(sConfPath)))
     {
@@ -348,12 +348,12 @@ xpr_bool_t MainWindow::getConfHomeDir(xpr::tstring &aDir)
     }
 
     // [2] FXFILE_CONF_HOME environment varaible
-    sRcode = xpr::getEnv(kEnvConfHomeName, sEnvConfDir, XPR_MAX_PATH);
+    sRcode = xpr::getEnv(kEnvConfHomeName, sEnvConfDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscpy(sConfPath, sEnvConfDir);
-        _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sConfPath, kRootConfFileName);
+        sConfPath  = sEnvConfDir;
+        sConfPath += XPR_FILE_SEPARATOR_STRING;
+        sConfPath += kRootConfFileName;
 
         if (XPR_IS_TRUE(xpr::FileSys::exist(sConfPath)))
         {
@@ -365,14 +365,14 @@ xpr_bool_t MainWindow::getConfHomeDir(xpr::tstring &aDir)
 
 #if defined(XPR_CFG_OS_WINDOWS)
     // [3] %AppData%/fxfile/.fxfile
-    sRcode = xpr::getEnv(kEnvAppDataName, sAppDataConfDir, XPR_MAX_PATH);
+    sRcode = xpr::getEnv(kEnvAppDataName, sAppDataConfDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscpy(sConfPath, sAppDataConfDir);
-        _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sConfPath, kProgramDir);
-        _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sConfPath, kRootConfFileName);
+        sConfPath  = sAppDataConfDir;
+        sConfPath += XPR_FILE_SEPARATOR_STRING;
+        sConfPath += kProgramDir;
+        sConfPath += XPR_FILE_SEPARATOR_STRING;
+        sConfPath += kRootConfFileName;
 
         if (XPR_IS_TRUE(xpr::FileSys::exist(sConfPath)))
         {
@@ -384,14 +384,14 @@ xpr_bool_t MainWindow::getConfHomeDir(xpr::tstring &aDir)
     }
 
     // [4] %LocalAppData%/fxfile/.fxfile
-    sRcode = xpr::getEnv(kEnvLocalAppDataName, sLocalAppDataConfDir, XPR_MAX_PATH);
+    sRcode = xpr::getEnv(kEnvLocalAppDataName, sLocalAppDataConfDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscpy(sConfPath, sLocalAppDataConfDir);
-        _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sConfPath, kProgramDir);
-        _tcscat(sConfPath, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sConfPath, kRootConfFileName);
+        sConfPath  = sLocalAppDataConfDir;
+        sConfPath += XPR_FILE_SEPARATOR_STRING;
+        sConfPath += kProgramDir;
+        sConfPath += XPR_FILE_SEPARATOR_STRING;
+        sConfPath += kRootConfFileName;
 
         if (XPR_IS_TRUE(xpr::FileSys::exist(sConfPath)))
         {
@@ -408,7 +408,7 @@ xpr_bool_t MainWindow::getConfHomeDir(xpr::tstring &aDir)
     return XPR_TRUE;
 }
 
-xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::tstring &aConfPath, xpr::tstring &aDir)
+xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::string &aConfPath, xpr::string &aDir)
 {
     fxfile::base::ConfFileEx sConfFile(aConfPath);
     if (XPR_IS_TRUE(sConfFile.load()))
@@ -419,7 +419,7 @@ xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::tstring &aConfPath,
             const xpr_tchar_t *sValue = sConfFile.getValueS(sSection, kRootConfFileKeyConfHome, XPR_NULL);
             if (XPR_IS_NOT_NULL(sValue))
             {
-                xpr::tstring sDir = sValue;
+                xpr::string sDir = sValue;
 
                 fxfile::base::EnvPath::instance().resolve(sDir, aDir);
 
@@ -442,8 +442,8 @@ xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::tstring &aConfPath,
 
 xpr_bool_t MainWindow::loadConfig(void)
 {
-    xpr::tstring sConfHomeDir;
-    xpr::tstring sConfPath;
+    xpr::string sConfHomeDir;
+    xpr::string sConfPath;
 
     if (XPR_IS_FALSE(getConfHomeDir(sConfHomeDir)))
     {

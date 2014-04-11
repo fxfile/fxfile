@@ -57,7 +57,7 @@ void CrcCreate::setPath(const xpr_tchar_t *aPath)
         mPath = aPath;
 }
 
-void CrcCreate::addPath(const xpr::tstring &aPath)
+void CrcCreate::addPath(const xpr::string &aPath)
 {
     mPathDeque.push_back(aPath);
 }
@@ -93,7 +93,7 @@ unsigned CrcCreate::OnEntryProc(void)
 
     if (XPR_IS_FALSE(mEach))
     {
-        sRcode = sFileIo.open(mPath.c_str(), sOpenMode);
+        sRcode = sFileIo.open(mPath, sOpenMode);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
             sTextFileWriter = new xpr::TextFileWriter(sFileIo);
@@ -118,9 +118,9 @@ unsigned CrcCreate::OnEntryProc(void)
         const xpr_tchar_t *sExt;
         xpr_size_t sInputBytes;
         xpr_size_t sOutputBytes;
-        xpr::tstring sPath;
-        xpr::tstring sFileName;
-        xpr::tstring sCrcPath;
+        xpr::string sPath;
+        xpr::string sFileName;
+        xpr::string sCrcPath;
         PathDeque::iterator sIterator;
 
         sIterator = mPathDeque.begin();
@@ -141,7 +141,7 @@ unsigned CrcCreate::OnEntryProc(void)
 
                 sCrcPath += (mMethod == 0) ? XPR_STRING_LITERAL(".sfv") : XPR_STRING_LITERAL(".md5");
 
-                sRcode = sFileIo.open(sCrcPath.c_str(), sOpenMode);
+                sRcode = sFileIo.open(sCrcPath, sOpenMode);
                 if (XPR_RCODE_IS_ERROR(sRcode))
                     continue;
 

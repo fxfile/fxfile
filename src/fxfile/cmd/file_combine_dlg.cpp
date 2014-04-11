@@ -25,6 +25,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user timer
 enum
 {
@@ -36,6 +38,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 FileCombineDlg::FileCombineDlg()
     : super(IDD_FILE_COMBINE, XPR_NULL)

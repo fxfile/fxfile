@@ -27,12 +27,15 @@
 
 namespace fxfile
 {
+namespace
+{
 // user defined message
 enum
 {
     WM_SHCN_DRIVE        = WM_USER + 20,
     WM_DRIVE_ICON_UPDATE = WM_USER + 30,
 };
+} // namespace anonymous
 
 DriveToolBar::DriveToolBar(void)
     : mObserver(XPR_NULL)
@@ -311,7 +314,7 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
         sDriveChar = XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
         _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), sDriveChar);
 
-        xpr::tstring sName;
+        xpr::string sName;
         LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sDrive);
         GetName(sFullPidl, SHGDN_INFOLDER, sName);
         COM_FREE(sFullPidl);
@@ -828,9 +831,9 @@ void DriveToolBar::OnDropShortcut(STGMEDIUM *pstg, xpr_sint_t aDriveIndex)
     // File Operation
     xpr_sint_t i;
     xpr_size_t sColon;
-    xpr::tstring sDir;
-    xpr::tstring sName;
-    xpr::tstring sLinkPath;
+    xpr::string sDir;
+    xpr::string sName;
+    xpr::string sLinkPath;
     const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
     {
@@ -852,7 +855,7 @@ void DriveToolBar::OnDropShortcut(STGMEDIUM *pstg, xpr_sint_t aDriveIndex)
         GetName(sFullPidl2, SHGDN_INFOLDER, sName);
 
         sColon = sName.find(XPR_STRING_LITERAL(':'));
-        if (sColon != xpr::tstring::npos)
+        if (sColon != xpr::string::npos)
             sName.erase(sColon, 1);
 
         sName += sLinkSuffix;

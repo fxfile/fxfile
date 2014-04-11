@@ -398,7 +398,7 @@ LPITEMIDLIST Pidl::create(const xpr_tchar_t *aPath)
     return sPidl;
 }
 
-LPITEMIDLIST Pidl::create(const xpr::tstring &aPath)
+LPITEMIDLIST Pidl::create(const xpr::string &aPath)
 {
     const xpr_tchar_t *sPath = aPath.c_str();
 
@@ -460,7 +460,7 @@ HRESULT Pidl::create(const xpr_tchar_t *aPath, LPITEMIDLIST &aFullPidl)
     return S_OK;
 }
 
-HRESULT Pidl::create(const xpr::tstring &aPath, LPITEMIDLIST &aFullPidl)
+HRESULT Pidl::create(const xpr::string &aPath, LPITEMIDLIST &aFullPidl)
 {
     LPITEMIDLIST sFullPidl = create(aPath);
     if (XPR_IS_NULL(sFullPidl))
@@ -683,7 +683,7 @@ xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aNa
     return sResult;
 }
 
-xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aName)
+xpr_bool_t Pidl::getName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::string &aName)
 {
     xpr_bool_t    sResult      = XPR_FALSE;
     LPSHELLFOLDER sShellFolder = XPR_NULL;
@@ -718,7 +718,7 @@ xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD 
     return XPR_FALSE;
 }
 
-xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aName)
+xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::string &aName)
 {
     STRRET     sStrRet = {0};
     HRESULT    sComResult;
@@ -964,7 +964,7 @@ xpr_bool_t Pidl::getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr
     return sResult;
 }
 
-xpr_bool_t Pidl::getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aInfotip)
+xpr_bool_t Pidl::getInfotip(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::string &aInfotip)
 {
     xpr_bool_t  sResult    = XPR_FALSE;
     IQueryInfo *sQueryInfo = XPR_NULL;

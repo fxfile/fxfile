@@ -24,26 +24,29 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_uint64_t SIZE_KB = 1024ui64;
-static const xpr_uint64_t SIZE_MB = 1024ui64 * 1024ui64;
-static const xpr_uint64_t SIZE_GB = 1024ui64 * 1024ui64 * 1024ui64;
-static const xpr_uint64_t SIZE_TB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
-static const xpr_uint64_t SIZE_PB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
-static const xpr_uint64_t SIZE_EB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+namespace
+{
+const xpr_uint64_t SIZE_KB = 1024ui64;
+const xpr_uint64_t SIZE_MB = 1024ui64 * 1024ui64;
+const xpr_uint64_t SIZE_GB = 1024ui64 * 1024ui64 * 1024ui64;
+const xpr_uint64_t SIZE_TB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+const xpr_uint64_t SIZE_PB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
+const xpr_uint64_t SIZE_EB = 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64 * 1024ui64;
 
-static const xpr_tchar_t kSizeFormatSection[]      = XPR_STRING_LITERAL("size_format");
-static const xpr_tchar_t kSizeKey[]                = XPR_STRING_LITERAL("size_format.item%d.size");
-static const xpr_tchar_t kUnitKey[]                = XPR_STRING_LITERAL("size_format.item%d.unit");
-static const xpr_tchar_t kDisplayKey[]             = XPR_STRING_LITERAL("size_format.item%d.display");
-static const xpr_tchar_t kDefaultDecimalPlaceKey[] = XPR_STRING_LITERAL("size_format.item%d.default_decimal_place");
-static const xpr_tchar_t kDecimalPlaceKey[]        = XPR_STRING_LITERAL("size_format.item%d.decimal_place");
-static const xpr_tchar_t kRoundOffKey[]            = XPR_STRING_LITERAL("size_format.item%d.round_off");
+const xpr_tchar_t kSizeFormatSection[]      = XPR_STRING_LITERAL("size_format");
+const xpr_tchar_t kSizeKey[]                = XPR_STRING_LITERAL("size_format.item%d.size");
+const xpr_tchar_t kUnitKey[]                = XPR_STRING_LITERAL("size_format.item%d.unit");
+const xpr_tchar_t kDisplayKey[]             = XPR_STRING_LITERAL("size_format.item%d.display");
+const xpr_tchar_t kDefaultDecimalPlaceKey[] = XPR_STRING_LITERAL("size_format.item%d.default_decimal_place");
+const xpr_tchar_t kDecimalPlaceKey[]        = XPR_STRING_LITERAL("size_format.item%d.decimal_place");
+const xpr_tchar_t kRoundOffKey[]            = XPR_STRING_LITERAL("size_format.item%d.round_off");
+} // namespace anonymous
 
-xpr::tstring SizeFormat::mNoneText;
-xpr::tstring SizeFormat::mAutoText;
-xpr::tstring SizeFormat::mDefaultText;
-xpr::tstring SizeFormat::mCustomText;
-xpr::tstring SizeFormat::mByteUnitText;
+const xpr_tchar_t *SizeFormat::mNoneText     = XPR_NULL;
+const xpr_tchar_t *SizeFormat::mAutoText     = XPR_NULL;
+const xpr_tchar_t *SizeFormat::mDefaultText  = XPR_NULL;
+const xpr_tchar_t *SizeFormat::mCustomText   = XPR_NULL;
+const xpr_tchar_t *SizeFormat::mByteUnitText = XPR_NULL;
 
 SizeFormat::SizeFormat(void)
 {
@@ -236,11 +239,11 @@ const xpr_tchar_t *SizeFormat::getDefUnitText(xpr_sint_t aUnit)
 {
     switch (aUnit)
     {
-    case SIZE_UNIT_DEFAULT: return (mDefaultText.empty()  == XPR_FALSE) ? mDefaultText.c_str()  : XPR_STRING_LITERAL("Default");
-    case SIZE_UNIT_AUTO:    return (mAutoText.empty()     == XPR_FALSE) ? mAutoText.c_str()     : XPR_STRING_LITERAL("Automatic");
-    case SIZE_UNIT_CUSTOM:  return (mCustomText.empty()   == XPR_FALSE) ? mCustomText.c_str()   : XPR_STRING_LITERAL("Custom");
-    case SIZE_UNIT_NONE:    return (mNoneText.empty()     == XPR_FALSE) ? mNoneText.c_str()     : XPR_STRING_LITERAL("None");
-    case SIZE_UNIT_BYTE:    return (mByteUnitText.empty() == XPR_FALSE) ? mByteUnitText.c_str() : XPR_STRING_LITERAL("Byte(s)");
+    case SIZE_UNIT_DEFAULT: return (mDefaultText  != XPR_NULL) ? mDefaultText  : XPR_STRING_LITERAL("Default");
+    case SIZE_UNIT_AUTO:    return (mAutoText     != XPR_NULL) ? mAutoText     : XPR_STRING_LITERAL("Automatic");
+    case SIZE_UNIT_CUSTOM:  return (mCustomText   != XPR_NULL) ? mCustomText   : XPR_STRING_LITERAL("Custom");
+    case SIZE_UNIT_NONE:    return (mNoneText     != XPR_NULL) ? mNoneText     : XPR_STRING_LITERAL("None");
+    case SIZE_UNIT_BYTE:    return (mByteUnitText != XPR_NULL) ? mByteUnitText : XPR_STRING_LITERAL("Byte(s)");
     case SIZE_UNIT_KB:      return XPR_STRING_LITERAL("KB");
     case SIZE_UNIT_MB:      return XPR_STRING_LITERAL("MB");
     case SIZE_UNIT_GB:      return XPR_STRING_LITERAL("GB");

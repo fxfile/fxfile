@@ -159,8 +159,8 @@ void CfgAppearanceColorDlg::OnDestroy(void)
 void CfgAppearanceColorDlg::onInit(const Option::Config &aConfig)
 {
     xpr_sint_t i;
-    xpr::tstring sStringId;
-    xpr::tstring sViewText;
+    xpr::string sStringId;
+    xpr::string sViewText;
     ViewColor *pViewColor;
     CComboBox *sViewColorComboBox = (CComboBox *)GetDlgItem(IDC_CFG_COLOR_VIEW);
 

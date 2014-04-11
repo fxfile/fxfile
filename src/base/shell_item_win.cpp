@@ -15,8 +15,11 @@ namespace fxfile
 {
 namespace base
 {
-static const xpr_wchar_t kSpecialFolderMyDocumentsGuidString[] = XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}");
-static const xpr_wchar_t kSpecialFolderLibariesGuidString   [] = XPR_WIDE_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
+namespace
+{
+const xpr_wchar_t kSpecialFolderMyDocumentsGuidString[] = XPR_WIDE_STRING_LITERAL("::{450d8fba-ad25-11d0-98a8-0800361b1103}");
+const xpr_wchar_t kSpecialFolderLibariesGuidString   [] = XPR_WIDE_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
+} // namespace anonymous
 
 ShellItem::ShellItem(void)
     : mShellFolder(XPR_NULL)
@@ -49,7 +52,7 @@ ShellItem::ShellItem(const xpr_tchar_t *aFilePath)
     assign(aFilePath);
 }
 
-ShellItem::ShellItem(const xpr::tstring &aFilePath)
+ShellItem::ShellItem(const xpr::string &aFilePath)
     : mShellFolder(XPR_NULL)
     , mPidl(XPR_NULL)
     , mAttributes(AttrbitueNone)
@@ -117,7 +120,7 @@ xpr_bool_t ShellItem::assign(const xpr_tchar_t *aPath)
     return XPR_TRUE;
 }
 
-xpr_bool_t ShellItem::assign(const xpr::tstring &aPath)
+xpr_bool_t ShellItem::assign(const xpr::string &aPath)
 {
     LPITEMIDLIST sFullPidl = Pidl::create(aPath);
     if (XPR_IS_NULL(sFullPidl))

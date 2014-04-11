@@ -26,11 +26,11 @@ public:
     StringIterator(void);
 
 protected:
-    explicit StringIterator(xpr_char_t *aString);
+    explicit StringIterator(xpr_tchar_t *aString);
 
 public:
-    xpr_char_t&     operator*  () const;
-    xpr_char_t*     operator-> () const;
+    xpr_tchar_t&    operator*  () const;
+    xpr_tchar_t*    operator-> () const;
     StringIterator& operator++ ();
     StringIterator  operator++ (xpr_sint_t);
     StringIterator& operator-- ();
@@ -40,7 +40,7 @@ public:
     StringIterator& operator-= (xpr_sint_t aOffset);
     StringIterator  operator-  (xpr_sint_t aOffset) const;
     xpr_sint_t      operator-  (const StringIterator &aIterator) const;
-    xpr_char_t&     operator[] (xpr_sint_t aOffset) const;
+    xpr_tchar_t&    operator[] (xpr_sint_t aOffset) const;
     bool            operator== (const StringIterator &aIterator) const;
     bool            operator!= (const StringIterator &aIterator) const;
     bool            operator<  (const StringIterator &aIterator) const;
@@ -49,7 +49,7 @@ public:
     bool            operator>= (const StringIterator &aIterator) const;
 
 protected:
-    xpr_char_t *mString;
+    xpr_tchar_t *mString;
 };
 
 class XPR_DL_API StringConstIterator
@@ -61,11 +61,11 @@ public:
     StringConstIterator(const StringIterator &aIterator);
 
 protected:
-    explicit StringConstIterator(const xpr_char_t *aString);
+    explicit StringConstIterator(const xpr_tchar_t *aString);
 
 public:
-    const xpr_char_t&    operator*  () const;
-    const xpr_char_t*    operator-> () const;
+    const xpr_tchar_t&   operator*  () const;
+    const xpr_tchar_t*   operator-> () const;
     StringConstIterator& operator++ ();
     StringConstIterator  operator++ (xpr_sint_t);
     StringConstIterator& operator-- ();
@@ -75,7 +75,7 @@ public:
     StringConstIterator& operator-= (xpr_sint_t aOffset);
     StringConstIterator  operator-  (xpr_sint_t aOffset) const;
     xpr_sint_t           operator-  (const StringConstIterator &aIterator) const;
-    const xpr_char_t&    operator[] (xpr_sint_t aOffset) const;
+    const xpr_tchar_t&   operator[] (xpr_sint_t aOffset) const;
     bool                 operator== (const StringConstIterator &aIterator) const;
     bool                 operator!= (const StringConstIterator &aIterator) const;
     bool                 operator<  (const StringConstIterator &aIterator) const;
@@ -84,7 +84,7 @@ public:
     bool                 operator>= (const StringConstIterator &aIterator) const;
 
 protected:
-    const xpr_char_t *mString;
+    const xpr_tchar_t *mString;
 };
 
 class XPR_DL_API StringReverseIterator
@@ -96,11 +96,11 @@ public:
     StringReverseIterator(void);
 
 protected:
-    explicit StringReverseIterator(xpr_char_t *aString);
+    explicit StringReverseIterator(xpr_tchar_t *aString);
 
 public:
-    xpr_char_t&            operator*  () const;
-    xpr_char_t*            operator-> () const;
+    xpr_tchar_t&           operator*  () const;
+    xpr_tchar_t*           operator-> () const;
     StringReverseIterator& operator++ ();
     StringReverseIterator  operator++ (xpr_sint_t);
     StringReverseIterator& operator-- ();
@@ -110,7 +110,7 @@ public:
     StringReverseIterator& operator-= (xpr_sint_t aOffset);
     StringReverseIterator  operator-  (xpr_sint_t aOffset) const;
     xpr_sint_t             operator-  (const StringReverseIterator &aIterator) const;
-    xpr_char_t&            operator[] (xpr_sint_t aOffset) const;
+    xpr_tchar_t&           operator[] (xpr_sint_t aOffset) const;
     bool                   operator== (const StringReverseIterator &aIterator) const;
     bool                   operator!= (const StringReverseIterator &aIterator) const;
     bool                   operator<  (const StringReverseIterator &aIterator) const;
@@ -119,7 +119,7 @@ public:
     bool                   operator>= (const StringReverseIterator &aIterator) const;
 
 protected:
-    xpr_char_t *mString;
+    xpr_tchar_t *mString;
 };
 
 class XPR_DL_API StringConstReverseIterator
@@ -131,11 +131,11 @@ public:
     StringConstReverseIterator(const StringReverseIterator &aIterator);
 
 protected:
-    explicit StringConstReverseIterator(const xpr_char_t *aString);
+    explicit StringConstReverseIterator(const xpr_tchar_t *aString);
 
 public:
-    const xpr_char_t&           operator*  () const;
-    const xpr_char_t*           operator-> () const;
+    const xpr_tchar_t&          operator*  () const;
+    const xpr_tchar_t*          operator-> () const;
     StringConstReverseIterator& operator++ ();
     StringConstReverseIterator  operator++ (xpr_sint_t);
     StringConstReverseIterator& operator-- ();
@@ -145,7 +145,7 @@ public:
     StringConstReverseIterator& operator-= (xpr_sint_t aOffset);
     StringConstReverseIterator  operator-  (xpr_sint_t aOffset) const;
     xpr_sint_t                  operator-  (const StringConstReverseIterator &aIterator) const;
-    const xpr_char_t&           operator[] (xpr_sint_t aOffset) const;
+    const xpr_tchar_t&          operator[] (xpr_sint_t aOffset) const;
     bool                        operator== (const StringConstReverseIterator &aIterator) const;
     bool                        operator!= (const StringConstReverseIterator &aIterator) const;
     bool                        operator<  (const StringConstReverseIterator &aIterator) const;
@@ -154,7 +154,7 @@ public:
     bool                        operator>= (const StringConstReverseIterator &aIterator) const;
 
 protected:
-    const xpr_char_t *mString;
+    const xpr_tchar_t *mString;
 };
 } // namespace xpr
 

@@ -20,7 +20,10 @@
 
 namespace fxfile
 {
+namespace
+{
 static const xpr_tchar_t kKeyName[] = XPR_STRING_LITERAL("Folder\\Shell");
+} // namespace anonymous
 
 void ShellRegistry::registerShell(void)
 {

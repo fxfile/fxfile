@@ -23,7 +23,10 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t PROP_CONTEXT_MENU[] = XPR_STRING_LITERAL("OldWndProc");
+namespace
+{
+const xpr_tchar_t PROP_CONTEXT_MENU[] = XPR_STRING_LITERAL("OldWndProc");
+} // namespace anonymous
 
 xpr_bool_t ContextMenu::mShowFileScrapMenu = XPR_FALSE;
 xpr_bool_t ContextMenu::mAnimationMenu     = XPR_FALSE;

@@ -21,23 +21,28 @@
 using namespace fxfile;
 using namespace fxfile::base;
 
-#define EACH_VIEW_SET_FILENAME                  XPR_STRING_LITERAL(".view_set.conf")
+namespace fxfile
+{
+namespace
+{
+#define EACH_VIEW_SET_FILENAME           XPR_STRING_LITERAL(".view_set.conf")
 
-static const xpr_tchar_t kIndexSection     [] = XPR_STRING_LITERAL("view_set_index");
-static const xpr_tchar_t kIndexPathKey     [] = XPR_STRING_LITERAL("view_set.index%d.path");
-static const xpr_tchar_t kIndexHashKey     [] = XPR_STRING_LITERAL("view_set.index%d.hash");
-static const xpr_tchar_t kAllSubApplyKey   [] = XPR_STRING_LITERAL("view_set.index%d.all_sub_apply");
+const xpr_tchar_t kIndexSection     [] = XPR_STRING_LITERAL("view_set_index");
+const xpr_tchar_t kIndexPathKey     [] = XPR_STRING_LITERAL("view_set.index%d.path");
+const xpr_tchar_t kIndexHashKey     [] = XPR_STRING_LITERAL("view_set.index%d.hash");
+const xpr_tchar_t kAllSubApplyKey   [] = XPR_STRING_LITERAL("view_set.index%d.all_sub_apply");
 
-static const xpr_tchar_t kHashSection      [] = XPR_STRING_LITERAL("%s");
-static const xpr_tchar_t kViewSetSection   [] = XPR_STRING_LITERAL("view_set");
-static const xpr_tchar_t kStyleKey         [] = XPR_STRING_LITERAL("view_set.style");
-static const xpr_tchar_t kSortFormatIdKey  [] = XPR_STRING_LITERAL("view_set.sort_format_id");
-static const xpr_tchar_t kSortPropertyIdKey[] = XPR_STRING_LITERAL("view_set.sort_property_id");
-static const xpr_tchar_t kSortAscendingKey [] = XPR_STRING_LITERAL("view_set.sort_ascending");
-static const xpr_tchar_t kColumnCountKey   [] = XPR_STRING_LITERAL("view_set.column_count");
-static const xpr_tchar_t kFormatIdKey      [] = XPR_STRING_LITERAL("view_set.column%d.format_id");
-static const xpr_tchar_t kPropertyIdKey    [] = XPR_STRING_LITERAL("view_set.column%d.property_id");
-static const xpr_tchar_t kWidthKey         [] = XPR_STRING_LITERAL("view_set.column%d.width");
+const xpr_tchar_t kHashSection      [] = XPR_STRING_LITERAL("%s");
+const xpr_tchar_t kViewSetSection   [] = XPR_STRING_LITERAL("view_set");
+const xpr_tchar_t kStyleKey         [] = XPR_STRING_LITERAL("view_set.style");
+const xpr_tchar_t kSortFormatIdKey  [] = XPR_STRING_LITERAL("view_set.sort_format_id");
+const xpr_tchar_t kSortPropertyIdKey[] = XPR_STRING_LITERAL("view_set.sort_property_id");
+const xpr_tchar_t kSortAscendingKey [] = XPR_STRING_LITERAL("view_set.sort_ascending");
+const xpr_tchar_t kColumnCountKey   [] = XPR_STRING_LITERAL("view_set.column_count");
+const xpr_tchar_t kFormatIdKey      [] = XPR_STRING_LITERAL("view_set.column%d.format_id");
+const xpr_tchar_t kPropertyIdKey    [] = XPR_STRING_LITERAL("view_set.column%d.property_id");
+const xpr_tchar_t kWidthKey         [] = XPR_STRING_LITERAL("view_set.column%d.width");
+} // namespace anonymous
 
 FolderViewSet::FolderViewSet(void)
     : mViewStyle(LVS_REPORT)
@@ -135,7 +140,7 @@ void ViewSetMgr::load(void)
     // load view set
     FXFILE_STL_FOR_EACH(sIndexIterator, mIndexMap)
     {
-        const xpr::tstring &sHashValue = sIndexIterator->second;
+        const xpr::string &sHashValue = sIndexIterator->second;
 
         if (XPR_IS_NULL(sFolderViewSet))
         {
@@ -185,8 +190,8 @@ xpr_bool_t ViewSetMgr::save(void) const
     // save view set
     FXFILE_STL_FOR_EACH(sIterator, mHashMap)
     {
-        const xpr::tstring &sHashValue     = sIterator->first;
-        FolderViewSet      *sFolderViewSet = sIterator->second;
+        const xpr::string &sHashValue     = sIterator->first;
+        FolderViewSet     *sFolderViewSet = sIterator->second;
 
         XPR_ASSERT(sFolderViewSet != XPR_NULL);
 
@@ -249,8 +254,8 @@ void ViewSetMgr::saveIndex(fxfile::base::ConfFileEx &aConfFile) const
     sIterator = mIndexMap.begin();
     for (i = 0; sIterator != mIndexMap.end(); ++sIterator, ++i)
     {
-        const xpr::tstring &sPath = sIterator->first;
-        const xpr::tstring &sHash = sIterator->second.c_str();
+        const xpr::string &sPath = sIterator->first;
+        const xpr::string &sHash = sIterator->second.c_str();
 
         _stprintf(sKey, kIndexPathKey, i + 1);
         aConfFile.setValueS(sSection, sKey, sPath);
@@ -284,7 +289,7 @@ xpr_bool_t ViewSetMgr::getViewSet(const xpr_tchar_t *aPath, FolderViewSet *aFold
 
     FXFILE_STL_FOR_EACH(sIterator, mSubSet)
     {
-        const xpr::tstring &sPathForAllSubApply = *sIterator;
+        const xpr::string &sPathForAllSubApply = *sIterator;
 
         if (_tcsnicmp(sPathForAllSubApply.c_str(), sPath, sIterator->length()) == 0)
         {
@@ -561,7 +566,7 @@ void ViewSetMgr::verify(void)
         sIterator = mSubSet.begin();
         while (sIterator != mSubSet.end())
         {
-            const xpr::tstring &sPath = *sIterator;
+            const xpr::string &sPath = *sIterator;
 
             if (sPath.length() < 2)
             {
@@ -594,7 +599,7 @@ void ViewSetMgr::verify(void)
         sIterator = mIndexMap.begin();
         while (sIterator != mIndexMap.end())
         {
-            const xpr::tstring &sPath = sIterator->first;
+            const xpr::string &sPath = sIterator->first;
 
             if (sPath.length() < 2)
             {
@@ -620,7 +625,7 @@ void ViewSetMgr::verify(void)
         }
     }
 
-    typedef std::tr1::unordered_set<xpr::tstring> HashSet;
+    typedef std::tr1::unordered_set<xpr::string> HashSet;
     HashSet sHashSet;
 
     {
@@ -628,7 +633,7 @@ void ViewSetMgr::verify(void)
 
         FXFILE_STL_FOR_EACH(sIterator, mHashMap)
         {
-            const xpr::tstring &sHash = sIterator->first;
+            const xpr::string &sHash = sIterator->first;
 
             sHashSet.insert(sHash);
         }
@@ -640,7 +645,7 @@ void ViewSetMgr::verify(void)
         sIterator = mIndexMap.begin();
         while (sIterator != mIndexMap.end())
         {
-            const xpr::tstring &sHash = sIterator->second;
+            const xpr::string &sHash = sIterator->second;
 
             if (sHashSet.find(sHash) == sHashSet.end())
             {
@@ -652,3 +657,4 @@ void ViewSetMgr::verify(void)
         }
     }
 }
+} // namespace fxfile

@@ -16,7 +16,10 @@
 
 namespace fxfile
 {
-static const DWORD kIdleTime = 20;
+namespace
+{
+const DWORD kIdleTime = 20;
+} // namespace anonymous
 
 FileChangeWatcher::FileChangeWatcher(void)
     : mEvent(XPR_NULL)

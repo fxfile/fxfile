@@ -15,7 +15,10 @@
 #define new DEBUG_NEW
 #endif
 
-static const CRect kMargin(200, 150, 200, 150);
+namespace
+{
+const CRect kMargin(200, 150, 200, 150);
+} // namespace anonymous
 
 Print::Print(void)
 {

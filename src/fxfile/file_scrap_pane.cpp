@@ -27,8 +27,10 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("FileScrapPane");
-static const xpr_size_t  kPaneWidth[] = { 150, 90 };
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("FileScrapPane");
+const xpr_size_t  kPaneWidth[] = { 150, 90 };
 
 //
 // control id
@@ -49,6 +51,7 @@ enum
     kPaneIdNormal = 10,
     kPaneIdSize,
 };
+} // namespace anonymous
 
 FileScrapPane::FileScrapPane(void)
     : TabPane(TabTypeFileScrap)
@@ -773,7 +776,7 @@ xpr_sint_t FileScrapPane::addGroup(FileScrap::Group *aGroup, xpr_sint_t aIndex)
     if (XPR_IS_NULL(aGroup))
         return -1;
 
-    xpr::tstring sGroupName(aGroup->mGroupName);
+    xpr::string sGroupName(aGroup->mGroupName);
     if (sGroupName == kFileScrapNoGroupName)
         sGroupName = gApp.loadString(XPR_STRING_LITERAL("file_scrap.group.no_group"));
 
@@ -925,7 +928,7 @@ void FileScrapPane::updateDefGroup(void)
 
     xpr_size_t i;
     xpr_size_t sCount;
-    xpr::tstring sGroupName;
+    xpr::string sGroupName;
     FileScrap::Group *sGroup;
 
     sCount = mGroupComboBox->GetCount();

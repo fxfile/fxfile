@@ -98,7 +98,7 @@ void AttrTime::setTime(LPSYSTEMTIME aCreatedSystemTime, LPSYSTEMTIME aModifiedSy
     }
 }
 
-void AttrTime::addPath(const xpr::tstring &aPath)
+void AttrTime::addPath(const xpr::string &aPath)
 {
     mPathDeque.push_back(aPath);
 }
@@ -132,7 +132,7 @@ unsigned AttrTime::OnEntryProc(void)
 
     xpr_bool_t sResult = XPR_TRUE;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     PathDeque::iterator sIterator;
 
     sIterator = mPathDeque.begin();
@@ -183,12 +183,12 @@ unsigned AttrTime::OnEntryProc(void)
     return 0;
 }
 
-xpr_bool_t AttrTime::OnRcsvDirAttrTimeProc(const xpr::tstring &strDir, DWORD sAttributes, xpr_sint_t sDepth)
+xpr_bool_t AttrTime::OnRcsvDirAttrTimeProc(const xpr::string &strDir, DWORD sAttributes, xpr_sint_t sDepth)
 {
     if (IsStop() == XPR_TRUE)
         return XPR_TRUE;
 
-    xpr::tstring sPath = strDir + XPR_STRING_LITERAL('\\');
+    xpr::string sPath = strDir + XPR_STRING_LITERAL('\\');
     sPath += XPR_STRING_LITERAL("*.*");
 
     HANDLE sFile;
@@ -234,7 +234,7 @@ xpr_bool_t AttrTime::OnRcsvDirAttrTimeProc(const xpr::tstring &strDir, DWORD sAt
     return XPR_TRUE;
 }
 
-xpr_bool_t AttrTime::OnAttrTimeProc(const xpr::tstring &aPath, DWORD aAttributes)
+xpr_bool_t AttrTime::OnAttrTimeProc(const xpr::string &aPath, DWORD aAttributes)
 {
     xpr_bool_t sResult = XPR_FALSE;
 

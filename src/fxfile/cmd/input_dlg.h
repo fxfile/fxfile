@@ -39,9 +39,9 @@ public:
     const xpr_tchar_t *getText(void);
 
 protected:
-    xpr::tstring mProfile;
-    xpr::tstring mTitle;
-    xpr::tstring mDesc;
+    xpr::string mProfile;
+    xpr::string mTitle;
+    xpr::string mDesc;
     xpr_tchar_t mText[1024];
 
     xpr_sint_t mDlgWidth;

@@ -21,15 +21,18 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-#define CFG_PATH_FILENAME                   XPR_STRING_LITERAL(".fxfile")
+namespace
+{
+#define CFG_PATH_FILENAME             XPR_STRING_LITERAL(".fxfile")
 
-static const xpr_tchar_t kFxFilePath    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\")CFG_PATH_FILENAME;
+const xpr_tchar_t kFxFilePath    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\")CFG_PATH_FILENAME;
 
-static const xpr_tchar_t kProgramConfDir[] = XPR_STRING_LITERAL("%fxFile%\\conf");
-static const xpr_tchar_t kDefConfDir    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\conf");
+const xpr_tchar_t kProgramConfDir[] = XPR_STRING_LITERAL("%fxFile%\\conf");
+const xpr_tchar_t kDefConfDir    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\conf");
 
-static const xpr_tchar_t kFxFileSection [] = XPR_STRING_LITERAL(".fxfile");
-static const xpr_tchar_t kConfHomeKey   [] = XPR_STRING_LITERAL("conf_home");
+const xpr_tchar_t kFxFileSection [] = XPR_STRING_LITERAL(".fxfile");
+const xpr_tchar_t kConfHomeKey   [] = XPR_STRING_LITERAL("conf_home");
+} // namespace anonymous
 
 ConfDir::ConfDir(void)
     : mReadOnly(XPR_FALSE)
@@ -68,7 +71,7 @@ xpr_bool_t ConfDir::getDir(const xpr_tchar_t *aConfDir, xpr_tchar_t *aDir, xpr_s
     if (XPR_IS_NULL(aDir) || aMaxLen <= 0)
         return XPR_FALSE;
 
-    xpr::tstring sDir;
+    xpr::string sDir;
     GetEnvRealPath(aConfDir, sDir);
 
     if (sDir.empty() == XPR_TRUE)
@@ -98,7 +101,7 @@ xpr_bool_t ConfDir::getPath(xpr_sint_t aType, const xpr_tchar_t *aDir, xpr_tchar
     if (XPR_IS_NULL(sFileName))
         return XPR_FALSE;
 
-    xpr::tstring sPath(aDir);
+    xpr::string sPath(aDir);
     sPath += XPR_STRING_LITERAL('\\');
     sPath += sFileName;
 
@@ -238,7 +241,7 @@ xpr_bool_t ConfDir::load(void)
 {
     clear();
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetEnvRealPath(kFxFilePath, sPath);
 
     xpr_bool_t sResult = XPR_FALSE;
@@ -283,7 +286,7 @@ xpr_bool_t ConfDir::save(void) const
         return XPR_TRUE;
     }
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetEnvRealPath(kFxFilePath, sPath);
 
     fxfile::base::ConfFileEx sConfFile(sPath.c_str());

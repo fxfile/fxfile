@@ -23,8 +23,8 @@ namespace base
 class ConfFile::Key
 {
 public:
-    xpr::tstring mName;
-    xpr::tstring mValue;
+    xpr::string mName;
+    xpr::string mValue;
 };
 
 class ConfFile::Section
@@ -53,16 +53,16 @@ public:
     }
 
 public:
-    xpr::tstring mName;
-    KeyList      mKeyList;
-    KeyMap       mKeyMap;
-    xpr_size_t   mMaxNameLen;
+    xpr::string mName;
+    KeyList     mKeyList;
+    KeyMap      mKeyMap;
+    xpr_size_t  mMaxNameLen;
 };
 
 class ConfFile::Comment
 {
 public:
-    xpr::tstring mComment;
+    xpr::string mComment;
 };
 
 ConfFile::SectionIterator::SectionIterator(void)
@@ -146,7 +146,7 @@ ConfFile::ConfFile(const xpr_tchar_t *aFilePath)
     mFilePath = aFilePath;
 }
 
-ConfFile::ConfFile(const xpr::tstring &aFilePath)
+ConfFile::ConfFile(const xpr::string &aFilePath)
     : mFilePath(aFilePath)
     , mFlags(0)
 {
@@ -175,7 +175,7 @@ void ConfFile::setFilePath(const xpr_tchar_t *aFilePath)
     mFilePath = aFilePath;
 }
 
-void ConfFile::setFilePath(const xpr::tstring &aFilePath)
+void ConfFile::setFilePath(const xpr::string &aFilePath)
 {
     mFilePath = aFilePath;
 }
@@ -197,7 +197,7 @@ xpr_bool_t ConfFile::load(void)
     xpr_ssize_t sReadLen;
     xpr_bool_t  sFileLock;
 
-    sRcode = sFileIo.open(mFilePath.c_str(), xpr::FileIo::OpenModeReadOnly);
+    sRcode = sFileIo.open(mFilePath, xpr::FileIo::OpenModeReadOnly);
     if (XPR_RCODE_IS_ERROR(sRcode))
     {
         return XPR_FALSE;
@@ -343,7 +343,7 @@ xpr_bool_t ConfFile::save(xpr::CharSet aCharSet) const
     xpr_bool_t  sFileLock;
 
     sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-    sRcode = sFileIo.open(mFilePath.c_str(), sOpenMode);
+    sRcode = sFileIo.open(mFilePath, sOpenMode);
     if (XPR_RCODE_IS_ERROR(sRcode))
     {
         return XPR_FALSE;

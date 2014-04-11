@@ -55,10 +55,10 @@ public:
     }
 
 public:
-    xpr::tstring mName;
-    xpr::tstring mExts;
-    COLORREF     mColor;
-    xpr_sint_t   mIconIndex;
+    xpr::string mName;
+    xpr::string mExts;
+    COLORREF    mColor;
+    xpr_sint_t  mIconIndex;
 };
 
 class Filter
@@ -72,7 +72,7 @@ public:
     xpr_sint_t getCount(void);
     FilterItem *getFilter(xpr_sint_t aIndex = -1);
     FilterItem *getFilterFromName(const xpr_tchar_t *aName);
-    FilterItem *getFilterFromName(const xpr::tstring &aName);
+    FilterItem *getFilterFromName(const xpr::string &aName);
 
     xpr_sint_t getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder = XPR_FALSE);
     COLORREF   getColor(const xpr_tchar_t *aPath, xpr_bool_t aFolder = XPR_FALSE);

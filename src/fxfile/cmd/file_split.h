@@ -64,8 +64,8 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    xpr::tstring mPath;
-    xpr::tstring mDestDir;
+    xpr::string  mPath;
+    xpr::string  mDestDir;
     xpr_uint_t   mFlags;
     xpr_sint64_t mUnitSize;
     xpr_size_t   mBufferSize;

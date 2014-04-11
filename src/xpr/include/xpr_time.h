@@ -11,6 +11,7 @@
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
 #include "xpr_math.h"
+#include "xpr_string.h"
 
 typedef xpr_sint64_t xpr_time_t; // nano-second unit, from Jan 1, 1970
 
@@ -55,9 +56,33 @@ enum
     kDecember,
 };
 
-class TimeExpr
+enum
+{
+    DstUnknown = -1,
+};
+
+struct TimeExpr
 {
 public:
+    TimeExpr(void)
+    {
+        clear();
+    }
+
+    inline void clear(void)
+    {
+        mYear       = 0;
+        mMonth      = 0;
+        mDay        = 0;
+        mDayOfWeek  = 0;
+        mHour       = 0;
+        mMinute     = 0;
+        mSecond     = 0;
+        mNanosecond = 0;
+        mIsDst      = DstUnknown;
+        mUtcOffset  = 0;
+    }
+
     inline xpr_sint_t getMicrosecond(void) const
     {
         return mNanosecond / kMicrosecond;
@@ -92,11 +117,9 @@ public:
     xpr_sint_t mMinute;
     xpr_sint_t mSecond;
     xpr_sint_t mNanosecond;
-    xpr_bool_t mIsDst;       // daylight saving time
-    xpr_sint_t mGmtOff;      // seconds east of UTC
+    xpr_sint_t mIsDst;       // daylight saving time
+    xpr_sint_t mUtcOffset;   // seconds east of UTC
 };
-
-const TimeExpr kInitTimeExpr = {0, 0, 0, 0, 0, 0, 0, 0, XPR_FALSE, 0};
 
 XPR_DL_API xpr_time_t getTimeNow(void);
 XPR_DL_API void getTimeNow(xpr_time_t &aTimeNow);
@@ -111,6 +134,8 @@ XPR_DL_API void getLocalTimeNow(xpr_time_t &aLocalTimeNow);
 XPR_DL_API void getLocalTimeNow(TimeExpr &aLocalTimeExprNow);
 
 XPR_DL_API void getTimeFromAnsiTime(time_t aAnsiTime, xpr_time_t &aTime);
+
+XPR_DL_API xpr_sint_t getTimeZoneOffset(void);
 
 XPR_DL_API xpr_bool_t toTimeExpr(xpr_time_t aTime, TimeExpr &aTimeExpr, xpr_sint_t aOffset);
 XPR_DL_API xpr_bool_t toTime(const TimeExpr &aTimeExpr, xpr_time_t &aTime);

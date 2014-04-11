@@ -11,6 +11,8 @@
 #define __FXFILE_SEL_FOLDER_DLG_H__ 1
 #pragma once
 
+namespace fxfile
+{
 class DlgState;
 
 class SelFolderDlg : public CDialog
@@ -40,5 +42,6 @@ protected:
     afx_msg void OnDestroy(void);
     afx_msg void OnBrowse(void);
 };
+} // namespace fxfile
 
 #endif // __FXFILE_SEL_FOLDER_DLG_H__

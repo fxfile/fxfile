@@ -76,7 +76,7 @@ public:
     void setCreateType(CreateType aCreateType);
     CreateType getCreateType(void) const;
 
-    Result addPath(const xpr::tstring &aPath);
+    Result addPath(const xpr::string &aPath);
     Result addFormat(const xpr_tchar_t *aDir, const xpr_tchar_t *aFormat, xpr_size_t aCount);
     xpr_size_t getCount(void) const;
     void clear(void);
@@ -96,8 +96,8 @@ protected:
 
     typedef struct Item
     {
-        xpr::tstring mPath;
-        Result       mResult;
+        xpr::string mPath;
+        Result      mResult;
     } Item;
 
     typedef std::deque<Item *> NewDeque;

@@ -60,7 +60,7 @@ public:
         virtual xpr_sint_t draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_t aWidth, xpr_sint_t aHeight, CFont *aTextFont, CFont *aBoldTextFont);
 
     public:
-        xpr::tstring mHelp;
+        xpr::string mHelp;
     };
 
     class InfotipItem : public Item
@@ -72,7 +72,7 @@ public:
         virtual xpr_sint_t draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_t aWidth, xpr_sint_t aHeight, CFont *aTextFont, CFont *aBoldTextFont);
 
     public:
-        xpr::tstring mInfotip;
+        xpr::string mInfotip;
     };
 
     class SingleSelItem : public Item
@@ -84,11 +84,11 @@ public:
         virtual xpr_sint_t draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_t aWidth, xpr_sint_t aHeight, CFont *aTextFont, CFont *aBoldTextFont);
 
     public:
-        xpr::tstring mName;
-        xpr::tstring mType;
-        xpr::tstring mDate;
-        xpr::tstring mSize;
-        xpr::tstring mAttr;
+        xpr::string mName;
+        xpr::string mType;
+        xpr::string mDate;
+        xpr::string mSize;
+        xpr::string mAttr;
     };
 
     class MultiSelItem : public Item
@@ -100,9 +100,9 @@ public:
         virtual xpr_sint_t draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_t aWidth, xpr_sint_t aHeight, CFont *aTextFont, CFont *aBoldTextFont);
 
     public:
-        xpr::tstring mCount;
-        xpr::tstring mSize;
-        xpr::tstring mNames;
+        xpr::string mCount;
+        xpr::string mSize;
+        xpr::string mNames;
     };
 
     class DriveSpaceItem : public Item
@@ -114,10 +114,10 @@ public:
         virtual xpr_sint_t draw(CDC *aDc, xpr_sint_t aTop, xpr_sint_t aWidth, xpr_sint_t aHeight, CFont *aTextFont, CFont *aBoldTextFont);
 
     public:
-        xpr::tstring mTotalSize;
-        xpr::tstring mUsedSize;
-        xpr::tstring mFreeSize;
-        xpr_sint_t   mUsedPercentage;
+        xpr::string mTotalSize;
+        xpr::string mUsedSize;
+        xpr::string mFreeSize;
+        xpr_sint_t  mUsedPercentage;
     };
 
 public:
@@ -154,7 +154,7 @@ protected:
 protected:
     Mode            mMode;
 
-    xpr::tstring    mFolderName;
+    xpr::string     mFolderName;
     HICON           mFolderIcon;
 
     typedef std::deque<Item *> DispDeque;

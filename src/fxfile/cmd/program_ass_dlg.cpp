@@ -74,18 +74,18 @@ xpr_bool_t ProgramAssDlg::OnInitDialog(void)
     AddControl(IDC_PROGRAM_ASS_STATUS, sizeResize, sizeRepos);
     //------------------------------------------------------------
 
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     sPath = mPath;
     xpr_size_t sFind = mPath.rfind(XPR_STRING_LITERAL('\\'));
-    if (sFind != xpr::tstring::npos)
+    if (sFind != xpr::string::npos)
         sPath = sPath.substr(sFind+1);
 
     SetDlgItemText(IDC_PROGRAM_ASS_FILE, sPath.c_str());
 
     xpr_sint_t sImageIndex;
-    xpr::tstring sText;
-    xpr::tstring sFileName;
+    xpr::string sText;
+    xpr::string sFileName;
     LPITEMIDLIST sFullPidl;
     TV_INSERTSTRUCT sTvInsertStruct = {0};
     ProgramAssItem *sProgramAssItem;
@@ -100,7 +100,7 @@ xpr_bool_t ProgramAssDlg::OnInitDialog(void)
 
         sFileName = sProgramAssItem->mPath;
         xpr_size_t sFind = sFileName.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sFileName = sFileName.substr(sFind+1);
 
         sText  = sProgramAssItem->mName;
@@ -173,7 +173,7 @@ void ProgramAssDlg::OnDestroy(void)
     }
 }
 
-void ProgramAssDlg::setPath(const xpr::tstring &aPath)
+void ProgramAssDlg::setPath(const xpr::string &aPath)
 {
     mPath = aPath;
 }
@@ -265,7 +265,7 @@ void ProgramAssDlg::getContextMenu(xpr_bool_t sRightClick)
     if (sProgramAssItem == XPR_NULL)
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetEnvRealPath(sProgramAssItem->mPath, sPath);
 
     LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sPath.c_str());
@@ -292,7 +292,7 @@ void ProgramAssDlg::OnTvnSelchangedTree(NMHDR *pNMHDR, LRESULT *pResult)
     LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
     *pResult = 0;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     HTREEITEM sTreeItem = mTreeCtrl.GetSelectedItem();
     if (sTreeItem != XPR_NULL)

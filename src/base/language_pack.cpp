@@ -17,6 +17,8 @@ namespace fxfile
 {
 namespace base
 {
+namespace
+{
 const xpr_tchar_t kLanguagePackElement[] = XPR_STRING_LITERAL("LanguagePack");
 const xpr_tchar_t kDescriptionElement[]  = XPR_STRING_LITERAL("Description");
 const xpr_tchar_t kLanguageElement[]     = XPR_STRING_LITERAL("Language");
@@ -26,6 +28,7 @@ const xpr_tchar_t kEmailElement[]        = XPR_STRING_LITERAL("Email");
 const xpr_tchar_t kStringTableElement[]  = XPR_STRING_LITERAL("StringTable");
 const xpr_tchar_t kStringElement[]       = XPR_STRING_LITERAL("String");
 const xpr_tchar_t kIDAttribute[]         = XPR_STRING_LITERAL("ID");
+} // namespace anonymous
 
 LanguagePack::LanguagePack(void)
 {
@@ -44,7 +47,7 @@ xpr_bool_t LanguagePack::load(const xpr_tchar_t *aPath)
 
     _tcscpy(mPath, aPath);
 
-    XPR_TRACE(XPR_STRING_LITERAL("The \'%s\' language pack is loaded.\n"), mDesc.mLanguage);
+    XPR_TRACE(XPR_STRING_LITERAL("The \'%s\' language pack is loaded.\n"), mDesc.mLanguage.c_str());
 
     return XPR_TRUE;
 }
@@ -54,7 +57,7 @@ xpr_bool_t LanguagePack::loadStringTable(StringTable *aStringTable)
     if (load(mPath, aStringTable) == XPR_FALSE)
         return XPR_FALSE;
 
-    XPR_TRACE(XPR_STRING_LITERAL("The string table for \'%s\' language is loaded.\n"), mDesc.mLanguage);
+    XPR_TRACE(XPR_STRING_LITERAL("The string table for \'%s\' language is loaded.\n"), mDesc.mLanguage.c_str());
 
     return XPR_TRUE;
 }
@@ -72,77 +75,76 @@ xpr_bool_t LanguagePack::load(const xpr_tchar_t *aPath, StringTable *aStringTabl
     if (sXmlReader.testElement(sLanguagePackElement, kLanguagePackElement) == XPR_FALSE)
         return XPR_FALSE;
 
-    xpr_tchar_t sName[0xff] = {0};
-    xpr_tchar_t sEntity[XPR_MAX_URL_LENGTH] = {0};
-    xpr_tchar_t sValue[0xff] = {0};
+    xpr::string  sName;
+    xpr::string  sEntity;
+    xpr::string  sValue;
     XmlReader::Attribute *sAttribute;
-    xpr_tchar_t sId[StringTable::kMaxIdLength + 1] = {0};
-    xpr_tchar_t sString[StringTable::kMaxStringLength + 1] = {0};
+    xpr::string *sId;
+    xpr::string  sString;
 
     XmlReader::Element *sInLanguagePackElement = sXmlReader.childElement(sLanguagePackElement);
     while (sInLanguagePackElement != XPR_NULL)
     {
-        if (sXmlReader.getElement(sInLanguagePackElement, sName, 0xfe))
+        if (sXmlReader.getElement(sInLanguagePackElement, sName))
         {
-            if (_tcscmp(sName, kDescriptionElement) == 0)
+            if (sName == kDescriptionElement)
             {
                 XmlReader::Element *sInDescriptionElement = sXmlReader.childElement(sInLanguagePackElement);
                 while (sInDescriptionElement != XPR_NULL)
                 {
-                    if (sXmlReader.getElement(sInDescriptionElement, sName, 0xfe) == XPR_TRUE)
+                    if (sXmlReader.getElement(sInDescriptionElement, sName) == XPR_TRUE)
                     {
-                        if (_tcscmp(sName, kLanguageElement) == 0)
+                        if (sName == kLanguageElement)
                         {
-                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mLanguage, kMaxLanguageLength);
+                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mLanguage);
                         }
-                        else if (_tcscmp(sName, kAuthorElement) == 0)
+                        else if (sName == kAuthorElement)
                         {
-                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mAuthor, kMaxAuthorLength);
+                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mAuthor);
                         }
-                        else if (_tcscmp(sName, kHomepageElement) == 0)
+                        else if (sName == kHomepageElement)
                         {
-                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mHomepage, kMaxHomepageLength);
+                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mHomepage);
                         }
-                        else if (_tcscmp(sName, kEmailElement) == 0)
+                        else if (sName == kEmailElement)
                         {
-                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mEmail, kMaxEmailLength);
+                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mEmail);
                         }
-                        else if (_tcscmp(sName, kDescriptionElement) == 0)
+                        else if (sName == kDescriptionElement)
                         {
-                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mDescription, kMaxDescriptionLength);
+                            sXmlReader.getEntity(sInDescriptionElement, mDesc.mDescription);
                         }
                     }
 
                     sInDescriptionElement = sXmlReader.nextElement(sInDescriptionElement);
                 }
             }
-            else if (XPR_IS_NOT_NULL(aStringTable) && _tcscmp(sName, kStringTableElement) == 0)
+            else if (XPR_IS_NOT_NULL(aStringTable) && sName == kStringTableElement)
             {
                 XmlReader::Element *sStringElement = sXmlReader.childElement(sInLanguagePackElement);
                 while (sStringElement != XPR_NULL)
                 {
                     if (sXmlReader.testElement(sStringElement, kStringElement) == XPR_TRUE)
                     {
-                        sId[0] = 0;
-                        sString[0] = 0;
+                        sId = XPR_NULL;
 
                         sAttribute = sXmlReader.getFirstAttribute(sStringElement);
                         if (sAttribute != XPR_NULL)
                         {
-                            if (sXmlReader.getAttribute(sAttribute, sName, 2, sValue, StringTable::kMaxIdLength) == XPR_TRUE)
+                            if (sXmlReader.getAttribute(sAttribute, sName, sValue) == XPR_TRUE)
                             {
-                                if (_tcscmp(sName, kIDAttribute) == 0)
+                                if (sName == kIDAttribute)
                                 {
-                                    _tcscpy(sId, sValue);
+                                    sId = &sValue;
                                 }
                             }
                         }
 
-                        sXmlReader.getEntity(sStringElement, sString, StringTable::kMaxStringLength);
+                        sXmlReader.getEntity(sStringElement, sString);
 
-                        if (sId[0] != 0)
+                        if (XPR_IS_NOT_NULL(sId))
                         {
-                            aStringTable->mStringTable[sId] = sString;
+                            aStringTable->mStringTable[*sId] = sString;
                         }
                     }
 
@@ -154,9 +156,9 @@ xpr_bool_t LanguagePack::load(const xpr_tchar_t *aPath, StringTable *aStringTabl
         sInLanguagePackElement = sXmlReader.nextElement(sInLanguagePackElement);
     }
 
-    _tcscpy(mDesc.mFilePath, aPath);
+    mDesc.mFilePath = aPath;
 
-    XPR_TRACE(XPR_STRING_LITERAL("The string table for \'%s\' language is loaded.\n"), mDesc.mLanguage);
+    XPR_TRACE(XPR_STRING_LITERAL("The string table for \'%s\' language is loaded.\n"), mDesc.mLanguage.c_str());
 
     return XPR_TRUE;
 }
@@ -171,7 +173,7 @@ xpr_bool_t LanguagePack::equalLanguage(const xpr_tchar_t *aLanguage) const
     if (XPR_IS_NULL(aLanguage))
         return XPR_FALSE;
 
-    if (_tcsicmp(mDesc.mLanguage, aLanguage) != 0)
+    if (mDesc.mLanguage.compare_case(aLanguage) != 0)
         return XPR_FALSE;
 
     return XPR_TRUE;

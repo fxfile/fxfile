@@ -10,6 +10,7 @@
 
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
+#include "xpr_string.h"
 
 namespace xpr
 {
@@ -28,10 +29,8 @@ public:
     xpr_bool_t  none(void) const;
 
 public:
-    xpr_bool_t  toString(xpr_char_t *aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
-    xpr_bool_t  toString(xpr_wchar_t *aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
-    xpr_bool_t  fromString(const xpr_char_t *aString);
-    xpr_bool_t  fromString(const xpr_wchar_t *aString);
+    xpr_bool_t  toString(xpr::string &aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
+    xpr_bool_t  fromString(const xpr::string &aString);
 
     void        toGuid(Guid &aGuid) const;
     void        fromGuid(const Guid &aGuid);

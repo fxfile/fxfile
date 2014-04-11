@@ -38,7 +38,7 @@ public:
     void setPathSet(SearchUserLocPathSet *aSearchUserLocPathSet);
 
 protected:
-    xpr::tstring          mPath;
+    xpr::string           mPath;
     xpr_bool_t            mInclude;
     xpr_bool_t            mSubFolder;
     SearchUserLocPathSet *mSearchUserLocPathSet;

@@ -32,12 +32,12 @@ protected:
     void addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL);
 
 public:
-    LPITEMIDLIST getPidl(const xpr::tstring &aSpec, xpr_uint_t *aCSIDL = XPR_NULL);
-    xpr_bool_t getPidl(const xpr::tstring &aSpec, LPITEMIDLIST *aFullPidl, xpr_uint_t *aCSIDL = XPR_NULL);
-    xpr_bool_t getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_uint_t *aCSIDL = XPR_NULL);
+    LPITEMIDLIST getPidl(const xpr::string &aSpec, xpr_uint_t *aCSIDL = XPR_NULL);
+    xpr_bool_t getPidl(const xpr::string &aSpec, LPITEMIDLIST *aFullPidl, xpr_uint_t *aCSIDL = XPR_NULL);
+    xpr_bool_t getPath(const xpr::string &aSpec, xpr::string &aPath, xpr_uint_t *aCSIDL = XPR_NULL);
 
 protected:
-    typedef std::map<xpr::tstring, xpr_uint_t> SpecMap;
+    typedef std::map<xpr::string, xpr_uint_t> SpecMap;
     SpecMap mSpecMap;
 };
 } // namespace fxfile

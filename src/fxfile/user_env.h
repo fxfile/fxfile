@@ -57,7 +57,7 @@ public:
 public:
     OSVERSIONINFOEX mOSVerInfo;
     InetExpVer      mInetExpVer;
-    xpr::tstring    mShellVer;
+    xpr::string     mShellVer;
 
 protected:
     void getUserEnvironment(void);

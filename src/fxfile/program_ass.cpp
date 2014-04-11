@@ -22,13 +22,16 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kProgramAssSection[] = XPR_STRING_LITERAL("program_ass");
-static const xpr_tchar_t kNameKey          [] = XPR_STRING_LITERAL("program_ass.item%d.name");
-static const xpr_tchar_t kTypeKey          [] = XPR_STRING_LITERAL("program_ass.item%d.type");
-static const xpr_tchar_t kMethodKey        [] = XPR_STRING_LITERAL("program_ass.item%d.method");
-static const xpr_tchar_t kExtensionKey     [] = XPR_STRING_LITERAL("program_ass.item%d.extension");
-static const xpr_tchar_t kFilterKey        [] = XPR_STRING_LITERAL("program_ass.item%d.filter");
-static const xpr_tchar_t kProgramKey       [] = XPR_STRING_LITERAL("program_ass.item%d.program");
+namespace
+{
+const xpr_tchar_t kProgramAssSection[] = XPR_STRING_LITERAL("program_ass");
+const xpr_tchar_t kNameKey          [] = XPR_STRING_LITERAL("program_ass.item%d.name");
+const xpr_tchar_t kTypeKey          [] = XPR_STRING_LITERAL("program_ass.item%d.type");
+const xpr_tchar_t kMethodKey        [] = XPR_STRING_LITERAL("program_ass.item%d.method");
+const xpr_tchar_t kExtensionKey     [] = XPR_STRING_LITERAL("program_ass.item%d.extension");
+const xpr_tchar_t kFilterKey        [] = XPR_STRING_LITERAL("program_ass.item%d.filter");
+const xpr_tchar_t kProgramKey       [] = XPR_STRING_LITERAL("program_ass.item%d.program");
+} // namespace anonymous
 
 ProgramAssMgr::ProgramAssMgr(void)
 {
