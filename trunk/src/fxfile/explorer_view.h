@@ -57,7 +57,7 @@ public:
 
     xpr_sint_t    newTab(TabType aTabType = TabTypeExplorer);
     xpr_sint_t    newTab(LPCITEMIDLIST aInitFolder);
-    xpr_sint_t    newTab(const xpr::tstring &aInitFolder);
+    xpr_sint_t    newTab(const xpr::string &aInitFolder);
     xpr_sint_t    newSearchResultTab(void);
     xpr_sint_t    newFileScrapTab(void);
     xpr_sint_t    duplicateTab(xpr_sint_t aTab = -1);
@@ -66,7 +66,7 @@ public:
     xpr_sint_t    getTabOnCursor(void) const;
     xpr_sint_t    getTabCount(void) const;
     xpr_bool_t    getTabText(xpr_sint_t aTab, xpr_tchar_t *aText, xpr_size_t aMaxLen) const;
-    xpr_bool_t    getTabText(xpr_sint_t aTab, xpr::tstring &aText) const;
+    xpr_bool_t    getTabText(xpr_sint_t aTab, xpr::string &aText) const;
     TabPane      *getTabPane(xpr_sint_t aTab = -1) const;
     xpr_uint_t    getTabPaneId(xpr_sint_t aTab = -1) const;
     xpr_sint_t    findTab(xpr_uint_t aTabPaneId) const;
@@ -124,7 +124,7 @@ protected:
         InitFolderAll     = 0xffffffff,
     };
 
-    LPITEMIDLIST getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::tstring &aSelFile) const;
+    LPITEMIDLIST getInitFolderByProgramOption(xpr_sint_t aIndex, xpr::string &aSelFile) const;
     LPITEMIDLIST getInitFolder(xpr_sint_t  aIndex,
                                xpr_uint_t  aFlags = InitFolderAll,
                                xpr_uint_t *aInitFolderType = XPR_NULL) const;
@@ -188,7 +188,7 @@ protected:
     virtual void       onTabDoubleClicked(TabCtrl &aTabCtrl, xpr_size_t aTab);
     virtual void       onTabContextMenu(TabCtrl &aTabCtrl, xpr_size_t aTab, const POINT &aPoint);
     virtual void       onTabNewButton(TabCtrl &aTabCtrl);
-    virtual xpr_bool_t onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::tstring &aToolTipText);
+    virtual xpr_bool_t onTabToolTip(TabCtrl &aTabCtrl, xpr_size_t aTab, xpr::string &aToolTipText);
     virtual void       onSetFocus(TabCtrl &aTabCtrl);
 
     // from SplitterObserver

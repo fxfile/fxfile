@@ -49,9 +49,9 @@ LRESULT SendNotifyCodeMessage(CWnd *aWnd, LPNMHDR aNmHdr);
 // module
 //
 void GetModulePath(xpr_tchar_t *aPath, xpr_size_t aMaxLen);
-void GetModulePath(xpr::tstring &aPath);
+void GetModulePath(xpr::string &aPath);
 void GetModuleDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen);
-void GetModuleDir(xpr::tstring &aDir);
+void GetModuleDir(xpr::string &aDir);
 
 //
 // message box

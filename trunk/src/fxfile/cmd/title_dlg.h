@@ -35,8 +35,8 @@ protected:
 
     xpr_bool_t   mIconLeft;
     HICON        mDescIcon;
-    xpr::tstring mTitle;
-    xpr::tstring mDesc;
+    xpr::string  mTitle;
+    xpr::string  mDesc;
 
 protected:
     DECLARE_MESSAGE_MAP()

@@ -29,23 +29,23 @@ public:
     static void showVersion(void);
 
 public:
-    inline xpr_bool_t   isShowUsage(void) const { return mShowUsage; }
-    inline xpr_bool_t   isShowVersion(void) const { return mShowVersion; }
-    inline xpr_bool_t   isSelect(void) const { return mSelect; }
-    inline xpr_bool_t   isResetConf(void) const { return mResetConf; }
-    inline void         getWindowSplit(xpr_sint_t &aSplitRowCount, xpr_sint_t &aSplitColumnCount) const { aSplitRowCount = mSplitRowCount; aSplitColumnCount = mSplitColumnCount; }
-    inline xpr::tstring getDir(xpr_size_t aIndex) { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
-    inline xpr::tstring getConfDir(void) { return mConfDir; }
+    inline xpr_bool_t  isShowUsage(void) const { return mShowUsage; }
+    inline xpr_bool_t  isShowVersion(void) const { return mShowVersion; }
+    inline xpr_bool_t  isSelect(void) const { return mSelect; }
+    inline xpr_bool_t  isResetConf(void) const { return mResetConf; }
+    inline void        getWindowSplit(xpr_sint_t &aSplitRowCount, xpr_sint_t &aSplitColumnCount) const { aSplitRowCount = mSplitRowCount; aSplitColumnCount = mSplitColumnCount; }
+    inline xpr::string getDir(xpr_size_t aIndex) { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
+    inline xpr::string getConfDir(void) { return mConfDir; }
 
 private:
-    xpr_bool_t   mShowUsage;
-    xpr_bool_t   mShowVersion;
-    xpr_bool_t   mSelect;
-    xpr_sint_t   mSplitRowCount;
-    xpr_sint_t   mSplitColumnCount;
-    xpr::tstring mDir[MAX_VIEW_SPLIT];
-    xpr::tstring mConfDir;
-    xpr_bool_t   mResetConf;
+    xpr_bool_t  mShowUsage;
+    xpr_bool_t  mShowVersion;
+    xpr_bool_t  mSelect;
+    xpr_sint_t  mSplitRowCount;
+    xpr_sint_t  mSplitColumnCount;
+    xpr::string mDir[MAX_VIEW_SPLIT];
+    xpr::string mConfDir;
+    xpr_bool_t  mResetConf;
 };
 } // namespace fxfile
 

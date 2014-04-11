@@ -18,6 +18,8 @@
 
 namespace fxfile
 {
+namespace
+{
 typedef struct NotifyRegister
 {
     LPCITEMIDLIST mFullPidl;
@@ -44,7 +46,7 @@ typedef WINSHELLAPI xpr_bool_t (WINAPI *SHChangeNotifyDeregisterFunc)(HANDLE aNo
 //SHCNRF_RecursiveInterrupt     0x1000 /* Must be combined with SHCNRF_InterruptLevel */
 //SHCNRF_NewDelivery            0x8000 /* Messages use shared memory */
 
-static HANDLE createShellChangeNotify(HWND aHwnd, LPCITEMIDLIST aFullPidl, xpr_slong_t aEventMask, xpr_uint_t aMsg, xpr_bool_t aSubItems)
+HANDLE createShellChangeNotify(HWND aHwnd, LPCITEMIDLIST aFullPidl, xpr_slong_t aEventMask, xpr_uint_t aMsg, xpr_bool_t aSubItems)
 {
     HANDLE sShcnHandle;
     HINSTANCE sDll;
@@ -69,7 +71,7 @@ static HANDLE createShellChangeNotify(HWND aHwnd, LPCITEMIDLIST aFullPidl, xpr_s
     return sShcnHandle;
 }
 
-static xpr_bool_t destroyShellChangeNotify(HANDLE aShcnHandle)
+xpr_bool_t destroyShellChangeNotify(HANDLE aShcnHandle)
 {
     xpr_bool_t sResult = XPR_FALSE;
     HINSTANCE sDll;
@@ -93,6 +95,7 @@ enum
     WM_SHCHANGENOTIFY     = WM_USER + 1000,
     WM_SHCHANGENOTIFY_END = 0x7FFF,
 };
+} // namespace anonymous
 
 xpr_uint_t ShellChangeNotify::mIdMgr     = 100;
 xpr_bool_t ShellChangeNotify::mNoRefresh = XPR_FALSE;

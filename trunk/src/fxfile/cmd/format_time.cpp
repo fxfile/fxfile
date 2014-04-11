@@ -40,7 +40,7 @@ FormatTime::FormatTime(void)
 {
 }
 
-FormatTime::FormatTime(const xpr::tstring &aFormat)
+FormatTime::FormatTime(const xpr::string &aFormat)
     : mFormat(aFormat)
 {
 }
@@ -49,7 +49,7 @@ FormatTime::~FormatTime(void)
 {
 }
 
-void FormatTime::toString(const xpr::tstring &aFormat, const SYSTEMTIME &aSystemTime, xpr::tstring &aString)
+void FormatTime::toString(const xpr::string &aFormat, const SYSTEMTIME &aSystemTime, xpr::string &aString)
 {
     xpr_sint_t sNumber;
 
@@ -86,10 +86,10 @@ void FormatTime::toString(const xpr::tstring &aFormat, const SYSTEMTIME &aSystem
     }
 }
 
-void FormatTime::resolveTimeFormat(const xpr::tstring &aFormat, const SYSTEMTIME &aSystemTime, xpr::tstring &aString)
+void FormatTime::resolveTimeFormat(const xpr::string &aFormat, const SYSTEMTIME &aSystemTime, xpr::string &aString)
 {
-    xpr::tstring sBuffer;
-    xpr::tstring::const_iterator it;
+    xpr::string sBuffer;
+    xpr::string::const_iterator it;
 
     it = aFormat.begin();
     for (; it != aFormat.end(); ++it)
@@ -126,10 +126,10 @@ void FormatTime::resolveTimeFormat(const xpr::tstring &aFormat, const SYSTEMTIME
     toString(sBuffer, aSystemTime, aString);
 }
 
-void FormatTime::parseShort(const xpr::tstring &aFormatString, xpr::tstring &aFormat)
+void FormatTime::parseShort(const xpr::string &aFormatString, xpr::string &aFormat)
 {
     xpr_size_t sColon = aFormatString.find(XPR_STRING_LITERAL(':'));
-    if (sColon != xpr::tstring::npos)
+    if (sColon != xpr::string::npos)
     {
         aFormat = aFormatString.substr(sColon + 1, aFormatString.length() - sColon - 2);
     }
@@ -143,9 +143,9 @@ xpr_bool_t FormatTime::parseXml(const base::XmlReader &aXmlReader, base::XmlRead
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring sName;
-    xpr::tstring sValue;
-    xpr::tstring sFormat;
+    xpr::string sName;
+    xpr::string sValue;
+    xpr::string sFormat;
 
     base::XmlReader::Element *sFormatElement = aXmlReader.childElement(aElement);
     while (XPR_IS_NOT_NULL(sFormatElement))
@@ -172,7 +172,7 @@ FormatNowTime::FormatNowTime(void)
 {
 }
 
-FormatNowTime::FormatNowTime(const xpr::tstring &aFormat)
+FormatNowTime::FormatNowTime(const xpr::string &aFormat)
     : FormatTime(aFormat)
 {
 }
@@ -195,7 +195,7 @@ Format *FormatNowTime::newClone(void) const
 
 void FormatNowTime::rename(RenameContext &aContext) const
 {
-    const xpr::tstring &sFormat = getFormat();
+    const xpr::string &sFormat = getFormat();
 
     if (sFormat.empty() == XPR_TRUE)
     {
@@ -207,7 +207,7 @@ void FormatNowTime::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatNowTime::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatNowTime::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatNowTimeElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -235,16 +235,16 @@ xpr_bool_t FormatNowTime::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatNowTime::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatNowTime::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatTimeRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatNowTime::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatNowTime::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
-    xpr::tstring sFormat;
+    xpr::string sFormat;
     FormatTime::parseShort(aFormatString, sFormat);
 
     aFormat = new FormatNowTime(sFormat);
@@ -254,7 +254,7 @@ FormatCTime::FormatCTime(void)
 {
 }
 
-FormatCTime::FormatCTime(const xpr::tstring &aFormat)
+FormatCTime::FormatCTime(const xpr::string &aFormat)
     : FormatTime(aFormat)
 {
 }
@@ -277,7 +277,7 @@ Format *FormatCTime::newClone(void) const
 
 void FormatCTime::rename(RenameContext &aContext) const
 {
-    const xpr::tstring &sFormat = getFormat();
+    const xpr::string &sFormat = getFormat();
 
     // get creation time of the file
     aContext.getCTime();
@@ -292,7 +292,7 @@ void FormatCTime::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatCTime::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatCTime::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatCTimeElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -320,16 +320,16 @@ xpr_bool_t FormatCTime::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatCTime::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatCTime::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatCTimeRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatCTime::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatCTime::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
-    xpr::tstring sFormat;
+    xpr::string sFormat;
     FormatTime::parseShort(aFormatString, sFormat);
 
     aFormat = new FormatCTime(sFormat);
@@ -339,7 +339,7 @@ FormatMTime::FormatMTime(void)
 {
 }
 
-FormatMTime::FormatMTime(const xpr::tstring &aFormat)
+FormatMTime::FormatMTime(const xpr::string &aFormat)
     : FormatTime(aFormat)
 {
 }
@@ -362,7 +362,7 @@ Format *FormatMTime::newClone(void) const
 
 void FormatMTime::rename(RenameContext &aContext) const
 {
-    const xpr::tstring &sFormat = getFormat();
+    const xpr::string &sFormat = getFormat();
 
     // get last written time of the file
     aContext.getMTime();
@@ -377,7 +377,7 @@ void FormatMTime::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatMTime::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatMTime::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatMTimeElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -405,16 +405,16 @@ xpr_bool_t FormatMTime::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatMTime::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatMTime::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatMTimeRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatMTime::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatMTime::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
-    xpr::tstring sFormat;
+    xpr::string sFormat;
     FormatTime::parseShort(aFormatString, sFormat);
 
     aFormat = new FormatMTime(sFormat);

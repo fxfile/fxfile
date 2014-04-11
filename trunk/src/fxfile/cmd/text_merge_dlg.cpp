@@ -25,6 +25,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
@@ -36,6 +38,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 TextMergeDlg::TextMergeDlg(void)
     : super(IDD_TEXT_MERGE, XPR_NULL)

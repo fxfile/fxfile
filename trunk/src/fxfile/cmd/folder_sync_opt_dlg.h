@@ -33,8 +33,8 @@ public:
 
 protected:
     xpr_uint_t   mDirection;
-    xpr::tstring mPath1;
-    xpr::tstring mPath2;
+    xpr::string  mPath1;
+    xpr::string  mPath2;
     xpr_sint_t   mFiles1;
     xpr_sint_t   mFiles2;
     xpr_sint64_t mSize1;

@@ -38,7 +38,7 @@ protected:
     xpr_tchar_t mExts[MAX_FILTER_EXTS + 1];
     xpr_sint_t  mByExt;
 
-    typedef std::set<xpr::tstring> NameSet;
+    typedef std::set<xpr::string> NameSet;
     NameSet mNameSet;
 
 protected:

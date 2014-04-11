@@ -26,8 +26,8 @@ public:
     ~UpdateInfoManager(void);
 
 public:
-    static xpr_bool_t getDefaultUpdateHomeDir(xpr::tstring &aDir);
-    void setUpdateHomeDir(const xpr::tstring &aDir);
+    static xpr_bool_t getDefaultUpdateHomeDir(xpr::string &aDir);
+    void setUpdateHomeDir(const xpr::string &aDir);
 
 public:
     void close(void);
@@ -48,12 +48,12 @@ public:
 protected:
     xpr_key_t generateKey(xpr_key_t aOldKey);
 
-    void getKeyFilePath(xpr::tstring &aFilePath);
+    void getKeyFilePath(xpr::string &aFilePath);
 
     void initUpdateInfo(UpdateInfo &aUpdateInfo);
 
 protected:
-    xpr::tstring       mUpdateHomeDir;
+    xpr::string        mUpdateHomeDir;
     xpr_bool_t         mInitialized;
 
     xpr_key_t          mProcessMutexKey;

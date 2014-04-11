@@ -26,14 +26,14 @@ class AttrTimeDlg : public CResizingDialog
     typedef CResizingDialog super;
 
 public:
-    typedef std::deque<xpr::tstring> PathList;
+    typedef std::deque<xpr::string> PathList;
 
 public:
     AttrTimeDlg(void);
     virtual ~AttrTimeDlg(void);
 
 public:
-    void setDir(const xpr::tstring &aDir);
+    void setDir(const xpr::string &aDir);
     void setItemList(const PathList &aList);
 
 protected:
@@ -43,7 +43,7 @@ protected:
 protected:
     AttrTime *mAttrTime;
 
-    xpr::tstring mDir;
+    xpr::string mDir;
     PathList mList;
 
 protected:

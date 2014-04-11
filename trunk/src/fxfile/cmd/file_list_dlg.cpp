@@ -26,6 +26,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 #define MAX_DIV_TEXT 30
 
 // user defined message
@@ -33,6 +35,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 FileListDlg::FileListDlg(void)
     : super(IDD_FILE_LIST)

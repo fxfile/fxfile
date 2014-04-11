@@ -21,12 +21,12 @@ namespace fxfile
 {
 struct Thumbnail::ThumbItem
 {
-    HWND         mHwnd;
-    xpr_uint_t   mMsg;
-    xpr_uint_t   mCode;
-    xpr::tstring mPath;
-    xpr_bool_t   mLoadByExt;
-    CSize        mThumbSize;
+    HWND        mHwnd;
+    xpr_uint_t  mMsg;
+    xpr_uint_t  mCode;
+    xpr::string mPath;
+    xpr_bool_t  mLoadByExt;
+    CSize       mThumbSize;
 };
 
 Thumbnail::Thumbnail(void)

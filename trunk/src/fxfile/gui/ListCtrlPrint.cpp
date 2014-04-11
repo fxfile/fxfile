@@ -14,14 +14,17 @@
 #define new DEBUG_NEW
 #endif
 
-static const xpr_sint_t kHeaderLineSize = 5;
-static const xpr_sint_t kHeaderLineGap  = 5;
-static const xpr_sint_t kColumnTextGap  = 10;
-static const xpr_sint_t kColumnLineSize = 5;
-static const xpr_sint_t kColumnLineGap  = 5;
-static const xpr_sint_t kFooterLineSize = 5;
-static const xpr_sint_t kFooterLineGap  = 5;
-static const xpr_sint_t kCellPadding    = 5;
+namespace
+{
+const xpr_sint_t kHeaderLineSize = 5;
+const xpr_sint_t kHeaderLineGap  = 5;
+const xpr_sint_t kColumnTextGap  = 10;
+const xpr_sint_t kColumnLineSize = 5;
+const xpr_sint_t kColumnLineGap  = 5;
+const xpr_sint_t kFooterLineSize = 5;
+const xpr_sint_t kFooterLineGap  = 5;
+const xpr_sint_t kCellPadding    = 5;
+} // namespace anonymous
 
 ListCtrlPrint::ListCtrlPrint(void)
     : mListCtrl(XPR_NULL)

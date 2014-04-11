@@ -18,7 +18,7 @@
 
 namespace fxfile
 {
-LPITEMIDLIST GetEnvPidl(const xpr::tstring &aEnv, xpr_uint_t *aCSIDL)
+LPITEMIDLIST GetEnvPidl(const xpr::string &aEnv, xpr_uint_t *aCSIDL)
 {
     return EnvPath::instance().getPidl(aEnv, aCSIDL);
 }
@@ -28,12 +28,12 @@ LPITEMIDLIST GetEnvPidl(const xpr_tchar_t *aEnv, xpr_uint_t *aCSIDL)
     return EnvPath::instance().getPidl(aEnv, aCSIDL);
 }
 
-xpr_bool_t GetEnvPidl(const xpr::tstring &aEnv, LPITEMIDLIST *aPidl, xpr_uint_t *aCSIDL)
+xpr_bool_t GetEnvPidl(const xpr::string &aEnv, LPITEMIDLIST *aPidl, xpr_uint_t *aCSIDL)
 {
     return EnvPath::instance().getPidl(aEnv, aPidl, aCSIDL);
 }
 
-xpr_bool_t GetEnvPath(const xpr::tstring &aEnv, xpr::tstring &aPath, xpr_uint_t *aCSIDL)
+xpr_bool_t GetEnvPath(const xpr::string &aEnv, xpr::string &aPath, xpr_uint_t *aCSIDL)
 {
     return EnvPath::instance().getPath(aEnv, aPath, aCSIDL);
 }
@@ -43,7 +43,7 @@ xpr_bool_t GetEnvPath(const xpr_tchar_t *aEnv, xpr_tchar_t *aPath, xpr_uint_t *a
     if (XPR_IS_NULL(aEnv) || XPR_IS_NULL(aPath))
         return XPR_FALSE;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     if (EnvPath::instance().getPath(aEnv, sPath, aCSIDL) == XPR_FALSE)
         return XPR_FALSE;
 
@@ -52,25 +52,25 @@ xpr_bool_t GetEnvPath(const xpr_tchar_t *aEnv, xpr_tchar_t *aPath, xpr_uint_t *a
     return XPR_TRUE;
 }
 
-static inline xpr_bool_t GetEnv(const xpr::tstring &aEnvPath, xpr::tstring &aEnv)
+static inline xpr_bool_t GetEnv(const xpr::string &aEnvPath, xpr::string &aEnv)
 {
     aEnv.clear();
 
     if (aEnvPath.length() >= 3 && aEnvPath[0] == XPR_STRING_LITERAL('%'))
     {
         xpr_size_t sFind = aEnvPath.find('%', 1);
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             aEnv = aEnvPath.substr(0, sFind + 1);
     }
 
     return aEnv.empty() ? XPR_FALSE : XPR_TRUE;
 }
 
-void GetEnvRealPath(const xpr::tstring &aEnvPath, xpr::tstring &aRealPath)
+void GetEnvRealPath(const xpr::string &aEnvPath, xpr::string &aRealPath)
 {
     aRealPath.clear();
 
-    xpr::tstring sEnv;
+    xpr::string sEnv;
     if (GetEnv(aEnvPath, sEnv) == XPR_TRUE)
     {
         GetEnvPath(sEnv, aRealPath);
@@ -84,7 +84,7 @@ void GetEnvRealPath(const xpr::tstring &aEnvPath, xpr::tstring &aRealPath)
     }
 }
 
-xpr_bool_t GetEnvRealPidl(const xpr::tstring &aEnvPath, LPITEMIDLIST *aPidl)
+xpr_bool_t GetEnvRealPidl(const xpr::string &aEnvPath, LPITEMIDLIST *aPidl)
 {
     if (XPR_IS_NULL(aPidl))
         return XPR_FALSE;
@@ -94,14 +94,14 @@ xpr_bool_t GetEnvRealPidl(const xpr::tstring &aEnvPath, LPITEMIDLIST *aPidl)
     return (*aPidl != XPR_NULL);
 }
 
-LPITEMIDLIST GetEnvRealPidl(const xpr::tstring &aEnvPath)
+LPITEMIDLIST GetEnvRealPidl(const xpr::string &aEnvPath)
 {
     LPITEMIDLIST sFullPidl = XPR_NULL;
 
-    xpr::tstring sSubPath;
+    xpr::string sSubPath;
     xpr_uint_t sCSIDL = CSIDL_NONE;
 
-    xpr::tstring sEnv;
+    xpr::string sEnv;
     if (GetEnv(aEnvPath, sEnv) == XPR_TRUE)
     {
         sFullPidl = GetEnvPidl(sEnv, &sCSIDL);
@@ -370,7 +370,7 @@ void CombinePath(xpr_tchar_t *aPath, const xpr_tchar_t *aDir, const xpr_tchar_t 
         _tcscat(aPath, aExt);
 }
 
-void CombinePath(xpr::tstring &aPath, const xpr::tstring &aDir, const xpr::tstring &aFileName, const xpr_tchar_t *aExt)
+void CombinePath(xpr::string &aPath, const xpr::string &aDir, const xpr::string &aFileName, const xpr_tchar_t *aExt)
 {
     aPath.clear();
 
@@ -388,10 +388,10 @@ void CombinePath(xpr::tstring &aPath, const xpr::tstring &aDir, const xpr::tstri
         aPath += aExt;
 }
 
-void ConvUrlPath(xpr::tstring &aPath)
+void ConvUrlPath(xpr::string &aPath)
 {
     xpr_size_t sFind = 0;
-    while ((sFind = aPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::tstring::npos)
+    while ((sFind = aPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::string::npos)
     {
         aPath.replace(sFind, 1, 1, XPR_STRING_LITERAL('/'));
         sFind++;
@@ -400,10 +400,10 @@ void ConvUrlPath(xpr::tstring &aPath)
     aPath.insert(0, XPR_STRING_LITERAL("file:///"));
 }
 
-void ConvDevPath(xpr::tstring &aPath)
+void ConvDevPath(xpr::string &aPath)
 {
     xpr_size_t sFind = 0;
-    while ((sFind = aPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::tstring::npos)
+    while ((sFind = aPath.find(XPR_STRING_LITERAL('\\'), sFind)) != xpr::string::npos)
     {
         aPath.replace(sFind, 1, 2, XPR_STRING_LITERAL('\\'));
         sFind += 2;
@@ -447,11 +447,11 @@ xpr_bool_t SetNewPath(xpr_tchar_t       *aPath,
     return sResult;
 }
 
-xpr_bool_t SetNewPath(xpr::tstring       &aPath,
-                      const xpr::tstring &aDir,
-                      const xpr::tstring &aFileName,
-                      const xpr::tstring &aExt,
-                      const xpr_sint_t    aMaxNumber)
+xpr_bool_t SetNewPath(xpr::string       &aPath,
+                      const xpr::string &aDir,
+                      const xpr::string &aFileName,
+                      const xpr::string &aExt,
+                      const xpr_sint_t   aMaxNumber)
 {
     xpr_bool_t sResult = XPR_FALSE;
 
@@ -497,7 +497,7 @@ void RemoveLastSplit(xpr_tchar_t *aPath)
         aPath[sLen - 1] = '\0';
 }
 
-void RemoveLastSplit(xpr::tstring &aPath)
+void RemoveLastSplit(xpr::string &aPath)
 {
     const xpr_size_t sLen = aPath.length();
     if (sLen <= 0)
@@ -507,7 +507,7 @@ void RemoveLastSplit(xpr::tstring &aPath)
         aPath.erase(sLen-1);
 }
 
-static xpr_bool_t _fxIsEqualPath(xpr::tstring aPath1, xpr::tstring aPath2, xpr_bool_t aCase)
+static xpr_bool_t _fxIsEqualPath(xpr::string aPath1, xpr::string aPath2, xpr_bool_t aCase)
 {
     xpr_size_t sLen1 = aPath1.length();
     xpr_size_t sLen2 = aPath2.length();
@@ -532,27 +532,27 @@ xpr_bool_t IsEqualPath(const xpr_tchar_t *aPath1, const xpr_tchar_t *aPath2, xpr
     if (XPR_IS_NULL(aPath1) && XPR_IS_NULL(aPath2)) return XPR_TRUE;
     if (XPR_IS_NULL(aPath1) || XPR_IS_NULL(aPath2)) return XPR_FALSE;
 
-    xpr::tstring sPath1(aPath1);
-    xpr::tstring sPath2(aPath2);
+    xpr::string sPath1(aPath1);
+    xpr::string sPath2(aPath2);
 
     return _fxIsEqualPath(sPath1, sPath2, aCase);
 }
 
-xpr_bool_t IsEqualPath(const xpr::tstring &aPath1, const xpr::tstring &aPath2, xpr_bool_t aCase)
+xpr_bool_t IsEqualPath(const xpr::string &aPath1, const xpr::string &aPath2, xpr_bool_t aCase)
 {
-    xpr::tstring sPath1(aPath1);
-    xpr::tstring sPath2(aPath1);
+    xpr::string sPath1(aPath1);
+    xpr::string sPath2(aPath1);
 
     return _fxIsEqualPath(sPath1, sPath2, aCase);
 }
 
-xpr_bool_t VerifyFileName(const xpr::tstring &aFileName)
+xpr_bool_t VerifyFileName(const xpr::string &aFileName)
 {
     xpr_bool_t sResult = XPR_TRUE;
     const xpr_tchar_t *sInvalidChar = XPR_STRING_LITERAL("\\/:*?\"<>|");
 
     xpr_size_t sFind = aFileName.find_first_of(sInvalidChar);
-    if (sFind != xpr::tstring::npos)
+    if (sFind != xpr::string::npos)
         sResult = XPR_FALSE;
 
     return sResult;
@@ -563,11 +563,11 @@ xpr_bool_t VerifyFileName(const xpr_tchar_t *aFileName)
     if (XPR_IS_NULL(aFileName))
         return XPR_FALSE;
 
-    xpr::tstring sFileName(aFileName);
+    xpr::string sFileName(aFileName);
     return VerifyFileName(sFileName);
 }
 
-void RemoveInvalidChar(xpr::tstring &aFileName)
+void RemoveInvalidChar(xpr::string &aFileName)
 {
     xpr_size_t sFind = 0;
     const xpr_tchar_t *sInvalidChar = XPR_STRING_LITERAL("\\/:*?\"<>|");
@@ -575,7 +575,7 @@ void RemoveInvalidChar(xpr::tstring &aFileName)
     while (true)
     {
         sFind = aFileName.find_first_of(sInvalidChar, sFind);
-        if (sFind == xpr::tstring::npos)
+        if (sFind == xpr::string::npos)
             break;
 
         aFileName.erase(sFind, 1);

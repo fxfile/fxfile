@@ -147,8 +147,8 @@ xpr_bool_t FormatSequence::read(const base::XmlReader &aXmlReader, base::XmlRead
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring   sName;
-    Format        *sFormat;
+    xpr::string   sName;
+    Format       *sFormat;
     FormatFactory &sFormatFactory = SingletonManager::get<FormatFactory>();
 
     base::XmlReader::Element *sFormatElement = aXmlReader.childElement(aElement);
@@ -309,7 +309,7 @@ xpr_bool_t FileNameFormat::rename(RenameContext &aContext) const
     //
     // verify file name
     //
-    if (aContext.mNewFileName.find_first_of(kInvalidCharsInFilePath) != xpr::tstring::npos)
+    if (aContext.mNewFileName.find_first_of(kInvalidCharsInFilePath) != xpr::string::npos)
     {
         if (XPR_IS_NOT_NULL(mInvalidFileNameString))
         {
@@ -368,7 +368,7 @@ FileNameFormat *FileNameFormat::newClone(void) const
     return sNewFileNameFormat;
 }
 
-xpr_bool_t FileNameFormat::load(const xpr::tstring &aFilePath)
+xpr_bool_t FileNameFormat::load(const xpr::string &aFilePath)
 {
     xpr_bool_t       sResult = XPR_FALSE;
     FormatSequence  *sFormatSequence;
@@ -380,7 +380,7 @@ xpr_bool_t FileNameFormat::load(const xpr::tstring &aFilePath)
         base::XmlReader::Element *sFileNameFormatElement = sXmlReader.getRootElement();
         if (XPR_IS_NOT_NULL(sFileNameFormatElement))
         {
-            xpr::tstring sName;
+            xpr::string sName;
 
             if (XPR_IS_TRUE(sXmlReader.getElement(sFileNameFormatElement, sName)) && sName.compare(kXmlFileNameFormatElement) == 0)
             {
@@ -417,7 +417,7 @@ xpr_bool_t FileNameFormat::load(const xpr::tstring &aFilePath)
     return sResult;
 }
 
-xpr_bool_t FileNameFormat::save(const xpr::tstring &aFilePath) const
+xpr_bool_t FileNameFormat::save(const xpr::string &aFilePath) const
 {
     xpr_bool_t      sResult = XPR_FALSE;
     base::XmlWriter sXmlWriter;

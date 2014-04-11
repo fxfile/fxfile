@@ -14,10 +14,13 @@ namespace fxfile
 {
 namespace base
 {
-static const xpr_tchar_t kEnvAppDataName[] = XPR_STRING_LITERAL("APPDATA");
+namespace
+{
+const xpr_tchar_t kEnvAppDataName[] = XPR_STRING_LITERAL("APPDATA");
 
-static const xpr_tchar_t kProgramDir    [] = XPR_STRING_LITERAL("fxfile");
-static const xpr_tchar_t kUpdateDir     [] = XPR_STRING_LITERAL("update");
+const xpr_tchar_t kProgramDir    [] = XPR_STRING_LITERAL("fxfile");
+const xpr_tchar_t kUpdateDir     [] = XPR_STRING_LITERAL("update");
+} // namespace anonymous
 
 UpdateInfoManager::UpdateInfoManager(void)
     : mInitialized(XPR_FALSE)
@@ -44,21 +47,19 @@ void UpdateInfoManager::close(void)
     mShmAttachedAddr = XPR_NULL;
 }
 
-xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::tstring &aDir)
+xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::string &aDir)
 {
-    XPR_ASSERT(aDir != XPR_NULL);
-
     xpr_bool_t  sResult = XPR_FALSE;
-    xpr_tchar_t sUpdateHomeDir[XPR_MAX_PATH + 1];
+    xpr::string sUpdateHomeDir;
     xpr_rcode_t sRcode;
 
-    sRcode = xpr::getEnv(kEnvAppDataName, sUpdateHomeDir, XPR_MAX_PATH);
+    sRcode = xpr::getEnv(kEnvAppDataName, sUpdateHomeDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kProgramDir);
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kUpdateDir);
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kProgramDir;
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kUpdateDir;
 
         sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
@@ -69,13 +70,13 @@ xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::tstring &aDir)
         }
     }
 
-    sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir, XPR_MAX_PATH);
+    sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kProgramDir);
-        _tcscat(sUpdateHomeDir, XPR_FILE_SEPARATOR_STRING);
-        _tcscat(sUpdateHomeDir, kUpdateDir);
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kProgramDir;
+        sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
+        sUpdateHomeDir += kUpdateDir;
 
         sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
@@ -89,7 +90,7 @@ xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::tstring &aDir)
     return XPR_FALSE;
 }
 
-void UpdateInfoManager::setUpdateHomeDir(const xpr::tstring &aDir)
+void UpdateInfoManager::setUpdateHomeDir(const xpr::string &aDir)
 {
     mUpdateHomeDir = aDir;
 }
@@ -100,7 +101,7 @@ void UpdateInfoManager::setUpdateHomeDir(const xpr::tstring &aDir)
 xpr_rcode_t UpdateInfoManager::openUpdateInfo(void)
 {
     xpr_rcode_t  sRcode;
-    xpr::tstring sKeyFilePath;
+    xpr::string  sKeyFilePath;
     xpr::FileIo  sFileIo;
     xpr_sint_t   sOpenMode;
     xpr_ssize_t  sReadSize;
@@ -109,7 +110,7 @@ xpr_rcode_t UpdateInfoManager::openUpdateInfo(void)
 
     sOpenMode = xpr::FileIo::OpenModeReadOnly;
 
-    sRcode = sFileIo.open(sKeyFilePath.c_str(), sOpenMode);
+    sRcode = sFileIo.open(sKeyFilePath, sOpenMode);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         sRcode = sFileIo.read(&mProcessMutexKey, sizeof(xpr_key_t), &sReadSize);
@@ -241,7 +242,7 @@ xpr_key_t UpdateInfoManager::generateKey(xpr_key_t aOldKey)
     return sKey;
 }
 
-void UpdateInfoManager::getKeyFilePath(xpr::tstring &aFilePath)
+void UpdateInfoManager::getKeyFilePath(xpr::string &aFilePath)
 {
     aFilePath  = mUpdateHomeDir;
     aFilePath += XPR_FILE_SEPARATOR_STRING;
@@ -308,7 +309,7 @@ xpr_rcode_t UpdateInfoManager::createUpdateInfo(void)
     }
 
     // write shared memory key and process mutex key to '.key' file
-    xpr::tstring sKeyFilePath;
+    xpr::string  sKeyFilePath;
     xpr::FileIo  sFileIo;
     xpr_sint_t   sOpenMode;
     xpr_ssize_t  sWrittenSize;
@@ -317,7 +318,7 @@ xpr_rcode_t UpdateInfoManager::createUpdateInfo(void)
 
     sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
 
-    sRcode = sFileIo.open(sKeyFilePath.c_str(), sOpenMode);
+    sRcode = sFileIo.open(sKeyFilePath, sOpenMode);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         sRcode = sFileIo.write(&mProcessMutexKey, sizeof(xpr_key_t), &sWrittenSize);

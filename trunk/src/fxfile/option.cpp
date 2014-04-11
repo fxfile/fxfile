@@ -27,19 +27,22 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
-static const xpr_tchar_t kMainSection    [] = XPR_STRING_LITERAL("main");
-static const xpr_tchar_t kConfigSection  [] = XPR_STRING_LITERAL("config");
+namespace
+{
+const xpr_tchar_t kMainSection    [] = XPR_STRING_LITERAL("main");
+const xpr_tchar_t kConfigSection  [] = XPR_STRING_LITERAL("config");
 
-static const xpr_tchar_t kCurTabKey      [] = XPR_STRING_LITERAL("main.view%d.current_tab");
-static const xpr_tchar_t kTabKey         [] = XPR_STRING_LITERAL("main.view%d.tab%d.path");
-static const xpr_tchar_t kVersionKey     [] = XPR_STRING_LITERAL("version");
+const xpr_tchar_t kCurTabKey      [] = XPR_STRING_LITERAL("main.view%d.current_tab");
+const xpr_tchar_t kTabKey         [] = XPR_STRING_LITERAL("main.view%d.tab%d.path");
+const xpr_tchar_t kVersionKey     [] = XPR_STRING_LITERAL("version");
 
-static const xpr_tchar_t kBackwardSection[] = XPR_STRING_LITERAL("backward");
-static const xpr_tchar_t kBackwardKey    [] = XPR_STRING_LITERAL("backward.view%d.tab%d.item%d.path");
-static const xpr_tchar_t kForwardSection [] = XPR_STRING_LITERAL("forward");
-static const xpr_tchar_t kForwardKey     [] = XPR_STRING_LITERAL("forward.view%d.tab%d.item%d.path");
-static const xpr_tchar_t kHistorySection [] = XPR_STRING_LITERAL("history");
-static const xpr_tchar_t kHistoryKey     [] = XPR_STRING_LITERAL("history.view%d.tab%d.item%d.path");
+const xpr_tchar_t kBackwardSection[] = XPR_STRING_LITERAL("backward");
+const xpr_tchar_t kBackwardKey    [] = XPR_STRING_LITERAL("backward.view%d.tab%d.item%d.path");
+const xpr_tchar_t kForwardSection [] = XPR_STRING_LITERAL("forward");
+const xpr_tchar_t kForwardKey     [] = XPR_STRING_LITERAL("forward.view%d.tab%d.item%d.path");
+const xpr_tchar_t kHistorySection [] = XPR_STRING_LITERAL("history");
+const xpr_tchar_t kHistoryKey     [] = XPR_STRING_LITERAL("history.view%d.tab%d.item%d.path");
+} // namespace anonymous
 
 struct OptionKey
 {
@@ -683,7 +686,7 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
                 sHistoryIterator = sTab->mBackwardList.begin();
                 for (k = 0; sHistoryIterator != sTab->mBackwardList.end(); ++sHistoryIterator, ++k)
                 {
-                    const xpr::tstring &sTabPath = *sHistoryIterator;
+                    const xpr::string &sTabPath = *sHistoryIterator;
 
                     _stprintf(sKey, kBackwardKey, i + 1, j + 1, k + 1);
 
@@ -696,7 +699,7 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
                 sHistoryIterator = sTab->mForwardList.begin();
                 for (k = 0; sHistoryIterator != sTab->mForwardList.end(); ++sHistoryIterator, ++k)
                 {
-                    const xpr::tstring &sTabPath = *sHistoryIterator;
+                    const xpr::string &sTabPath = *sHistoryIterator;
 
                     _stprintf(sKey, kForwardKey, i + 1, j + 1, k + 1);
 
@@ -709,7 +712,7 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
                 sHistoryIterator = sTab->mHistoryList.begin();
                 for (k = 0; sHistoryIterator != sTab->mHistoryList.end(); ++sHistoryIterator, ++k)
                 {
-                    const xpr::tstring &sTabPath = *sHistoryIterator;
+                    const xpr::string &sTabPath = *sHistoryIterator;
 
                     _stprintf(sKey, kHistoryKey, i + 1, j + 1, k + 1);
 

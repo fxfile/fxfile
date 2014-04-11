@@ -70,7 +70,7 @@ BatchCreate::CreateType BatchCreate::getCreateType(void) const
     return mCreateType;
 }
 
-BatchCreate::Result BatchCreate::addPath(const xpr::tstring &aPath)
+BatchCreate::Result BatchCreate::addPath(const xpr::string &aPath)
 {
     if (aPath.length() > XPR_MAX_PATH)
         return ResultExcessPathLength;
@@ -92,8 +92,8 @@ BatchCreate::Result BatchCreate::addFormat(const xpr_tchar_t *aDir,
     XPR_ASSERT(aFormat != XPR_NULL);
     XPR_ASSERT(aCount > 0);
 
-    xpr::tstring sDir = aDir;
-    xpr::tstring sFormat = aFormat;
+    xpr::string sDir = aDir;
+    xpr::string sFormat = aFormat;
 
     if (sDir[sDir.length()-1] != XPR_STRING_LITERAL('\\'))
     {
@@ -107,15 +107,15 @@ BatchCreate::Result BatchCreate::addFormat(const xpr_tchar_t *aDir,
 
     Result sResult = ResultSucceeded;
 
-    xpr_sint_t   i = 0;
-    xpr_size_t   sMaxNewLen;
-    xpr_bool_t   sFolder = (mCreateType == CreateTypeFolder) ? XPR_TRUE : XPR_FALSE;
-    xpr_bool_t   sAtLeastOneError = XPR_FALSE;
-    xpr::tstring sOrgFilePath;
-    xpr::tstring sOrgFileName;
-    xpr::tstring sOldFileName;
-    xpr::tstring sPath;
-    SYSTEMTIME   sNowTime = {0,};
+    xpr_size_t  i = 0;
+    xpr_size_t  sMaxNewLen;
+    xpr_bool_t  sFolder = (mCreateType == CreateTypeFolder) ? XPR_TRUE : XPR_FALSE;
+    xpr_bool_t  sAtLeastOneError = XPR_FALSE;
+    xpr::string sOrgFilePath;
+    xpr::string sOrgFileName;
+    xpr::string sOldFileName;
+    xpr::string sPath;
+    SYSTEMTIME  sNowTime = {0,};
 
     FormatSequence *sFormatSequence;
     FileNameFormat  sFileNameFormat;
@@ -142,7 +142,7 @@ BatchCreate::Result BatchCreate::addFormat(const xpr_tchar_t *aDir,
                                sOrgFilePath,
                                sOrgFileName,
                                sOldFileName,
-                               i,
+                               (xpr_sint_t)i,
                                sMaxNewLen,
                                sNowTime);
 
@@ -197,8 +197,8 @@ unsigned BatchCreate::OnEntryProc(void)
 {
     CreateType sCreateType = getCreateType();
 
-    xpr::tstring sPath;
-    xpr::tstring sFileName;
+    xpr::string sPath;
+    xpr::string sFileName;
 
     xpr_sint_t sInvalidItem = -1;
     xpr_bool_t sInvalid = XPR_FALSE;
@@ -209,7 +209,7 @@ unsigned BatchCreate::OnEntryProc(void)
     Item *sItem2;
     NewDeque::iterator sIterator;
 
-    typedef std::tr1::unordered_multimap<xpr::tstring, Item *> HashPathMap;
+    typedef std::tr1::unordered_multimap<xpr::string, Item *> HashPathMap;
     typedef std::pair<HashPathMap::iterator, HashPathMap::iterator> HashPathPairIterator;
     HashPathMap sHashPathMap;
     HashPathMap::iterator sHashPathIterator;
@@ -256,7 +256,7 @@ unsigned BatchCreate::OnEntryProc(void)
         sFileName.clear();
 
         sFind = sPath.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sFileName = sPath.substr(sFind+1);
 
         if (VerifyFileName(sFileName) == XPR_FALSE)
@@ -331,7 +331,7 @@ unsigned BatchCreate::OnEntryProc(void)
                 case CreateTypeFile:
                 case CreateTypeTextFile:
                     {
-                        sRcode = sFileIo.open(sItem->mPath.c_str(), sOpenMode);
+                        sRcode = sFileIo.open(sItem->mPath, sOpenMode);
                         if (XPR_RCODE_IS_SUCCESS(sRcode))
                             sFileIo.close();
                         break;

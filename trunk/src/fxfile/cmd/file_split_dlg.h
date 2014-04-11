@@ -43,8 +43,8 @@ protected:
     xpr_size_t getSplitCount(void);
 
 protected:
-    xpr::tstring mPath;
-    xpr::tstring mDestDir;
+    xpr::string mPath;
+    xpr::string mDestDir;
 
     FileSplit *mFileSplit;
 

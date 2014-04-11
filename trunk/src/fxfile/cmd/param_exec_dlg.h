@@ -28,8 +28,8 @@ public:
     const xpr_tchar_t *getParameter(void);
 
 protected:
-    xpr_tchar_t  mPath[XPR_MAX_ARG + 1];
-    xpr::tstring mParameter;
+    xpr_tchar_t mPath[XPR_MAX_ARG + 1];
+    xpr::string mParameter;
 
 protected:
     DlgState  *mDlgState;

@@ -24,11 +24,14 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
     TM_ID_SELITEM = 1,
 };
+} // namespace anonymous
 
 SingleRenameDlg::SingleRenameDlg(void)
     : super(IDD_CREATE_ITEM)

@@ -12,6 +12,7 @@
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
 #include "xpr_file_sys.h"
+#include "xpr_string.h"
 
 #if defined(XPR_CFG_OS_WINDOWS)
 #define XPR_MBCS_EOL XPR_MBCS_STRING_LITERAL("\r\n")
@@ -29,11 +30,6 @@
 
 namespace xpr
 {
-namespace detail
-{
-class CrossString;
-} // namespace
-
 class XPR_DL_API FileIo
 {
 public:
@@ -81,20 +77,14 @@ public:
     virtual ~FileIo(void);
 
 public:
-    virtual xpr_rcode_t open(const xpr_char_t *aPath, xpr_sint_t aOpenMode);
-    virtual xpr_rcode_t open(const xpr_wchar_t *aPath, xpr_sint_t aOpenMode);
-    virtual xpr_rcode_t open(const void *aPath, xpr_size_t aPathBytes, xpr_bool_t aWideChar, xpr_sint_t aOpenMode);
+    virtual xpr_rcode_t open(const xpr::string &aFilePath, xpr_sint_t aOpenMode);
     virtual xpr_bool_t isOpened(void) const;
     virtual xpr_sint_t getOpenMode(void) const;
     virtual void close(void);
 
 public:
-    virtual xpr_bool_t getPath(xpr_char_t *aPath, xpr_size_t aMaxLen) const;
-    virtual xpr_bool_t getPath(xpr_wchar_t *aPath, xpr_size_t aMaxLen) const;
-    virtual xpr_bool_t isWideChar(void) const;
-    virtual const xpr_byte_t *getPath(void) const;
-    virtual xpr_size_t getPathBytes(void) const;
-    virtual xpr_size_t getPathLen(void) const;
+    virtual void getFilePath(xpr::string &aFilePath) const;
+    virtual const xpr::string &getFilePath(void) const;
 
 public:
     virtual xpr_rcode_t read(void *aData, xpr_size_t aSize, xpr_ssize_t *aReadSize);
@@ -120,9 +110,9 @@ public:
     virtual xpr_rcode_t unlock(void);
 
 protected:
-    Handle               mHandle;
-    detail::CrossString *mFilePath;
-    xpr_sint_t           mOpenMode;
+    Handle      mHandle;
+    xpr::string mFilePath;
+    xpr_sint_t  mOpenMode;
 };
 } // namespace xpr
 

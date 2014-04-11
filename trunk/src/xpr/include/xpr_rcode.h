@@ -10,6 +10,7 @@
 
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
+#include "xpr_string.h"
 
 namespace xpr
 {
@@ -837,7 +838,7 @@ namespace xpr
 #define XPR_RCODE_IS_NOT_ETXTBSY(e)          (!XPR_RCODE_IS_ETXTBSY(e))
 #define XPR_RCODE_IS_NOT_EWOULDBLOCK(e)      (!XPR_RCODE_IS_EWOULDBLOCK(e))
 
-XPR_DL_API void getRcodeString(xpr_rcode_t aRcode, xpr_char_t *aBuffer, xpr_size_t aSize);
+XPR_DL_API void getRcodeString(xpr_rcode_t aRcode, xpr::string &aString);
 } // namespace xpr
 
 #endif // __XPR_RCODE_H__

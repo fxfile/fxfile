@@ -25,11 +25,14 @@
 
 namespace fxfile
 {
+namespace
+{
 // user defined message
 enum
 {
     WM_BOOKMARK_ASYNC_ICON = WM_USER + 100,
 };
+} // namespace anonymous
 
 BookmarkToolBar::BookmarkToolBar(void)
     : mObserver(XPR_NULL)
@@ -812,9 +815,9 @@ void BookmarkToolBar::OnDropShortcut(STGMEDIUM *aStgMedium, xpr_sint_t aBookmark
 
         xpr_sint_t i;
         xpr_size_t sColon;
-        xpr::tstring sDir;
-        xpr::tstring sName;
-        xpr::tstring sBookmarkPath;
+        xpr::string sDir;
+        xpr::string sName;
+        xpr::string sBookmarkPath;
         const xpr_tchar_t *sLinkSuffix = gApp.loadString(XPR_STRING_LITERAL("common.shortcut.suffix"));
 
         GetName(sFullPidl, SHGDN_FORPARSING, sDir);
@@ -828,7 +831,7 @@ void BookmarkToolBar::OnDropShortcut(STGMEDIUM *aStgMedium, xpr_sint_t aBookmark
             GetName(sFullPidl2, SHGDN_INFOLDER, sName);
 
             sColon = sName.find(XPR_STRING_LITERAL(':'));
-            if (sColon != xpr::tstring::npos)
+            if (sColon != xpr::string::npos)
                 sName.erase(sColon, 1);
 
             sName += sLinkSuffix;

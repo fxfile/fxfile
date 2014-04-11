@@ -38,7 +38,7 @@ public:   ~SizeFormat(void);
 public:
     typedef struct Item
     {
-        xpr::tstring mText;
+        xpr::string  mText;
         xpr_uint64_t mSize;
         xpr_sint_t   mSizeUnit;
         xpr_bool_t   mDefaultDecimalPlace;
@@ -69,11 +69,11 @@ public:
     static void getFormatedNumber(xpr_uint64_t aNumber, xpr_tchar_t *aFormatedNumber, xpr_size_t aMaxLen);
 
 protected:
-    static xpr::tstring mNoneText;
-    static xpr::tstring mAutoText;
-    static xpr::tstring mDefaultText;
-    static xpr::tstring mCustomText;
-    static xpr::tstring mByteUnitText;
+    static const xpr_tchar_t *mNoneText;
+    static const xpr_tchar_t *mAutoText;
+    static const xpr_tchar_t *mDefaultText;
+    static const xpr_tchar_t *mCustomText;
+    static const xpr_tchar_t *mByteUnitText;
 
     typedef std::deque<Item *> FormatDeque;
     FormatDeque mFormatDeque;

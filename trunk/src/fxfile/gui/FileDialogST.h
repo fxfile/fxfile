@@ -110,7 +110,7 @@ private:
 	TCHAR			m_szFile[MAX_PATH];
 	TCHAR			m_szFileTitle[MAX_PATH];
 	TCHAR			m_szSelectedFolder[MAX_PATH];
-	xpr::tstring m_strInitDir;
+	xpr::string		m_strInitDir;
 };
 
 #endif 

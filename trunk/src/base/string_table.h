@@ -40,7 +40,7 @@ public:
     void clear(void);
 
 protected:
-    typedef std::tr1::unordered_map<xpr::tstring, xpr::tstring> StringTableMap;
+    typedef std::tr1::unordered_map<xpr::string, xpr::string> StringTableMap;
 
     xpr_bool_t load(const xpr_tchar_t *aFileName, StringTableMap &aStringTable);
 

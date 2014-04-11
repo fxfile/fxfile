@@ -39,7 +39,7 @@ protected:
     HWND       mHwnd;
     xpr_uint_t mMsg;
 
-    typedef std::deque<xpr::tstring> DirDeque;
+    typedef std::deque<xpr::string> DirDeque;
     DirDeque   mDirDeque;
     xpr::Mutex mMutex;
 

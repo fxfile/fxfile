@@ -23,7 +23,7 @@ class FormatInsert : public Format
 
 public:
     FormatInsert(void);
-    FormatInsert(InsertPosType aPosType, xpr_sint_t aPos, const xpr::tstring &aString);
+    FormatInsert(InsertPosType aPosType, xpr_sint_t aPos, const xpr::string &aString);
     virtual ~FormatInsert(void);
 
 public:
@@ -37,21 +37,21 @@ public:
 public:
     inline InsertPosType getPosType(void) const { return mPosType; }
     inline xpr_sint_t getPos(void) const { return mPos; }
-    inline const xpr::tstring &getString(void) const { return mString; }
+    inline const xpr::string &getString(void) const { return mString; }
 
 public:
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 
 private:
-    static void toString(const InsertPosType &aPosType, xpr::tstring &aString);
-    static void toType(const xpr::tstring &aString, InsertPosType &aPosType);
+    static void toString(const InsertPosType &aPosType, xpr::string &aString);
+    static void toType(const xpr::string &aString, InsertPosType &aPosType);
 
 private:
     InsertPosType mPosType;
     xpr_sint_t    mPos;
-    xpr::tstring  mString;
+    xpr::string   mString;
 };
 } // namespace cmd
 } // namespace fxfile

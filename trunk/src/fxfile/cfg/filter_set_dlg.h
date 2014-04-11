@@ -36,7 +36,7 @@ public:
 protected:
     FilterItem mFilterItem;
 
-    typedef std::set<xpr::tstring> NameSet;
+    typedef std::set<xpr::string> NameSet;
     NameSet mNameSet;
 
 protected:

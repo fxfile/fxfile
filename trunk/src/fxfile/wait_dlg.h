@@ -31,7 +31,7 @@ public:
     xpr_bool_t isStopped(void);
 
 protected:
-    xpr::tstring mTitle;
+    xpr::string mTitle;
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

@@ -46,7 +46,9 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ExplorerPane");
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ExplorerPane");
 
 #define MAX_CONTENS_SHOW_SEL_ITEMS       17
 #define CONTENTS_EXPLORER_STYLE_WIDTH   200
@@ -64,6 +66,7 @@ enum
     CTRL_ID_STATUS_BAR,
     CTRL_ID_EXPLORER_CTRL = 200,
 };
+} // namespace anonymous
 
 class ExplorerPane::ExplorerCtrlData
 {

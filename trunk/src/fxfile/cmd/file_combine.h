@@ -54,8 +54,8 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    xpr::tstring mPath;
-    xpr::tstring mDestDir;
+    xpr::string  mPath;
+    xpr::string  mDestDir;
     DWORD        mBufferSize;
 
     xpr_size_t   mCombinedCount;

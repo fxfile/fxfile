@@ -6,12 +6,15 @@
 
 #include "xpr_memory.h"
 #include "xpr_rcode.h"
+#include "xpr_debug.h"
 
 namespace xpr
 {
 XPR_DL_API xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
 {
-    if (aAddr == XPR_NULL || aSize == 0)
+    XPR_ASSERT(aAddr != XPR_NULL);
+
+    if (aSize == 0)
         return XPR_RCODE_EINVAL;
 
 #if defined(XPR_CFG_OS_WINDOWS)
@@ -36,7 +39,9 @@ XPR_DL_API xpr_rcode_t xpr_malloc(void **aAddr, xpr_size_t aSize)
 
 XPR_DL_API xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t aSize)
 {
-    if (aAddr == XPR_NULL || aNumber == 0 || aSize == 0)
+    XPR_ASSERT(aAddr != XPR_NULL);
+
+    if (aNumber == 0 || aSize == 0)
         return XPR_RCODE_EINVAL;
 
 #if defined(XPR_CFG_OS_WINDOWS)
@@ -61,7 +66,9 @@ XPR_DL_API xpr_rcode_t xpr_calloc(void **aAddr, xpr_size_t aNumber, xpr_size_t a
 
 XPR_DL_API xpr_rcode_t xpr_realloc(void **aAddr, xpr_size_t aSize)
 {
-    if (aAddr == XPR_NULL || aSize == 0)
+    XPR_ASSERT(aAddr != XPR_NULL);
+
+    if (aSize == 0)
         return XPR_RCODE_EINVAL;
 
     void *sNewAddr = XPR_NULL;
@@ -114,7 +121,9 @@ XPR_DL_API void xpr_free(void *aAddr)
 
 XPR_DL_API void xpr_memset(void *aAddr, xpr_uint8_t aValue, xpr_size_t aSize)
 {
-    if (aAddr == XPR_NULL || aSize == 0)
+    XPR_ASSERT(aAddr != XPR_NULL);
+
+    if (aSize == 0)
         return;
 
 #if defined(XPR_CFG_OS_WINDOWS)

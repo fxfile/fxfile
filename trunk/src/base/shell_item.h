@@ -85,7 +85,7 @@ public:
     explicit ShellItem(ShellItem &aShellItem);
     explicit ShellItem(xpr_sint_t aSpecialFolder);
     explicit ShellItem(const xpr_tchar_t *aFilePath);
-    explicit ShellItem(const xpr::tstring &aFilePath);
+    explicit ShellItem(const xpr::string &aFilePath);
     explicit ShellItem(const xpr::FilePath &aFilePath);
     virtual ~ShellItem(void);
 
@@ -95,7 +95,7 @@ public:
 public:
     xpr_bool_t assign(const ShellItem &aShellItem);
     xpr_bool_t assign(const xpr_tchar_t *aFilePath);
-    xpr_bool_t assign(const xpr::tstring &aFilePath);
+    xpr_bool_t assign(const xpr::string &aFilePath);
     xpr_bool_t assign(const xpr::FilePath &aFilePath);
     xpr_bool_t assign(xpr_sint_t aSpecialFolder);
 
@@ -104,18 +104,18 @@ public:
 //    void       swap(ShellItem &aShellItem);
 //
 //    xpr_bool_t rename(const xpr_tchar_t *aName) const;
-//    xpr_bool_t rename(const xpr::tstring &aName) const;
+//    xpr_bool_t rename(const xpr::string &aName) const;
 //
 //    xpr_bool_t getName(xpr_tchar_t *aName, xpr_size_t aMaxLen, xpr_bool_t aForEditing = XPR_FALSE) const;
-//    xpr_bool_t getName(xpr::tstring &aName, xpr_bool_t aForEditing = XPR_FALSE) const;
+//    xpr_bool_t getName(xpr::string &aName, xpr_bool_t aForEditing = XPR_FALSE) const;
 //    xpr_bool_t getExt(xpr_tchar_t *aExt, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getExt(xpr::tstring &aExt) const;
+//    xpr_bool_t getExt(xpr::string &aExt) const;
 //    xpr_bool_t getPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getPath(xpr::tstring &aPath) const;
+//    xpr_bool_t getPath(xpr::string &aPath) const;
 //    xpr_bool_t getLastPath(xpr_tchar_t *aPath, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getLastPath(xpr::tstring &aPath) const;
+//    xpr_bool_t getLastPath(xpr::string &aPath) const;
 //    xpr_bool_t getTreePath(xpr_tchar_t *aTreePath, xpr_size_t aMaxLen, xpr_bool_t aByName = XPR_FALSE) const;
-//    xpr_bool_t getTreePath(const xpr::tstring &aTreePath, xpr_bool_t aByName = XPR_FALSE) const;
+//    xpr_bool_t getTreePath(const xpr::string &aTreePath, xpr_bool_t aByName = XPR_FALSE) const;
 //
 //    xpr_bool_t isFile(void) const;
 //    xpr_bool_t isFolder(void) const;
@@ -129,7 +129,7 @@ public:
 //    xpr_bool_t existFile(void) const;
 //    xpr_bool_t isKnownExt(void) const;
 //    xpr_bool_t equalExt(const xpr_tchar_t *aExt) const;
-//    xpr_bool_t equalExt(xpr::tstring &aExt) const;
+//    xpr_bool_t equalExt(xpr::string &aExt) const;
 //
 //    xpr_bool_t getFileType(FileType &aFileType) const;
 //    xpr_bool_t getFileTime(xpr_time_t *aAccessTime, xpr_time_t *aModifyTime, xpr_time_t *aChangeTime) const;
@@ -138,23 +138,23 @@ public:
 //    xpr_bool_t getFileChangeTime(xpr_time_t &aChangeTime) const;
 //    xpr_bool_t getFileSize(xpr_sint64_t &aFileSize) const;
 //    xpr_bool_t getInfoTip(xpr_tchar_t *aInfoTip, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getInfoTip(xpr::tstring &aInfoTip) const;
+//    xpr_bool_t getInfoTip(xpr::string &aInfoTip) const;
 //
 //    xpr_bool_t makeLink(const xpr_tchar_t *aLinkFile, xpr_bool_t aSymbolicLink) const;
-//    xpr_bool_t makeLink(const xpr::tstring &aLinkFile, xpr_bool_t aSymbolicLink) const;
+//    xpr_bool_t makeLink(const xpr::string &aLinkFile, xpr_bool_t aSymbolicLink) const;
 //    xpr_bool_t makeShortcut(const xpr_tchar_t *aLinkFile, const xpr_tchar_t *aStartupDir, xpr_ushort_t aHotkey, xpr_sint_t aShowCommand) const;
-//    xpr_bool_t makeShortcut(const xpr::tstring &aLinkFile, const xpr::tstring *aStartupDir, xpr_ushort_t aHotkey, xpr_sint_t aShowCommand) const;
+//    xpr_bool_t makeShortcut(const xpr::string &aLinkFile, const xpr::string *aStartupDir, xpr_ushort_t aHotkey, xpr_sint_t aShowCommand) const;
 //    xpr_bool_t getLinkTarget(xpr_tchar_t *aTargetPath, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getLinkTarget(xpr::tstring &aTargetPath) const;
+//    xpr_bool_t getLinkTarget(xpr::string &aTargetPath) const;
 //    xpr_bool_t getShortcutTarget(xpr_tchar_t *aTargetPath, xpr_size_t aMaxTargetPathLen,
 //                                 xpr_tchar_t *aParameters, xpr_size_t aMaxParametersLen,
 //                                 xpr_tchar_t *aStartupDir, xpr_size_t aMaxStartupDirLen,
 //                                 xpr_tchar_t *aIconPath,   xpr_size_t aMaxIconPathLen,
 //                                 xpr_sint_t  *aIconIndex) const;
-//    xpr_bool_t getShortcutTarget(xpr::tstring &aTargetPath,
-//                                 xpr::tstring &aParameters,
-//                                 xpr::tstring &aStartupDir,
-//                                 xpr::tstring &aIconPath,
+//    xpr_bool_t getShortcutTarget(xpr::string &aTargetPath,
+//                                 xpr::string &aParameters,
+//                                 xpr::string &aStartupDir,
+//                                 xpr::string &aIconPath,
 //                                 xpr_size_t   &aIconIndex) const;
 //
 //    xpr_bool_t execute(void) const;
@@ -176,7 +176,7 @@ public:
 //    struct ColumnMetaData
 //    {
 //        ColumnId     mColumnId;
-//        xpr::tstring mColumnName;
+//        xpr::string  mColumnName;
 //        xpr_sint_t   mTextAlign;
 //        xpr_sint_t   mDefaultWidth;
 //        xpr_bool_t   mDefaultUse;
@@ -186,7 +186,7 @@ public:
 //    xpr_size_t getColumnCount(void) const;
 //    xpr_bool_t getColumnMetaData(const ColumnId &aColumnId, ColumnMetaData &aColumnMetaData) const;
 //    xpr_bool_t getColumnText(const ColumnId &aColumnId, xpr_tchar_t *aColumnText, xpr_size_t aMaxLen) const;
-//    xpr_bool_t getColumnText(const ColumnId &aColumnId, xpr::tstring &aColumnText) const;
+//    xpr_bool_t getColumnText(const ColumnId &aColumnId, xpr::string &aColumnText) const;
 
 protected:
 #if defined(XPR_CFG_OS_WINDOWS)

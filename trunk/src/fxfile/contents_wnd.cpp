@@ -25,7 +25,9 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ContentsWnd");
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ContentsWnd");
 
 //
 // control id
@@ -34,6 +36,7 @@ enum
 {
     CTRL_ID_BOOKMARK_SET_WND = 50,
 };
+} // namespace anonymous
 
 ContentsWnd::ContentsWnd(void)
     : mMode(ModeNone)

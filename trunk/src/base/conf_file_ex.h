@@ -31,7 +31,7 @@ public:
     {
     }
 
-    explicit ConfFileEx(const xpr::tstring &aFilePath)
+    explicit ConfFileEx(const xpr::string &aFilePath)
         : ConfFile(aFilePath)
     {
     }
@@ -370,7 +370,7 @@ public:
         return super::setValue(aSection, aKey, aValue);
     }
 
-    inline xpr_bool_t setValueS(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr::tstring &aValue)
+    inline xpr_bool_t setValueS(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr::string &aValue)
     {
         const xpr_tchar_t *sValue = aValue.c_str();
 
@@ -382,7 +382,7 @@ public:
         return super::setValue(aSection, aKey, aValue);
     }
 
-    inline xpr_bool_t setValueS(ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr::tstring &aValue)
+    inline xpr_bool_t setValueS(ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr::string &aValue)
     {
         const xpr_tchar_t *sValue = aValue.c_str();
 

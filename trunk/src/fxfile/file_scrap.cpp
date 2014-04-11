@@ -23,6 +23,8 @@ using namespace fxfile::base;
 
 namespace fxfile
 {
+namespace
+{
 enum
 {
     MODE_COPY,
@@ -31,12 +33,13 @@ enum
     MODE_TRASH,
 };
 
-static const xpr_tchar_t kFileScrapSection[] = XPR_STRING_LITERAL("file_scrap");
-static const xpr_tchar_t kGroupSection    [] = XPR_STRING_LITERAL("file_scrap_group_%s");
-static const xpr_tchar_t kNoGroup         [] = XPR_STRING_LITERAL("no_group");
-static const xpr_tchar_t kGroupKey        [] = XPR_STRING_LITERAL("file_scrap.group%d");
-static const xpr_tchar_t kFileKey         [] = XPR_STRING_LITERAL("file_scrap.file%d");
-static const xpr_tchar_t kDefaultKey      [] = XPR_STRING_LITERAL("file_scrap.default");
+const xpr_tchar_t kFileScrapSection[] = XPR_STRING_LITERAL("file_scrap");
+const xpr_tchar_t kGroupSection    [] = XPR_STRING_LITERAL("file_scrap_group_%s");
+const xpr_tchar_t kNoGroup         [] = XPR_STRING_LITERAL("no_group");
+const xpr_tchar_t kGroupKey        [] = XPR_STRING_LITERAL("file_scrap.group%d");
+const xpr_tchar_t kFileKey         [] = XPR_STRING_LITERAL("file_scrap.file%d");
+const xpr_tchar_t kDefaultKey      [] = XPR_STRING_LITERAL("file_scrap.default");
+} // namespace anonymous
 
 FileScrap::FileScrap(void)
     : mObserver(XPR_NULL)
@@ -810,7 +813,7 @@ xpr_bool_t FileScrap::load(const xpr_tchar_t *aPath)
     if (sConfFile.load() == XPR_FALSE)
         return XPR_FALSE;
 
-    typedef std::map<xpr::tstring, xpr_uint_t> GroupIdMap;
+    typedef std::map<xpr::string, xpr_uint_t> GroupIdMap;
     GroupIdMap sGroupIdMap;
     GroupIdMap::const_iterator sIterator;
 
@@ -871,8 +874,8 @@ xpr_bool_t FileScrap::load(const xpr_tchar_t *aPath)
     sIterator = sGroupIdMap.begin();
     for (; sIterator != sGroupIdMap.end(); ++sIterator)
     {
-        const xpr::tstring &sGroupName = sIterator->first;
-        const xpr_uint_t   &sGroupId   = sIterator->second;
+        const xpr::string &sGroupName = sIterator->first;
+        const xpr_uint_t  &sGroupId   = sIterator->second;
 
         _stprintf(sSectionName, kGroupSection, sGroupName.c_str());
 

@@ -67,7 +67,7 @@ xpr_sint_t FormatName::getDefaultEndPos(void)
     return kDefaultEndPos;
 }
 
-void FormatName::parseShort(const xpr::tstring &aFormatString, xpr_size_t aParseBeginPos, xpr_sint_t &aBeginPos, xpr_sint_t &aEndPos)
+void FormatName::parseShort(const xpr::string &aFormatString, xpr_size_t aParseBeginPos, xpr_sint_t &aBeginPos, xpr_sint_t &aEndPos)
 {
     aBeginPos = kDefaultBeginPos;
     aEndPos   = kDefaultEndPos;
@@ -79,10 +79,10 @@ xpr_bool_t FormatName::parseXml(const base::XmlReader &aXmlReader, base::XmlRead
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring sName;
-    xpr::tstring sValue;
-    xpr_sint_t   sBeginPos = kDefaultBeginPos;
-    xpr_sint_t   sEndPos   = kDefaultEndPos;
+    xpr::string sName;
+    xpr::string sValue;
+    xpr_sint_t  sBeginPos = kDefaultBeginPos;
+    xpr_sint_t  sEndPos   = kDefaultEndPos;
 
     base::XmlReader::Attribute *sAttribute = aXmlReader.getFirstAttribute(aElement);
     while (XPR_IS_NOT_NULL(sAttribute))
@@ -137,8 +137,8 @@ Format *FormatBaseFileName::newClone(void) const
 
 void FormatBaseFileName::rename(RenameContext &aContext) const
 {
-    xpr::tstring sBaseFileName;
-    xpr::tstring sFileExt;
+    xpr::string sBaseFileName;
+    xpr::string sFileExt;
 
     RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mNewFileName, sBaseFileName, sFileExt);
 
@@ -152,7 +152,7 @@ void FormatBaseFileName::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatBaseFileName::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatBaseFileName::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatBaseFileNameElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -181,14 +181,14 @@ xpr_bool_t FormatBaseFileName::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatBaseFileName::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatBaseFileName::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatBaseFileNameRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatBaseFileName::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatBaseFileName::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 2, sBeginPos, sEndPos);
@@ -223,8 +223,8 @@ Format *FormatFileExt::newClone(void) const
 
 void FormatFileExt::rename(RenameContext &aContext) const
 {
-    xpr::tstring sBaseFileName;
-    xpr::tstring sFileExt;
+    xpr::string sBaseFileName;
+    xpr::string sFileExt;
 
     RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mNewFileName, sBaseFileName, sFileExt);
 
@@ -238,7 +238,7 @@ void FormatFileExt::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatFileExt::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatFileExt::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatFileExtElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -267,14 +267,14 @@ xpr_bool_t FormatFileExt::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatFileExt::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatFileExt::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatFileExtRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatFileExt::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatFileExt::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 2, sBeginPos, sEndPos);
@@ -319,7 +319,7 @@ void FormatFileName::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatFileName::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatFileName::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatFileNameElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -348,14 +348,14 @@ xpr_bool_t FormatFileName::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatFileName::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatFileName::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatFileNameRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatFileName::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatFileName::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 2, sBeginPos, sEndPos);
@@ -390,8 +390,8 @@ Format *FormatOrgBaseFileName::newClone(void) const
 
 void FormatOrgBaseFileName::rename(RenameContext &aContext) const
 {
-    xpr::tstring sBaseFileName;
-    xpr::tstring sFileExt;
+    xpr::string sBaseFileName;
+    xpr::string sFileExt;
 
     RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mOrgFileName, sBaseFileName, sFileExt);
 
@@ -405,7 +405,7 @@ void FormatOrgBaseFileName::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatOrgBaseFileName::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatOrgBaseFileName::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatOrgBaseFileNameElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -434,14 +434,14 @@ xpr_bool_t FormatOrgBaseFileName::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatOrgBaseFileName::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatOrgBaseFileName::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatOrgBaseFileNameRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatOrgBaseFileName::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatOrgBaseFileName::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 3, sBeginPos, sEndPos);
@@ -476,8 +476,8 @@ Format *FormatOrgFileExt::newClone(void) const
 
 void FormatOrgFileExt::rename(RenameContext &aContext) const
 {
-    xpr::tstring sBaseFileName;
-    xpr::tstring sFileExt;
+    xpr::string sBaseFileName;
+    xpr::string sFileExt;
 
     RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mOrgFileName, sBaseFileName, sFileExt);
 
@@ -491,7 +491,7 @@ void FormatOrgFileExt::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatOrgFileExt::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatOrgFileExt::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatOrgFileExtElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -520,14 +520,14 @@ xpr_bool_t FormatOrgFileExt::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatOrgFileExt::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatOrgFileExt::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatOrgFileExtRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatOrgFileExt::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatOrgFileExt::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 3, sBeginPos, sEndPos);
@@ -572,7 +572,7 @@ void FormatOrgFileName::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatOrgFileName::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatOrgFileName::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatOrgFileNameElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -601,14 +601,14 @@ xpr_bool_t FormatOrgFileName::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-xpr_bool_t FormatOrgFileName::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatOrgFileName::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatOrgFileNameRegExpr);
 
     return (std::tr1::regex_match(aFormatString.c_str(), sRegEx) == true) ? XPR_TRUE : XPR_FALSE;
 }
 
-void FormatOrgFileName::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatOrgFileName::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sBeginPos, sEndPos;
     FormatName::parseShort(aFormatString, 3, sBeginPos, sEndPos);

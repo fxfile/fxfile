@@ -25,6 +25,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user timer
 enum
 {
@@ -36,6 +38,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 FileMergeDlg::FileMergeDlg(void)
     : CResizingDialog(IDD_FILE_MERGE, XPR_NULL)
@@ -106,7 +109,7 @@ xpr_bool_t FileMergeDlg::OnInitDialog(void)
     xpr_sint_t i;
     PathDeque::iterator sIterator;
     xpr_tchar_t sText[0xff];
-    xpr::tstring sPath;
+    xpr::string sPath;
 
     sIterator = mPathDeque.begin();
     for (i = 0; sIterator != mPathDeque.end(); ++sIterator, ++i)

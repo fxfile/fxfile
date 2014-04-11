@@ -107,11 +107,11 @@ static void doBatchRename(FolderCtrl &aFolderCtrl, xpr_bool_t aWithFile, xpr_boo
 
     if (aFileSysItem != XPR_NULL)
     {
-        xpr::tstring sPath = aFileSysItem->mPath;
+        xpr::string sPath = aFileSysItem->mPath;
         xpr_bool_t sFolder = XPR_TEST_BITS(aFileSysItem->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
 
         xpr_size_t sOffset = sPath.rfind(XPR_STRING_LITERAL('\\'));
-        if (sOffset != xpr::tstring::npos)
+        if (sOffset != xpr::string::npos)
         {
             BatchRename::Item *sBatchRenameItem = new BatchRename::Item;
             sBatchRenameItem->mDir    = sPath.substr(0, sOffset);
@@ -164,7 +164,7 @@ static void doBatchRename(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aWithFile, xpr
 
     if (aFileSysItemList != XPR_NULL && aFileSysItemList->empty() == XPR_FALSE)
     {
-        xpr::tstring sPath;
+        xpr::string sPath;
         xpr_bool_t sFolder;
         BatchRename::Item *sBatchRenameItem;
         BatchRenameDlg sDlg;
@@ -178,7 +178,7 @@ static void doBatchRename(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aWithFile, xpr
             sFolder = XPR_TEST_BITS(sFileSysItem->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
 
             xpr_size_t sOffset = sPath.rfind(XPR_STRING_LITERAL('\\'));
-            if (sOffset == xpr::tstring::npos)
+            if (sOffset == xpr::string::npos)
                 return;
 
             sBatchRenameItem = new BatchRename::Item;
@@ -252,7 +252,7 @@ static void doRename(FolderCtrl &aFolderCtrl, HTREEITEM aTreeItem = XPR_NULL)
 
 static void doBatchRename(SearchResultCtrl &mSearchResultCtrl, FileSysItemDeque &aFileSysItemList)
 {
-    xpr::tstring sPath;
+    xpr::string sPath;
     xpr_bool_t sFolder;
     BatchRename::Item *sBatchRenameItem;
     BatchRenameDlg sDlg;
@@ -266,7 +266,7 @@ static void doBatchRename(SearchResultCtrl &mSearchResultCtrl, FileSysItemDeque 
         sFolder = XPR_TEST_BITS(sFileSysItem->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
 
         xpr_size_t sOffset = sPath.rfind(XPR_STRING_LITERAL('\\'));
-        if (sOffset == xpr::tstring::npos)
+        if (sOffset == xpr::string::npos)
             return;
 
         sBatchRenameItem = new BatchRename::Item;

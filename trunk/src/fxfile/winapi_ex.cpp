@@ -344,7 +344,7 @@ void GetModulePath(xpr_tchar_t *aPath, xpr_size_t aMaxLen)
     ::GetModuleFileName(sModule, aPath, (DWORD)aMaxLen);
 }
 
-void GetModulePath(xpr::tstring &aPath)
+void GetModulePath(xpr::string &aPath)
 {
     xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
     GetModulePath(sPath, XPR_MAX_PATH);
@@ -364,7 +364,7 @@ void GetModuleDir(xpr_tchar_t *aDir, xpr_size_t aMaxLen)
         *sSplit = '\0';
 }
 
-void GetModuleDir(xpr::tstring &strDir)
+void GetModuleDir(xpr::string &strDir)
 {
     xpr_tchar_t sDir[XPR_MAX_PATH + 1] = {0};
     GetModuleDir(sDir, XPR_MAX_PATH);

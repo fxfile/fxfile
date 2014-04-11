@@ -178,7 +178,7 @@ unsigned ShellIcon::OnEntryProc(void)
     return 0;
 }
 
-HICON ShellIcon::getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, const xpr::tstring &aPath, xpr_bool_t aFastNetIcon, xpr_bool_t aLarge)
+HICON ShellIcon::getIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, const xpr::string &aPath, xpr_bool_t aFastNetIcon, xpr_bool_t aLarge)
 {
     HICON sIcon = XPR_NULL;
 
@@ -189,7 +189,7 @@ HICON ShellIcon::getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, c
         {
             if (aIconPath[0] == XPR_STRING_LITERAL('%'))
             {
-                xpr::tstring sRealIconPath;
+                xpr::string sRealIconPath;
                 GetEnvRealPath(aIconPath, sRealIconPath);
 
                 sIcon = extractIcon(sRealIconPath, aIconIndex, aLarge);
@@ -236,7 +236,7 @@ HICON ShellIcon::getIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, c
     return sIcon;
 }
 
-HICON ShellIcon::extractIcon(const xpr::tstring &aIconPath, xpr_sint_t aIconIndex, xpr_bool_t aLarge)
+HICON ShellIcon::extractIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, xpr_bool_t aLarge)
 {
     HICON sIcon = XPR_NULL;
 

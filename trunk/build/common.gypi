@@ -76,7 +76,7 @@
                         'TargetMachine':                  '1',
                     },
                 },
-				
+                
                 'msvs_configuration_platform': 'Win32',
             },
 
@@ -149,7 +149,7 @@
                         'TargetMachine':              '1',
                     },
                 },
-				
+                
                 'msvs_configuration_platform': 'Win32',
             },
 

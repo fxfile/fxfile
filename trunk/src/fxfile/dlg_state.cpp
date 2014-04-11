@@ -100,7 +100,7 @@ xpr_sint_t DlgState::getStateB(const xpr_tchar_t *aEntry, xpr_bool_t aDefault) c
     if (sIterator == mValueMap.end())
         return aDefault;
 
-    const xpr::tstring &sValue = sIterator->second;
+    const xpr::string &sValue = sIterator->second;
 
     xpr_bool_t sBoolValue = aDefault;
     _stscanf(sValue.c_str(), XPR_STRING_LITERAL("%d"), &sBoolValue);
@@ -120,7 +120,7 @@ xpr_bool_t DlgState::getStateI(const xpr_tchar_t *aEntry, xpr_sint_t aDefault) c
     if (sIterator == mValueMap.end())
         return aDefault;
 
-    const xpr::tstring &sValue = sIterator->second;
+    const xpr::string &sValue = sIterator->second;
 
     xpr_bool_t sIntValue = aDefault;
     _stscanf(sValue.c_str(), XPR_STRING_LITERAL("%d"), &sIntValue);
@@ -137,7 +137,7 @@ const xpr_tchar_t *DlgState::getStateS(const xpr_tchar_t *aEntry, const xpr_tcha
     if (sIterator == mValueMap.end())
         return aDefault;
 
-    const xpr::tstring &sValue = sIterator->second;
+    const xpr::string &sValue = sIterator->second;
 
     return sValue.c_str();
 }
@@ -569,7 +569,7 @@ void DlgState::insertComboEditString(CComboBox *aComboBox, xpr_bool_t aCase)
     aComboBox->SetCurSel(0);
 }
 
-const xpr::tstring &DlgState::getSection(void) const
+const xpr::string &DlgState::getSection(void) const
 {
     return mSection;
 }

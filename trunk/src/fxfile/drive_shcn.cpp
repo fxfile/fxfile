@@ -18,6 +18,8 @@
 
 namespace fxfile
 {
+namespace
+{
 //
 // user defined message
 //
@@ -25,6 +27,7 @@ enum
 {
     WM_SHELL_CHANGE_NOTIFY = WM_USER + 1500,
 };
+} // namespace anonymous
 
 DriveShcn::DriveShcn(void)
     : mShcnId(0)

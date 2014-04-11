@@ -46,8 +46,8 @@ void CreateFolderCommand::execute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        xpr::tstring sPath;
-        xpr::tstring sDir;
+        xpr::string sPath;
+        xpr::string sDir;
 
         sExplorerCtrl->getCurPath(sDir);
         RemoveLastSplit(sDir);
@@ -55,7 +55,7 @@ void CreateFolderCommand::execute(CommandContext &aContext)
         xpr_bool_t sResult = XPR_FALSE;
         if (gOpt->mConfig.mNewItemDlg == XPR_TRUE)
         {
-            xpr::tstring sCurDir;
+            xpr::string sCurDir;
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;
@@ -105,8 +105,8 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        xpr::tstring sPath;
-        xpr::tstring sDir;
+        xpr::string sPath;
+        xpr::string sDir;
 
         sExplorerCtrl->getCurPath(sDir);
         RemoveLastSplit(sDir);
@@ -116,7 +116,7 @@ void CreateGeneralFileCommand::execute(CommandContext &aContext)
         {
             HICON sIcon = GetFileExtIcon(XPR_STRING_LITERAL(".fxfile"), XPR_TRUE);
 
-            xpr::tstring sCurDir;
+            xpr::string sCurDir;
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;
@@ -169,8 +169,8 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        xpr::tstring sPath;
-        xpr::tstring sDir;
+        xpr::string sPath;
+        xpr::string sDir;
 
         sExplorerCtrl->getCurPath(sDir);
         RemoveLastSplit(sDir);
@@ -180,7 +180,7 @@ void CreateTextFileCommand::execute(CommandContext &aContext)
         {
             HICON sIcon = GetFileExtIcon(XPR_STRING_LITERAL(".txt"), XPR_TRUE);
 
-            xpr::tstring sCurDir;
+            xpr::string sCurDir;
             sExplorerCtrl->getCurPath(sCurDir);
 
             CreateItemDlg sDlg;

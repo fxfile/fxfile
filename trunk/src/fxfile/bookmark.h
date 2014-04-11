@@ -53,14 +53,14 @@ public:
     BookmarkItem& operator=(const BookmarkItem &aSrc);
 
 public:
-    xpr::tstring mName;
-    xpr::tstring mPath;
-    xpr::tstring mIconPath;
-    xpr_sint_t   mIconIndex;
-    xpr::tstring mParam;
-    xpr::tstring mStartup;
-    xpr_sint_t   mShowCmd;
-    DWORD        mHotKey;
+    xpr::string mName;
+    xpr::string mPath;
+    xpr::string mIconPath;
+    xpr_sint_t  mIconIndex;
+    xpr::string mParam;
+    xpr::string mStartup;
+    xpr_sint_t  mShowCmd;
+    DWORD       mHotKey;
 
 protected:
     xpr_uint_t mSignature;

@@ -36,13 +36,13 @@ FormatReplace::FormatReplace(void)
 {
 }
 
-FormatReplace::FormatReplace(const xpr::tstring &aFindString, const xpr::tstring &aReplaceString)
+FormatReplace::FormatReplace(const xpr::string &aFindString, const xpr::string &aReplaceString)
     : mFindString(aFindString), mReplaceString(aReplaceString)
     , mRepeat(kDefaultRepeat), mCaseSensitivity(kDefaultCaseSensitivity)
 {
 }
 
-FormatReplace::FormatReplace(const xpr::tstring &aFindString, const xpr::tstring &aReplaceString, xpr_sint_t aRepeat, xpr_bool_t aCaseSensitivity)
+FormatReplace::FormatReplace(const xpr::string &aFindString, const xpr::string &aReplaceString, xpr_sint_t aRepeat, xpr_bool_t aCaseSensitivity)
     : mFindString(aFindString), mReplaceString(aReplaceString)
     , mRepeat(aRepeat), mCaseSensitivity(aCaseSensitivity)
 {
@@ -76,14 +76,14 @@ Format *FormatReplace::newClone(void) const
 
 void FormatReplace::rename(RenameContext &aContext) const
 {
-    xpr::tstring sOld           = aContext.mNewFileName;
-    xpr::tstring sFindString    = mFindString;
-    xpr::tstring sReplaceString = mReplaceString;
-    xpr_sint_t   sRepeat        = mRepeat;
-    xpr_size_t   sOffset        = 0;
-    xpr_size_t   sFind          = 0;
-    xpr_sint_t   sLenDiff       = (xpr_sint_t)mReplaceString.length() - (xpr_sint_t)mFindString.length();
-    xpr_sint_t   i;
+    xpr::string sOld           = aContext.mNewFileName;
+    xpr::string sFindString    = mFindString;
+    xpr::string sReplaceString = mReplaceString;
+    xpr_sint_t  sRepeat        = mRepeat;
+    xpr_size_t  sOffset        = 0;
+    xpr_size_t  sFind          = 0;
+    xpr_sint_t  sLenDiff       = (xpr_sint_t)mReplaceString.length() - (xpr_sint_t)mFindString.length();
+    xpr_sint_t  i;
 
     if (sRepeat < 0)
     {
@@ -100,7 +100,7 @@ void FormatReplace::rename(RenameContext &aContext) const
     for (i = 0; i < sRepeat; ++i)
     {
         sFind = sOld.find(sFindString, sOffset);
-        if (sFind == xpr::tstring::npos)
+        if (sFind == xpr::string::npos)
         {
             break;
         }
@@ -112,7 +112,7 @@ void FormatReplace::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatReplace::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatReplace::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatReplaceElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -121,12 +121,12 @@ xpr_bool_t FormatReplace::parseXml(const base::XmlReader &aXmlReader, base::XmlR
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring  sName;
-    xpr::tstring  sValue;
-    xpr_sint_t    sRepeat          = kDefaultRepeat;
-    xpr_bool_t    sCaseSensitivity = kDefaultCaseSensitivity;
-    xpr::tstring  sFindString;
-    xpr::tstring  sReplaceString;
+    xpr::string  sName;
+    xpr::string  sValue;
+    xpr_sint_t   sRepeat          = kDefaultRepeat;
+    xpr_bool_t   sCaseSensitivity = kDefaultCaseSensitivity;
+    xpr::string  sFindString;
+    xpr::string  sReplaceString;
 
     base::XmlReader::Attribute *sAttribute = aXmlReader.getFirstAttribute(aElement);
     while (XPR_IS_NOT_NULL(sAttribute))

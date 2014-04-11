@@ -23,6 +23,8 @@
 
 namespace fxfile
 {
+namespace
+{
 // item type
 enum
 {
@@ -38,6 +40,7 @@ enum
     WM_SHCN_DESKTOP  = WM_USER + 100,
     WM_SHCN_COMPUTER = WM_USER + 101,
 };
+} // namespace anonymous
 
 AddressBar::AddressBar(void)
 {
@@ -314,7 +317,7 @@ xpr_bool_t AddressBar::fillItem(LPSHELLFOLDER  aShellFolder,
 
     if (sShellEnumerator.enumerate(m_hWnd, aShellFolder, sEnumListType, sEnumAttributes) == XPR_TRUE)
     {
-        xpr::tstring    sName;
+        xpr::string     sName;
         LPITEMIDLIST    sEnumPidl        = XPR_NULL;
         LPABITEMDATA    sCbItemData      = XPR_NULL;
         xpr_ulong_t     sShellAttributes;

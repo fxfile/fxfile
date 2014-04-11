@@ -37,8 +37,8 @@ void FormatExtRemove::rename(RenameContext &aContext) const
 {
     if (aContext.mNewFileName.empty() == XPR_FALSE)
     {
-        xpr::tstring sBaseFileName;
-        xpr::tstring sFileExt;
+        xpr::string sBaseFileName;
+        xpr::string sFileExt;
 
         RenameContext::getBaseFileNameAndExt(aContext.mFolder, aContext.mNewFileName, sBaseFileName, sFileExt);
 
@@ -46,7 +46,7 @@ void FormatExtRemove::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatExtRemove::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatExtRemove::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatExtRemoveElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }

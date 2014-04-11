@@ -16,13 +16,8 @@ namespace xpr
 #if defined(XPR_CFG_OS_WINDOWS)
     #if defined(XPR_CFG_BUILD_DEBUG)
 
-XPR_DL_API void traceOutA(const xpr_char_t *aFormat, ...);
-XPR_DL_API void traceOutW(const xpr_wchar_t *aFormat, ...);
-#if defined(XPR_CFG_UNICODE)
-#define XPR_TRACE              xpr::traceOutW
-#else
-#define XPR_TRACE              xpr::traceOutA
-#endif
+XPR_DL_API void traceOut(const xpr_tchar_t *aFormat, ...);
+#define XPR_TRACE              xpr::traceOut
 #define XPR_ASSERT(exp)        assert(exp)
 #define XPR_DEBUG_ASSERT(exp)  assert(exp)
 #define XPR_VERIFY(exp)        assert(exp)

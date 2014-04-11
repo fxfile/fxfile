@@ -42,7 +42,7 @@ public:
     void               clear(void);
 
 protected:
-    typedef std::deque<xpr::tstring> FileDeque;
+    typedef std::deque<xpr::string> FileDeque;
     FileDeque mFileDeque;
 };
 } // namespace fxfile

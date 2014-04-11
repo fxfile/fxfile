@@ -65,15 +65,15 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque    mPathDeque;
 
     xpr_sint_t   mPathMaxLen;
     xpr_sint_t   mFileMaxLen;
 
-    xpr::tstring mTextFilePath;
+    xpr::string  mTextFilePath;
     xpr_uint_t   mFlags;
-    xpr::tstring mSplitChar;
+    xpr::string  mSplitChar;
 
     Status       mStatus;
     xpr::Mutex   mMutex;

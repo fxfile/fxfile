@@ -24,14 +24,16 @@
 
 namespace fxfile
 {
-static const COLORREF IL_COLOR_MASK = RGB(255,0,255);
+namespace
+{
+const COLORREF IL_COLOR_MASK = RGB(255,0,255);
 
-static const xpr_byte_t TBSTYLE_1 = TBSTYLE_BUTTON;
-static const xpr_byte_t TBSTYLE_2 = TBSTYLE_SEP;
-static const xpr_byte_t TBSTYLE_3 = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
-static const xpr_byte_t TBSTYLE_4 = TBSTYLE_DROPDOWN | BTNS_WHOLEDROPDOWN;
+const xpr_byte_t TBSTYLE_1 = TBSTYLE_BUTTON;
+const xpr_byte_t TBSTYLE_2 = TBSTYLE_SEP;
+const xpr_byte_t TBSTYLE_3 = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
+const xpr_byte_t TBSTYLE_4 = TBSTYLE_DROPDOWN | BTNS_WHOLEDROPDOWN;
 
-static TBBUTTONEX kTbButtons[] = {
+TBBUTTONEX kTbButtons[] = {
     { {  0, ID_GO_BACK,               TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 1 },
     { {  1, ID_GO_FORWARD,            TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 1 },
     { {  2, ID_GO_UP,                 TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 1 },
@@ -81,6 +83,7 @@ static TBBUTTONEX kTbButtons[] = {
     { { 38, ID_TOOL_OPTION,           TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 0 },
     { { 28, ID_APP_ABOUT,             TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
 };
+} // namespace anonymous
 
 MainToolBar::MainToolBar(void)
     : mOldDragId(0)
@@ -447,7 +450,7 @@ void MainToolBar::OnDropProgramAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType)
          XPR_TEST_BITS(sShellAttributes, SFGAO_FOLDER))
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
     ProgramAssItem *sProgramAssItem;
@@ -455,8 +458,8 @@ void MainToolBar::OnDropProgramAss(LPITEMIDLIST aFullPidl, xpr_uint_t aType)
     if (XPR_IS_NULL(sProgramAssItem))
         return;
 
-    xpr::tstring sFile;
-    xpr::tstring sParameters;
+    xpr::string sFile;
+    xpr::string sParameters;
 
     GetEnvRealPath(sProgramAssItem->mPath, sFile);
     sParameters = sPath;

@@ -45,8 +45,6 @@ public:
     virtual void close(void);
 
 protected:
-    const xpr::string mEncoding;
-
     xpr_bool_t mDocument;
     xpr_bool_t mTopElement;
 };

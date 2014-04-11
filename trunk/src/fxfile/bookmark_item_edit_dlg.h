@@ -38,7 +38,7 @@ protected:
     void fillItem(void);
     void enableWindow(xpr_bool_t aCustomIcon = XPR_FALSE, xpr_bool_t aSeparator = XPR_FALSE);
 
-    void getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::tstring &strPath);
+    void getPathFromPidl(LPITEMIDLIST aFullPidl, xpr::string &strPath);
 
     HICON       mNotCustomIcon;
     HICON       mCustomSmallIcon;

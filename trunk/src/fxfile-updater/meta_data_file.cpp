@@ -36,7 +36,7 @@ static const xpr_sint_t  kHashBufferSize = 16 * 1024; // 16KB
 /**
  * parse meta-data file
  */
-xpr_bool_t MetaDataFile::parseMetaFile(const xpr::tstring &aMetaFilePath, MetaData &aMetaData)
+xpr_bool_t MetaDataFile::parseMetaFile(const xpr::string &aMetaFilePath, MetaData &aMetaData)
 {
     fxfile::base::ConfFileEx sConfFile(aMetaFilePath.c_str());
 
@@ -60,7 +60,7 @@ xpr_bool_t MetaDataFile::parseMetaFile(const xpr::tstring &aMetaFilePath, MetaDa
     return XPR_TRUE;
 }
 
-xpr_bool_t MetaDataFile::verifyChecksum(const xpr::tstring &aProgramFilePath, MetaData &aMetaData)
+xpr_bool_t MetaDataFile::verifyChecksum(const xpr::string &aProgramFilePath, MetaData &aMetaData)
 {
     xpr_rcode_t sRcode;
     xpr::FileIo sFileIo;

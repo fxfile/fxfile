@@ -64,7 +64,7 @@ FormatFactory::~FormatFactory(void)
 {
 }
 
-xpr_bool_t FormatFactory::parseShort(const xpr::tstring &aFormatString, Format *&aFormat) const
+xpr_bool_t FormatFactory::parseShort(const xpr::string &aFormatString, Format *&aFormat) const
 {
     ShortParseFuncTable::const_iterator sIterator;
 
@@ -82,7 +82,7 @@ xpr_bool_t FormatFactory::parseShort(const xpr::tstring &aFormatString, Format *
     return XPR_FALSE;
 }
 
-void FormatFactory::parseShortAsString(const xpr::tstring &aFormatString, Format *&aFormat) const
+void FormatFactory::parseShortAsString(const xpr::string &aFormatString, Format *&aFormat) const
 {
     FormatString::parseShort(aFormatString, aFormat);
 }
@@ -91,7 +91,7 @@ xpr_bool_t FormatFactory::parseFromXml(const base::XmlReader &aXmlReader, base::
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring sName;
+    xpr::string sName;
 
     if (aXmlReader.getElement(aElement, sName) == XPR_FALSE)
     {

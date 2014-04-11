@@ -20,17 +20,17 @@ class MetaDataFile
 public:
     struct MetaData
     {
-        xpr::tstring mProgram;
-        xpr::tstring mVersion;
-        xpr::tstring mFile;
-        xpr::tstring mHashCrc32;
-        xpr::tstring mHashMd5;
-        xpr::tstring mHashSha1;
+        xpr::string mProgram;
+        xpr::string mVersion;
+        xpr::string mFile;
+        xpr::string mHashCrc32;
+        xpr::string mHashMd5;
+        xpr::string mHashSha1;
     };
 
 public:
-    static xpr_bool_t parseMetaFile(const xpr::tstring &aMetaFilePath, MetaData &aMetaData);
-    static xpr_bool_t verifyChecksum(const xpr::tstring &aProgramFilePath, MetaData &aMetaData);
+    static xpr_bool_t parseMetaFile(const xpr::string &aMetaFilePath, MetaData &aMetaData);
+    static xpr_bool_t verifyChecksum(const xpr::string &aProgramFilePath, MetaData &aMetaData);
 };
 } // namespace fxfile
 } // namespace updater

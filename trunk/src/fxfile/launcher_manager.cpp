@@ -20,16 +20,19 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kLauncherProgramDebug          [] = XPR_STRING_LITERAL("fxfile-launcher_dbg.exe");
-static const xpr_tchar_t kLauncherProgram               [] = XPR_STRING_LITERAL("fxfile-launcher.exe");
-static const xpr_tchar_t kLauncherWindowClass           [] = XPR_STRING_LITERAL("fxfile-launcher");
-static const xpr_tchar_t kLauncherRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
-static const xpr_tchar_t kLauncherRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-launcher");
+namespace
+{
+const xpr_tchar_t kLauncherProgramDebug          [] = XPR_STRING_LITERAL("fxfile-launcher_dbg.exe");
+const xpr_tchar_t kLauncherProgram               [] = XPR_STRING_LITERAL("fxfile-launcher.exe");
+const xpr_tchar_t kLauncherWindowClass           [] = XPR_STRING_LITERAL("fxfile-launcher");
+const xpr_tchar_t kLauncherRegKey                [] = XPR_STRING_LITERAL("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+const xpr_tchar_t kLauncherRegValueNameWinStartup[] = XPR_STRING_LITERAL("fxfile-launcher");
 
-static const xpr_uint_t WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Load"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Tray"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: HotKey"));
-static const xpr_uint_t WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Exit"));
+const xpr_uint_t WM_LAUNCHER_COMMAND_LOAD   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Load"));
+const xpr_uint_t WM_LAUNCHER_COMMAND_TRAY   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Tray"));
+const xpr_uint_t WM_LAUNCHER_COMMAND_HOTKEY = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: HotKey"));
+const xpr_uint_t WM_LAUNCHER_COMMAND_EXIT   = ::RegisterWindowMessage(XPR_STRING_LITERAL("fxfile-launcher: Exit"));
+} // namespace anonymous
 
 void LauncherManager::startupProcess(xpr_ushort_t aGlobalHotKey, xpr_bool_t aShowTray)
 {

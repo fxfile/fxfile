@@ -58,16 +58,16 @@ protected:
     LPITEMIDLIST  mFullPidl;
     xpr_ulong_t   mShellAttributes;
 
-    xpr::tstring  mEditName;
+    xpr::string   mEditName;
 
     LPITEMIDLIST  mNewPidl;
     LPITEMIDLIST  mNewFullPidl;
-    xpr::tstring  mNewName;
+    xpr::string   mNewName;
 
     xpr_sint_t    mSelItem0;
     xpr_sint_t    mSelItem1;
-    xpr::tstring  mKeepExt;
-    xpr::tstring  mParsingExt;
+    xpr::string   mKeepExt;
+    xpr::string   mParsingExt;
 };
 } // namespace fxfile
 

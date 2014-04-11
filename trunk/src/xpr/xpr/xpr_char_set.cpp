@@ -13,7 +13,9 @@
 
 namespace xpr
 {
-static const xpr_char_t *kCharSets[] = {
+namespace
+{
+const xpr_char_t *kCharSets[] = {
     "",             // CharSetNone
     "char",         // CharSetMultiBytes
     "utf-8",        // CharSetUtf8
@@ -22,6 +24,7 @@ static const xpr_char_t *kCharSets[] = {
     "utf-32le",     // CharSetUtf32le
     "utf-32be",     // CharSetUtf32be
 };
+} // namespace anonymous
 
 CharSetConverter::CharSetConverter(void)
     : mHandle(XPR_NULL)
@@ -72,8 +75,10 @@ void CharSetConverter::getCharSet(CharSet &aInputCharSet, CharSet &aOutputCharSe
 xpr_rcode_t CharSetConverter::convert(const void *aInput,  xpr_size_t *aInputBytes,
                                             void *aOutput, xpr_size_t *aOutputBytes)
 {
-    if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aInput != XPR_NULL);
+    XPR_ASSERT(aOutput != XPR_NULL);
+    XPR_ASSERT(aInputBytes != XPR_NULL);
+    XPR_ASSERT(aOutputBytes != XPR_NULL);
 
     if (XPR_IS_NULL(mHandle))
         return XPR_RCODE_EBADF;
@@ -148,8 +153,10 @@ void CharSetConverter::close(void)
 XPR_DL_API xpr_rcode_t convertCharSet(const void *aInput,  xpr_size_t *aInputBytes,  CharSet aInputCharSet,
                                             void *aOutput, xpr_size_t *aOutputBytes, CharSet aOutputCharSet)
 {
-    if (XPR_IS_NULL(aInput) || XPR_IS_NULL(aOutput) || XPR_IS_NULL(aInputBytes) || XPR_IS_NULL(aOutputBytes))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aInput != XPR_NULL);
+    XPR_ASSERT(aOutput != XPR_NULL);
+    XPR_ASSERT(aInputBytes != XPR_NULL);
+    XPR_ASSERT(aOutputBytes != XPR_NULL);
 
     xpr_rcode_t sRcode;
 

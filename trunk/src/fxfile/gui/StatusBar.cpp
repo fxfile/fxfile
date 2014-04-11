@@ -17,10 +17,13 @@
 #define new DEBUG_NEW
 #endif
 
-static const xpr_sint_t kGap = 2;
-static const xpr_sint_t kTextOffset = 3;
+namespace
+{
+const xpr_sint_t kGap = 2;
+const xpr_sint_t kTextOffset = 3;
 
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("StatusBar");
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("StatusBar");
+} // namespace anonymous
 
 struct StatusBar::PaneItem
 {
@@ -38,7 +41,7 @@ public:
 
 public:
     xpr_size_t    mPaneId;
-    xpr::tstring  mText;
+    xpr::string   mText;
     void         *mData;
     xpr_size_t    mSize;
     xpr_size_t    mMinSize;

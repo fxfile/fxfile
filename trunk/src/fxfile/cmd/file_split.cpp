@@ -20,7 +20,10 @@ namespace fxfile
 {
 namespace cmd
 {
-static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+namespace
+{
+const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+} // namespace anonymous
 
 FileSplit::FileSplit(void)
     : mHwnd(XPR_NULL), mMsg(0)
@@ -113,7 +116,7 @@ unsigned FileSplit::OnEntryProc(void)
     xpr_rcode_t sRcode;
     xpr::FileIo sFileIo;
 
-    sRcode = sFileIo.open(mPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+    sRcode = sFileIo.open(mPath, xpr::FileIo::OpenModeReadOnly);
     if (XPR_RCODE_IS_ERROR(sRcode))
     {
         sStatus = StatusNotReadable;
@@ -126,7 +129,7 @@ unsigned FileSplit::OnEntryProc(void)
         xpr_byte_t *sBuffer;
         xpr_sint_t sOpenMode;
         xpr::FileIo sTargetFileIo;
-        xpr::tstring sFileName;
+        xpr::string sFileName;
 
         xpr_sint_t sIndex;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];

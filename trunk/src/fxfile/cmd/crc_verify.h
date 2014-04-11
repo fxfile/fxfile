@@ -49,7 +49,7 @@ public:
             mResult = VerifyResultNone;
         }
 
-        xpr::tstring mPath;
+        xpr::string  mPath;
         CrcVal       mCrcCode;
         xpr_sint_t   mMethod;
         VerifyResult mResult;
@@ -86,7 +86,7 @@ protected:
 
     typedef struct CrcFile
     {
-        xpr::tstring    mPath;
+        xpr::string     mPath;
         VerifyFileDeque mVerifyFileDeque;
     } CrcFile;
 

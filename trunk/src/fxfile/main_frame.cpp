@@ -80,6 +80,8 @@ namespace fxfile
 {
 MainFrame *gFrame;
 
+namespace
+{
 #define DEFAULT_WINDOW_WIDTH  800
 #define DEFAULT_WINDOW_HEIGHT 600
 
@@ -94,6 +96,7 @@ enum
     WM_TRAY_MESSAGE         = WM_USER + 1,
     WM_COMPARE_DIRS_STATUS  = WM_USER + 2,
 };
+} // namespace anonymous
 
 MainFrame::MainFrame(void)
     : mExit(XPR_FALSE)
@@ -2859,8 +2862,8 @@ xpr_bool_t MainFrame::setWorkingFolder(xpr_size_t aIndex, LPITEMIDLIST aFullPidl
         xpr_bool_t sParentVirtualItem = IsParentVirtualItem(aFullPidl);
         if (XPR_IS_TRUE(sParentVirtualItem) && IsFileSystem(aFullPidl) == XPR_TRUE)
         {
-            xpr::tstring sPath;
-            xpr::tstring sFullPath;
+            xpr::string sPath;
+            xpr::string sFullPath;
 
             GetName(aFullPidl, SHGDN_FORPARSING, sPath);
             GetFullPath(aFullPidl, sFullPath);
@@ -4331,8 +4334,8 @@ LRESULT MainFrame::OnCompareDirsStatus(WPARAM wParam, LPARAM lParam)
         xpr_sint_t sCount, sFind;
         xpr_bool_t sFirst[2];
         SyncItem *sSyncItem;
-        xpr::tstring sDir[2];
-        xpr::tstring sPath;
+        xpr::string sDir[2];
+        xpr::string sPath;
         xpr_uint_t sMask, sState;
 
         mCompareDirs->getDir(sDir[0], sDir[1]);
@@ -4599,7 +4602,7 @@ xpr_bool_t MainFrame::OnQueryRemove(xpr_sint_t aDeviceNumber, const RemovableDev
 {
     xpr_sint_t i;
     xpr_sint_t sViewCount = getViewCount();
-    xpr::tstring sPath;
+    xpr::string sPath;
     FolderCtrl *sFolderCtrl;
     ExplorerCtrl *sExplorerCtrl;
 
@@ -4628,7 +4631,7 @@ xpr_bool_t MainFrame::OnQueryRemoveFailed(xpr_sint_t aDeviceNumber, const Remova
 {
     xpr_sint_t i;
     xpr_sint_t sViewCount = getViewCount();
-    xpr::tstring sPath;
+    xpr::string sPath;
     xpr_tchar_t sDriveChar;
     FolderCtrl *sFolderCtrl;
     ExplorerCtrl *sExplorerCtrl;

@@ -44,7 +44,7 @@ public:
     xpr_size_t getTabCount(void) const;
     xpr_size_t getCurTab(void) const;
     xpr_bool_t getTabText(xpr_size_t aTab, xpr_tchar_t *aText, xpr_size_t aMaxLen) const;
-    xpr_bool_t getTabText(xpr_size_t aTab, xpr::tstring &aText) const;
+    xpr_bool_t getTabText(xpr_size_t aTab, xpr::string &aText) const;
     void *     getTabData(xpr_size_t aTab) const;
     xpr_bool_t getNewButtonRect(CRect &aNewButtonRect) const;
     xpr_size_t hitTest(const POINT &aPoint) const;
@@ -77,7 +77,7 @@ protected:
     typedef std::deque<TabItem *> TabDeque;
     TabDeque    mTabDeque;
     xpr_size_t  mCurTab;
-    xpr::tstring mTabToolTipText;
+    xpr::string mTabToolTipText;
 
     xpr_bool_t  mFixedSizeMode;
     xpr_sint_t  mFixedSize;
@@ -101,7 +101,7 @@ protected:
     BOOL        mNewButtonHover;
     BOOL        mNewButtonPressed;
     BOOL        mNewButtonPressedLeave;
-    xpr::tstring mNewButtonToolTipText;
+    xpr::string mNewButtonToolTipText;
 
     CXPTheme    mXPTheme;
 

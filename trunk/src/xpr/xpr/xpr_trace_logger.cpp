@@ -10,21 +10,23 @@
 #include "xpr_system.h"
 #include "xpr_debug.h"
 #include "xpr_string.h"
-#include "xpr_wide_string.h"
 #include "xpr_bit.h"
 #include "xpr_time.h"
 #include "xpr_process.h"
 #include "xpr_thread.h"
-#include "xpr_detail_cross_string.h"
+#include "xpr_memory.h"
+#include "xpr_rcode.h"
 
 namespace xpr
 {
-static const xpr_sint_t kDefLevel     = TraceLogger::kLogLevelInfo;
-static const xpr_uint_t kDefFlags     = TraceLogger::kFlagTraceOut;
-static const xpr_sint_t kDefFileSize  = 10 * 1024 * 1024; // 10MB
-static const xpr_sint_t kDefFileCount = 10;               // 10 (10MB x 10 = 100MB)
+namespace
+{
+const xpr_sint_t kDefLevel     = TraceLogger::kLogLevelInfo;
+const xpr_uint_t kDefFlags     = TraceLogger::kFlagTraceOut;
+const xpr_sint_t kDefFileSize  = 10 * 1024 * 1024; // 10MB
+const xpr_sint_t kDefFileCount = 10;               // 10 (10MB x 10 = 100MB)
 
-static const xpr_char_t *kLogLevelText[] = {
+const xpr_char_t *kLogLevelText[] = {
     XPR_MBCS_STRING_LITERAL("NONE"),
     XPR_MBCS_STRING_LITERAL("FATAL"),
     XPR_MBCS_STRING_LITERAL("ERROR"),
@@ -34,7 +36,7 @@ static const xpr_char_t *kLogLevelText[] = {
     XPR_MBCS_STRING_LITERAL("TRACE"),
 };
 
-static const xpr_wchar_t *kLogLevelTextW[] = {
+const xpr_wchar_t *kLogLevelTextW[] = {
     XPR_WIDE_STRING_LITERAL("NONE"),
     XPR_WIDE_STRING_LITERAL("FATAL"),
     XPR_WIDE_STRING_LITERAL("ERROR"),
@@ -43,19 +45,19 @@ static const xpr_wchar_t *kLogLevelTextW[] = {
     XPR_WIDE_STRING_LITERAL("DEBUG"),
     XPR_WIDE_STRING_LITERAL("TRACE"),
 };
+} // namespace anonymous
 
 struct TraceLogger::LogRecord
 {
-    const void *mMessage;
-    xpr_size_t  mMessageBytes;
-    xpr_bool_t  mWideChar;
+    const xpr_tchar_t *mMessage;
+    xpr_size_t         mMessageBytes;
+    CharSet            mMessageCharSet;
 };
 
 TraceLogger::TraceLogger(void)
     : mLevel(kDefLevel)
     , mFlags(kDefFlags)
     , mFileSize(kDefFileSize), mFileCount(kDefFileCount), mFileIndex(0)
-    , mFileDir(XPR_NULL), mFileName(XPR_NULL), mFilePath(XPR_NULL)
     , mTextFileWriter(XPR_NULL)
     , mCharSet(CharSetNone), mWriteBom(XPR_FALSE)
     , mStarted(XPR_FALSE)
@@ -65,10 +67,6 @@ TraceLogger::TraceLogger(void)
 TraceLogger::~TraceLogger(void)
 {
     stop();
-
-    XPR_SAFE_DELETE(mFileDir);
-    XPR_SAFE_DELETE(mFileName);
-    XPR_SAFE_DELETE(mFilePath);
 }
 
 xpr_sint_t TraceLogger::getLevel(void) const
@@ -86,44 +84,14 @@ xpr_bool_t TraceLogger::hasFlag(xpr_uint_t aFlag) const
     return XPR_TEST_BITS(mFlags, aFlag);
 }
 
-xpr_bool_t TraceLogger::getFileDir(xpr_char_t *aFileDir, xpr_size_t aMaxLen) const
+void TraceLogger::getFileDir(xpr::string &aFileDir) const
 {
-    if (XPR_IS_NULL(mFileDir))
-    {
-        return XPR_FALSE;
-    }
-
-    return mFileDir->getString(aFileDir, aMaxLen);
+    aFileDir = mFileDir;
 }
 
-xpr_bool_t TraceLogger::getFileDir(xpr_wchar_t *aFileDir, xpr_size_t aMaxLen) const
+void TraceLogger::getFileName(xpr::string &aFileName) const
 {
-    if (XPR_IS_NULL(mFileDir))
-    {
-        return XPR_FALSE;
-    }
-
-    return mFileDir->getString(aFileDir, aMaxLen);
-}
-
-xpr_bool_t TraceLogger::getFileName(xpr_char_t *aFileName, xpr_size_t aMaxLen) const
-{
-    if (XPR_IS_NULL(mFileName))
-    {
-        return XPR_FALSE;
-    }
-
-    return mFileDir->getString(aFileName, aMaxLen);
-}
-
-xpr_bool_t TraceLogger::getFileName(xpr_wchar_t *aFileName, xpr_size_t aMaxLen) const
-{
-    if (XPR_IS_NULL(mFileName))
-    {
-        return XPR_FALSE;
-    }
-
-    return mFileDir->getString(aFileName, aMaxLen);
+    aFileName = mFileName;
 }
 
 xpr_size_t TraceLogger::getFileSize(void) const
@@ -180,120 +148,26 @@ xpr_bool_t TraceLogger::setFlags(xpr_uint_t aFlags)
     return XPR_TRUE;
 }
 
-xpr_bool_t TraceLogger::setFileDir(const xpr_char_t *aFileDir)
+xpr_bool_t TraceLogger::setFileDir(const xpr::string &aFileDir)
 {
     if (XPR_IS_TRUE(isStarted()))
     {
         return XPR_FALSE;
     }
 
-    detail::CrossString *sFileDir = new detail::CrossString;
-    if (XPR_IS_NULL(sFileDir))
-    {
-        return XPR_FALSE;
-    }
-
-    xpr_rcode_t sRcode = sFileDir->setString(aFileDir);
-    if (XPR_RCODE_IS_ERROR(sRcode))
-    {
-        return XPR_FALSE;
-    }
-
-    // remove, if last character is file separator
-    xpr_char_t *sSplit = strrchr(sFileDir->mStringA, XPR_FILE_SEPARATOR);
-    if (XPR_IS_NOT_NULL(sSplit))
-    {
-        *sSplit = 0;
-    }
-
-    XPR_SAFE_DELETE(mFileDir);
-
-    mFileDir = sFileDir;
+    mFileDir = aFileDir;
 
     return XPR_TRUE;
 }
 
-xpr_bool_t TraceLogger::setFileDir(const xpr_wchar_t *aFileDir)
+xpr_bool_t TraceLogger::setFileName(const xpr::string &aFileName)
 {
     if (XPR_IS_TRUE(isStarted()))
     {
         return XPR_FALSE;
     }
 
-    detail::CrossString *sFileDir = new detail::CrossString;
-    if (XPR_IS_NULL(sFileDir))
-    {
-        return XPR_FALSE;
-    }
-
-    xpr_rcode_t sRcode = sFileDir->setString(aFileDir);
-    if (XPR_RCODE_IS_ERROR(sRcode))
-    {
-        return XPR_FALSE;
-    }
-
-    // remove, if last character is file separator
-    xpr_wchar_t *sSplit = wcsrchr(sFileDir->mStringW, XPR_FILE_SEPARATOR);
-    if (XPR_IS_NOT_NULL(sSplit))
-    {
-        *sSplit = 0;
-    }
-
-    XPR_SAFE_DELETE(mFileDir);
-
-    mFileDir = sFileDir;
-
-    return XPR_TRUE;
-}
-
-xpr_bool_t TraceLogger::setFileName(const xpr_char_t *aFileName)
-{
-    if (XPR_IS_TRUE(isStarted()))
-    {
-        return XPR_FALSE;
-    }
-
-    detail::CrossString *sFileName = new detail::CrossString;
-    if (XPR_IS_NULL(sFileName))
-    {
-        return XPR_FALSE;
-    }
-
-    xpr_rcode_t sRcode = sFileName->setString(aFileName);
-    if (XPR_RCODE_IS_ERROR(sRcode))
-    {
-        return XPR_FALSE;
-    }
-
-    XPR_SAFE_DELETE(mFileName);
-
-    mFileName = sFileName;
-
-    return XPR_TRUE;
-}
-
-xpr_bool_t TraceLogger::setFileName(const xpr_wchar_t *aFileName)
-{
-    if (XPR_IS_TRUE(isStarted()))
-    {
-        return XPR_FALSE;
-    }
-
-    detail::CrossString *sFileName = new detail::CrossString;
-    if (XPR_IS_NULL(sFileName))
-    {
-        return XPR_FALSE;
-    }
-
-    xpr_rcode_t sRcode = sFileName->setString(aFileName);
-    if (XPR_RCODE_IS_ERROR(sRcode))
-    {
-        return XPR_FALSE;
-    }
-
-    XPR_SAFE_DELETE(mFileName);
-
-    mFileName = sFileName;
+    mFileName = aFileName;
 
     return XPR_TRUE;
 }
@@ -342,63 +216,16 @@ xpr_rcode_t TraceLogger::start(void)
         return XPR_RCODE_SUCCESS;
     }
 
-    if (XPR_IS_NULL(mFileName))
+    mFilePath.clear();
+
+    if (mFileDir.empty() == XPR_FALSE)
     {
-        return XPR_RCODE_ENOENT;
+        mFilePath  = mFileDir;
+        mFilePath += XPR_FILE_SEPARATOR;
     }
 
-    detail::CrossString *sFilePath = new detail::CrossString;
-    if (XPR_IS_NULL(sFilePath))
-    {
-        return XPR_RCODE_ENOMEM;
-    }
+    mFilePath += mFileName;
 
-    if ((XPR_IS_NOT_NULL(mFileDir) && XPR_IS_TRUE(mFileDir->mWideChar)) || (XPR_IS_TRUE(mFileName->mWideChar)))
-    {
-        xpr_size_t  sLen = 0;
-        xpr_wchar_t sString[XPR_MAX_PATH + 1] = {0};
-
-        if (XPR_IS_NOT_NULL(mFileDir))
-        {
-            mFileDir->getString(sString, XPR_MAX_PATH);
-
-            sLen = wcslen(sString);
-            if (sLen > 0)
-            {
-                sString[sLen] = XPR_FILE_SEPARATOR;
-                ++sLen;
-            }
-        }
-
-        mFileName->getString(sString + sLen, XPR_MAX_PATH - sLen);
-
-        sFilePath->setString(sString);
-    }
-    else
-    {
-        xpr_size_t sLen = 0;
-        xpr_char_t sString[XPR_MAX_PATH + 1] = {0};
-
-        if (XPR_IS_NOT_NULL(mFileDir))
-        {
-            mFileDir->getString(sString, XPR_MAX_PATH);
-
-            sLen = strlen(sString);
-            if (sLen > 0)
-            {
-                sString[sLen] = XPR_FILE_SEPARATOR;
-                ++sLen;
-            }
-        }
-
-        mFileName->getString(sString + sLen, XPR_MAX_PATH - sLen);
-
-        sFilePath->setString(sString);
-    }
-
-    XPR_SAFE_DELETE(mFilePath);
-
-    mFilePath = sFilePath;
     mFileIndex = 0;
 
     mStarted = XPR_TRUE;
@@ -425,6 +252,8 @@ xpr_bool_t TraceLogger::isStarted(void) const
 
 xpr_rcode_t TraceLogger::logFatal(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -437,6 +266,8 @@ xpr_rcode_t TraceLogger::logFatal(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logFatal(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -449,6 +280,8 @@ xpr_rcode_t TraceLogger::logFatal(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logError(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -461,6 +294,8 @@ xpr_rcode_t TraceLogger::logError(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logError(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -473,6 +308,8 @@ xpr_rcode_t TraceLogger::logError(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logWarning(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -485,6 +322,8 @@ xpr_rcode_t TraceLogger::logWarning(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logWarning(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -497,6 +336,8 @@ xpr_rcode_t TraceLogger::logWarning(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logInfo(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -509,6 +350,8 @@ xpr_rcode_t TraceLogger::logInfo(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logInfo(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -521,6 +364,8 @@ xpr_rcode_t TraceLogger::logInfo(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logDebug(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -533,6 +378,8 @@ xpr_rcode_t TraceLogger::logDebug(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logDebug(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -545,6 +392,8 @@ xpr_rcode_t TraceLogger::logDebug(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logTrace(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -557,6 +406,8 @@ xpr_rcode_t TraceLogger::logTrace(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::logTrace(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -569,6 +420,8 @@ xpr_rcode_t TraceLogger::logTrace(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_char_t *aFormat, va_list aArgs)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     if (aLevel > mLevel)
     {
         return XPR_RCODE_SUCCESS;
@@ -593,9 +446,9 @@ xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_char_t *aFormat, va_li
     sFormattedMessage.append(XPR_MBCS_EOL);
 
     LogRecord sLogRecord;
-    sLogRecord.mMessage      = sFormattedMessage.c_str();
-    sLogRecord.mMessageBytes = sFormattedMessage.bytes();
-    sLogRecord.mWideChar     = XPR_FALSE;
+    sLogRecord.mMessage        = sFormattedMessage.c_str();
+    sLogRecord.mMessageBytes   = sFormattedMessage.bytes();
+    sLogRecord.mMessageCharSet = sFormattedMessage.get_char_set();
 
     if (XPR_IS_TRUE(hasFlag(kFlagTraceOut)))
     {
@@ -612,6 +465,8 @@ xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_char_t *aFormat, va_li
 
 xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_wchar_t *aFormat, va_list aArgs)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     if (aLevel > mLevel)
     {
         return XPR_RCODE_SUCCESS;
@@ -620,7 +475,7 @@ xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_wchar_t *aFormat, va_l
     xpr_pid_t          sProcessId = xpr::getPid();
     xpr::ThreadId      sThreadId  = Thread::getCurThreadId();
     const xpr_wchar_t *sLevelText = kLogLevelTextW[aLevel];
-    xpr::wstring       sFormattedMessage;
+    xpr::string        sFormattedMessage;
     xpr::TimeExpr      sTimeExprNow;
     xpr_sint_t         sMillisecond;
 
@@ -636,9 +491,9 @@ xpr_rcode_t TraceLogger::log(xpr_sint_t aLevel, const xpr_wchar_t *aFormat, va_l
     sFormattedMessage.append(XPR_WIDE_EOL);
 
     LogRecord sLogRecord;
-    sLogRecord.mMessage      = sFormattedMessage.c_str();
-    sLogRecord.mMessageBytes = sFormattedMessage.bytes();
-    sLogRecord.mWideChar     = XPR_TRUE;
+    sLogRecord.mMessage        = sFormattedMessage.c_str();
+    sLogRecord.mMessageBytes   = sFormattedMessage.bytes();
+    sLogRecord.mMessageCharSet = sFormattedMessage.get_char_set();
 
     if (XPR_IS_TRUE(hasFlag(kFlagTraceOut)))
     {
@@ -657,18 +512,8 @@ xpr_rcode_t TraceLogger::log(LogRecord *aLogRecord)
 {
     XPR_ASSERT(aLogRecord != XPR_NULL);
 
-    xpr_uint64_t sFileSize = 0;
-
-    if (XPR_IS_TRUE(mFilePath->mWideChar))
-    {
-        sFileSize = FileSys::getFileSize(mFilePath->mStringW);
-    }
-    else
-    {
-        sFileSize = FileSys::getFileSize(mFilePath->mStringA);
-    }
-
-    xpr_rcode_t sRcode;
+    xpr_rcode_t  sRcode;
+    xpr_uint64_t sFileSize = FileSys::getFileSize(mFilePath.c_str());
 
     if (sFileSize > 0)
     {
@@ -688,20 +533,7 @@ xpr_rcode_t TraceLogger::log(LogRecord *aLogRecord)
         return sRcode;
     }
 
-    CharSet sCharSet = CharSetMultiBytes;
-    if (XPR_IS_TRUE(aLogRecord->mWideChar))
-    {
-        if (sizeof(xpr_wchar_t) == 4)
-        {
-            sCharSet = CharSetUtf32;
-        }
-        else
-        {
-            sCharSet = CharSetUtf16;
-        }
-    }
-
-    sRcode = mTextFileWriter->write(aLogRecord->mMessage, aLogRecord->mMessageBytes, sCharSet);
+    sRcode = mTextFileWriter->write(aLogRecord->mMessage, aLogRecord->mMessageBytes, aLogRecord->mMessageCharSet);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         sRcode = XPR_RCODE_SUCCESS;
@@ -744,135 +576,67 @@ xpr_rcode_t TraceLogger::logThreadSafe(LogRecord *aLogRecord)
 xpr_rcode_t TraceLogger::moveLogFiles(void)
 {
     xpr_rcode_t sRcode = XPR_RCODE_SUCCESS;
+    xpr_sint_t  i;
+    xpr_sint_t  sOldLogNumber = mFileIndex + 1;
+    xpr::string sFilePath1;
+    xpr::string sFilePath2;
 
-    if (XPR_IS_FALSE(mFilePath->mWideChar))
+    if (XPR_IS_TRUE(isCircular()))
     {
-        xpr_sint_t i;
-        xpr_sint_t sOldLogNumber = mFileIndex + 1;
-        xpr_char_t sFilePath1[XPR_MAX_PATH] = {0};
-        xpr_char_t sFilePath2[XPR_MAX_PATH] = {0};
-
-        if (XPR_IS_TRUE(isCircular()))
+        if (sOldLogNumber >= (mFileCount - 1))
         {
-            if (sOldLogNumber >= (mFileCount - 1))
-            {
-                sprintf(sFilePath2, XPR_MBCS_STRING_LITERAL("%s-%d"), mFilePath->mStringA, mFileCount - 1);
+            sFilePath2.format(XPR_STRING_LITERAL("%s-%d"), mFilePath.c_str(), mFileCount - 1);
 
-                if (XPR_IS_TRUE(FileSys::exist(sFilePath2)))
+            if (XPR_IS_TRUE(FileSys::exist(sFilePath2.c_str())))
+            {
+                sRcode = FileSys::remove(sFilePath2.c_str());
+                if (XPR_RCODE_IS_ERROR(sRcode))
                 {
-                    sRcode = FileSys::remove(sFilePath2);
-                    if (XPR_RCODE_IS_ERROR(sRcode))
-                    {
-                        return sRcode;
-                    }
+                    return sRcode;
                 }
-
-                sOldLogNumber = mFileCount - 1;
             }
+
+            sOldLogNumber = mFileCount - 1;
         }
-        else
-        {
-            do
-            {
-                sprintf(sFilePath2, XPR_MBCS_STRING_LITERAL("%s-%d"), mFilePath->mStringA, sOldLogNumber);
-
-                if (XPR_IS_FALSE(FileSys::exist(sFilePath2)))
-                {
-                    break;
-                }
-
-                ++sOldLogNumber;
-
-            } while (true);
-        }
-
-        for (i = sOldLogNumber; i > 1; --i)
-        {
-            sprintf(sFilePath1, XPR_MBCS_STRING_LITERAL("%s-%d"), mFilePath->mStringA, i - 1);
-            sprintf(sFilePath2, XPR_MBCS_STRING_LITERAL("%s-%d"), mFilePath->mStringA, i);
-
-            sRcode = FileSys::rename(sFilePath1, sFilePath2);
-            if (XPR_RCODE_IS_ERROR(sRcode))
-            {
-                return sRcode;
-            }
-        }
-
-        sprintf(sFilePath1, XPR_MBCS_STRING_LITERAL("%s"), mFilePath->mStringA);
-        sprintf(sFilePath2, XPR_MBCS_STRING_LITERAL("%s-%d"), mFilePath->mStringA, 1);
-
-        sRcode = FileSys::rename(sFilePath1, sFilePath2);
-        if (XPR_RCODE_IS_ERROR(sRcode))
-        {
-            return sRcode;
-        }
-
-        ++mFileIndex;
     }
     else
     {
-        xpr_sint_t  i;
-        xpr_sint_t  sOldLogNumber = mFileIndex + 1;
-        xpr_wchar_t sFilePath1[XPR_MAX_PATH] = {0};
-        xpr_wchar_t sFilePath2[XPR_MAX_PATH] = {0};
-
-        if (XPR_IS_TRUE(isCircular()))
+        do
         {
-            if (sOldLogNumber >= (mFileCount - 1))
+            sFilePath2.format(XPR_STRING_LITERAL("%s-%d"), mFilePath.c_str(), sOldLogNumber);
+
+            if (XPR_IS_FALSE(FileSys::exist(sFilePath2.c_str())))
             {
-                swprintf(sFilePath2, XPR_WIDE_STRING_LITERAL("%s-%d"), mFilePath->mStringA, mFileCount - 1);
-
-                if (XPR_IS_TRUE(FileSys::exist(sFilePath2)))
-                {
-                    sRcode = FileSys::remove(sFilePath2);
-                    if (XPR_RCODE_IS_ERROR(sRcode))
-                    {
-                        return sRcode;
-                    }
-                }
-
-                sOldLogNumber = mFileCount - 1;
+                break;
             }
-        }
-        else
-        {
-            do
-            {
-                swprintf(sFilePath2, XPR_WIDE_STRING_LITERAL("%s-%d"), mFilePath->mStringA, sOldLogNumber);
 
-                if (XPR_IS_FALSE(FileSys::exist(sFilePath2)))
-                {
-                    break;
-                }
+            ++sOldLogNumber;
 
-                ++sOldLogNumber;
+        } while (true);
+    }
 
-            } while (true);
-        }
+    for (i = sOldLogNumber; i > 1; --i)
+    {
+        sFilePath1.format(XPR_STRING_LITERAL("%s-%d"), mFilePath.c_str(), i - 1);
+        sFilePath2.format(XPR_STRING_LITERAL("%s-%d"), mFilePath.c_str(), i);
 
-        for (i = sOldLogNumber; i > 1; --i)
-        {
-            swprintf(sFilePath1, XPR_WIDE_STRING_LITERAL("%s-%d"), mFilePath->mStringA, i - 1);
-            swprintf(sFilePath2, XPR_WIDE_STRING_LITERAL("%s-%d"), mFilePath->mStringA, i);
-
-            sRcode = FileSys::rename(sFilePath1, sFilePath2);
-            if (XPR_RCODE_IS_ERROR(sRcode))
-            {
-                return sRcode;
-            }
-        }
-
-        swprintf(sFilePath1, XPR_WIDE_STRING_LITERAL("%s"), mFilePath->mStringA);
-        swprintf(sFilePath2, XPR_WIDE_STRING_LITERAL("%s-%d"), mFilePath->mStringA, 1);
-
-        sRcode = FileSys::rename(sFilePath1, sFilePath2);
+        sRcode = FileSys::rename(sFilePath1.c_str(), sFilePath2.c_str());
         if (XPR_RCODE_IS_ERROR(sRcode))
         {
             return sRcode;
         }
-
-        ++mFileIndex;
     }
+
+    sFilePath1.format(XPR_STRING_LITERAL("%s"), mFilePath.c_str());
+    sFilePath2.format(XPR_STRING_LITERAL("%s-%d"), mFilePath.c_str(), 1);
+
+    sRcode = FileSys::rename(sFilePath1.c_str(), sFilePath2.c_str());
+    if (XPR_RCODE_IS_ERROR(sRcode))
+    {
+        return sRcode;
+    }
+
+    ++mFileIndex;
 
     return sRcode;
 }
@@ -883,18 +647,9 @@ xpr_rcode_t TraceLogger::openLogFile(void)
     xpr_bool_t  sExist = XPR_FALSE;
     xpr_sint_t  sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeAppend;
 
-    if (XPR_IS_TRUE(mFilePath->mWideChar))
-    {
-        sExist = FileSys::exist(mFilePath->mStringW);
+    sExist = FileSys::exist(mFilePath.c_str());
 
-        sRcode = mFileIo.open(mFilePath->mStringW, sOpenMode);
-    }
-    else
-    {
-        sExist = FileSys::exist(mFilePath->mStringA);
-
-        sRcode = mFileIo.open(mFilePath->mStringA, sOpenMode);
-    }
+    sRcode = mFileIo.open(mFilePath, sOpenMode);
 
     if (XPR_RCODE_IS_ERROR(sRcode))
     {

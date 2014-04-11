@@ -34,9 +34,9 @@ public:
 
     struct Item
     {
-        xpr_uint_t   mGroupId;
-        xpr_uint_t   mId;
-        xpr::tstring mPath;
+        xpr_uint_t  mGroupId;
+        xpr_uint_t  mId;
+        xpr::string mPath;
     };
 
     typedef std::deque<Item *> ItemDeque;
@@ -44,10 +44,10 @@ public:
 
     struct Group
     {
-        xpr_uint_t   mGroupId;
-        xpr::tstring mGroupName;
-        ItemDeque    mItemDeque;
-        xpr_uint_t   mIdMgr;
+        xpr_uint_t  mGroupId;
+        xpr::string mGroupName;
+        ItemDeque   mItemDeque;
+        xpr_uint_t  mIdMgr;
 
         ~Group(void)
         {
@@ -131,7 +131,7 @@ protected:
 
     xpr_uint_t   mGroupIdMgr;
 
-    typedef std::map<xpr::tstring, Group *> GroupMap;
+    typedef std::map<xpr::string, Group *> GroupMap;
     GroupMap     mGroupMap;
 
     typedef std::map<xpr_uint_t, Group *> GroupIdMap;

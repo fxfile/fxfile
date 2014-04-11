@@ -287,7 +287,7 @@ xpr_bool_t BatchCreateTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
     xpr_tchar_t sFormat[FXFILE_BATCH_CREATE_FORMAT_MAX_LENGTH + 1] = {0};
     GetDlgItemText(IDC_BATCH_CREATE_FORMAT, sFormat, FXFILE_BATCH_CREATE_FORMAT_MAX_LENGTH);
 
-    xpr::tstring sAppendedFormat(sFormat);
+    xpr::string sAppendedFormat(sFormat);
     if (sId == IDC_BATCH_CREATE_FORMAT_NUMBERING || sId == ID_BATCH_CREATE_FORMAT_MENU_NUMBERING)
     {
         xpr_sint_t sNumber   = GetDlgItemInt(IDC_BATCH_CREATE_FORMAT_NUMBER_START);
@@ -299,14 +299,14 @@ xpr_bool_t BatchCreateTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
         {
             if (sIncrease == 1)
             {
-                xpr::tstring sStringFormat;
+                xpr::string sStringFormat;
                 sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd>"), sDigit);
 
                 sAppendedFormat.append_format(sStringFormat.c_str(), sNumber);
             }
             else
             {
-                xpr::tstring sStringFormat;
+                xpr::string sStringFormat;
                 sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd+%%d>"), sDigit);
 
                 sAppendedFormat.append_format(sStringFormat.c_str(), sNumber, sIncrease);

@@ -111,7 +111,7 @@ void ShortcutDlg::OnOK(void)
         return;
     }
 
-    xpr::tstring sLinkPath(mPath);
+    xpr::string sLinkPath(mPath);
     RemoveLastSplit(sLinkPath);
     sLinkPath += XPR_STRING_LITERAL("\\");
     sLinkPath += sName;
@@ -138,7 +138,7 @@ void ShortcutDlg::OnTargetBrowse(void)
     if (XPR_IS_NULL(sFullPidl))
         return;
 
-    xpr::tstring sName, sPath;
+    xpr::string sName, sPath;
     GetName(sFullPidl, SHGDN_INFOLDER,   sName);
     GetName(sFullPidl, SHGDN_FORPARSING, sPath);
 

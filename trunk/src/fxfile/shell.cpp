@@ -26,10 +26,13 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kSpecialFolderLibariesGuidString[] = XPR_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
+namespace
+{
+const xpr_tchar_t kSpecialFolderLibariesGuidString[] = XPR_STRING_LITERAL("::{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
 
 typedef WINSHELLAPI HRESULT (WINAPI *SHCreateItemFromIDListFunc)(LPCITEMIDLIST, REFIID, void **);
 typedef WINSHELLAPI HRESULT (WINAPI *SHGetIDListFromObjectFunc)(IUnknown *, LPITEMIDLIST *);
+} // namespace anonymous
 
 LPITEMIDLIST Path2Pidl(const xpr_tchar_t *aPath)
 {
@@ -46,7 +49,7 @@ LPITEMIDLIST Path2Pidl(const xpr_tchar_t *aPath)
     // 7. Desktop\Documents (Old Full Path)
     // 8. Desktop\Computer\C:\Program Files
 
-    xpr::tstring sPath(aPath);
+    xpr::string sPath(aPath);
 
     // '/' -> '\\'
     {
@@ -54,7 +57,7 @@ LPITEMIDLIST Path2Pidl(const xpr_tchar_t *aPath)
         while (true)
         {
             sFind = sPath.find(XPR_STRING_LITERAL('/'), sFind);
-            if (sFind == xpr::tstring::npos)
+            if (sFind == xpr::string::npos)
                 break;
 
             sPath[sFind] = XPR_STRING_LITERAL('\\');
@@ -97,12 +100,12 @@ xpr_bool_t Path2Pidl(const xpr_tchar_t *aPath, LPITEMIDLIST *aFullPidl)
     return XPR_IS_NOT_NULL(*aFullPidl) ? XPR_TRUE : XPR_FALSE;
 }
 
-xpr_bool_t Path2Pidl(const xpr::tstring &aPath, LPITEMIDLIST *aFullPidl)
+xpr_bool_t Path2Pidl(const xpr::string &aPath, LPITEMIDLIST *aFullPidl)
 {
     return Path2Pidl(aPath.c_str(), aFullPidl);
 }
 
-LPITEMIDLIST Path2Pidl(const xpr::tstring &aPath)
+LPITEMIDLIST Path2Pidl(const xpr::string &aPath)
 {
     return Path2Pidl(aPath.c_str());
 }
@@ -112,7 +115,7 @@ xpr_bool_t Pidl2Path(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_bool_t aOn
     if (XPR_IS_NULL(aPath))
         return XPR_FALSE;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     if (Pidl2Path(aFullPidl, sPath, aOnlyFileSystemPath) == XPR_FALSE)
         return XPR_FALSE;
 
@@ -121,7 +124,7 @@ xpr_bool_t Pidl2Path(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_bool_t aOn
     return XPR_TRUE;
 }
 
-xpr_bool_t Pidl2Path(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath, xpr_bool_t aOnlyFileSystemPath)
+xpr_bool_t Pidl2Path(LPCITEMIDLIST aFullPidl, xpr::string &aPath, xpr_bool_t aOnlyFileSystemPath)
 {
     if (XPR_IS_TRUE(aOnlyFileSystemPath))
     {
@@ -129,7 +132,7 @@ xpr_bool_t Pidl2Path(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath, xpr_bool_t aO
         return XPR_TRUE;
     }
 
-    xpr::tstring sFullPath;
+    xpr::string sFullPath;
     GetFullPath(aFullPidl, sFullPath);
 
     if (IsParentVirtualItem(aFullPidl, sFullPath) == XPR_TRUE)
@@ -166,7 +169,7 @@ xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath, xpr_ulong_
     return sResult;
 }
 
-xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath, xpr_ulong_t aShellAttributes)
+xpr_bool_t GetFolderPath(LPCITEMIDLIST aFullPidl, xpr::string &aPath, xpr_ulong_t aShellAttributes)
 {
     aPath.clear();
 
@@ -219,7 +222,7 @@ xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr_tc
     return sResult;
 }
 
-xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::tstring &aPath, xpr_ulong_t aShellAttributes)
+xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::string &aPath, xpr_ulong_t aShellAttributes)
 {
     aPath.clear();
 
@@ -235,7 +238,7 @@ xpr_bool_t GetFolderPath(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, xpr::t
 //
 // full path
 //
-void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath)
+void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::string &aFullPath)
 {
     aFullPath.clear();
 
@@ -245,7 +248,7 @@ void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath)
         return;
     }
 
-    xpr::tstring sName;
+    xpr::string sName;
 
     LPITEMIDLIST sFullPidl2 = fxfile::base::Pidl::clone(aFullPidl);
     while (XPR_IS_NOT_NULL(sFullPidl2))
@@ -273,7 +276,7 @@ void GetFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aFullPath)
 
 void GetFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aFullPath)
 {
-    xpr::tstring sFullPath;
+    xpr::string sFullPath;
     GetFullPath(aFullPidl, sFullPath);
 
     _tcscpy(aFullPath, sFullPath.c_str());
@@ -309,7 +312,7 @@ LPITEMIDLIST GetFullPidl(const xpr_tchar_t *aFullPath)
     return sFullPidl;
 }
 
-LPITEMIDLIST GetFullPidl(const xpr::tstring &aFullPath)
+LPITEMIDLIST GetFullPidl(const xpr::string &aFullPath)
 {
     return GetFullPidl(aFullPath.c_str());
 }
@@ -324,7 +327,7 @@ xpr_bool_t GetFullPidl(const xpr_tchar_t *aFullPath, LPITEMIDLIST *aFullPidl)
     return XPR_IS_NOT_NULL(*aFullPidl) ? XPR_TRUE : XPR_FALSE;
 }
 
-xpr_bool_t GetFullPidl(const xpr::tstring &aFullPath, LPITEMIDLIST *aFullPidl)
+xpr_bool_t GetFullPidl(const xpr::string &aFullPath, LPITEMIDLIST *aFullPidl)
 {
     return GetFullPidl(aFullPath.c_str(), aFullPidl);
 }
@@ -340,10 +343,10 @@ void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath)
         return;
     }
 
-    xpr::tstring sName;
+    xpr::string sName;
     LPITEMIDLIST sFullPidl2 = fxfile::base::Pidl::clone(aFullPidl);
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     while (XPR_IS_NOT_NULL(sFullPidl2))
     {
         // new
@@ -364,7 +367,7 @@ void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr_tchar_t *aPath)
     COM_FREE(sFullPidl2);
 }
 
-void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath)
+void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::string &aPath)
 {
     if (XPR_IS_NULL(aFullPidl))
     {
@@ -372,7 +375,7 @@ void GetDispFullPath(LPCITEMIDLIST aFullPidl, xpr::tstring &aPath)
         return;
     }
 
-    xpr::tstring sName;
+    xpr::string sName;
     LPITEMIDLIST sFullPidl2 = fxfile::base::Pidl::clone(aFullPidl);
 
     aPath = XPR_STRING_LITERAL("");
@@ -547,7 +550,7 @@ LPITEMIDLIST GetDispFullPidl(const xpr_tchar_t *aFullPath)
 //
 // name
 //
-xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::tstring &aFriendlyName)
+xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr::string &aFriendlyName)
 {
     xpr_bool_t    sResult      = XPR_FALSE;
     LPSHELLFOLDER sShellFolder = XPR_NULL;
@@ -581,7 +584,7 @@ xpr_bool_t GetName(LPCITEMIDLIST aFullPidl, DWORD aFlags, xpr_tchar_t *aFriendly
     return sResult;
 }
 
-xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::tstring &aFriendlyName)
+xpr_bool_t GetName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD aFlags, xpr::string &aFriendlyName)
 {
     xpr_tchar_t sFriendlyName[XPR_MAX_PATH + 1] = {0};
     if (GetName(aShellFolder, aPidl, aFlags, sFriendlyName) == XPR_TRUE)
@@ -646,7 +649,7 @@ void PathToNormal(const xpr_tchar_t *aPath, xpr_tchar_t *aNormal)
 //
 // file size
 //
-xpr_uint64_t GetFileSize(const xpr::tstring &aPath)
+xpr_uint64_t GetFileSize(const xpr::string &aPath)
 {
     return GetFileSize(aPath.c_str());
 }
@@ -1388,7 +1391,7 @@ xpr_bool_t IsFileSystemFolder(const xpr_tchar_t *aPath)
     return XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
 }
 
-xpr_bool_t IsFileSystemFolder(const xpr::tstring &aPath)
+xpr_bool_t IsFileSystemFolder(const xpr::string &aPath)
 {
     DWORD sFileAttributes = GetFileAttributes(aPath.c_str());
     return XPR_TEST_BITS(sFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
@@ -1428,13 +1431,13 @@ xpr_bool_t IsNetItem(const xpr_tchar_t *aPath)
 
 xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl)
 {
-    xpr::tstring sFullPath;
+    xpr::string sFullPath;
     GetFullPath(aFullPidl, sFullPath);
 
     return IsParentVirtualItem(aFullPidl, sFullPath);
 }
 
-xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFullPath)
+xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::string &aFullPath)
 {
     if (aFullPath.empty() == XPR_TRUE)
         return XPR_TRUE;
@@ -1442,7 +1445,7 @@ xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFul
     if (IsFileSystem(aFullPidl))
     {
         xpr_size_t sFind = aFullPath.find(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
         {
             xpr_tchar_t sDriveChar = aFullPath[sFind+1];
             xpr_bool_t sLocalFileSystem = (XPR_IS_RANGE(XPR_STRING_LITERAL('a'), sDriveChar, 'z') || XPR_IS_RANGE(XPR_STRING_LITERAL('A'), sDriveChar, 'Z')) && aFullPath[sFind+2] == XPR_STRING_LITERAL(':');
@@ -1454,7 +1457,7 @@ xpr_bool_t IsParentVirtualItem(LPCITEMIDLIST aFullPidl, const xpr::tstring &aFul
     }
     else
     {
-        xpr::tstring sPath;
+        xpr::string sPath;
         GetName(aFullPidl, SHGDN_FORPARSING, sPath);
 
         if (sPath.empty() == XPR_FALSE && sPath[0] == XPR_STRING_LITERAL('\\') && sPath[1] == XPR_STRING_LITERAL('\\'))
@@ -1572,7 +1575,7 @@ xpr_bool_t IsExistFile(const xpr_tchar_t *aPath)
     return sResult;
 }
 
-xpr_bool_t IsExistFile(const xpr::tstring &aPath)
+xpr_bool_t IsExistFile(const xpr::string &aPath)
 {
     return IsExistFile(aPath.c_str());
 }
@@ -2038,7 +2041,7 @@ xpr_bool_t IsEqualFileExt(const xpr_tchar_t *aPath, const xpr_tchar_t *aExt)
     return sEqual;
 }
 
-const xpr_tchar_t *GetFileExt(const xpr::tstring &aPath)
+const xpr_tchar_t *GetFileExt(const xpr::string &aPath)
 {
     const xpr_tchar_t *sExt = ::PathFindExtension(aPath.c_str());
     if (XPR_IS_NULL(sExt))
@@ -2166,7 +2169,7 @@ xpr_bool_t ExecFile(LPCITEMIDLIST      aFullPidl,
     default: aShowCmd = SW_SHOWDEFAULT; break;
     }
 
-    xpr::tstring sStartup;
+    xpr::string sStartup;
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
@@ -2175,7 +2178,7 @@ xpr_bool_t ExecFile(LPCITEMIDLIST      aFullPidl,
         GetName(aFullPidl, SHGDN_FORPARSING, sStartup);
 
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sStartup = sStartup.substr(0, sFind);
 
         if (sStartup.length() == 2)
@@ -2224,7 +2227,7 @@ xpr_bool_t ExecFile(const xpr_tchar_t *aPath,
     default: aShowCmd = SW_SHOWDEFAULT; break;
     }
 
-    xpr::tstring sStartup;
+    xpr::string sStartup;
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
@@ -2232,7 +2235,7 @@ xpr_bool_t ExecFile(const xpr_tchar_t *aPath,
     {
         sStartup = aPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sStartup = sStartup.substr(0, sFind);
 
         if (sStartup.length() == 2)
@@ -2277,7 +2280,7 @@ xpr_bool_t OpenAsFile(const xpr_tchar_t *aPath,
     default: aShowCmd = SW_SHOWDEFAULT; break;
     }
 
-    xpr::tstring sStartup;
+    xpr::string sStartup;
     if (XPR_IS_NOT_NULL(aStartup))
         sStartup = aStartup;
 
@@ -2285,7 +2288,7 @@ xpr_bool_t OpenAsFile(const xpr_tchar_t *aPath,
     {
         sStartup = aPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sStartup = sStartup.substr(0, sFind);
 
         if (sStartup.length() == 2)
@@ -2332,10 +2335,10 @@ void NavigateURL(xpr_tchar_t *aUrl)
     if (XPR_IS_NULL(aUrl))
         return;
 
-    xpr::tstring sUrl(aUrl);
+    xpr::string sUrl(aUrl);
 
     xpr_size_t sFind = sUrl.find(XPR_STRING_LITERAL("://"));
-    if (sFind == xpr::tstring::npos)
+    if (sFind == xpr::string::npos)
         sUrl.insert(0, XPR_STRING_LITERAL("http://"));
 
     ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sUrl.c_str(), XPR_NULL, XPR_NULL, 0);

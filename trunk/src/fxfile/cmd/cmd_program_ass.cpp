@@ -24,7 +24,9 @@ namespace fxfile
 {
 namespace cmd
 {
-static void executeProgramAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
+namespace
+{
+void executeProgramAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
 {
     xpr_sint_t sSelCount = aExplorerCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -42,7 +44,7 @@ static void executeProgramAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
         XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
     ProgramAssItem *sProgramAssItem;
@@ -50,8 +52,8 @@ static void executeProgramAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
     if (XPR_IS_NULL(sProgramAssItem))
         return;
 
-    xpr::tstring sFile;
-    xpr::tstring sParameters;
+    xpr::string sFile;
+    xpr::string sParameters;
 
     GetEnvRealPath(sProgramAssItem->mPath, sFile);
     sParameters = sPath;
@@ -59,7 +61,7 @@ static void executeProgramAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
     ::ShellExecute(aExplorerCtrl.m_hWnd, XPR_STRING_LITERAL("open"), sFile.c_str(), sParameters.c_str(), XPR_NULL, SW_SHOW);
 }
 
-static void executeProgramAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aType)
+void executeProgramAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aType)
 {
     xpr_sint_t sSelCount = aSearchResultCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -76,7 +78,7 @@ static void executeProgramAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aT
     if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     sSrItemData->getPath(sPath);
 
     ProgramAssItem *sProgramAssItem;
@@ -84,8 +86,8 @@ static void executeProgramAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aT
     if (XPR_IS_NULL(sProgramAssItem))
         return;
 
-    xpr::tstring sFile;
-    xpr::tstring sParameters;
+    xpr::string sFile;
+    xpr::string sParameters;
 
     GetEnvRealPath(sProgramAssItem->mPath, sFile);
     sParameters = sPath;
@@ -93,7 +95,7 @@ static void executeProgramAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aT
     ::ShellExecute(aSearchResultCtrl.m_hWnd, XPR_STRING_LITERAL("open"), sFile.c_str(), sParameters.c_str(), XPR_NULL, SW_SHOW);
 }
 
-static void executeFileMultiAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
+void executeFileMultiAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
 {
     xpr_sint_t sSelCount = aExplorerCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -111,7 +113,7 @@ static void executeFileMultiAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
          XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
     ProgramAssDeque sProgramAssDeque;
@@ -138,8 +140,8 @@ static void executeFileMultiAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
 
     if (XPR_IS_NOT_NULL(sProgramAssItem))
     {
-        xpr::tstring sFile;
-        xpr::tstring sParameters;
+        xpr::string sFile;
+        xpr::string sParameters;
 
         GetEnvRealPath(sProgramAssItem->mPath, sFile);
         sParameters = sPath;
@@ -150,7 +152,7 @@ static void executeFileMultiAss(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aType)
     sProgramAssDeque.clear();
 }
 
-static void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aType)
+void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t aType)
 {
     xpr_sint_t sSelCount = aSearchResultCtrl.GetSelectedCount();
     if (sSelCount <= 0)
@@ -167,7 +169,7 @@ static void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t 
     if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
         return;
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     sSrItemData->getPath(sPath);
 
     ProgramAssDeque sProgramAssDeque;
@@ -194,8 +196,8 @@ static void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t 
 
     if (XPR_IS_NOT_NULL(sProgramAssItem))
     {
-        xpr::tstring sFile;
-        xpr::tstring sParameters;
+        xpr::string sFile;
+        xpr::string sParameters;
 
         GetEnvRealPath(sProgramAssItem->mPath, sFile);
         sParameters = sPath;
@@ -205,6 +207,7 @@ static void executeFileMultiAss(SearchResultCtrl &aSearchResultCtrl, xpr_sint_t 
 
     sProgramAssDeque.clear();
 }
+} // namespace anonymous
 
 xpr_sint_t FileViewCommand::canExecute(CommandContext &aContext)
 {
@@ -373,12 +376,12 @@ void FileShellAssCommand::execute(CommandContext &aContext)
         if (XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
             return;
 
-        xpr::tstring sPath;
+        xpr::string sPath;
         sSrItemData->getPath(sPath);
 
-        xpr::tstring sStartup = sPath;
+        xpr::string sStartup = sPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sStartup = sStartup.substr(0, sFind);
 
         OpenAsFile(sPath.c_str(), sStartup.c_str());
@@ -401,12 +404,12 @@ void FileShellAssCommand::execute(CommandContext &aContext)
              XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
             return;
 
-        xpr::tstring sPath;
+        xpr::string sPath;
         GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
-        xpr::tstring sStartup = sPath;
+        xpr::string sStartup = sPath;
         xpr_size_t sFind = sStartup.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             sStartup = sStartup.substr(0, sFind);
 
         OpenAsFile(sPath.c_str(), sStartup.c_str());

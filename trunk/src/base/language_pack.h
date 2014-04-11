@@ -31,12 +31,12 @@ public:
 
     struct Desc
     {
-        xpr_tchar_t mLanguage[kMaxLanguageLength];
-        xpr_tchar_t mFilePath[XPR_MAX_PATH + 1];
-        xpr_tchar_t mAuthor[kMaxAuthorLength];
-        xpr_tchar_t mHomepage[kMaxHomepageLength];
-        xpr_tchar_t mEmail[kMaxEmailLength];
-        xpr_tchar_t mDescription[kMaxDescriptionLength];
+        xpr::string mLanguage;
+        xpr::string mFilePath;
+        xpr::string mAuthor;
+        xpr::string mHomepage;
+        xpr::string mEmail;
+        xpr::string mDescription;
     };
 
 public:

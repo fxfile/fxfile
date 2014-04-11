@@ -29,7 +29,7 @@ protected:
     virtual void onApply(Option::Config &aConfig);
 
 protected:
-    xpr_bool_t loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, xpr::tstring &aPath, xpr_bool_t &aSatistifed);
+    xpr_bool_t loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, xpr::string &aPath, xpr_bool_t &aSatistifed);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support

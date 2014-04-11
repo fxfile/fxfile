@@ -29,9 +29,9 @@ public:
     xpr_bool_t checkServer(const xpr_tchar_t *aServer);
     xpr_bool_t getNetDesc(const xpr_tchar_t *aServer, xpr_tchar_t *aDesc);
 
-    xpr_bool_t isConnectedServer(const xpr::tstring &aNetPath);
+    xpr_bool_t isConnectedServer(const xpr::string &aNetPath);
 
-    void getNetFullPath(xpr::tstring &aFullPath);
+    void getNetFullPath(xpr::string &aFullPath);
 
 protected:
     xpr_bool_t mSockInit;

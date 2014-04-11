@@ -14,7 +14,12 @@ namespace fxfile
 {
 namespace base
 {
-static const xpr_tchar_t kTopElementName[] = XPR_STRING_LITERAL("fxfile");
+namespace
+{
+const xpr_char_t kEncoding[] = XPR_MBCS_STRING_LITERAL("utf-8");
+
+const xpr_tchar_t kTopElementName[] = XPR_STRING_LITERAL("fxfile");
+} // namespace anonymous
 
 XmlReader::XmlReader(void)
 {
@@ -30,20 +35,19 @@ xpr::XmlReader::Element *XmlReader::getRootElement(void)
     if (sTopElement == XPR_NULL)
         return XPR_NULL;
 
-    xpr_tchar_t sName[0xff] = {0};
+    xpr::string sName;
 
-    if (getElement(sTopElement, sName, 0xfe) == XPR_FALSE)
+    if (getElement(sTopElement, sName) == XPR_FALSE)
         return XPR_NULL;
 
-    if (_tcscmp(sName, kTopElementName) != 0)
+    if (sName.compare(kTopElementName) != 0)
         return XPR_NULL;
 
     return super::childElement(sTopElement);
 }
 
 XmlWriter::XmlWriter(void)
-    : mEncoding("utf-8")
-    , mDocument(XPR_FALSE)
+    : mDocument(XPR_FALSE)
     , mTopElement(XPR_FALSE)
 {
 }
@@ -54,7 +58,7 @@ XmlWriter::~XmlWriter(void)
 
 xpr_bool_t XmlWriter::beginDocument(void)
 {
-    mDocument = super::beginDocument(mEncoding.c_str());
+    mDocument = super::beginDocument(kEncoding);
     if (mDocument == XPR_TRUE)
     {
         mTopElement = beginElement(kTopElementName);

@@ -121,7 +121,7 @@ void CreateItemDlg::OnOK(void)
         return;
     }
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     sPath = mDir;
 
     if (sPath.empty() == XPR_FALSE)

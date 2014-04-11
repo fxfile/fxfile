@@ -27,9 +27,9 @@ protected:
     void drawDrivePie(CDC &aDC);
 
 protected:
-    xpr::tstring mTotalSizeText;
-    xpr::tstring mUsedSizeText;
-    xpr::tstring mFreeSizeText;
+    xpr::string  mTotalSizeText;
+    xpr::string  mUsedSizeText;
+    xpr::string  mFreeSizeText;
 
     xpr_tchar_t  mDrive[XPR_MAX_PATH + 1];
     xpr_uint64_t mUsedSize;

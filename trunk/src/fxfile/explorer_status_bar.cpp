@@ -22,7 +22,9 @@
 
 namespace fxfile
 {
-static const xpr_sint_t kPaneWidth[] = { 150, 90, 70, 90 };
+namespace
+{
+const xpr_sint_t kPaneWidth[] = { 150, 90, 70, 90 };
 
 //
 // control id
@@ -31,6 +33,7 @@ enum
 {
     CTRL_ID_DRIVE_PROGRESS_CTRL = 50,
 };
+} // namespace anonymous
 
 ExplorerStatusBar::ExplorerStatusBar(void)
     : mDriveIcon(XPR_NULL)

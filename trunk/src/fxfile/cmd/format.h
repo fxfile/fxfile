@@ -20,13 +20,13 @@ namespace cmd
 struct RenameContext
 {
 public:
-    RenameContext(xpr_bool_t          aFolder,
-                  const xpr::tstring &aOrgFilePath,
-                  const xpr::tstring &aOrgFileName,
-                  const xpr::tstring &aOldFileName,
-                  xpr_sint_t          aIndex,
-                  xpr_size_t          aMaxLen,
-                  const SYSTEMTIME   &aNowTime)
+    RenameContext(xpr_bool_t         aFolder,
+                  const xpr::string &aOrgFilePath,
+                  const xpr::string &aOrgFileName,
+                  const xpr::string &aOldFileName,
+                  xpr_sint_t         aIndex,
+                  xpr_size_t         aMaxLen,
+                  const SYSTEMTIME  &aNowTime)
         : mFolder(aFolder)
         , mOrgFilePath(aOrgFilePath)
         , mOrgFileName(aOrgFileName)
@@ -60,10 +60,10 @@ public:
         return mMTime;
     }
 
-    static void getBaseFileNameAndExt(xpr_bool_t          aFolder,
-                                      const xpr::tstring &aFilePath,
-                                      xpr::tstring       &aBaseFileName,
-                                      xpr::tstring       &aFileExt)
+    static void getBaseFileNameAndExt(xpr_bool_t         aFolder,
+                                      const xpr::string &aFilePath,
+                                      xpr::string       &aBaseFileName,
+                                      xpr::string       &aFileExt)
     {
         if (XPR_IS_TRUE(aFolder))
         {
@@ -73,7 +73,7 @@ public:
         else
         {
             xpr_size_t sOffset = aFilePath.rfind(XPR_FILE_EXT_SEPARATOR);
-            if (sOffset != xpr::tstring::npos)
+            if (sOffset != xpr::string::npos)
             {
                 aBaseFileName = aFilePath.substr(0, sOffset);
                 aFileExt      = aFilePath.substr(sOffset);
@@ -108,13 +108,13 @@ private:
     }
 
 public:
-    const xpr_bool_t    mFolder;
-    const xpr::tstring &mOrgFilePath;   // original file path
-    const xpr::tstring &mOrgFileName;   // original file name with extension
-    xpr::tstring        mOldFileName;   // old file name with extension
-    const xpr_uint_t    mIndex;
-    xpr::tstring        mNewFileName;
-    const xpr_size_t    mMaxLen;
+    const xpr_bool_t   mFolder;
+    const xpr::string &mOrgFilePath;   // original file path
+    const xpr::string &mOrgFileName;   // original file name with extension
+    xpr::string        mOldFileName;   // old file name with extension
+    const xpr_uint_t   mIndex;
+    xpr::string        mNewFileName;
+    const xpr_size_t   mMaxLen;
 
     const SYSTEMTIME   &mNowTime;
     mutable SYSTEMTIME  mCTime;
@@ -216,8 +216,8 @@ public:
     FileNameFormat *newClone(void) const;
 
 public:
-    xpr_bool_t load(const xpr::tstring &aFilePath);
-    xpr_bool_t save(const xpr::tstring &aFilePath) const;
+    xpr_bool_t load(const xpr::string &aFilePath);
+    xpr_bool_t save(const xpr::string &aFilePath) const;
 
 public:
     static void setString(const xpr_tchar_t *aExcessMaxLengthString,

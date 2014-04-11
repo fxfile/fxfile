@@ -11,6 +11,7 @@
 #include "xpr_types.h"
 #include "xpr_dlsym.h"
 #include "xpr_time.h"
+#include "xpr_string.h"
 
 namespace xpr
 {
@@ -51,7 +52,7 @@ public:
     };
 
 public:
-    Thread(xpr_char_t *aThreadName = XPR_NULL);
+    Thread(const xpr_tchar_t *aThreadName = XPR_NULL);
     virtual ~Thread(void);
 
 public:
@@ -61,7 +62,8 @@ public:
     virtual ThreadId     getThreadId(void) const;
     virtual ThreadState  getThreadState(void) const;
     virtual NativeHandle getThreadHandle(void) const;
-    virtual xpr_bool_t   getThreadName(xpr_char_t *aThreadName) const;
+    virtual void         getThreadName(xpr::string &aThreadName) const;
+    virtual const xpr::string &getThreadName(void) const;
     virtual xpr_sint_t   getExitCode(void) const;
     virtual xpr_bool_t   isEqual(const Thread &aThread) const;
     virtual void         swap(Thread &aThread);
@@ -84,7 +86,7 @@ protected:
 
 protected:
     NativeHandle mHandle;
-    xpr_char_t  *mThreadName;
+    xpr::string  mThreadName;
     ThreadId     mThreadId;
     ThreadState  mThreadState;
     xpr_uint_t   mExitCode;

@@ -15,11 +15,6 @@
 
 namespace xpr
 {
-namespace detail
-{
-class CrossString;
-} // namespace detail
-
 class TextFileWriter;
 
 class XPR_DL_API TraceLogger
@@ -57,10 +52,8 @@ public:
     xpr_sint_t getLevel(void) const;
     xpr_uint_t getFlags(void) const;
     xpr_bool_t hasFlag(xpr_uint_t aFlag) const;
-    xpr_bool_t getFileDir(xpr_char_t *aFileDir, xpr_size_t aMaxLen) const;
-    xpr_bool_t getFileDir(xpr_wchar_t *aFileDir, xpr_size_t aMaxLen) const;
-    xpr_bool_t getFileName(xpr_char_t *aFileName, xpr_size_t aMaxLen) const;
-    xpr_bool_t getFileName(xpr_wchar_t *aFileName, xpr_size_t aMaxLen) const;
+    void       getFileDir(xpr::string &aFileDir) const;
+    void       getFileName(xpr::string &aFileName) const;
     xpr_size_t getFileSize(void) const;
     xpr_size_t getFileCount(void) const;
     CharSet    getEncoding(void) const;
@@ -69,10 +62,8 @@ public:
 
     xpr_bool_t setLevel(xpr_sint_t aLevel);
     xpr_bool_t setFlags(xpr_uint_t aFlags);
-    xpr_bool_t setFileDir(const xpr_char_t *aFileDir);
-    xpr_bool_t setFileDir(const xpr_wchar_t *aFileDir);
-    xpr_bool_t setFileName(const xpr_char_t *aFileName);
-    xpr_bool_t setFileName(const xpr_wchar_t *aFileName);
+    xpr_bool_t setFileDir(const xpr::string &aFileDir);
+    xpr_bool_t setFileName(const xpr::string &aFileName);
     xpr_bool_t setFileSize(xpr_sint_t aFileSize);
     xpr_bool_t setFileCount(xpr_sint_t aFileCount);
     xpr_bool_t setEncoding(CharSet aCharSet, xpr_bool_t aWriteBom);
@@ -84,21 +75,21 @@ public:
     virtual xpr_bool_t isStarted(void) const;
 
 public:
-    xpr_rcode_t logFatal(const xpr_char_t *aFormat, ...);
-    xpr_rcode_t logFatal(const xpr_wchar_t *aFormat, ...);
-    xpr_rcode_t logError(const xpr_char_t *aFormat, ...);
-    xpr_rcode_t logError(const xpr_wchar_t *aFormat, ...);
-    xpr_rcode_t logWarning(const xpr_char_t *aFormat, ...);
+    xpr_rcode_t logFatal  (const xpr_char_t  *aFormat, ...);
+    xpr_rcode_t logFatal  (const xpr_wchar_t *aFormat, ...);
+    xpr_rcode_t logError  (const xpr_char_t  *aFormat, ...);
+    xpr_rcode_t logError  (const xpr_wchar_t *aFormat, ...);
+    xpr_rcode_t logWarning(const xpr_char_t  *aFormat, ...);
     xpr_rcode_t logWarning(const xpr_wchar_t *aFormat, ...);
-    xpr_rcode_t logInfo(const xpr_char_t *aFormat, ...);
-    xpr_rcode_t logInfo(const xpr_wchar_t *aFormat, ...);
-    xpr_rcode_t logDebug(const xpr_char_t *aFormat, ...);
-    xpr_rcode_t logDebug(const xpr_wchar_t *aFormat, ...);
-    xpr_rcode_t logTrace(const xpr_char_t *aFormat, ...);
-    xpr_rcode_t logTrace(const xpr_wchar_t *aFormat, ...);
+    xpr_rcode_t logInfo   (const xpr_char_t  *aFormat, ...);
+    xpr_rcode_t logInfo   (const xpr_wchar_t *aFormat, ...);
+    xpr_rcode_t logDebug  (const xpr_char_t  *aFormat, ...);
+    xpr_rcode_t logDebug  (const xpr_wchar_t *aFormat, ...);
+    xpr_rcode_t logTrace  (const xpr_char_t  *aFormat, ...);
+    xpr_rcode_t logTrace  (const xpr_wchar_t *aFormat, ...);
 
 protected:
-    virtual xpr_rcode_t log(xpr_sint_t aLevel, const xpr_char_t *aFormat, va_list aArgs);
+    virtual xpr_rcode_t log(xpr_sint_t aLevel, const xpr_char_t  *aFormat, va_list aArgs);
     virtual xpr_rcode_t log(xpr_sint_t aLevel, const xpr_wchar_t *aFormat, va_list aArgs);
 
 private:
@@ -111,20 +102,20 @@ private:
     void closeLogFile(void);
 
 protected:
-    xpr_sint_t           mLevel;
-    xpr_uint_t           mFlags;
-    detail::CrossString *mFileDir;
-    detail::CrossString *mFileName;
-    detail::CrossString *mFilePath;
-    xpr_sint_t           mFileSize;
-    xpr_sint_t           mFileCount;
-    xpr_sint_t           mFileIndex;
-    FileIo               mFileIo;
-    TextFileWriter      *mTextFileWriter;
-    CharSet              mCharSet;
-    xpr_bool_t           mWriteBom;
-    xpr_bool_t           mStarted;
-    Mutex                mMutex;
+    xpr_sint_t      mLevel;
+    xpr_uint_t      mFlags;
+    xpr::string     mFileDir;
+    xpr::string     mFileName;
+    xpr::string     mFilePath;
+    xpr_sint_t      mFileSize;
+    xpr_sint_t      mFileCount;
+    xpr_sint_t      mFileIndex;
+    FileIo          mFileIo;
+    TextFileWriter *mTextFileWriter;
+    CharSet         mCharSet;
+    xpr_bool_t      mWriteBom;
+    xpr_bool_t      mStarted;
+    Mutex           mMutex;
 };
 } // namespace xpr
 

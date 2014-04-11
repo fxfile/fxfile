@@ -250,7 +250,7 @@ protected:
     // Compare Directories
     SyncDirs *mCompareDirs;
 
-    typedef std::map<xpr_tchar_t, xpr::tstring> DrivePathMap;
+    typedef std::map<xpr_tchar_t, xpr::string> DrivePathMap;
     DrivePathMap mDrivePathMap[MAX_VIEW_SPLIT];
 
     LPITEMIDLIST mSplitFullPidl[2];

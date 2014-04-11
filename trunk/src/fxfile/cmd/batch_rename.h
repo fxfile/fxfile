@@ -54,10 +54,10 @@ class BatchRename
 public:
     typedef struct Item
     {
-        xpr::tstring mDir;
-        xpr::tstring mOld;
-        xpr::tstring mNew;
-        xpr_bool_t   mFolder;
+        xpr::string mDir;
+        xpr::string mOld;
+        xpr::string mNew;
+        xpr_bool_t  mFolder;
     } Item;
 
     typedef std::deque<Item *> ItemDeque;
@@ -133,8 +133,8 @@ public:
     void clearForward(void);
 
 public:
-    xpr_bool_t load(const xpr::tstring &aFilePath);
-    xpr_bool_t save(const xpr::tstring &aFilePath) const;
+    xpr_bool_t load(const xpr::string &aFilePath);
+    xpr_bool_t save(const xpr::string &aFilePath) const;
 
 public:
     xpr_bool_t start(void);
@@ -175,7 +175,7 @@ private:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
     xpr_uint_t   mFlags;
-    xpr::tstring mBackup;
+    xpr::string  mBackup;
 
     ItemDeque    mItemDeque;
     MultiRename *mMultiRename;

@@ -38,7 +38,7 @@ protected:
     typedef struct CfgItem
     {
         HTREEITEM     mTreeItem;
-        xpr::tstring  mText;
+        xpr::string   mText;
         xpr_sint_t    mImage;
         xpr_sint_t    mParent;
 

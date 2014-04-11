@@ -37,10 +37,10 @@ protected:
     void enableWindow(xpr_bool_t aEnable = XPR_TRUE);
 
 protected:
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque mPathDeque;
 
-    xpr::tstring mTextFile;
+    xpr::string mTextFile;
 
     FileList *mFileList;
 

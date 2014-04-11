@@ -18,24 +18,27 @@
 #define new DEBUG_NEW
 #endif
 
-static const xpr_sint_t kDefaultTabSize     = 150;
-static const CRect      kTabOffset          = CRect(3, 2, 3, 0);
-static const CRect      kTextOffset         = CRect(5, 2, 5, 2);
-static const xpr_sint_t kIconOffset         = 5;
-static const xpr_sint_t kDragDist           = 8;
-static const xpr_sint_t kBarLineHeight      = 1;
-static const xpr_sint_t kInactivedTabOffset = 2;
-static const xpr_uint_t kNewTabToolTipId    = 0xfffffffe;
+namespace
+{
+const xpr_sint_t kDefaultTabSize     = 150;
+const CRect      kTabOffset          = CRect(3, 2, 3, 0);
+const CRect      kTextOffset         = CRect(5, 2, 5, 2);
+const xpr_sint_t kIconOffset         = 5;
+const xpr_sint_t kDragDist           = 8;
+const xpr_sint_t kBarLineHeight      = 1;
+const xpr_sint_t kInactivedTabOffset = 2;
+const xpr_uint_t kNewTabToolTipId    = 0xfffffffe;
 
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("TabCtrl");
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("TabCtrl");
+} // namespace anonymous
 
 struct TabCtrl::TabItem
 {
-    xpr::tstring  mText;
-    void         *mData;
-    CRect         mTabRect;
-    CRect         mCloseRect;
-    xpr_sint_t    mImageIndex;
+    xpr::string  mText;
+    void        *mData;
+    CRect        mTabRect;
+    CRect        mCloseRect;
+    xpr_sint_t   mImageIndex;
 };
 
 TabCtrl::TabCtrl(void)
@@ -273,7 +276,7 @@ xpr_bool_t TabCtrl::getTabText(xpr_size_t aTab, xpr_tchar_t *aText, xpr_size_t a
     return XPR_TRUE;
 }
 
-xpr_bool_t TabCtrl::getTabText(xpr_size_t aTab, xpr::tstring &aText) const
+xpr_bool_t TabCtrl::getTabText(xpr_size_t aTab, xpr::string &aText) const
 {
     TabItem *sTabItem = getTabItem(aTab);
     if (XPR_IS_NULL(sTabItem))

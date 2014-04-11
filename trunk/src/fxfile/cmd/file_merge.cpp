@@ -18,7 +18,10 @@ namespace fxfile
 {
 namespace cmd
 {
-static const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+namespace
+{
+const xpr_size_t kDefaultBufferSize = 16 * 1024; // 16KB
+} // namespace anonymous
 
 FileMerge::FileMerge(void)
     : mHwnd(XPR_NULL), mMsg(0)
@@ -57,9 +60,9 @@ void FileMerge::setBufferSize(DWORD aBufferSize)
 
 xpr_bool_t FileMerge::OnPreEntry(void)
 {
-    xpr::tstring sDestDir = mDestPath;
+    xpr::string sDestDir = mDestPath;
     xpr_size_t sFind = sDestDir.rfind(XPR_STRING_LITERAL('\\'));
-    if (sFind != xpr::tstring::npos)
+    if (sFind != xpr::string::npos)
         sDestDir = sDestDir.substr(0, sFind);
 
     if (IsExistFile(sDestDir) == XPR_FALSE)
@@ -83,7 +86,7 @@ unsigned FileMerge::OnEntryProc(void)
     xpr::FileIo sDestFileIo;
 
     sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-    sRcode = sDestFileIo.open(mDestPath.c_str(), sOpenMode);
+    sRcode = sDestFileIo.open(mDestPath, sOpenMode);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
         xpr::FileIo sFileIo;
@@ -92,7 +95,7 @@ unsigned FileMerge::OnEntryProc(void)
         xpr_char_t *sBuffer;
 
         PathDeque::iterator sIterator;
-        xpr::tstring sPath;
+        xpr::string sPath;
 
         sBuffer = new xpr_char_t[mBufferSize];
 
@@ -101,7 +104,7 @@ unsigned FileMerge::OnEntryProc(void)
         {
             sPath = *sIterator;
 
-            sRcode = sFileIo.open(sPath.c_str(), xpr::FileIo::OpenModeReadOnly);
+            sRcode = sFileIo.open(sPath, xpr::FileIo::OpenModeReadOnly);
             if (XPR_RCODE_IS_SUCCESS(sRcode))
             {
                 {

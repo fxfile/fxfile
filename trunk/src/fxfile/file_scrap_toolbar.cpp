@@ -21,14 +21,16 @@
 
 namespace fxfile
 {
-static const COLORREF IL_COLOR_MASK = RGB(255,0,255);
+namespace
+{
+const COLORREF IL_COLOR_MASK = RGB(255,0,255);
 
-static const xpr_byte_t TBSTYLE_1 = TBSTYLE_BUTTON;
-static const xpr_byte_t TBSTYLE_2 = TBSTYLE_SEP;
-static const xpr_byte_t TBSTYLE_3 = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
-static const xpr_byte_t TBSTYLE_4 = TBSTYLE_DROPDOWN | BTNS_WHOLEDROPDOWN;
+const xpr_byte_t TBSTYLE_1 = TBSTYLE_BUTTON;
+const xpr_byte_t TBSTYLE_2 = TBSTYLE_SEP;
+const xpr_byte_t TBSTYLE_3 = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
+const xpr_byte_t TBSTYLE_4 = TBSTYLE_DROPDOWN | BTNS_WHOLEDROPDOWN;
 
-static TBBUTTONEX kTbButtons[] = {
+TBBUTTONEX kTbButtons[] = {
     { {  30, ID_EDIT_FILE_SCRAP_GROUP_ADD,       TBSTATE_ENABLED, TBSTYLE_3, 0, 0, 0 }, 1 },
     { {   0, 0,                                  TBSTATE_ENABLED, TBSTYLE_2, 0, 0, 0 }, 1 },
     { {  35, ID_EDIT_FILE_SCRAP_COPY_TO,         TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
@@ -41,6 +43,7 @@ static TBBUTTONEX kTbButtons[] = {
     { {  49, ID_EDIT_FILE_SCRAP_REMOVE_LIST,     TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
     { {  49, ID_EDIT_FILE_SCRAP_REMOVE_ALL_LIST, TBSTATE_ENABLED, TBSTYLE_1, 0, 0, 0 }, 1 },
 };
+} // namespace anonymous
 
 FileScrapToolBar::FileScrapToolBar(void)
 {

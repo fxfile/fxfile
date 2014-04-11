@@ -50,14 +50,14 @@ public:
     static void insertComboEditString(CComboBox *aComboBox, xpr_bool_t aCase = XPR_TRUE);
 
 protected:
-    typedef std::tr1::unordered_map<xpr::tstring, xpr::tstring> ValueMap;
+    typedef std::tr1::unordered_map<xpr::string, xpr::string> ValueMap;
 
-    const xpr::tstring &getSection(void) const;
+    const xpr::string &getSection(void) const;
     const ValueMap &getValueMap(void) const;
     void setValueMap(const ValueMap &aValueMap);
 
 protected:
-    typedef std::tr1::unordered_map<xpr::tstring, xpr_uint_t> CtrlMap;
+    typedef std::tr1::unordered_map<xpr::string, xpr_uint_t> CtrlMap;
 
     CDialog   *mDlg;
     CtrlMap    mListCtrlMap;
@@ -68,8 +68,8 @@ protected:
     xpr_bool_t mPos;
 
 protected:
-    xpr::tstring mSection;
-    ValueMap     mValueMap;
+    xpr::string mSection;
+    ValueMap    mValueMap;
 };
 } // namespace fxfile
 

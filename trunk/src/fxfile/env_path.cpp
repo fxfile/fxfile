@@ -93,7 +93,7 @@ EnvPath::~EnvPath(void)
 
 void EnvPath::addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL)
 {
-    xpr::tstring sSpec;
+    xpr::string sSpec;
     sSpec  = XPR_STRING_LITERAL("%");
     sSpec += aSpec;
     sSpec += XPR_STRING_LITERAL("%");
@@ -101,7 +101,7 @@ void EnvPath::addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL)
     mSpecMap[sSpec] = aCSIDL;
 }
 
-LPITEMIDLIST EnvPath::getPidl(const xpr::tstring &aSpec, xpr_uint_t *aCSIDL)
+LPITEMIDLIST EnvPath::getPidl(const xpr::string &aSpec, xpr_uint_t *aCSIDL)
 {
     SpecMap::iterator sIterator = mSpecMap.find(aSpec);
     if (sIterator == mSpecMap.end())
@@ -202,7 +202,7 @@ LPITEMIDLIST EnvPath::getPidl(const xpr::tstring &aSpec, xpr_uint_t *aCSIDL)
     return sFullPidl;
 }
 
-xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, LPITEMIDLIST *aFullPidl, xpr_uint_t *aCSIDL)
+xpr_bool_t EnvPath::getPidl(const xpr::string &aSpec, LPITEMIDLIST *aFullPidl, xpr_uint_t *aCSIDL)
 {
     if (XPR_IS_NULL(aFullPidl))
         return XPR_FALSE;
@@ -212,7 +212,7 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, LPITEMIDLIST *aFullPidl, 
     return (*aFullPidl != XPR_NULL) ? XPR_TRUE : XPR_FALSE;
 }
 
-xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_uint_t *aCSIDL)
+xpr_bool_t EnvPath::getPath(const xpr::string &aSpec, xpr::string &aPath, xpr_uint_t *aCSIDL)
 {
     aPath.clear();
 

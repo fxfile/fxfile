@@ -30,7 +30,7 @@ public:
 public:
     void addOperation(SHFILEOPSTRUCT *aShFileOpStruct);
     void addRename(const xpr_tchar_t *aSource, const xpr_tchar_t *aTarget);
-    void addRename(const xpr::tstring &aSource, const xpr::tstring &aTarget);
+    void addRename(const xpr::string &aSource, const xpr::string &aTarget);
 
     static void deleteUndoDir(void);
 

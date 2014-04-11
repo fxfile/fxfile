@@ -50,12 +50,12 @@ void AttrTimeCommand::execute(CommandContext &aContext)
 
     FXFILE_COMMAND_IF_FOLDER_CTRL
     {
-        xpr::tstring sPath;
+        xpr::string sPath;
         sFolderCtrl->getCurPath(sPath);
 
-        xpr::tstring sDir;
+        xpr::string sDir;
         xpr_size_t sOffset = sPath.rfind(XPR_STRING_LITERAL('\\'));
-        if (sOffset != xpr::tstring::npos)
+        if (sOffset != xpr::string::npos)
             sDir = sPath.substr(0, sOffset);
 
         AttrTimeDlg::PathList sPathList;
@@ -72,7 +72,7 @@ void AttrTimeCommand::execute(CommandContext &aContext)
     }
     FXFILE_COMMAND_ELSE_IF_EXPLORER_CTRL
     {
-        xpr::tstring sDir;
+        xpr::string sDir;
         sExplorerCtrl->getCurPath(sDir);
 
         FileSysItemDeque sFileSysItemDeque;

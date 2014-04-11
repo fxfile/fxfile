@@ -36,10 +36,10 @@ public:
     void clear(void);
 
 protected:
-    xpr::tstring mPath;
-    xpr_bool_t   mLoaded;
+    xpr::string mPath;
+    xpr_bool_t  mLoaded;
 
-    typedef std::tr1::unordered_map<xpr::tstring, DlgState *> DlgStateMap;
+    typedef std::tr1::unordered_map<xpr::string, DlgState *> DlgStateMap;
     DlgStateMap mDlgStateMap;
 };
 } // namespace fxfile

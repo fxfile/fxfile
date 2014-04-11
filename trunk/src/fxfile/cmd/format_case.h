@@ -24,7 +24,7 @@ class FormatCase : public Format
 public:
     FormatCase(void);
     FormatCase(CaseTargetType aTargetType, CaseType aCaseType);
-    FormatCase(CaseTargetType aTargetType, CaseType aCaseType, const xpr::tstring &aSkipChars);
+    FormatCase(CaseTargetType aTargetType, CaseType aCaseType, const xpr::string &aSkipChars);
     virtual ~FormatCase(void);
 
 public:
@@ -38,26 +38,26 @@ public:
 public:
     inline CaseTargetType getTargetType(void) const { return mTargetType; }
     inline CaseType getCaseType(void) const { return mCaseType; }
-    inline const xpr::tstring &getSkipChars(void) const { return mSkipChars; }
+    inline const xpr::string &getSkipChars(void) const { return mSkipChars; }
 
 public:
-    static xpr_bool_t canParseXml(const xpr::tstring &aElementName);
+    static xpr_bool_t canParseXml(const xpr::string &aElementName);
 
     static Format *newObject(void);
 
 private:
-    static void convertUpperAtFirstChar(xpr::tstring &aName, const xpr::tstring &aSkipChars);
-    static void convertUpperAtFirstCharOnEveryWord(xpr::tstring &aName, const xpr::tstring &aSkipChars);
+    static void convertUpperAtFirstChar(xpr::string &aName, const xpr::string &aSkipChars);
+    static void convertUpperAtFirstCharOnEveryWord(xpr::string &aName, const xpr::string &aSkipChars);
 
-    static void toString(const CaseTargetType &aTargetType, xpr::tstring &aString);
-    static void toString(const CaseType &aCaseType, xpr::tstring &aString);
-    static void toType(const xpr::tstring &aString, CaseTargetType &aTargetType);
-    static void toType(const xpr::tstring &aString, CaseType &aCaseType);
+    static void toString(const CaseTargetType &aTargetType, xpr::string &aString);
+    static void toString(const CaseType &aCaseType, xpr::string &aString);
+    static void toType(const xpr::string &aString, CaseTargetType &aTargetType);
+    static void toType(const xpr::string &aString, CaseType &aCaseType);
 
 private:
     CaseTargetType mTargetType;
     CaseType       mCaseType;
-    xpr::tstring   mSkipChars;
+    xpr::string    mSkipChars;
 };
 } // namespace cmd
 } // namespace fxfile

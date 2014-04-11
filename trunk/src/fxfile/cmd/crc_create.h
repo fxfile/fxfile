@@ -41,7 +41,7 @@ public:
     void setEach(xpr_bool_t aEach);
     void setPath(const xpr_tchar_t *aPath);
 
-    void addPath(const xpr::tstring &aPath);
+    void addPath(const xpr::string &aPath);
 
     xpr_size_t getCount(void);
     const xpr_tchar_t *getPath(xpr_sint_t aIndex);
@@ -55,10 +55,10 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque    mPathDeque;
 
-    xpr::tstring mPath;
+    xpr::string  mPath;
     xpr_sint_t   mMethod;
     xpr_bool_t   mEach;
 

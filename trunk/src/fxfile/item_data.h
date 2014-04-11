@@ -15,7 +15,7 @@ namespace fxfile
 {
 typedef struct LVITEMDATA
 {
-    xpr::tstring   mName;
+    xpr::string    mName;
     xpr_uint_t     mSignature;
     DWORD          mItemType;
     LPSHELLFOLDER  mShellFolder;

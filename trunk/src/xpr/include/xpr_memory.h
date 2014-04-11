@@ -24,6 +24,7 @@ XPR_DL_API void        xpr_memcpy(void *aDest, const void *aSrc, xpr_size_t aSiz
 XPR_DL_API void        xpr_memmove(void *aDest, const void *aSrc, xpr_size_t aSize);
 XPR_DL_API xpr_sint_t  xpr_memcmp(const void *aAddr1, const void *aAddr2, xpr_size_t aSize);
 
+#define XPR_SAFE_FREE(addr) { free((addr)); (addr) = XPR_NULL; }
 #define XPR_SAFE_DELETE(addr) { delete (addr); (addr) = XPR_NULL; }
 #define XPR_SAFE_DELETE_ARRAY(addr) { delete[] (addr); (addr) = XPR_NULL; }
 } // namespace xpr

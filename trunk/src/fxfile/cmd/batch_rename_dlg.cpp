@@ -35,6 +35,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
@@ -46,6 +48,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 BatchRenameDlg::BatchRenameDlg(void)
     : super(IDD_RENAME, XPR_NULL)
@@ -195,7 +198,7 @@ xpr_bool_t BatchRenameDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.list.column.new_name")), LVCFMT_LEFT, 233, -1);
 
     {
-        xpr::tstring sDir;
+        xpr::string sDir;
 
         xpr_size_t i;
         xpr_size_t sCount;
@@ -413,10 +416,10 @@ void BatchRenameDlg::addPath(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
     if (sLen < 0 || sLen >= XPR_MAX_PATH)
         return;
 
-    xpr::tstring sPath = aPath;
+    xpr::string sPath = aPath;
 
     xpr_size_t sFind = sPath.rfind(XPR_STRING_LITERAL('\\'));
-    if (sFind == xpr::tstring::npos)
+    if (sFind == xpr::string::npos)
         return;
 
     BatchRename::Item *sBatchRenameItem = new BatchRename::Item;
@@ -546,7 +549,7 @@ void BatchRenameDlg::OnUpdateInit(CCmdUI *pCmdUI)
 
 void BatchRenameDlg::OnLoad(void)
 {
-    xpr::tstring sFilter;
+    xpr::string sFilter;
     sFilter.format(XPR_STRING_LITERAL("%s (*.xml)\0*.xml\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.file_dialog.filter.preset_files")));
 
     CFileDialogST sFileDialog(XPR_TRUE,
@@ -561,7 +564,7 @@ void BatchRenameDlg::OnLoad(void)
         return;
     }
 
-    xpr::tstring sFilePath(sFileDialog.GetPathName());
+    xpr::string sFilePath(sFileDialog.GetPathName());
     if (mBatchRename->load(sFilePath) == XPR_FALSE)
     {
         const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.load_failed"));
@@ -575,7 +578,7 @@ void BatchRenameDlg::OnLoad(void)
 
 void BatchRenameDlg::OnSave(void)
 {
-    xpr::tstring sFilter;
+    xpr::string sFilter;
     sFilter.format(XPR_STRING_LITERAL("%s (*.xml)\0*.xml\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.file_dialog.filter.preset_files")));
 
     CFileDialogST sFileDialog(XPR_FALSE,
@@ -590,7 +593,7 @@ void BatchRenameDlg::OnSave(void)
         return;
     }
 
-    xpr::tstring sFilePath(sFileDialog.GetPathName());
+    xpr::string sFilePath(sFileDialog.GetPathName());
     if (mBatchRename->save(sFilePath) == XPR_FALSE)
     {
         const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.batch_rename.msg.save_failed"));
@@ -1083,8 +1086,8 @@ void BatchRenameDlg::editItem(xpr_sint_t aIndex)
 
     xpr_bool_t sNoChangeExt = mBatchRename->isFlag(BatchRename::FlagNoChangeExt);
 
-    xpr::tstring sExt;
-    xpr::tstring sName;
+    xpr::string sExt;
+    xpr::string sName;
 
     sName = sBatchRenameItem->mOld;
     if (sNoChangeExt == XPR_TRUE)

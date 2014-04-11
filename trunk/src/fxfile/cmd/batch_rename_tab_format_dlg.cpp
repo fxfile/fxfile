@@ -379,7 +379,7 @@ xpr_bool_t BatchRenameTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
     xpr_tchar_t sForamt[FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH + 1] = {0};
     GetDlgItemText(IDC_BATCH_RENAME_FORMAT, sForamt, FXFILE_BATCH_RENAME_FORMAT_MAX_LENGTH);
 
-    xpr::tstring sAppendedFormat(sForamt);
+    xpr::string sAppendedFormat(sForamt);
     if (sId == IDC_BATCH_RENAME_FORMAT_NUMBERING && sId == ID_BATCH_RENAME_FORMAT_MENU_NUMBERING)
     {
         xpr_sint_t sNumber   = GetDlgItemInt(IDC_BATCH_RENAME_FORMAT_NUMBER);
@@ -391,14 +391,14 @@ xpr_bool_t BatchRenameTabFormatDlg::OnCommand(WPARAM wParam, LPARAM lParam)
         {
             if (sIncrease == 1)
             {
-                xpr::tstring sStringFormat;
+                xpr::string sStringFormat;
                 sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd>"), sDigit);
 
                 sAppendedFormat.append_format(sStringFormat.c_str(), sNumber);
             }
             else
             {
-                xpr::tstring sStringFormat;
+                xpr::string sStringFormat;
                 sStringFormat.format(XPR_STRING_LITERAL("<%%0%dd+%%d>"), sDigit);
 
                 sAppendedFormat.append_format(sStringFormat.c_str(), sNumber, sIncrease);

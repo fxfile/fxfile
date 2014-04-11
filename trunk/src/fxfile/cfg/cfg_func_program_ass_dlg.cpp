@@ -369,7 +369,7 @@ void CfgFuncProgramAssDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
 
     if (XPR_TEST_BITS(sLvItem.mask, LVIF_IMAGE))
     {
-        xpr::tstring sPath;
+        xpr::string sPath;
         GetEnvRealPath(sProgramAssItem->mPath, sPath);
 
         sLvItem.iImage = GetItemIconIndex(sPath.c_str());

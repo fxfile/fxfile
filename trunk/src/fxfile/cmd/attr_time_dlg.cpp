@@ -23,6 +23,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 #define MIN_DEPTH 0
 #define MAX_DEPTH 100
 
@@ -37,6 +39,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 AttrTimeDlg::AttrTimeDlg(void)
     : super(IDD_ATTRIBUTE, XPR_NULL)
@@ -80,7 +83,7 @@ BEGIN_MESSAGE_MAP(AttrTimeDlg, super)
     ON_BN_CLICKED(IDOK,               OnOK)
 END_MESSAGE_MAP()
 
-void AttrTimeDlg::setDir(const xpr::tstring &aDir)
+void AttrTimeDlg::setDir(const xpr::string &aDir)
 {
     mDir = aDir;
 }
@@ -134,7 +137,7 @@ xpr_bool_t AttrTimeDlg::OnInitDialog(void)
     xpr_tchar_t sText[0xff] = {0};
 
     xpr_sint_t i;
-    xpr::tstring sPath;
+    xpr::string sPath;
     PathList::iterator sIterator;
 
     sIterator = mList.begin();

@@ -49,17 +49,17 @@ void UpdateChecker::finalizeStatic(void)
     curl_global_cleanup();
 }
 
-void UpdateChecker::setUrl(const xpr::tstring &aUrl)
+void UpdateChecker::setUrl(const xpr::string &aUrl)
 {
     mUrl = aUrl;
 }
 
-void UpdateChecker::setDir(const xpr::tstring &aDir)
+void UpdateChecker::setDir(const xpr::string &aDir)
 {
     mDir = aDir;
 }
 
-void UpdateChecker::setNowVersion(const xpr::tstring &aNowVersion, xpr_bool_t aCheckMinorVer)
+void UpdateChecker::setNowVersion(const xpr::string &aNowVersion, xpr_bool_t aCheckMinorVer)
 {
     mNowVersion    = aNowVersion;
     mCheckMinorVer = aCheckMinorVer;
@@ -67,9 +67,9 @@ void UpdateChecker::setNowVersion(const xpr::tstring &aNowVersion, xpr_bool_t aC
 
 struct DownloadFileData
 {
-    xpr_bool_t   mFirst;
-    xpr_sint_t   mSleepTime;
-    xpr::tstring mFilePath;
+    xpr_bool_t  mFirst;
+    xpr_sint_t  mSleepTime;
+    xpr::string mFilePath;
 };
 
 xpr_size_t UpdateChecker::downloadFile(void *aSource, xpr_size_t aSize, xpr_size_t aMemoryBlock, void *aUserData)
@@ -166,12 +166,12 @@ xpr_bool_t UpdateChecker::check(void)
         return XPR_FALSE;
     }
 
-    xpr_size_t   sSplit;
-    xpr::tstring sMetaFileName;
-    xpr::tstring sUrl = mUrl;
+    xpr_size_t  sSplit;
+    xpr::string sMetaFileName;
+    xpr::string sUrl = mUrl;
 
     sSplit = sUrl.find_last_of(XPR_STRING_LITERAL('/'));
-    if (sSplit == xpr::tstring::npos)
+    if (sSplit == xpr::string::npos)
     {
         curl_easy_cleanup(sCtx);
         return XPR_FALSE;
@@ -274,7 +274,7 @@ xpr_bool_t UpdateChecker::isChecked(void) const
     return mChecked;
 }
 
-void UpdateChecker::getCheckedVersion(xpr::tstring &aVersion)
+void UpdateChecker::getCheckedVersion(xpr::string &aVersion)
 {
     aVersion = mMetaData.mVersion;
 }
@@ -299,12 +299,12 @@ xpr_bool_t UpdateChecker::download(void)
         return XPR_FALSE;
     }
 
-    xpr_size_t   sSplit;
-    xpr::tstring sFileName;
-    xpr::tstring sUrl = mMetaData.mFile;
+    xpr_size_t  sSplit;
+    xpr::string sFileName;
+    xpr::string sUrl = mMetaData.mFile;
 
     sSplit = sUrl.find_last_of(XPR_STRING_LITERAL('/'));
-    if (sSplit == xpr::tstring::npos)
+    if (sSplit == xpr::string::npos)
     {
         curl_easy_cleanup(sCtx);
         return XPR_FALSE;
@@ -363,7 +363,7 @@ xpr_bool_t UpdateChecker::isDownloaded(void)
     return mDownloaded;
 }
 
-void UpdateChecker::getDownloadedFilePath(xpr::tstring &aFilePath)
+void UpdateChecker::getDownloadedFilePath(xpr::string &aFilePath)
 {
     aFilePath = mProgramFilePath;
 }

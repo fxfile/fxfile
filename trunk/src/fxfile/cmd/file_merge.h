@@ -51,10 +51,10 @@ protected:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
-    typedef std::deque<xpr::tstring> PathDeque;
+    typedef std::deque<xpr::string> PathDeque;
     PathDeque    mPathDeque;
 
-    xpr::tstring mDestPath;
+    xpr::string  mDestPath;
     DWORD        mBufferSize;
 
     xpr_size_t   mMergedCount;

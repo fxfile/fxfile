@@ -18,6 +18,8 @@
 #define new DEBUG_NEW
 #endif
 
+namespace fxfile
+{
 SelFolderDlg::SelFolderDlg(void)
     : super(IDD_SEL_FOLDER, XPR_NULL)
 {
@@ -132,3 +134,4 @@ void SelFolderDlg::OnBrowse(void)
     COM_FREE(sFullPidl);
     COM_FREE(sOldFullPidl);
 }
+} // namespace fxfile

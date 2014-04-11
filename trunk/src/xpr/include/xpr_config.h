@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <errno.h>
 
 namespace xpr
 {

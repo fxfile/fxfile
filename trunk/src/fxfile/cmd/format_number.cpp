@@ -67,8 +67,8 @@ FormatNumber::~FormatNumber(void)
 
 void FormatNumber::rename(RenameContext &aContext) const
 {
-    xpr_sint_t   sNumber = mStart + (xpr_sint_t)aContext.mIndex * mStep;
-    xpr::tstring sStringFormat;
+    xpr_sint_t  sNumber = mStart + (xpr_sint_t)aContext.mIndex * mStep;
+    xpr::string sStringFormat;
 
     if (XPR_IS_TRUE(mZeroFilled))
     {
@@ -82,7 +82,7 @@ void FormatNumber::rename(RenameContext &aContext) const
     aContext.mNewFileName.append_format(sStringFormat.c_str(), sNumber);
 }
 
-xpr_bool_t FormatNumber::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatNumber::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatNumberElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -91,12 +91,12 @@ xpr_bool_t FormatNumber::parseXml(const base::XmlReader &aXmlReader, base::XmlRe
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring sName;
-    xpr::tstring sValue;
-    xpr_sint_t   sStart      = kDefaultStart;
-    xpr_sint_t   sStep       = kDefaultStep;
-    xpr_bool_t   sZeroFilled = kDefaultZeroFilled;
-    xpr_size_t   sDigit      = kDefaultDigit;
+    xpr::string sName;
+    xpr::string sValue;
+    xpr_sint_t  sStart      = kDefaultStart;
+    xpr_sint_t  sStep       = kDefaultStep;
+    xpr_bool_t  sZeroFilled = kDefaultZeroFilled;
+    xpr_size_t  sDigit      = kDefaultDigit;
 
     base::XmlReader::Attribute *sFormatNumberAttribute = aXmlReader.getFirstAttribute(aElement);
     while (XPR_IS_NOT_NULL(sFormatNumberAttribute))
@@ -178,7 +178,7 @@ Format *FormatNumber::newClone(void) const
     return sNewFormat;
 }
 
-xpr_bool_t FormatNumber::canParseShort(const xpr::tstring &aFormatString)
+xpr_bool_t FormatNumber::canParseShort(const xpr::string &aFormatString)
 {
     const std::tr1::tregex sRegEx(kShortFormatNumberRegExpr);
 
@@ -186,7 +186,7 @@ xpr_bool_t FormatNumber::canParseShort(const xpr::tstring &aFormatString)
 }
 
 // count format (e.g. <1> or <1+2> or <1-2> or <001+2> or <-001+2> or <-001-2>)
-void FormatNumber::parseShort(const xpr::tstring &aFormatString, Format *&aFormat)
+void FormatNumber::parseShort(const xpr::string &aFormatString, Format *&aFormat)
 {
     xpr_sint_t sNumber          = 1;
     xpr_sint_t sStep            = 1;
@@ -202,7 +202,7 @@ void FormatNumber::parseShort(const xpr::tstring &aFormatString, Format *&aForma
     sZeroFilled = (aFormatString[sZeroFilledIndex] == XPR_STRING_LITERAL('0')) ? XPR_TRUE : XPR_FALSE;
 
     xpr_size_t sStepSign = aFormatString.find_first_of(XPR_STRING_LITERAL("+-"), 2);
-    if (sStepSign != xpr::tstring::npos)
+    if (sStepSign != xpr::string::npos)
     {
         if (aFormatString[sStepSign] == XPR_STRING_LITERAL('-'))
         {
@@ -219,10 +219,10 @@ void FormatNumber::parseShort(const xpr::tstring &aFormatString, Format *&aForma
         _stscanf(aFormatString.c_str() + 1, XPR_STRING_LITERAL("%d"), &sNumber);
     }
 
-    xpr::tstring sStringFormat;
+    xpr::string sStringFormat;
     if (XPR_IS_TRUE(sZeroFilled))
     {
-        if (sStepSign != xpr::tstring::npos)
+        if (sStepSign != xpr::string::npos)
         {
             sDigit = sStepSign - 1;
 

@@ -21,9 +21,11 @@
 
 namespace fxfile
 {
-static const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("BookmarkSetWnd");
-static const xpr_sint_t OFFSET_MARGIN = 5;
-static const xpr_sint_t OFFSET_HEIGHT = 2;
+namespace
+{
+const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("BookmarkSetWnd");
+const xpr_sint_t OFFSET_MARGIN = 5;
+const xpr_sint_t OFFSET_HEIGHT = 2;
 
 //
 // control id
@@ -32,6 +34,7 @@ enum
 {
     CTRL_ID_BOOKMARK_WND = 50,
 };
+} // namespace anonymous
 
 BookmarkSetWnd::BookmarkSetWnd(void)
     : mBookmarkWnd(XPR_NULL)

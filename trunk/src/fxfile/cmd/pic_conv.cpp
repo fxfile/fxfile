@@ -96,7 +96,7 @@ unsigned PicConv::OnEntryProc(void)
     GFL_LOAD_PARAMS sGflLoadParams;
     gflEnableLZW(GFL_TRUE);
 
-    xpr::tstring sPath;
+    xpr::string sPath;
     xpr_char_t sPathA[XPR_MAX_PATH + 1];
     xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;

@@ -19,7 +19,10 @@
 
 namespace fxfile
 {
-static const xpr_size_t kCrcBufferSize = 16 * 1024; // 16KB
+namespace
+{
+const xpr_size_t kCrcBufferSize = 16 * 1024; // 16KB
+} // namespace anonymous
 
 xpr_rcode_t getFileCrcSfv(const xpr_tchar_t *aPath, xpr_char_t *aCrcVal)
 {

@@ -27,7 +27,7 @@ class FlatHeaderCtrl;
 class SrItemData
 {
 public:
-    xpr_bool_t getPath(xpr::tstring &aPath)
+    xpr_bool_t getPath(xpr::string &aPath)
     {
         aPath = mDir;
         if (aPath[aPath.length() - 1] != XPR_STRING_LITERAL('\\'))

@@ -147,7 +147,7 @@ xpr_bool_t DoPaste(HWND               aHwnd,
                 sMultipleSourceEnum = sMultipleSource;
             }
 
-            xpr::tstring sName;
+            xpr::string sName;
             xpr_tchar_t sLink[XPR_MAX_PATH + 1];
             xpr_size_t sColon;
 
@@ -169,7 +169,7 @@ xpr_bool_t DoPaste(HWND               aHwnd,
                 sDesktopShellFolder = XPR_NULL;
             }
 
-            xpr::tstring sLinkSuffix;
+            xpr::string sLinkSuffix;
             if (XPR_IS_NOT_NULL(aLinkSuffix))
                 sLinkSuffix = aLinkSuffix;
             else
@@ -185,7 +185,7 @@ xpr_bool_t DoPaste(HWND               aHwnd,
                 GetName(sShellFolder, sItemPidl, SHGDN_INFOLDER, sName);
 
                 sColon = sName.find(XPR_STRING_LITERAL(':'));
-                if (sColon != xpr::tstring::npos)
+                if (sColon != xpr::string::npos)
                     sName.erase(sColon, 1);
 
                 sName += sLinkSuffix;

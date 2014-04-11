@@ -27,6 +27,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user defined timer
 enum
 {
@@ -38,6 +40,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 CrcVerifyDlg::CrcVerifyDlg(const xpr_tchar_t *aDir)
     : super(IDD_CRC_VERIFY, XPR_NULL)

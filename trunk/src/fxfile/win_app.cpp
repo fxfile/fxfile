@@ -62,10 +62,10 @@ void freeTypeinfoMemory(void)
       delete sNode;
    }
 }
-} // anonymous namespace
 
-static const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
-static const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
+const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
+const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
+} // namespace anonymous
 
 WinApp gApp;
 Option *gOpt;
@@ -187,8 +187,8 @@ xpr_bool_t WinApp::InitInstance(void)
         ProgramOpts::showVersion();
     }
 
-    xpr_bool_t   sResetConf     = sProgramOpts.isResetConf();
-    xpr::tstring sConfDirToLoad = sProgramOpts.getConfDir();
+    xpr_bool_t  sResetConf     = sProgramOpts.isResetConf();
+    xpr::string sConfDirToLoad = sProgramOpts.getConfDir();
 
     // load configuration directory
     ConfDir &sConfDir = ConfDir::instance();
@@ -435,7 +435,7 @@ void WinApp::onChangedConfig(Option &aOption)
 
     // popup warning message about language change
     const fxfile::base::LanguagePack::Desc *sLoadedLanguagePackDesc = mLanguageTable->getLanguageDesc();
-    if (_tcsicmp(sLoadedLanguagePackDesc->mLanguage, aOption.mConfig.mLanguage) != 0)
+    if (sLoadedLanguagePackDesc->mLanguage.compare_case(aOption.mConfig.mLanguage) != 0)
     {
         const xpr_tchar_t *sMsg = gApp.loadString(XPR_STRING_LITERAL("popup.cfg.msg.apply_language_on_next_loading_time"));
         AfxMessageBox(sMsg, MB_OK | MB_ICONWARNING);

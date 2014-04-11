@@ -61,12 +61,12 @@ public:
     }
 
 public:
-    xpr::tstring mName;
-    xpr_uint_t   mType;
-    xpr_uint_t   mMethod;
-    xpr::tstring mExts;
-    xpr::tstring mFilterName;
-    xpr::tstring mPath;
+    xpr::string mName;
+    xpr_uint_t  mType;
+    xpr_uint_t  mMethod;
+    xpr::string mExts;
+    xpr::string mFilterName;
+    xpr::string mPath;
 };
 
 typedef std::deque<ProgramAssItem *> ProgramAssDeque;

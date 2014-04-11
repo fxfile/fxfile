@@ -37,7 +37,7 @@ void FormatClear::rename(RenameContext &aContext) const
     aContext.mNewFileName.clear();
 }
 
-xpr_bool_t FormatClear::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatClear::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatClearElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }

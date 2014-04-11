@@ -37,16 +37,19 @@
  */
 namespace xpr
 {
-static const xpr_tchar_t kUncLong           [] = XPR_STRING_LITERAL("\\\\?\\UNC\\");
-static const xpr_tchar_t kUriFileScheme     [] = XPR_STRING_LITERAL("file://");
-static const xpr_tchar_t kUriFileSchemeLocal[] = XPR_STRING_LITERAL("file:///");
-static const xpr_tchar_t kUriSmbScheme      [] = XPR_STRING_LITERAL("smb://");
+namespace
+{
+const xpr_tchar_t kUncLong           [] = XPR_STRING_LITERAL("\\\\?\\UNC\\");
+const xpr_tchar_t kUriFileScheme     [] = XPR_STRING_LITERAL("file://");
+const xpr_tchar_t kUriFileSchemeLocal[] = XPR_STRING_LITERAL("file:///");
+const xpr_tchar_t kUriSmbScheme      [] = XPR_STRING_LITERAL("smb://");
 
 #define XPR_URI_FILE_SCHEME_DRIVE_SEPARATOR      XPR_DRIVE_SEPARATOR
 #define XPR_URI_FILE_SCHEME_DRIVE_SEPARATOR2     XPR_STRING_LITERAL('|')
 #define XPR_ALL_OF_FILE_SEPARATORS_STRING        XPR_STRING_LITERAL("/\\")
 #define XPR_CUR_DIR_FILENAME                     XPR_STRING_LITERAL(".")
 #define XPR_PARENT_DIR_FILENAME                  XPR_STRING_LITERAL("..")
+} // namespace anonymous
 
 FilePath::FilePath(void)
     : mPathType(PathTypeNone)
@@ -61,7 +64,7 @@ FilePath::FilePath(const xpr_tchar_t *aFilePath)
     assign(aFilePath);
 }
 
-FilePath::FilePath(const xpr::tstring &aFilePath)
+FilePath::FilePath(const xpr::string &aFilePath)
     : mPathType(PathTypeNone)
 {
     assign(aFilePath);
@@ -120,7 +123,7 @@ FilePath& FilePath::operator=(const xpr_tchar_t *aFilePath)
     return *this;
 }
 
-FilePath& FilePath::operator=(const xpr::tstring &aFilePath)
+FilePath& FilePath::operator=(const xpr::string &aFilePath)
 {
     assign(aFilePath);
 
@@ -150,7 +153,7 @@ FilePath& FilePath::operator+=(const xpr_tchar_t *aFilePath)
     return *this;
 }
 
-FilePath& FilePath::operator+=(const xpr::tstring &aFilePath)
+FilePath& FilePath::operator+=(const xpr::string &aFilePath)
 {
     append(aFilePath);
 
@@ -182,7 +185,7 @@ void FilePath::assign(const xpr_tchar_t *aFilePath)
     removeLastCharSeparator();
 }
 
-void FilePath::assign(const xpr::tstring &aFilePath)
+void FilePath::assign(const xpr::string &aFilePath)
 {
     const xpr_tchar_t *sFilePath = aFilePath.c_str();
 
@@ -255,7 +258,7 @@ void FilePath::removeLastCharSeparator(void)
                 xpr_size_t sUriSchemeLength = _tcslen(XPR_URI_SCHEME_SEPARATOR);
 
                 sSeparatorPosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-                if ((sSeparatorPosition != xpr::tstring::npos) && ((sSeparatorPosition + sUriSchemeLength + 1) < sLength))
+                if ((sSeparatorPosition != xpr::string::npos) && ((sSeparatorPosition + sUriSchemeLength + 1) < sLength))
                 {
                     const xpr_tchar_t &sLastChar = *mFilePath.rbegin();
                     if (sLastChar == XPR_URI_SEPARATOR)
@@ -300,7 +303,7 @@ void FilePath::analyze(void)
         else
         {
             xpr_size_t sSeparatorPosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 mPathType = PathTypeUri;
             }
@@ -332,7 +335,7 @@ void FilePath::analyze(void)
         do
         {
             sSeparatorPosition = mFilePath.find_first_of(XPR_ALL_OF_FILE_SEPARATORS_STRING, sSeparatorPosition);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 mFilePath[sSeparatorPosition] = sFileSeparator;
                 ++sSeparatorPosition;
@@ -391,7 +394,7 @@ void FilePath::append(const xpr_tchar_t *aFilePath)
     removeLastCharSeparator();
 }
 
-void FilePath::append(const xpr::tstring &aFilePath)
+void FilePath::append(const xpr::string &aFilePath)
 {
     const xpr_tchar_t *sFilePath = aFilePath.c_str();
 
@@ -405,7 +408,7 @@ void FilePath::append(const FilePath &aFilePath)
     append(sFilePath);
 }
 
-void FilePath::getLastName(xpr::tstring &aLastName) const
+void FilePath::getLastName(xpr::string &aLastName) const
 {
     xpr_size_t sSeparatorPosition;
 
@@ -414,7 +417,7 @@ void FilePath::getLastName(xpr::tstring &aLastName) const
     case PathTypeNormal:
     case PathTypeUnc:
         sSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR);
-        if (sSeparatorPosition != xpr::tstring::npos)
+        if (sSeparatorPosition != xpr::string::npos)
         {
             aLastName = mFilePath.c_str() + sSeparatorPosition + 1;
         }
@@ -430,7 +433,7 @@ void FilePath::getLastName(xpr::tstring &aLastName) const
 
     case PathTypeUri:
         sSeparatorPosition = mFilePath.rfind(XPR_URI_SEPARATOR);
-        if (sSeparatorPosition != xpr::tstring::npos)
+        if (sSeparatorPosition != xpr::string::npos)
         {
             aLastName = mFilePath.c_str() + sSeparatorPosition + 1;
         }
@@ -443,7 +446,7 @@ void FilePath::setDir(const xpr_tchar_t *aDir)
 {
     XPR_ASSERT(aDir != XPR_NULL);
 
-    xpr::tstring sLastName;
+    xpr::string sLastName;
     getLastName(sLastName);
 
     if (aDir[0] == 0)
@@ -476,7 +479,7 @@ void FilePath::setDir(const xpr_tchar_t *aDir)
     }
 }
 
-void FilePath::setDir(const xpr::tstring &aDir)
+void FilePath::setDir(const xpr::string &aDir)
 {
     const xpr_tchar_t *sDir = aDir.c_str();
 
@@ -504,7 +507,7 @@ void FilePath::setRootDir(const xpr_tchar_t *aRootDir)
     }
     else
     {
-        xpr::tstring sFileName;
+        xpr::string sFileName;
         getFileName(sFileName);
 
         assign(aRootDir);
@@ -517,7 +520,7 @@ void FilePath::setRootDir(const xpr_tchar_t *aRootDir)
     analyze();
 }
 
-void FilePath::setRootDir(const xpr::tstring &aRootDir)
+void FilePath::setRootDir(const xpr::string &aRootDir)
 {
     const xpr_tchar_t *sRootDir = aRootDir.c_str();
 
@@ -545,7 +548,7 @@ void FilePath::setParentDir(const xpr_tchar_t *aParentDir)
     }
     else
     {
-        xpr::tstring sFileName;
+        xpr::string sFileName;
         getFileName(sFileName);
 
         assign(aParentDir);
@@ -558,7 +561,7 @@ void FilePath::setParentDir(const xpr_tchar_t *aParentDir)
     analyze();
 }
 
-void FilePath::setParentDir(const xpr::tstring &aParentDir)
+void FilePath::setParentDir(const xpr::string &aParentDir)
 {
     const xpr_tchar_t *sParentDir = aParentDir.c_str();
 
@@ -569,7 +572,7 @@ xpr_bool_t FilePath::validate(const xpr_tchar_t *aFileName) const
 {
     XPR_ASSERT(aFileName != XPR_NULL);
 
-    xpr::tstring sInvalidChars;
+    xpr::string sInvalidChars;
     FilePath::getInvalidChars(sInvalidChars);
 
     if (XPR_IS_NOT_NULL(_tcspbrk(aFileName, sInvalidChars.c_str())))
@@ -593,13 +596,13 @@ xpr_bool_t FilePath::setFileName(const xpr_tchar_t *aFileName, xpr_bool_t aWithE
     // set file name with extenstion option
     xpr_size_t sFileNamePosition = getFileNamePosition();
 
-    xpr::tstring sExt;
+    xpr::string sExt;
     if (XPR_IS_FALSE(aWithExt))
     {
         getExt(sExt);
     }
 
-    if (sFileNamePosition == xpr::tstring::npos)
+    if (sFileNamePosition == xpr::string::npos)
     {
         mFilePath.clear();
     }
@@ -618,7 +621,7 @@ xpr_bool_t FilePath::setFileName(const xpr_tchar_t *aFileName, xpr_bool_t aWithE
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::setFileName(const xpr::tstring &aFileName, xpr_bool_t aWithExt)
+xpr_bool_t FilePath::setFileName(const xpr::string &aFileName, xpr_bool_t aWithExt)
 {
     const xpr_tchar_t *sFileName = aFileName.c_str();
 
@@ -636,7 +639,7 @@ xpr_bool_t FilePath::setExt(const xpr_tchar_t *aExt)
     }
 
     // set file extension
-    xpr_size_t sSeparator = xpr::tstring::npos;
+    xpr_size_t sSeparator = xpr::string::npos;
 
     switch (mPathType)
     {
@@ -655,9 +658,9 @@ xpr_bool_t FilePath::setExt(const xpr_tchar_t *aExt)
 
     xpr_size_t sDot = mFilePath.rfind(XPR_FILE_EXT_SEPARATOR);
 
-    if (sDot != xpr::tstring::npos && sSeparator < sDot)
+    if (sDot != xpr::string::npos && sSeparator < sDot)
     {
-        mFilePath.replace(sDot, xpr::tstring::npos, aExt);
+        mFilePath.replace(sDot, xpr::string::npos, aExt);
     }
     else
     {
@@ -667,7 +670,7 @@ xpr_bool_t FilePath::setExt(const xpr_tchar_t *aExt)
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::setExt(const xpr::tstring &aExt)
+xpr_bool_t FilePath::setExt(const xpr::string &aExt)
 {
     const xpr_tchar_t *sExt = aExt.c_str();
 
@@ -717,7 +720,7 @@ xpr_size_t FilePath::getSeparatorCount(void) const
         do
         {
             sSeparatorPosition = mFilePath.find(sSeperator, sSeparatorPosition);
-            if (sSeparatorPosition == xpr::tstring::npos)
+            if (sSeparatorPosition == xpr::string::npos)
             {
                 break;
             }
@@ -739,7 +742,7 @@ xpr_bool_t FilePath::normalize(void)
     xpr_bool_t    sResult                = XPR_FALSE;
     xpr_bool_t    sStopLoop;
     xpr_size_t    sSeparatorCount        = getSeparatorCount();
-    xpr::tstring  sNormalizedFilePath    = mFilePath;
+    xpr::string  sNormalizedFilePath    = mFilePath;
     xpr_size_t   *sSeparatorPositions    = XPR_NULL;
     xpr_size_t    sBeginSearchPosition   = 0;
     xpr_size_t    sSeparatorPosition     = 0;
@@ -782,7 +785,7 @@ xpr_bool_t FilePath::normalize(void)
 
         case PathTypeUri:
             sBeginSearchPosition = sNormalizedFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-            XPR_ASSERT(sBeginSearchPosition != xpr::tstring::npos);
+            XPR_ASSERT(sBeginSearchPosition != xpr::string::npos);
 
             sBeginSearchPosition += _tcslen(XPR_URI_SCHEME_SEPARATOR);
 
@@ -805,7 +808,7 @@ xpr_bool_t FilePath::normalize(void)
                 do
                 {
                     sSeparatorPosition = sNormalizedFilePath.find(sSeparator, (i == 0) ? sBeginSearchPosition : (sLastSeparatorPosition + 1));
-                    if (sSeparatorPosition == xpr::tstring::npos)
+                    if (sSeparatorPosition == xpr::string::npos)
                     {
                         sSeparatorPosition = sNormalizedFilePath.length();
 
@@ -899,7 +902,7 @@ xpr_bool_t FilePath::normalize(void)
     return sResult;
 }
 
-const xpr::tstring &FilePath::getPath(void) const
+const xpr::string &FilePath::getPath(void) const
 {
     return mFilePath;
 }
@@ -918,7 +921,7 @@ xpr_bool_t FilePath::getPath(xpr_tchar_t *aFilePath, xpr_size_t aMaxLen) const
     return XPR_TRUE;
 }
 
-void FilePath::getPath(xpr::tstring &aFilePath) const
+void FilePath::getPath(xpr::string &aFilePath) const
 {
     aFilePath = mFilePath;
 }
@@ -937,7 +940,7 @@ xpr_bool_t FilePath::getScheme(xpr_tchar_t *aScheme, xpr_size_t aMaxLen) const
 {
     XPR_ASSERT(aScheme != XPR_NULL);
 
-    xpr::tstring sScheme;
+    xpr::string sScheme;
     getScheme(sScheme);
 
     if (sScheme.length() > aMaxLen)
@@ -950,10 +953,10 @@ xpr_bool_t FilePath::getScheme(xpr_tchar_t *aScheme, xpr_size_t aMaxLen) const
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::getScheme(xpr::tstring &aScheme) const
+xpr_bool_t FilePath::getScheme(xpr::string &aScheme) const
 {
     xpr_size_t sSchemePosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-    if (sSchemePosition == xpr::tstring::npos)
+    if (sSchemePosition == xpr::string::npos)
     {
         return XPR_FALSE;
     }
@@ -966,7 +969,7 @@ xpr_bool_t FilePath::getScheme(xpr::tstring &aScheme) const
 xpr_bool_t FilePath::hasScheme(void) const
 {
     xpr_size_t sSchemePosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-    if (sSchemePosition == xpr::tstring::npos)
+    if (sSchemePosition == xpr::string::npos)
     {
         return XPR_FALSE;
     }
@@ -978,7 +981,7 @@ xpr_bool_t FilePath::getRootDir(xpr_tchar_t *aRootDir, xpr_size_t aMaxLen) const
 {
     XPR_ASSERT(aRootDir != XPR_NULL);
 
-    xpr::tstring sRootDir;
+    xpr::string sRootDir;
     if (XPR_IS_FALSE(getRootDir(sRootDir)))
     {
         return XPR_FALSE;
@@ -994,7 +997,7 @@ xpr_bool_t FilePath::getRootDir(xpr_tchar_t *aRootDir, xpr_size_t aMaxLen) const
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::getRootDir(xpr::tstring &aRootDir) const
+xpr_bool_t FilePath::getRootDir(xpr::string &aRootDir) const
 {
     xpr_size_t sRootDirLength = getRootDirLength();
     if (sRootDirLength == 0)
@@ -1036,10 +1039,10 @@ xpr_size_t FilePath::getRootDirLength(void) const
                 // e.g.) \\ServerName
 
                 xpr_size_t sSeparatorPosition = mFilePath.find(XPR_FILE_SEPARATOR, 2);
-                if (sSeparatorPosition != xpr::tstring::npos)
+                if (sSeparatorPosition != xpr::string::npos)
                 {
                     sSeparatorPosition = mFilePath.find(XPR_FILE_SEPARATOR, sSeparatorPosition + 1);
-                    if (sSeparatorPosition == xpr::tstring::npos)
+                    if (sSeparatorPosition == xpr::string::npos)
                     {
                         sRootDirLength = mFilePath.length();
                     }
@@ -1060,10 +1063,10 @@ xpr_size_t FilePath::getRootDirLength(void) const
                     if (sLength > sUncLongLength)
                     {
                         xpr_size_t sSeparatorPosition = mFilePath.find(XPR_FILE_SEPARATOR, sUncLongLength);
-                        if (sSeparatorPosition != xpr::tstring::npos)
+                        if (sSeparatorPosition != xpr::string::npos)
                         {
                             sSeparatorPosition = mFilePath.find(XPR_FILE_SEPARATOR, sSeparatorPosition + 1);
-                            if (sSeparatorPosition == xpr::tstring::npos)
+                            if (sSeparatorPosition == xpr::string::npos)
                             {
                                 sRootDirLength = mFilePath.length();
                             }
@@ -1096,7 +1099,7 @@ xpr_size_t FilePath::getRootDirLength(void) const
                         mFilePath[sUriLocalFileSchemeLength + 1] == XPR_URI_FILE_SCHEME_DRIVE_SEPARATOR2) // local path
                     {
                         sSeparatorPosition = mFilePath.find(XPR_URI_SEPARATOR, sUriLocalFileSchemeLength);
-                        if (sSeparatorPosition == xpr::tstring::npos)
+                        if (sSeparatorPosition == xpr::string::npos)
                         {
                             sRootDirLength = mFilePath.length();
                         }
@@ -1112,10 +1115,10 @@ xpr_size_t FilePath::getRootDirLength(void) const
                 // e.g.) smb://ServerName/ShareName/file
 
                 sSeparatorPosition = mFilePath.find(XPR_URI_SEPARATOR, sUriSmbSchemeLength);
-                if (sSeparatorPosition != xpr::tstring::npos)
+                if (sSeparatorPosition != xpr::string::npos)
                 {
                     sSeparatorPosition = mFilePath.find(XPR_URI_SEPARATOR, sSeparatorPosition + 1);
-                    if (sSeparatorPosition == xpr::tstring::npos)
+                    if (sSeparatorPosition == xpr::string::npos)
                     {
                         sRootDirLength = mFilePath.length();
                     }
@@ -1130,10 +1133,10 @@ xpr_size_t FilePath::getRootDirLength(void) const
                 xpr_size_t sUriSchemeLength = _tcslen(XPR_URI_SCHEME_SEPARATOR);
 
                 sSeparatorPosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-                if ((sSeparatorPosition != xpr::tstring::npos) && ((sSeparatorPosition + sUriSchemeLength + 1) < sLength))
+                if ((sSeparatorPosition != xpr::string::npos) && ((sSeparatorPosition + sUriSchemeLength + 1) < sLength))
                 {
                     sSeparatorPosition = mFilePath.find(XPR_URI_SEPARATOR, sSeparatorPosition + sUriSchemeLength);
-                    if (sSeparatorPosition == xpr::tstring::npos)
+                    if (sSeparatorPosition == xpr::string::npos)
                     {
                         sRootDirLength = mFilePath.length();
                     }
@@ -1159,7 +1162,7 @@ xpr_size_t FilePath::getRootDirLength(void) const
 
 xpr_bool_t FilePath::getRootDir(xpr::FilePath &aFilePath) const
 {
-    xpr::tstring sRootDir;
+    xpr::string sRootDir;
     if (XPR_IS_FALSE(getRootDir(sRootDir)))
     {
         return XPR_FALSE;
@@ -1172,7 +1175,7 @@ xpr_bool_t FilePath::getRootDir(xpr::FilePath &aFilePath) const
 
 xpr_bool_t FilePath::isRootDir(void) const
 {
-    xpr::tstring sRootDir;
+    xpr::string sRootDir;
     if (XPR_IS_FALSE(getRootDir(sRootDir)))
     {
         return XPR_FALSE;
@@ -1185,7 +1188,7 @@ xpr_bool_t FilePath::getParentDir(xpr_tchar_t *aParentDir, xpr_size_t aMaxLen) c
 {
     XPR_ASSERT(aParentDir != XPR_NULL);
 
-    xpr::tstring sParentDir;
+    xpr::string sParentDir;
     if (XPR_IS_FALSE(getParentDir(sParentDir)))
     {
         return XPR_FALSE;
@@ -1201,7 +1204,7 @@ xpr_bool_t FilePath::getParentDir(xpr_tchar_t *aParentDir, xpr_size_t aMaxLen) c
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::getParentDir(xpr::tstring &aParentDir) const
+xpr_bool_t FilePath::getParentDir(xpr::string &aParentDir) const
 {
     xpr_size_t sParentDirLength = getParentDirLength();
     if (sParentDirLength == 0)
@@ -1226,7 +1229,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
     case PathTypeNormal:
         {
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 sParentDirLength = sLastSeparatorPosition;
             }
@@ -1237,7 +1240,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
     case PathTypeUnc:
         {
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos && sSeparatorPosition > 2)
+            if (sSeparatorPosition != xpr::string::npos && sSeparatorPosition > 2)
             {
                 xpr_size_t sMinimumSeparator = 2;
                 if (isLong() == XPR_TRUE)
@@ -1246,7 +1249,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
                 }
 
                 sSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR, sSeparatorPosition - 1);
-                if (sSeparatorPosition != xpr::tstring::npos && sSeparatorPosition > sMinimumSeparator)
+                if (sSeparatorPosition != xpr::string::npos && sSeparatorPosition > sMinimumSeparator)
                 {
                     sParentDirLength = sLastSeparatorPosition;
                 }
@@ -1258,7 +1261,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
     case PathTypeUri:
         {
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_URI_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 xpr_size_t sPrefixLength             = 0;
                 xpr_size_t sUriLocalFileSchemeLength = _tcslen(kUriFileSchemeLocal);
@@ -1276,7 +1279,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
                     sPrefixLength = sUriSmbSchemeLength;
 
                     sSeparatorPosition = mFilePath.rfind(XPR_URI_SEPARATOR, sSeparatorPosition - 1);
-                    if (sSeparatorPosition != xpr::tstring::npos)
+                    if (sSeparatorPosition != xpr::string::npos)
                     {
                         if (sSeparatorPosition > sPrefixLength)
                         {
@@ -1318,7 +1321,7 @@ xpr_size_t FilePath::getParentDirLength(void) const
 
 xpr_bool_t FilePath::getParentDir(xpr::FilePath &aFilePath) const
 {
-    xpr::tstring sParentDir;
+    xpr::string sParentDir;
     if (XPR_IS_FALSE(getParentDir(sParentDir)))
     {
         return XPR_FALSE;
@@ -1333,7 +1336,7 @@ xpr_bool_t FilePath::getFileName(xpr_tchar_t *aFileName, xpr_size_t aMaxLen, xpr
 {
     XPR_ASSERT(aFileName != XPR_NULL);
 
-    xpr::tstring sFileName;
+    xpr::string sFileName;
     if (XPR_IS_FALSE(getFileName(sFileName, aWithExt)))
     {
         return XPR_FALSE;
@@ -1349,10 +1352,10 @@ xpr_bool_t FilePath::getFileName(xpr_tchar_t *aFileName, xpr_size_t aMaxLen, xpr
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::getFileName(xpr::tstring &aFileName, xpr_bool_t aWithExt) const
+xpr_bool_t FilePath::getFileName(xpr::string &aFileName, xpr_bool_t aWithExt) const
 {
     xpr_size_t sFileNamePosition = getFileNamePosition();
-    if (sFileNamePosition == xpr::tstring::npos)
+    if (sFileNamePosition == xpr::string::npos)
     {
         return XPR_FALSE;
     }
@@ -1362,7 +1365,7 @@ xpr_bool_t FilePath::getFileName(xpr::tstring &aFileName, xpr_bool_t aWithExt) c
     if (XPR_IS_FALSE(aWithExt))
     {
         xpr_size_t sFileExtSeparator = aFileName.rfind(XPR_FILE_EXT_SEPARATOR);
-        if (sFileExtSeparator != xpr::tstring::npos)
+        if (sFileExtSeparator != xpr::string::npos)
         {
             aFileName.erase(sFileExtSeparator);
         }
@@ -1373,7 +1376,7 @@ xpr_bool_t FilePath::getFileName(xpr::tstring &aFileName, xpr_bool_t aWithExt) c
 
 xpr_size_t FilePath::getFileNamePosition(void) const
 {
-    xpr_size_t sFileNamePosition = xpr::tstring::npos;
+    xpr_size_t sFileNamePosition = xpr::string::npos;
     xpr_size_t sLength = mFilePath.length();
     xpr_size_t sSeparatorPosition;
     xpr_size_t sLastSeparatorPosition;
@@ -1383,7 +1386,7 @@ xpr_size_t FilePath::getFileNamePosition(void) const
     case PathTypeNormal:
         {
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 sFileNamePosition = sLastSeparatorPosition + 1;
             }
@@ -1407,10 +1410,10 @@ xpr_size_t FilePath::getFileNamePosition(void) const
             }
 
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos && sSeparatorPosition > sMinimumSeparator)
+            if (sSeparatorPosition != xpr::string::npos && sSeparatorPosition > sMinimumSeparator)
             {
                 sSeparatorPosition = mFilePath.rfind(XPR_FILE_SEPARATOR, sSeparatorPosition - 1);
-                if (sSeparatorPosition != xpr::tstring::npos && sSeparatorPosition > sMinimumSeparator)
+                if (sSeparatorPosition != xpr::string::npos && sSeparatorPosition > sMinimumSeparator)
                 {
                     sFileNamePosition = sLastSeparatorPosition + 1;
                 }
@@ -1422,7 +1425,7 @@ xpr_size_t FilePath::getFileNamePosition(void) const
     case PathTypeUri:
         {
             sSeparatorPosition = sLastSeparatorPosition = mFilePath.rfind(XPR_URI_SEPARATOR);
-            if (sSeparatorPosition != xpr::tstring::npos)
+            if (sSeparatorPosition != xpr::string::npos)
             {
                 xpr_size_t sPrefixLength             = 0;
                 xpr_size_t sUriLocalFileSchemeLength = _tcslen(kUriFileSchemeLocal);
@@ -1440,7 +1443,7 @@ xpr_size_t FilePath::getFileNamePosition(void) const
                     sPrefixLength = sUriSmbSchemeLength;
 
                     sSeparatorPosition = mFilePath.rfind(XPR_URI_SEPARATOR, sSeparatorPosition - 1);
-                    if (sSeparatorPosition != xpr::tstring::npos)
+                    if (sSeparatorPosition != xpr::string::npos)
                     {
                         if (sSeparatorPosition > sPrefixLength)
                         {
@@ -1507,7 +1510,7 @@ xpr_size_t FilePath::getFileNamePosition(void) const
 
     default:
         {
-            sFileNamePosition = xpr::tstring::npos;
+            sFileNamePosition = xpr::string::npos;
             break;
         }
     }
@@ -1517,7 +1520,7 @@ xpr_size_t FilePath::getFileNamePosition(void) const
 
 xpr_bool_t FilePath::getFileName(xpr::FilePath &aFilePath, xpr_bool_t aWithExt) const
 {
-    xpr::tstring sFileName;
+    xpr::string sFileName;
     if (XPR_IS_FALSE(getFileName(sFileName, aWithExt)))
     {
         return XPR_FALSE;
@@ -1532,7 +1535,7 @@ xpr_bool_t FilePath::getExt(xpr_tchar_t *aExt, xpr_size_t aMaxLen) const
 {
     XPR_ASSERT(aExt != XPR_NULL);
 
-    xpr::tstring sExt;
+    xpr::string sExt;
     if (XPR_IS_FALSE(getExt(sExt)))
     {
         return XPR_FALSE;
@@ -1548,16 +1551,16 @@ xpr_bool_t FilePath::getExt(xpr_tchar_t *aExt, xpr_size_t aMaxLen) const
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::getExt(xpr::tstring &aExt) const
+xpr_bool_t FilePath::getExt(xpr::string &aExt) const
 {
-    xpr::tstring sFileName;
+    xpr::string sFileName;
     if (XPR_IS_FALSE(getFileName(sFileName)))
     {
         return XPR_FALSE;
     }
 
     xpr_size_t sDot = sFileName.rfind(XPR_FILE_EXT_SEPARATOR);
-    if (sDot != xpr::tstring::npos)
+    if (sDot != xpr::string::npos)
     {
         aExt = sFileName.substr(sDot);
     }
@@ -1573,7 +1576,7 @@ xpr_bool_t FilePath::equalExt(const xpr_tchar_t *aExt) const
 {
     XPR_ASSERT(aExt != XPR_NULL);
 
-    xpr::tstring sExt;
+    xpr::string sExt;
     if (XPR_IS_FALSE(getExt(sExt)))
     {
         return XPR_FALSE;
@@ -1582,9 +1585,9 @@ xpr_bool_t FilePath::equalExt(const xpr_tchar_t *aExt) const
     return (mFilePath.compare_case(aExt) == 0) ? XPR_TRUE : XPR_FALSE;
 }
 
-xpr_bool_t FilePath::equalExt(xpr::tstring &aExt) const
+xpr_bool_t FilePath::equalExt(xpr::string &aExt) const
 {
-    xpr::tstring sExt;
+    xpr::string sExt;
     if (XPR_IS_FALSE(getExt(sExt)))
     {
         return XPR_FALSE;
@@ -1595,7 +1598,7 @@ xpr_bool_t FilePath::equalExt(xpr::tstring &aExt) const
 
 xpr_bool_t FilePath::hasExt(void) const
 {
-    xpr::tstring sExt;
+    xpr::string sExt;
     if (XPR_IS_FALSE(getExt(sExt)))
     {
         return XPR_FALSE;
@@ -1652,7 +1655,7 @@ xpr_sint_t FilePath::compareCase(const xpr_tchar_t *aFilePath, xpr_size_t aLengt
                 else
                 {
                     xpr_size_t sSeparatorPosition = mFilePath.find(XPR_URI_SCHEME_SEPARATOR);
-                    if (sSeparatorPosition != xpr::tstring::npos)
+                    if (sSeparatorPosition != xpr::string::npos)
                     {
                         sPrefixLength = sSeparatorPosition + _tcslen(XPR_URI_SCHEME_SEPARATOR);
                     }
@@ -1691,7 +1694,7 @@ xpr_sint_t FilePath::compare(const xpr_tchar_t *aFilePath) const
     return compareCase(aFilePath, sLength, XPR_FALSE);
 }
 
-xpr_sint_t FilePath::compare(const xpr::tstring &aFilePath) const
+xpr_sint_t FilePath::compare(const xpr::string &aFilePath) const
 {
     const xpr_tchar_t *sFilePath = aFilePath.c_str();
     xpr_size_t         sLength   = aFilePath.length();
@@ -1716,7 +1719,7 @@ xpr_sint_t FilePath::compareCase(const xpr_tchar_t *aFilePath, xpr_bool_t aCaseS
     return compareCase(aFilePath, sLength, aCaseSensitivity);
 }
 
-xpr_sint_t FilePath::compareCase(const xpr::tstring &aFilePath, xpr_bool_t aCaseSensitivity) const
+xpr_sint_t FilePath::compareCase(const xpr::string &aFilePath, xpr_bool_t aCaseSensitivity) const
 {
     const xpr_tchar_t *sFilePath = aFilePath.c_str();
     xpr_size_t         sLength   = aFilePath.length();
@@ -1869,7 +1872,7 @@ xpr_bool_t FilePath::toUri(xpr_tchar_t *aUri, xpr_size_t aMaxLen) const
 {
     XPR_ASSERT(aUri != XPR_NULL);
 
-    xpr::tstring sUri;
+    xpr::string sUri;
     toUri(sUri);
 
     if (sUri.length() > aMaxLen)
@@ -1882,7 +1885,7 @@ xpr_bool_t FilePath::toUri(xpr_tchar_t *aUri, xpr_size_t aMaxLen) const
     return XPR_TRUE;
 }
 
-xpr_bool_t FilePath::toUri(xpr::tstring &aUri) const
+xpr_bool_t FilePath::toUri(xpr::string &aUri) const
 {
     switch (mPathType)
     {
@@ -1900,7 +1903,7 @@ xpr_bool_t FilePath::toUri(xpr::tstring &aUri) const
             do
             {
                 sSeparatorPosition = aUri.find(XPR_FILE_SEPARATOR, sSeparatorPosition);
-                if (sSeparatorPosition != xpr::tstring::npos)
+                if (sSeparatorPosition != xpr::string::npos)
                 {
                     aUri[sSeparatorPosition] = XPR_URI_SEPARATOR;
                     ++sSeparatorPosition;
@@ -1920,7 +1923,7 @@ xpr_bool_t FilePath::toUri(xpr::tstring &aUri) const
             // e.g.) \\?\UNC\ServerName\ShareName\file (long UNC)    -> file://ServerName/ShareName/file
             // e.g.) \\?\UNC\c:\windows\system32\test.log (long UNC) -> file:///c:/windows/system32/test.log
 
-            xpr_size_t sSubStrPosition = xpr::tstring::npos;
+            xpr_size_t sSubStrPosition = xpr::string::npos;
             xpr_size_t sUncLongLength  = _tcslen(kUncLong);
 
             if (mFilePath.compare_case(0, sUncLongLength, kUncLong) == 0)
@@ -1941,7 +1944,7 @@ xpr_bool_t FilePath::toUri(xpr::tstring &aUri) const
             do
             {
                 sSeparatorPosition = aUri.find(XPR_FILE_SEPARATOR, sSeparatorPosition);
-                if (sSeparatorPosition != xpr::tstring::npos)
+                if (sSeparatorPosition != xpr::string::npos)
                 {
                     aUri[sSeparatorPosition] = XPR_URI_SEPARATOR;
                     ++sSeparatorPosition;
@@ -1973,7 +1976,7 @@ xpr_bool_t FilePath::toUri(xpr::tstring &aUri) const
 
 xpr_bool_t FilePath::toUri(FilePath &aFilePath) const
 {
-    xpr::tstring sUri;
+    xpr::string sUri;
 
     if (XPR_IS_FALSE(toUri(sUri)))
     {
@@ -1989,7 +1992,7 @@ xpr_bool_t FilePath::getInvalidChars(xpr_tchar_t *aInvalidChars, xpr_size_t aMax
 {
     XPR_ASSERT(aInvalidChars != XPR_NULL);
 
-    xpr::tstring sInvalidChars;
+    xpr::string sInvalidChars;
     getInvalidChars(sInvalidChars);
 
     if (sInvalidChars.length() > aMaxLen)
@@ -2002,7 +2005,7 @@ xpr_bool_t FilePath::getInvalidChars(xpr_tchar_t *aInvalidChars, xpr_size_t aMax
     return XPR_TRUE;
 }
 
-void FilePath::getInvalidChars(xpr::tstring &aInvalidChars)
+void FilePath::getInvalidChars(xpr::string &aInvalidChars)
 {
     aInvalidChars = XPR_STRING_LITERAL("<>:\"/\\|?*");
 }

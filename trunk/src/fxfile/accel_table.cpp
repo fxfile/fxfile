@@ -20,6 +20,8 @@
 
 namespace fxfile
 {
+namespace
+{
 #pragma pack(push, 1)
 
 // 100 bytes
@@ -41,9 +43,10 @@ typedef struct FileFooter
     xpr_sint32_t mEndCode;
 } FileFooter;
 
-static const xpr_sint32_t kEndCode = 0xFFFFFFFF;
+const xpr_sint32_t kEndCode = 0xFFFFFFFF;
 
 #pragma pack(pop)
+} // namespace anonymous
 
 AccelTable::AccelTable(void)
 {

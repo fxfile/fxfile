@@ -26,6 +26,8 @@ namespace fxfile
 {
 namespace cmd
 {
+namespace
+{
 // user timer
 enum
 {
@@ -37,6 +39,7 @@ enum
 {
     WM_FINALIZE = WM_USER + 100,
 };
+} // namespace anonymous
 
 CrcCreateDlg::CrcCreateDlg(void)
     : super(IDD_CRC_CREATE, XPR_NULL)

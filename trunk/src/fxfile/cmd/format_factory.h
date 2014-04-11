@@ -26,8 +26,8 @@ protected: FormatFactory(void);
 public:   ~FormatFactory(void);
 
 public:
-    xpr_bool_t parseShort(const xpr::tstring &aFormatString, Format *&aFormat) const;
-    void parseShortAsString(const xpr::tstring &aFormatString, Format *&aFormat) const;
+    xpr_bool_t parseShort(const xpr::string &aFormatString, Format *&aFormat) const;
+    void parseShortAsString(const xpr::string &aFormatString, Format *&aFormat) const;
 
 public:
     xpr_bool_t parseFromXml(const base::XmlReader &aXmlReader, base::XmlReader::Element *aElement, Format *&aFormat) const;
@@ -37,9 +37,9 @@ private:
     template <typename T> void addXmlParseFuncTable(void);
 
 private:
-    typedef xpr_bool_t (*canParseShortFunc)(const xpr::tstring &aFormatString);
-    typedef void       (*parseShortFunc   )(const xpr::tstring &aFormatString, Format *&aFormat);
-    typedef xpr_bool_t (*canParseXmlFunc  )(const xpr::tstring &aElementName);
+    typedef xpr_bool_t (*canParseShortFunc)(const xpr::string &aFormatString);
+    typedef void       (*parseShortFunc   )(const xpr::string &aFormatString, Format *&aFormat);
+    typedef xpr_bool_t (*canParseXmlFunc  )(const xpr::string &aElementName);
     typedef Format *   (*newObjectFunc    )(void);
 
     struct ShortParseFunc

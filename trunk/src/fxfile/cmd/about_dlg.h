@@ -30,8 +30,8 @@ public:
     void showTabDialog(xpr_sint_t aIndex);
 
 protected:
-    xpr::tstring mProgram;
-    xpr::tstring mLicense;
+    xpr::string mProgram;
+    xpr::string mLicense;
 
     typedef std::deque<AboutTabDlg *> TabDeque;
     TabDeque   mTabDeque;

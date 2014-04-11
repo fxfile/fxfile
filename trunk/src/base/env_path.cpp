@@ -95,7 +95,7 @@ EnvPath::~EnvPath(void)
 
 void EnvPath::addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL)
 {
-    xpr::tstring sSpec;
+    xpr::string sSpec;
     sSpec  = XPR_STRING_LITERAL("%");
     sSpec += aSpec;
     sSpec += XPR_STRING_LITERAL("%");
@@ -103,7 +103,7 @@ void EnvPath::addSpec(const xpr_tchar_t *aSpec, xpr_uint_t aCSIDL)
     mSpecMap[sSpec] = aCSIDL;
 }
 
-xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xpr_uint_t *aCSIDL) const
+xpr_bool_t EnvPath::getPidl(const xpr::string &aSpec, ShellItem *aShellItem, xpr_uint_t *aCSIDL) const
 {
     SpecMap::const_iterator sIterator = mSpecMap.find(aSpec);
     if (sIterator == mSpecMap.end())
@@ -117,8 +117,8 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
     {
     case CSIDL_FXFILE:
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-            xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+            xpr::string sPath;
+            xpr::FileSys::getExeDir(sPath);
 
             sResult = aShellItem->assign(sPath);
             break;
@@ -126,10 +126,10 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
 
     case CSIDL_FXFILE_DRIVE:
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-            xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+            xpr::string sPath;
+            xpr::FileSys::getExeDir(sPath);
 
-            sPath[3] = XPR_STRING_LITERAL('\0');
+            sPath.erase(3);
 
             sResult = aShellItem->assign(sPath);
             break;
@@ -178,7 +178,7 @@ xpr_bool_t EnvPath::getPidl(const xpr::tstring &aSpec, ShellItem *aShellItem, xp
     return sResult;
 }
 
-xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_uint_t *aCSIDL) const
+xpr_bool_t EnvPath::getPath(const xpr::string &aSpec, xpr::string &aPath, xpr_uint_t *aCSIDL) const
 {
     aPath.clear();
 
@@ -192,8 +192,8 @@ xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_
     {
     case CSIDL_FXFILE:
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-            xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+            xpr::string sPath;
+            xpr::FileSys::getExeDir(sPath);
 
             aPath = sPath;
             break;
@@ -201,11 +201,12 @@ xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_
 
     case CSIDL_FXFILE_DRIVE:
         {
-            xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
-            xpr::FileSys::getExeDir(sPath, XPR_MAX_PATH);
+            xpr::string sPath;
+            xpr::FileSys::getExeDir(sPath);
+
+            sPath.erase(3);
 
             aPath = sPath;
-            aPath.erase(3);
             break;
         }
 
@@ -248,14 +249,14 @@ xpr_bool_t EnvPath::getPath(const xpr::tstring &aSpec, xpr::tstring &aPath, xpr_
     return sResult;
 }
 
-static inline xpr_bool_t getEnv(const xpr::tstring &aEnvPath, xpr::tstring &aEnv)
+static inline xpr_bool_t getEnv(const xpr::string &aEnvPath, xpr::string &aEnv)
 {
     aEnv.clear();
 
     if (aEnvPath.length() >= 3 && aEnvPath[0] == XPR_STRING_LITERAL('%'))
     {
         xpr_size_t sFind = aEnvPath.find('%', 1);
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
         {
             aEnv = aEnvPath.substr(0, sFind + 1);
         }
@@ -264,11 +265,11 @@ static inline xpr_bool_t getEnv(const xpr::tstring &aEnvPath, xpr::tstring &aEnv
     return aEnv.empty() ? XPR_FALSE : XPR_TRUE;
 }
 
-void EnvPath::resolve(const xpr::tstring &aEnvPath, xpr::tstring &aResolvedPath) const
+void EnvPath::resolve(const xpr::string &aEnvPath, xpr::string &aResolvedPath) const
 {
     aResolvedPath.clear();
 
-    xpr::tstring sEnv;
+    xpr::string sEnv;
 
     if (getEnv(aEnvPath, sEnv) == XPR_TRUE)
     {

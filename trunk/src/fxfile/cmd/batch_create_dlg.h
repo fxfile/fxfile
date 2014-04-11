@@ -48,7 +48,7 @@ protected:
     void setCreateType(BatchCreate::CreateType aType);
 
 protected:
-    xpr::tstring mPath;
+    xpr::string  mPath;
     BatchCreate *mBatchCreate;
 
     typedef std::deque<BatchCreateTabDlg *> TabDeque;

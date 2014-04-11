@@ -132,7 +132,7 @@ void FormatDelete::rename(RenameContext &aContext) const
     }
 }
 
-xpr_bool_t FormatDelete::canParseXml(const xpr::tstring &aElementName)
+xpr_bool_t FormatDelete::canParseXml(const xpr::string &aElementName)
 {
     return (aElementName.compare(kXmlFormatDeleteElement) == 0) ? XPR_TRUE : XPR_FALSE;
 }
@@ -141,8 +141,8 @@ xpr_bool_t FormatDelete::parseXml(const base::XmlReader &aXmlReader, base::XmlRe
 {
     XPR_ASSERT(aElement != XPR_NULL);
 
-    xpr::tstring  sName;
-    xpr::tstring  sValue;
+    xpr::string   sName;
+    xpr::string   sValue;
     DeletePosType sPosType = kDefaultPosType;
     xpr_sint_t    sPos     = kDefaultPos;
     xpr_sint_t    sLength  = kDefaultLength;
@@ -184,7 +184,7 @@ xpr_bool_t FormatDelete::write(base::XmlWriter &aXmlWriter) const
 
     if (aXmlWriter.beginElement(kXmlFormatDeleteElement) == XPR_TRUE)
     {
-        xpr::tstring sPosTypeString;
+        xpr::string sPosTypeString;
 
         toString(mPosType, sPosTypeString);
 
@@ -200,7 +200,7 @@ xpr_bool_t FormatDelete::write(base::XmlWriter &aXmlWriter) const
     return sResult;
 }
 
-void FormatDelete::toString(const DeletePosType &aPosType, xpr::tstring &aString)
+void FormatDelete::toString(const DeletePosType &aPosType, xpr::string &aString)
 {
     switch (aPosType)
     {
@@ -211,7 +211,7 @@ void FormatDelete::toString(const DeletePosType &aPosType, xpr::tstring &aString
     }
 }
 
-void FormatDelete::toType(const xpr::tstring &aString, DeletePosType &aPosType)
+void FormatDelete::toType(const xpr::string &aString, DeletePosType &aPosType)
 {
     if (aString.compare(kXmlAtFirstValue) == 0)
     {

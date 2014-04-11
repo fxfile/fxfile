@@ -8,10 +8,13 @@
 #include "xpr_rcode.h"
 #include "xpr_bit.h"
 #include "xpr_memory.h"
+#include "xpr_debug.h"
 
 namespace xpr
 {
-static const xpr_size_t kDefaultBufferSize = 1024; // 1KB
+namespace
+{
+const xpr_size_t kDefaultBufferSize = 1024; // 1KB
 
 // reference:
 // http://www.unicode.org/faq/utf_bom.html
@@ -30,7 +33,7 @@ static const xpr_size_t kDefaultBufferSize = 1024; // 1KB
 // | 84 31 95 33 | GB-18030             |
 // +-------------+----------------------+
 
-static const struct
+const struct
 {
     CharSet    mCharSet;
     xpr_char_t mBom[4];
@@ -43,6 +46,7 @@ static const struct
         { CharSetUtf32,   { (xpr_char_t)0xff, (xpr_char_t)0xfe, (xpr_char_t)0,    (xpr_char_t)0    }, 4 },
         { CharSetUtf32be, { (xpr_char_t)0,    (xpr_char_t)0,    (xpr_char_t)0xfe, (xpr_char_t)0xff }, 4 },
     };
+} // namespace anonymous
 
 TextFileIo::TextFileIo(FileIo &aFileIo)
     : mFileIo(aFileIo)
@@ -68,8 +72,7 @@ CharSet TextFileIo::getEncoding(void) const
 
 xpr_bool_t TextFileIo::setEndOfLine(const xpr_char_t *aEndOfLine)
 {
-    if (XPR_IS_NULL(aEndOfLine))
-        return XPR_FALSE;
+    XPR_ASSERT(aEndOfLine != XPR_NULL);
 
     xpr_size_t sLen = strlen(aEndOfLine);
     if (sLen == 0 || sLen > XPR_COUNT_OF(mEndOfLine))
@@ -106,7 +109,9 @@ xpr_bool_t TextFileIo::setEndOfLine(xpr_sint_t aEndOfLineStyle)
 
 xpr_bool_t TextFileIo::getEndOfLine(xpr_char_t *aEndOfLine, xpr_size_t aMaxLen) const
 {
-    if (XPR_IS_NULL(aEndOfLine) || aMaxLen == 0)
+    XPR_ASSERT(aEndOfLine != XPR_NULL);
+
+    if (aMaxLen == 0)
         return XPR_FALSE;
 
     xpr_size_t sLen = strlen(mEndOfLine);
@@ -210,8 +215,8 @@ void TextFileReader::setBufferSize(xpr_size_t aBufferSize)
 
 xpr_rcode_t TextFileReader::read(void *aText, xpr_size_t aMaxBytes, CharSet aCharSet, xpr_ssize_t *aReadBytes)
 {
-    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadBytes))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadBytes != XPR_NULL);
 
     if (aMaxBytes == 0)
     {
@@ -278,6 +283,9 @@ xpr_rcode_t TextFileReader::read(void *aText, xpr_size_t aMaxBytes, CharSet aCha
 
 xpr_rcode_t TextFileReader::read(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
+
     xpr_rcode_t sRcode;
     xpr_ssize_t sReadBytes;
 
@@ -292,6 +300,9 @@ xpr_rcode_t TextFileReader::read(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssiz
 
 xpr_rcode_t TextFileReader::read(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
+
     xpr_rcode_t sRcode;
     xpr_ssize_t sReadBytes;
     CharSet sCharSet;
@@ -311,6 +322,9 @@ xpr_rcode_t TextFileReader::read(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssi
 
 xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_char_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
+
     xpr_char_t *sEndOfLine;
 
     if (mEndOfLineLen == 0)
@@ -371,8 +385,8 @@ xpr_rcode_t TextFileReader::readLine(xpr_char_t  *aText,
                                      xpr_size_t   aMaxLen,
                                      xpr_ssize_t *aReadLen)
 {
-    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadLen))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
 
     xpr_rcode_t sRcode;
     xpr_ssize_t sReadLen;
@@ -441,6 +455,9 @@ xpr_rcode_t TextFileReader::readLine(xpr_char_t  *aText,
 
 xpr_rcode_t TextFileReader::copyToEndOfLine(xpr_wchar_t *aText, xpr_size_t aMaxLen, xpr_ssize_t *aReadLen)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
+
     xpr_wchar_t *sEndOfLine;
 
     if (mEndOfLineLen == 0)
@@ -501,8 +518,8 @@ xpr_rcode_t TextFileReader::readLine(xpr_wchar_t *aText,
                                      xpr_size_t   aMaxLen,
                                      xpr_ssize_t *aReadLen)
 {
-    if (XPR_IS_NULL(aText) || XPR_IS_NULL(aReadLen))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
+    XPR_ASSERT(aReadLen != XPR_NULL);
 
     xpr_rcode_t sRcode;
     xpr_ssize_t sReadLen;
@@ -623,8 +640,7 @@ xpr_rcode_t TextFileWriter::writeBom(void)
 
 xpr_rcode_t TextFileWriter::write(const void *aText, xpr_size_t aTextBytes, CharSet aCharSet)
 {
-    if (XPR_IS_NULL(aText))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
 
     const xpr_size_t sBufferNeedSize = aTextBytes * 4;
     if (XPR_IS_NULL(mBuffer) || sBufferNeedSize > mBufferSize)
@@ -653,8 +669,7 @@ xpr_rcode_t TextFileWriter::write(const void *aText, xpr_size_t aTextBytes, Char
 
 xpr_rcode_t TextFileWriter::write(const xpr_char_t *aText)
 {
-    if (XPR_IS_NULL(aText))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
 
     xpr_size_t sLen = strlen(aText);
 
@@ -663,8 +678,7 @@ xpr_rcode_t TextFileWriter::write(const xpr_char_t *aText)
 
 xpr_rcode_t TextFileWriter::write(const xpr_wchar_t *aText)
 {
-    if (XPR_IS_NULL(aText))
-        return XPR_RCODE_EINVAL;
+    XPR_ASSERT(aText != XPR_NULL);
 
     xpr_size_t sLen = wcslen(aText);
 
@@ -696,6 +710,8 @@ xpr_rcode_t TextFileWriter::ensureBuffer(xpr_size_t aFormattedTextSize)
 
 xpr_rcode_t TextFileWriter::writeFormat(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -712,6 +728,8 @@ xpr_rcode_t TextFileWriter::writeFormat(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TextFileWriter::writeFormat(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -728,6 +746,8 @@ xpr_rcode_t TextFileWriter::writeFormat(const xpr_wchar_t *aFormat, ...)
 
 xpr_rcode_t TextFileWriter::writeLine(const xpr_char_t *aText)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+
     xpr_rcode_t sRcode;
 
     sRcode = write(aText);
@@ -743,6 +763,8 @@ xpr_rcode_t TextFileWriter::writeLine(const xpr_char_t *aText)
 
 xpr_rcode_t TextFileWriter::writeLine(const xpr_wchar_t *aText)
 {
+    XPR_ASSERT(aText != XPR_NULL);
+
     xpr_rcode_t sRcode;
 
     sRcode = write(aText);
@@ -758,6 +780,8 @@ xpr_rcode_t TextFileWriter::writeLine(const xpr_wchar_t *aText)
 
 xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_char_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 
@@ -778,6 +802,8 @@ xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_char_t *aFormat, ...)
 
 xpr_rcode_t TextFileWriter::writeFormatLine(const xpr_wchar_t *aFormat, ...)
 {
+    XPR_ASSERT(aFormat != XPR_NULL);
+
     va_list sArgs;
     va_start(sArgs, aFormat);
 

@@ -18,15 +18,18 @@
 
 namespace fxfile
 {
+namespace
+{
 const DWORD kIdleTime = 20;
 const xpr_size_t kBufferSize = sizeof(FILE_NOTIFY_INFORMATION) * 1024;
+} // namespace anonymous
 
 struct AdvFileChangeWatcher::AdvWatchOverlapped : public OVERLAPPED
 {
     xpr_byte_t      mBuffer[kBufferSize];
     DriveWatchItem *mDriveWatchItem;
-    xpr::tstring    mOldFileName;
-    xpr::tstring    mRootPath;
+    xpr::string     mOldFileName;
+    xpr::string     mRootPath;
 };
 
 enum AdvFileChangeWatcher::TaskCommand
@@ -123,7 +126,7 @@ public:
         XPR_SAFE_DELETE(mOverlapped);
     }
 
-    AdvWatchId registerWatch(const xpr::tstring &aRootPath, AdvWatchItem *aNewAdvWatchItem)
+    AdvWatchId registerWatch(const xpr::string &aRootPath, AdvWatchItem *aNewAdvWatchItem)
     {
         if (aRootPath.empty() == XPR_TRUE || XPR_IS_NULL(aNewAdvWatchItem))
             return InvalidAdvWatchId;
@@ -132,7 +135,7 @@ public:
         {
             mRootPath = aRootPath;
 
-            xpr::tstring sDrivePath(aRootPath);
+            xpr::string sDrivePath(aRootPath);
             sDrivePath += XPR_STRING_LITERAL('\\');
 
             mDirectory = ::CreateFile(
@@ -273,7 +276,7 @@ public:
         return sOverlapped;
     }
 
-    void extractFileName(const FILE_NOTIFY_INFORMATION *aFileNotifyInfo, xpr::tstring &aFileName)
+    void extractFileName(const FILE_NOTIFY_INFORMATION *aFileNotifyInfo, xpr::string &aFileName)
     {
         xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
         xpr_size_t sInputBytes = aFileNotifyInfo->FileNameLength * sizeof(xpr_wchar_t);
@@ -327,15 +330,15 @@ public:
             return;
         }
 
-        const xpr::tstring &sRootPath = aAdvWatchOverlapped->mRootPath;
+        const xpr::string &sRootPath = aAdvWatchOverlapped->mRootPath;
         xpr_size_t sRootPathLen = sRootPath.length();
 
-        xpr::tstring sFileName;
+        xpr::string sFileName;
         extractFileName(aFileNotifyInformation, sFileName);
 
-        xpr::tstring sDir = sRootPath;
+        xpr::string sDir = sRootPath;
         xpr_size_t sFind = sFileName.rfind(XPR_STRING_LITERAL('\\'));
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
         {
             sDir += XPR_STRING_LITERAL('\\');
             sDir += sFileName.substr(0, sFind);
@@ -387,7 +390,7 @@ public:
         {
             sNotifyInfo->mOldDir = sRootPath;
             sFind = aAdvWatchOverlapped->mOldFileName.rfind(XPR_STRING_LITERAL('\\'));
-            if (sFind != xpr::tstring::npos)
+            if (sFind != xpr::string::npos)
             {
                 sNotifyInfo->mOldDir += XPR_STRING_LITERAL('\\');
                 sNotifyInfo->mOldDir += aAdvWatchOverlapped->mOldFileName.substr(0, sFind);
@@ -401,7 +404,7 @@ public:
     }
 
 public:
-    xpr::tstring        mRootPath;
+    xpr::string         mRootPath;
     HANDLE              mDirectory;
     HANDLE              mCompletionPort;
     AdvWatchOverlapped *mOverlapped;
@@ -580,7 +583,7 @@ void AdvFileChangeWatcher::unregisterAllWatches(void)
     }
 }
 
-xpr_bool_t AdvFileChangeWatcher::getRootPath(const xpr::tstring &aPath, xpr::tstring &aRootPath)
+xpr_bool_t AdvFileChangeWatcher::getRootPath(const xpr::string &aPath, xpr::string &aRootPath)
 {
     aRootPath.clear();
 
@@ -593,7 +596,7 @@ xpr_bool_t AdvFileChangeWatcher::getRootPath(const xpr::tstring &aPath, xpr::tst
     {
         // network shared-folder path
         xpr_size_t sFind = aPath.find(XPR_STRING_LITERAL('\\'), 2);
-        if (sFind != xpr::tstring::npos)
+        if (sFind != xpr::string::npos)
             aRootPath = aPath.substr(0, sFind);
     }
 
@@ -714,7 +717,7 @@ void AdvFileChangeWatcher::processTasks(TaskList &aTaskList)
 
 void AdvFileChangeWatcher::registerTask(Task &aTask)
 {
-    xpr::tstring sRootPath;
+    xpr::string sRootPath;
     if (!getRootPath(aTask.mAdvWatchItem->mPath, sRootPath))
         return;
 
@@ -792,7 +795,7 @@ void AdvFileChangeWatcher::modifyTask(Task &aTask)
                     sOldDriveWatchItem->unregisterWatch(aTask.mOldAdvWatchId);
                     mIdDriveWatchMap.erase(sOldIdIterator);
 
-                    xpr::tstring sRootPath;
+                    xpr::string sRootPath;
                     if (getRootPath(aTask.mAdvWatchItem->mPath, sRootPath))
                     {
                         sOldDriveWatchItem->registerWatch(sRootPath, aTask.mAdvWatchItem);
@@ -816,7 +819,7 @@ void AdvFileChangeWatcher::modifyTask(Task &aTask)
 
     // new
     {
-        xpr::tstring sRootPath;
+        xpr::string sRootPath;
         if (getRootPath(aTask.mAdvWatchItem->mPath, sRootPath))
         {
             DriveWatchMap::iterator sIterator = mDriveWatchMap.find(sRootPath);
