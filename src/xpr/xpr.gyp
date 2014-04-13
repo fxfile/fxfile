@@ -299,6 +299,7 @@
                 './include/xpr_process.h',
                 './include/xpr_process_sync.h',
                 './include/xpr_rcode.h',
+                './include/xpr_scoped_ptr.h',
                 './include/xpr_shm.h',
                 './include/xpr_std.h',
                 './include/xpr_string.h',
