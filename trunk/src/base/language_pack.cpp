@@ -136,6 +136,7 @@ xpr_bool_t LanguagePack::load(const xpr_tchar_t *aPath, StringTable *aStringTabl
                                 if (sName == kIDAttribute)
                                 {
                                     sId = &sValue;
+                                    sString.clear();
                                 }
                             }
                         }
