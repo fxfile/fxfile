@@ -1989,11 +1989,11 @@ void String::trim_left(void)
 void String::trim_right(void)
 {
     xpr_size_t i;
-    for (i = mLength - 1; i >= 0; --i)
+    for (i = mLength - 1; i != -1; --i)
     {
         if (xpr::isSpace((xpr_char_t)mString[i]) == XPR_FALSE)
         {
-            erase(i, mLength - i - 1);
+            erase(i + 1, mLength - i - 1);
             break;
         }
     }
