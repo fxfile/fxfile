@@ -40,7 +40,7 @@ xpr_bool_t Print::onPreparePrinting(CPrintInfo *aPrintInfo)
 
 void Print::onBeginPrinting(CDC *aDC, CPrintInfo *aPrintInfo)
 {
-    ASSERT(aDC != XPR_NULL && aPrintInfo != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL && aPrintInfo != XPR_NULL);
 
     mPaperRect = getPaperRect(aDC);
     mPageRect  = getPageRect();
@@ -80,7 +80,7 @@ void Print::drawRect(CDC *aDC, CRect aRect, COLORREF aColor)
 
 CRect Print::getPaperRect(CDC *aDC)
 {
-    ASSERT(aDC != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL);
 
     CSize aPaperSize = CSize(aDC->GetDeviceCaps(HORZRES), aDC->GetDeviceCaps(VERTRES));
 
@@ -89,7 +89,7 @@ CRect Print::getPaperRect(CDC *aDC)
 
 CRect Print::getPageRect(void)
 {
-    ASSERT(mPaperRect != CRect(0,0,0,0));
+    XPR_ASSERT(mPaperRect != CRect(0,0,0,0));
 
     CRect sRect = mPaperRect;
     sRect.DeflateRect(mMarginRect.left, mMarginRect.top, mMarginRect.right, mMarginRect.bottom);
@@ -99,7 +99,7 @@ CRect Print::getPageRect(void)
 
 CSize Print::getCharSize(CDC *aDC, CFont *aFont)
 {
-    ASSERT(aDC != XPR_NULL && aFont != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL && aFont != XPR_NULL);
 
     CFont *sOldFont = aDC->SelectObject(aFont);
 
@@ -113,7 +113,7 @@ CSize Print::getCharSize(CDC *aDC, CFont *aFont)
 
 xpr_float_t Print::getTextRatioX(CDC *aDC)
 {
-    ASSERT(aDC != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL);
 
     CClientDC sScreenDC(XPR_NULL);
 
@@ -125,9 +125,9 @@ xpr_float_t Print::getTextRatioX(CDC *aDC)
     return ((xpr_float_t)sDstTextMetrics.tmDigitizedAspectX) / ((xpr_float_t)sSrcTextMetrics.tmDigitizedAspectX);
 }
 
-CFont *Print::createFont(CDC *aDC, CString aName, xpr_sint_t aPoints, xpr_bool_t aBold, xpr_bool_t aItalic)
+CFont *Print::createFont(CDC *aDC, const xpr::string &aName, xpr_sint_t aPoints, xpr_bool_t aBold, xpr_bool_t aItalic)
 {
-    ASSERT(aDC != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL);
 
     if (XPR_IS_NULL(aDC) || aPoints < 0)
         return XPR_NULL;
@@ -151,7 +151,7 @@ CFont *Print::createFont(CDC *aDC, CString aName, xpr_sint_t aPoints, xpr_bool_t
 
     xpr_sint_t sHeight = -MulDiv(aPoints, sPaperSize.cy, 72);
 
-    HFONT sFontHandle = CreateFont(aName, sHeight, aBold, aItalic);
+    HFONT sFontHandle = CreateFont(aName.c_str(), sHeight, aBold, aItalic);
     if (XPR_IS_NULL(sFontHandle))
         return XPR_NULL;
 
@@ -161,12 +161,12 @@ CFont *Print::createFont(CDC *aDC, CString aName, xpr_sint_t aPoints, xpr_bool_t
     return sFont;
 }
 
-void Print::setAppName(const CString &aName)
+void Print::setAppName(const xpr::string &aName)
 {
     mAppName = aName;
 }
 
-void Print::setDocTitle(const CString &aName)
+void Print::setDocTitle(const xpr::string &aName)
 {
     mDocName = aName;
 }

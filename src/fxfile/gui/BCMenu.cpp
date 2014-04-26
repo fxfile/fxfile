@@ -1987,6 +1987,30 @@ void BCMenu::LoadCheckmarkBitmap(int unselect, int select)
 	}
 }
 
+BOOL BCMenu::GetMenuText(UINT id, xpr::string &string, UINT nFlags/*= MF_BYPOSITION*/)
+{
+	BOOL bResult = FALSE;
+	
+	if (MF_BYPOSITION & nFlags)
+	{
+		INT_PTR numMenuItems = m_MenuList.GetUpperBound();
+		if (numMenuItems != -1 && id <= (UINT)numMenuItems && m_MenuList[id])
+		{
+			string = m_MenuList[id]->GetString();
+			bResult = TRUE;
+		}
+	}
+	else
+	{
+		int uiLoc;
+		BCMenu* pMenu = FindMenuOption(id, uiLoc);
+		if (NULL != pMenu)
+			bResult = pMenu->GetMenuText(uiLoc, string);
+	}
+
+	return bResult;
+}
+
 //--------------------------------------------------------------------------
 //[18.06.99 rj]
 BOOL BCMenu::GetMenuText(UINT id, CString& string, UINT nFlags/*= MF_BYPOSITION*/)
@@ -2032,6 +2056,34 @@ BOOL BCMenu::GetMenuText(UINT id, LPTSTR lpszString, UINT nFlags/*= MF_BYPOSITIO
 		BCMenu* pMenu = FindMenuOption(id, uiLoc);
 		if (NULL != pMenu)
 			bResult = pMenu->GetMenuText(uiLoc, lpszString);
+	}
+
+	return bResult;
+}
+
+BOOL BCMenu::SetMenuText(UINT id, const xpr::string& string, UINT nFlags/*= MF_BYPOSITION*/)
+{
+	BOOL bResult = FALSE;
+	
+	if (MF_BYPOSITION & nFlags)
+	{
+		INT_PTR numMenuItems = m_MenuList.GetUpperBound();
+		if (numMenuItems != -1 && id <= (UINT)numMenuItems)
+		{
+#ifdef _UNICODE
+			m_MenuList[id]->SetWideString(string.c_str());
+#else
+			m_MenuList[id]->SetAnsiString(string.c_str());
+#endif
+			bResult = TRUE;
+		}
+	}
+	else
+	{
+		int uiLoc;
+		BCMenu* pMenu = FindMenuOption(id,uiLoc);
+		if (NULL != pMenu)
+			bResult = pMenu->SetMenuText(uiLoc, string.c_str());
 	}
 
 	return bResult;

@@ -55,7 +55,9 @@ public:
     const fxfile::base::LanguageTable *getLanguageTable(void) const;
 
     const xpr_tchar_t *loadString(const xpr_tchar_t *aId, xpr_bool_t aNullAvailable = XPR_FALSE);
+    const xpr_tchar_t *loadString(const xpr::string &aId, xpr_bool_t aNullAvailable = XPR_FALSE);
     const xpr_tchar_t *loadFormatString(const xpr_tchar_t *aId, const xpr_tchar_t *aReplaceFormatSpecifier);
+    const xpr_tchar_t *loadFormatString(const xpr::string &aId, const xpr_tchar_t *aReplaceFormatSpecifier);
 
 protected:
     void LoadStdProfileSettings(xpr_uint_t aMaxMRU = _AFX_MRU_COUNT);

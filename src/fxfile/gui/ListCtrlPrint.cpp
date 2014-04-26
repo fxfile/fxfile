@@ -63,7 +63,7 @@ xpr_bool_t ListCtrlPrint::onPreparePrinting(CPrintInfo *aPrintInfo)
 void ListCtrlPrint::onBeginPrinting(CDC *aDC, CPrintInfo *aPrintInfo)
 {
     // Create fonts
-    ASSERT(aDC != XPR_NULL && aPrintInfo != XPR_NULL);
+    XPR_ASSERT(aDC != XPR_NULL && aPrintInfo != XPR_NULL);
 
     Print::onBeginPrinting(aDC, aPrintInfo);
 
@@ -92,7 +92,8 @@ void ListCtrlPrint::onBeginPrinting(CDC *aDC, CPrintInfo *aPrintInfo)
     mPageCount    = (mRowCount + mPageRows - 1) / mPageRows;
 
     // Column order
-    ASSERT(mListCtrl);
+    XPR_ASSERT(mListCtrl != XPR_NULL);
+
     mListCtrl->GetColumnOrderArray(mColumns);
 
     // How many pages?
@@ -124,24 +125,24 @@ void ListCtrlPrint::onEndPrinting(CDC *aDC, CPrintInfo *aPrintInfo)
 void ListCtrlPrint::drawRow(CDC *aDC, xpr_sint_t aRow)
 {
     CRect sRect;
-    CString sText;
+    xpr::string sText;
     xpr_sint_t i, sFormat;
 
     for (i = 0; i < mPageColumns; ++i)
     {
         sRect = getCellRect(aRow, i);
-        sText = getItemText(aRow, i);
+        getItemText(aRow, i, sText);
         sFormat = getColumnFormat(i);
 
-        if (sFormat == -1)     DrawText(aDC->m_hDC, sText, -1, sRect, DT_LEFT   | DT_VCENTER | DT_END_ELLIPSIS);
-        else if (sFormat == 1) DrawText(aDC->m_hDC, sText, -1, sRect, DT_RIGHT  | DT_VCENTER | DT_END_ELLIPSIS);
-        else                   DrawText(aDC->m_hDC, sText, -1, sRect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
+        if (sFormat == -1)     DrawText(aDC->m_hDC, sText.c_str(), -1, sRect, DT_LEFT   | DT_VCENTER | DT_END_ELLIPSIS);
+        else if (sFormat == 1) DrawText(aDC->m_hDC, sText.c_str(), -1, sRect, DT_RIGHT  | DT_VCENTER | DT_END_ELLIPSIS);
+        else                   DrawText(aDC->m_hDC, sText.c_str(), -1, sRect, DT_CENTER | DT_VCENTER | DT_END_ELLIPSIS);
     }
 }
 
 CRect ListCtrlPrint::getHeaderRect(void)
 {
-    ASSERT(mPageRect != CRect(0,0,0,0));
+    XPR_ASSERT(mPageRect != CRect(0,0,0,0));
 
     CRect sHeaderRect = mPageRect;
     CSize sCharSize = mHeaderCharSize;
@@ -152,7 +153,7 @@ CRect ListCtrlPrint::getHeaderRect(void)
 
 CRect ListCtrlPrint::getFooterRect(void)
 {
-    ASSERT(mPageRect != CRect(0,0,0,0));
+    XPR_ASSERT(mPageRect != CRect(0,0,0,0));
 
     CRect sFooterRect = mPageRect;
     CSize sCharSize = mFooterCharSize;
@@ -163,9 +164,9 @@ CRect ListCtrlPrint::getFooterRect(void)
 
 CRect ListCtrlPrint::getBodyRect(void)
 {
-    ASSERT(mPageRect != CRect(0,0,0,0));
-    ASSERT(mHeaderRect != CRect(0,0,0,0));
-    ASSERT(mFooterRect != CRect(0,0,0,0));
+    XPR_ASSERT(mPageRect != CRect(0,0,0,0));
+    XPR_ASSERT(mHeaderRect != CRect(0,0,0,0));
+    XPR_ASSERT(mFooterRect != CRect(0,0,0,0));
 
     CRect sPageRect = mPageRect;
     CRect sHeaderRect = mHeaderRect;
@@ -177,8 +178,7 @@ CRect ListCtrlPrint::getBodyRect(void)
 
 xpr_sint_t ListCtrlPrint::getPageColumns(void)
 {
-    if (XPR_IS_NULL(mListCtrl))
-        return 0;
+    XPR_ASSERT(mListCtrl != XPR_NULL);
 
     CHeaderCtrl *sHeaderCtrl = mListCtrl->GetHeaderCtrl();
     if (XPR_IS_NULL(sHeaderCtrl))
@@ -187,16 +187,18 @@ xpr_sint_t ListCtrlPrint::getPageColumns(void)
     return sHeaderCtrl->GetItemCount();
 }
 
-CString ListCtrlPrint::getColumnHeading(xpr_sint_t aColumn)
+void ListCtrlPrint::getColumnHeading(xpr_sint_t aColumn, xpr::string &aText)
 {
-    if (XPR_IS_NULL(mListCtrl))
-        return XPR_STRING_LITERAL("");
+    XPR_ASSERT(mListCtrl != XPR_NULL);
 
     CHeaderCtrl *sHeaderCtrl = mListCtrl->GetHeaderCtrl();
     if (XPR_IS_NULL(sHeaderCtrl))
-        return XPR_STRING_LITERAL("");
+    {
+        aText.clear();
+        return;
+    }
 
-    xpr_tchar_t sBuffer[1024];
+    xpr_tchar_t sBuffer[1024] = {0,};
 
     HDITEM sHdItem = {0};
     sHdItem.mask       = HDI_TEXT;
@@ -204,13 +206,12 @@ CString ListCtrlPrint::getColumnHeading(xpr_sint_t aColumn)
     sHdItem.pszText    = sBuffer;
     sHeaderCtrl->GetItem(mColumns[aColumn], &sHdItem);
 
-    return CString(sBuffer);
+    aText = sBuffer;
 }
 
 xpr_sint_t ListCtrlPrint::getColumnFormat(xpr_sint_t aColumn)
 {
-    if (XPR_IS_NULL(mListCtrl))
-        return 0;
+    XPR_ASSERT(mListCtrl != XPR_NULL);
 
     CHeaderCtrl *sHeaderCtrl = mListCtrl->GetHeaderCtrl();
     if (XPR_IS_NULL(sHeaderCtrl))
@@ -251,8 +252,8 @@ CRect ListCtrlPrint::getColumnRect(xpr_sint_t aColumn)
 
 CRect ListCtrlPrint::getCellRect(xpr_sint_t aRow, xpr_sint_t aColumn)
 {
-    ASSERT(aColumn >= 0 && aColumn < mPageColumns);
-    ASSERT(aRow >= 0 && aRow < mRowCount);
+    XPR_ASSERT(aColumn >= 0 && aColumn < mPageColumns);
+    XPR_ASSERT(aRow >= 0 && aRow < mRowCount);
 
     CSize sCharSize = mBodyCharSize;
     CRect sBodyRect = mBodyRect;
@@ -263,7 +264,7 @@ CRect ListCtrlPrint::getCellRect(xpr_sint_t aRow, xpr_sint_t aColumn)
         sLeft += getColumnWidth(mColumns[i]);
     xpr_sint_t sRight = sLeft + getColumnWidth(mColumns[i]);   
     xpr_sint_t sPageRow =  aRow % mPageRows;
-    ASSERT(sPageRow <= mPageRows);
+    XPR_ASSERT(sPageRow <= mPageRows);
 
     CRect sCellRect;
     sCellRect.left   = sBodyRect.left + sLeft;
@@ -279,11 +280,14 @@ CRect ListCtrlPrint::getCellRect(xpr_sint_t aRow, xpr_sint_t aColumn)
     return sCellRect;
 }
 
-CString ListCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const
+void ListCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn, xpr::string &aText) const
 {
-    ASSERT(aColumn >= 0 && aColumn < mPageColumns);
-    ASSERT(aRow >= 0 && aRow < mRowCount);
-    return mListCtrl->GetItemText(aRow, mColumns[aColumn]);
+    XPR_ASSERT(mListCtrl != XPR_NULL);
+
+    XPR_ASSERT(aColumn >= 0 && aColumn < mPageColumns);
+    XPR_ASSERT(aRow >= 0 && aRow < mRowCount);
+
+    aText = mListCtrl->GetItemText(aRow, mColumns[aColumn]);
 }
 
 xpr_sint_t ListCtrlPrint::getPageRows(void)
@@ -297,8 +301,7 @@ xpr_sint_t ListCtrlPrint::getPageRows(void)
 
 xpr_sint_t ListCtrlPrint::getColumnWidth(xpr_sint_t aColumn)
 {
-    if (XPR_IS_NULL(mListCtrl))
-        return 0;
+    XPR_ASSERT(mListCtrl != XPR_NULL);
 
     CHeaderCtrl *sHeaderCtrl = mListCtrl->GetHeaderCtrl();
     if (XPR_IS_NULL(sHeaderCtrl))
@@ -324,13 +327,14 @@ xpr_sint_t ListCtrlPrint::getColumnWidth(xpr_sint_t aColumn)
 
 xpr_sint_t ListCtrlPrint::getRowCount(void) const
 {
-    ASSERT(mListCtrl);
+    XPR_ASSERT(mListCtrl != XPR_NULL);
+
     return mListCtrl->GetItemCount();
 }
 
 void ListCtrlPrint::printHeader(CDC *aDC, CPrintInfo *aPrintInfo)
 {
-    ASSERT(mHeaderFont && aPrintInfo);
+    XPR_ASSERT(mHeaderFont && aPrintInfo);
     UNUSED_ALWAYS(aPrintInfo);
     CFont *sOldFont = aDC->SelectObject(mHeaderFont);
 
@@ -354,13 +358,13 @@ void ListCtrlPrint::printHeader(CDC *aDC, CPrintInfo *aPrintInfo)
 
     // Draw "Program" and "Document"
     CRect sHeaderRect = mHeaderRect;
-    aDC->DrawText(mDocName, sHeaderRect, DT_LEFT | DT_BOTTOM | DT_PATH_ELLIPSIS);
+    aDC->DrawText(mDocName.c_str(), sHeaderRect, DT_LEFT | DT_BOTTOM | DT_PATH_ELLIPSIS);
     aDC->SelectObject(sOldFont);
 }
 
 void ListCtrlPrint::printBody(CDC *aDC, CPrintInfo *aPrintInfo)
 {
-    ASSERT(mBodyFont && mColumnFont && aPrintInfo);
+    XPR_ASSERT(mBodyFont && mColumnFont && aPrintInfo);
 
 #ifdef XPR_CFG_BUILD_DEBUG
 
@@ -374,9 +378,13 @@ void ListCtrlPrint::printBody(CDC *aDC, CPrintInfo *aPrintInfo)
 
     // Print column headings
     xpr_sint_t i;
+    xpr::string sColumnText;
     CFont *sOldFont = aDC->SelectObject(mColumnFont); 
     for (i = 0; i < mPageColumns; ++i)
-        DrawText(aDC->m_hDC, getColumnHeading(i), -1, getColumnRect(i), DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+    {
+        getColumnHeading(i, sColumnText);
+        DrawText(aDC->m_hDC, sColumnText.c_str(), -1, getColumnRect(i), DT_SINGLELINE | DT_LEFT | DT_VCENTER);
+    }
 
     CBrush sBrush;
     sBrush.CreateSolidBrush(RGB(0,0,0));
@@ -405,7 +413,7 @@ void ListCtrlPrint::printBody(CDC *aDC, CPrintInfo *aPrintInfo)
 
 void ListCtrlPrint::printFooter(CDC *aDC, CPrintInfo *aPrintInfo)
 {
-    ASSERT(mFooterFont != XPR_NULL && aPrintInfo != XPR_NULL);
+    XPR_ASSERT(mFooterFont != XPR_NULL && aPrintInfo != XPR_NULL);
     CFont *sOldFont;
 
 #ifdef XPR_CFG_BUILD_DEBUG
@@ -430,23 +438,24 @@ void ListCtrlPrint::printFooter(CDC *aDC, CPrintInfo *aPrintInfo)
     sAppNameRect.top += kHeaderLineGap;
 
     sOldFont = aDC->SelectObject(mColumnFont);
-    aDC->DrawText(mAppName, sAppNameRect, DT_LEFT | DT_BOTTOM | DT_SINGLELINE);
+    aDC->DrawText(mAppName.c_str(), sAppNameRect, DT_LEFT | DT_BOTTOM | DT_SINGLELINE);
     aDC->SelectObject(sOldFont);
 
     // Draw "Pages"
     CRect sPagesRect = mFooterRect;
     sPagesRect.top += kHeaderLineGap;
 
-    CString sPages;
-    sPages.Format(XPR_STRING_LITERAL("%d / %d"), aPrintInfo->m_nCurPage, mPageCount);
+    xpr::string sPages;
+    sPages.format(XPR_STRING_LITERAL("%d / %d"), aPrintInfo->m_nCurPage, mPageCount);
 
     sOldFont = aDC->SelectObject(mFooterFont);
-    aDC->DrawText(sPages, sPagesRect, DT_RIGHT | DT_BOTTOM);
+    aDC->DrawText(sPages.c_str(), sPagesRect, DT_RIGHT | DT_BOTTOM);
     aDC->SelectObject(sOldFont);
 }
 
 void ListCtrlPrint::setListCtrl(CListCtrl *aListCtrl)
 {
-    ASSERT(aListCtrl != XPR_NULL);
+    XPR_ASSERT(aListCtrl != XPR_NULL);
+
     mListCtrl = aListCtrl;
 }

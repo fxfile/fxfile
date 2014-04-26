@@ -306,12 +306,12 @@ xpr_bool_t DriveToolBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult
         if (sIndex < 0)
             return XPR_FALSE;
 
-        CString sText;
-        GetButtonText(sIndex, sText);
+        xpr::string sText;
+        sText = GetButtonText(sIndex);
 
         xpr_tchar_t sDriveChar;
         xpr_tchar_t sDrive[50];
-        sDriveChar = XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
+        sDriveChar = XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.length()-3];
         _stprintf(sDrive, XPR_STRING_LITERAL("%c:\\"), sDriveChar);
 
         xpr::string sName;
@@ -399,9 +399,9 @@ void DriveToolBar::OnShcnAllDriveUpdate(Shcn *aShcn)
 
 xpr_tchar_t DriveToolBar::getButtonDrive(xpr_uint_t aIndex)
 {
-    CString sText;
-    GetButtonText(aIndex, sText);
-    return XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.GetLength()-3];
+    xpr::string sText;
+    sText = GetButtonText(aIndex);
+    return XPR_IS_TRUE(mShortText) ? sText[0] : sText[sText.length()-3];
 }
 
 void DriveToolBar::GetButtonTextByCommand(xpr_uint_t aId, CString &aText)

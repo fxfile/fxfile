@@ -22,7 +22,7 @@ public:
     virtual ~ExplorerCtrlPrint(void);
 
 public:
-    virtual CString getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const;
+    virtual void getItemText(xpr_sint_t aRow, xpr_sint_t aColumn, xpr::string &aText) const;
     virtual xpr_sint_t getRowCount(void) const;
 };
 } // namespace fxfile

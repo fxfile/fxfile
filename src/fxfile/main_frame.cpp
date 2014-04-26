@@ -1050,6 +1050,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
     {
         xpr_sint_t sLen;
         static xpr_tchar_t sHotKey[0xff];
+        xpr::string sKeyName;
 
         xpr_uint_t sId;
         xpr_sint_t sCount = aPopupMenu->GetMenuItemCount();
@@ -1073,7 +1074,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
         const xpr_tchar_t *sStringId;
         const xpr_tchar_t *sString;
         CommandStringTable &sCommandStringTable = CommandStringTable::instance();
-        CString sMenuText;
+        xpr::string sMenuText;
 
         xpr_sint_t i, j;
         for (i = 0; i < sCount; ++i)
@@ -1090,7 +1091,7 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = gApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText);
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else
@@ -1115,7 +1116,10 @@ void MainFrame::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bool_t
                     if (mAccel[j].fVirt & FALT)     _tcscat(sHotKey, XPR_STRING_LITERAL("Alt+"));
 
                     if (mAccel[j].fVirt & FVIRTKEY)
-                        _tcscat(sHotKey, GetKeyName(mAccel[j].key));
+                    {
+                        GetKeyName(mAccel[j].key, sKeyName);
+                        _tcscat(sHotKey, sKeyName.c_str());
+                    }
                     else
                     {
                         sLen = (xpr_sint_t)_tcslen(sHotKey);
@@ -2432,7 +2436,7 @@ void MainFrame::initFolderCtrl(void)
         {
             LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
 
-            HTREEITEM sTreeItem = sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
+            HTREEITEM sTreeItem = sFolderCtrl->searchAndSelectItem(sTvItemData->mFullPidl, XPR_FALSE);
             if (XPR_IS_NOT_NULL(sTreeItem))
             {
                 if (XPR_IS_FALSE(gOpt->mConfig.mFolderTreeInitNoExpand))

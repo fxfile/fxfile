@@ -130,7 +130,7 @@ xpr_bool_t WinApp::InitInstance(void)
     // fxfile File Name Check Routine
     if (_tcsicmp(m_pszExeName, FXFILE_PROGRAM_NAME) != 0)
     {
-        CString sMsg;
+        xpr::string sMsg;
         sMsg  = XPR_STRING_LITERAL("This program is \'fxfile\' file manager.\n");
         sMsg += XPR_STRING_LITERAL("It is contained that a routine verfiy for this program file name.\n");
         sMsg += XPR_STRING_LITERAL("The file name must be \'fxfile.exe\'.");
@@ -138,7 +138,7 @@ xpr_bool_t WinApp::InitInstance(void)
         sMsg += XPR_STRING_LITERAL("\n");
         sMsg += XPR_STRING_LITERAL("Please, contact to homepage: http://flychk.com or e-mail: flychk@flychk.com for any question.");
         sMsg += XPR_STRING_LITERAL("\n");
-        MessageBox(XPR_NULL, sMsg, FXFILE_PROGRAM_NAME, MB_OK | MB_ICONSTOP);
+        MessageBox(XPR_NULL, sMsg.c_str(), FXFILE_PROGRAM_NAME, MB_OK | MB_ICONSTOP);
         return XPR_FALSE;
     }
 #endif // XPR_CFG_BUILD_RELEASE
@@ -420,12 +420,32 @@ const xpr_tchar_t *WinApp::loadString(const xpr_tchar_t *aId, xpr_bool_t aNullAv
     return mStringTable->loadString(aId, aNullAvailable);
 }
 
+const xpr_tchar_t *WinApp::loadString(const xpr::string &aId, xpr_bool_t aNullAvailable)
+{
+    const xpr_tchar_t *sId = aId.c_str();
+
+    if (XPR_IS_NULL(mStringTable))
+        return sId;
+
+    return mStringTable->loadString(sId, aNullAvailable);
+}
+
 const xpr_tchar_t *WinApp::loadFormatString(const xpr_tchar_t *aId, const xpr_tchar_t *aReplaceFormatSpecifier)
 {
     if (XPR_IS_NULL(mFormatStringTable))
         return aId;
 
     return mFormatStringTable->loadString(aId, aReplaceFormatSpecifier);
+}
+
+const xpr_tchar_t *WinApp::loadFormatString(const xpr::string &aId, const xpr_tchar_t *aReplaceFormatSpecifier)
+{
+    const xpr_tchar_t *sId = aId.c_str();
+
+    if (XPR_IS_NULL(mFormatStringTable))
+        return sId;
+
+    return mFormatStringTable->loadString(sId, aReplaceFormatSpecifier);
 }
 
 void WinApp::onChangedConfig(Option &aOption)

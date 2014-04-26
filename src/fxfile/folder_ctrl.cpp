@@ -28,6 +28,8 @@
 #include "gui/DropSource.h"
 #include "gui/WindowScroller.h"    // for Wheel Scroller
 
+#include "xpr_string_tokenizer.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -839,7 +841,7 @@ xpr_bool_t FolderCtrl::init(LPITEMIDLIST aRootFullPidl, xpr_bool_t aSelDefItem, 
     {
         if (XPR_IS_NOT_NULL(aSelFullPath))
         {
-            HTREEITEM sTreeItem = searchTree(aSelFullPath, XPR_FALSE, XPR_TRUE);
+            HTREEITEM sTreeItem = searchTree(aSelFullPath, XPR_TRUE);
             if (XPR_IS_NOT_NULL(sTreeItem))
             {
                 Expand(GetRootItem(), TVE_EXPAND);
@@ -1069,137 +1071,105 @@ xpr_sint_t CALLBACK FolderCtrl::TreeViewCompareProc(LPARAM aLParam1, LPARAM aLPa
     return (xpr_sshort_t)SCODE_CODE(GetScode(sHResult));
 }
 
-HTREEITEM FolderCtrl::searchTree(const CString &aSearchName, xpr_bool_t aWithinSelItem, xpr_bool_t aExpand)
+HTREEITEM FolderCtrl::searchTreeWithinSelItem(const xpr::string &aSearchName)
 {
-    xpr_sint_t i;
-    xpr_sint_t sLen;
-    xpr_sint_t sDivision = 0;
-    xpr_sint_t sDivisionNumber = 0;
+    HTREEITEM sSelectedTreeItem;
+    HTREEITEM sFoundTreeItem = XPR_NULL;
 
-    sLen = aSearchName.GetLength();
-    for (i = 0; i < sLen; ++i)
-    {
-        if (aSearchName[i] == XPR_STRING_LITERAL('\\'))
-            sDivisionNumber++;
-    }
+    sSelectedTreeItem = GetSelectedItem();
 
-    HTREEITEM sRootTreeItem;
-    HTREEITEM sChildTreeItem;
-    //SetRedraw(XPR_FALSE);
-    if (XPR_IS_TRUE(aWithinSelItem))
+    if (GetChildItem(sSelectedTreeItem) == XPR_NULL)
     {
-        sRootTreeItem = GetSelectedItem();
-        sChildTreeItem = GetChildItem(sRootTreeItem);
-        if (XPR_IS_NULL(sChildTreeItem))
+        if (XPR_IS_NOT_NULL(sSelectedTreeItem) && hasChildItem(sSelectedTreeItem) == XPR_TRUE)
         {
-            if (hasChildItem(sRootTreeItem) == XPR_TRUE)
-            {
-                SetRedraw(XPR_FALSE);
+            SetRedraw(XPR_FALSE);
 
-                Expand(sRootTreeItem, TVE_EXPAND);
-                Expand(sRootTreeItem, TVE_COLLAPSE);
-                sChildTreeItem = GetChildItem(sRootTreeItem);
+            Expand(sSelectedTreeItem, TVE_EXPAND);
+            Expand(sSelectedTreeItem, TVE_COLLAPSE);
 
-                SetRedraw();
-                UpdateWindow();
-            }
-            else
-            {
-                sChildTreeItem = XPR_NULL;
-            }
+            SetRedraw();
+            UpdateWindow();
+
+            sFoundTreeItem = findChildItem(sSelectedTreeItem, aSearchName, XPR_FALSE);
         }
     }
     else
     {
-        sChildTreeItem = sRootTreeItem = GetRootItem();
-
-        LPTVITEMDATA sTvItemData = (LPTVITEMDATA)GetItemData(sRootTreeItem);
-        if (XPR_IS_NOT_NULL(sTvItemData))
-        {
-            xpr::string sFullPath;
-            GetDispFullPath(sTvItemData->mFullPidl, sFullPath);
-
-            const xpr_tchar_t *sSplit = sFullPath.c_str();
-            while (XPR_IS_NOT_NULL(sSplit))
-            {
-                sSplit = _tcschr(sSplit, XPR_STRING_LITERAL('\\'));
-                if (XPR_IS_NOT_NULL(sSplit))
-                {
-                    sSplit++;
-                    sDivision++;
-                }
-            }
-        }
+        sFoundTreeItem = findChildItem(sSelectedTreeItem, aSearchName, XPR_FALSE);
     }
 
-    CString sSubPath;
-    CString sCurrentPath;
-    HTREEITEM sFiniteLoopTreeItem = sChildTreeItem;
-    xpr_sint_t sFiniteLoop = 0;
+    return sFoundTreeItem;
+}
+
+HTREEITEM FolderCtrl::searchTree(const xpr::string &aSearchName, xpr_bool_t aExpand)
+{
+    HTREEITEM sFoundTreeItem = XPR_NULL;
+    HTREEITEM sRootTreeItem  = GetRootItem();
+    HTREEITEM sChildTreeItem = sRootTreeItem;
+
+    xpr::StringTokenizer sPathTokenizer(aSearchName, XPR_FILE_SEPARATOR_STRING);
+    sPathTokenizer.next();
+
+    LPTVITEMDATA sTvItemData = (LPTVITEMDATA)GetItemData(sRootTreeItem);
+    if (XPR_IS_NOT_NULL(sTvItemData))
+    {
+        xpr::string sFullPath;
+        GetDispFullPath(sTvItemData->mFullPidl, sFullPath);
+
+        xpr_size_t sOffset = 0;
+        do
+        {
+            sOffset = sFullPath.find(XPR_FILE_SEPARATOR, sOffset);
+            if (sOffset == xpr::string::npos)
+            {
+                break;
+            }
+
+            ++sOffset;
+            sPathTokenizer.next();
+        }
+        while (true);
+    }
+
     while (XPR_IS_NOT_NULL(sChildTreeItem))
     {
-        if (XPR_IS_NOT_NULL(sFiniteLoopTreeItem) && sFiniteLoopTreeItem == sChildTreeItem)
+        const xpr::string &sSeparatedName = sPathTokenizer.getToken();
+
+        sChildTreeItem = findNextItem(sChildTreeItem, sSeparatedName, XPR_FALSE);
+        if (XPR_IS_NULL(sChildTreeItem))
         {
-            sFiniteLoop++;
-            if (sFiniteLoop > 5)
-            {
-                sChildTreeItem = XPR_NULL;
-                break;
-            }
-        }
-        else
-        {
-            sFiniteLoop = 0;
-        }
-
-        sFiniteLoopTreeItem = sChildTreeItem;
-
-        sCurrentPath = GetItemText(sChildTreeItem);
-        AfxExtractSubString(sSubPath, (const xpr_tchar_t *)aSearchName, sDivision, XPR_STRING_LITERAL('\\'));
-        sSubPath.MakeUpper();
-        sCurrentPath.MakeUpper();
-
-        if (sSubPath == sCurrentPath)
-        {
-            if (sDivision == sDivisionNumber)
-                break;
-
-            if (GetChildItem(sChildTreeItem) == XPR_NULL)
-            {
-                if (XPR_IS_TRUE(aExpand) && hasChildItem(sChildTreeItem) == XPR_TRUE)
-                {
-                    SetRedraw(XPR_FALSE);
-
-                    Expand(sChildTreeItem, TVE_EXPAND);
-                    Expand(sChildTreeItem, TVE_COLLAPSE);
-
-                    SetRedraw(XPR_TRUE);
-                    UpdateWindow();
-                }
-                else
-                {
-                    sChildTreeItem = XPR_NULL;
-                    break;
-                }
-            }
-
-            sChildTreeItem = GetChildItem(sChildTreeItem);
-            sDivision++;
-            continue;
-        }
-
-        sChildTreeItem = GetNextSiblingItem(sChildTreeItem);
-        if (sChildTreeItem == XPR_NULL && aWithinSelItem == XPR_TRUE)
-        {
-            sChildTreeItem = XPR_NULL;
             break;
         }
+
+        if (sPathTokenizer.next() == XPR_FALSE)
+        {
+            sFoundTreeItem = sChildTreeItem;
+            break;
+        }
+
+        if (GetChildItem(sChildTreeItem) == XPR_NULL)
+        {
+            if (XPR_IS_TRUE(aExpand) && hasChildItem(sChildTreeItem) == XPR_TRUE)
+            {
+                SetRedraw(XPR_FALSE);
+
+                Expand(sChildTreeItem, TVE_EXPAND);
+                Expand(sChildTreeItem, TVE_COLLAPSE);
+
+                SetRedraw(XPR_TRUE);
+                UpdateWindow();
+            }
+            else
+            {
+                sFoundTreeItem = XPR_NULL;
+                break;
+            }
+        }
+
+        sChildTreeItem = GetChildItem(sChildTreeItem);
     }
 
-    //SetRedraw(XPR_TRUE);
-    //UpdateWindow();
-
-    return sChildTreeItem;
+    return sFoundTreeItem;
 }
 
 void FolderCtrl::OnDeleteitem(NMHDR *aNmHdr, LRESULT *aResult) 
@@ -1652,7 +1622,7 @@ xpr_bool_t FolderCtrl::OnShcnCreateItem(Shcn *aShcn)
     xpr_tchar_t sFullPath[XPR_MAX_PATH * 2 + 1] = {0};
     GetDispFullPath(aShcn->mPidl1, sFullPath);
 
-    if (searchTree(sFullPath, XPR_FALSE, XPR_FALSE) != XPR_NULL)
+    if (searchTree(sFullPath, XPR_FALSE) != XPR_NULL)
         return XPR_FALSE;
 
     ShNotifyInfo sShNotifyInfo = {0};
@@ -1760,7 +1730,7 @@ xpr_bool_t FolderCtrl::OnShcnRenameItem(Shcn *aShcn)
     if (XPR_IS_FALSE(sRename))
         return XPR_TRUE;
 
-    HTREEITEM sTreeItem = searchTree(sFullPath1, XPR_FALSE, XPR_FALSE);
+    HTREEITEM sTreeItem = searchTree(sFullPath1, XPR_FALSE);
     if (XPR_IS_NULL(sTreeItem))
         return XPR_FALSE;
 
@@ -1820,7 +1790,7 @@ xpr_bool_t FolderCtrl::OnShcnRenameItem(Shcn *aShcn)
 
     //if (XPR_IS_TRUE(sSelItem))
     //{
-    //    HTREEITEM sNewTreeItem = searchTree(sFullPath2, XPR_FALSE, XPR_FALSE);
+    //    HTREEITEM sNewTreeItem = searchTree(sFullPath2, XPR_FALSE);
     //    if (XPR_IS_NOT_NULL(sNewTreeItem))
     //        SelectItem(sNewTreeItem);
 
@@ -1866,7 +1836,7 @@ xpr_bool_t FolderCtrl::OnShcnDriveAdd(Shcn *aShcn)
     xpr_tchar_t sPath[XPR_MAX_PATH * 2 + 1];
     GetDispFullPath(aShcn->mPidl1, sPath);
 
-    if (searchTree(sPath, XPR_FALSE, XPR_FALSE))
+    if (searchTree(sPath, XPR_FALSE))
         return XPR_FALSE;
 
     ShNotifyInfo sShNotifyInfo = {0};
@@ -1929,7 +1899,7 @@ xpr_bool_t FolderCtrl::OnShcnDriveRemove(Shcn *aShcn)
     xpr::string sDispFullPath;
     GetDispFullPath(sFullPidl, sDispFullPath);
 
-    HTREEITEM sTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_TRUE);
+    HTREEITEM sTreeItem = searchTree(sDispFullPath, XPR_TRUE);
     COM_FREE(sFullPidl);
     if (XPR_IS_NULL(sTreeItem))
         return XPR_FALSE;
@@ -1948,13 +1918,14 @@ xpr_bool_t FolderCtrl::OnShcnDriveRemove(Shcn *aShcn)
     }
 
     xpr_bool_t sResult = XPR_FALSE;
-    xpr_sint_t sColon = 0;
-    CString sName;
+    xpr_size_t sColon;
+    xpr::string sName;
     while (XPR_IS_NOT_NULL(sTreeItem))
     {
         sName = GetItemText(sTreeItem);
-        sColon = sName.ReverseFind(XPR_STRING_LITERAL(':'));
-        if (sColon > 0)
+
+        sColon = sName.rfind(XPR_STRING_LITERAL(':'));
+        if (sColon != xpr::string::npos)
         {
             if (sName[--sColon] == sDrive[0])
             {
@@ -1984,7 +1955,7 @@ xpr_bool_t FolderCtrl::beginShcn(xpr_slong_t aEventId, xpr_tchar_t *aFullPath1, 
     {
         //xpr_tchar_t *p = _tcsrchr(aFullPath1, XPR_STRING_LITERAL('\\'));
         //if (p) p[0] = XPR_STRING_LITERAL('\0');
-        sParentTreeItem = searchTree(aFullPath1, XPR_FALSE, XPR_FALSE);
+        sParentTreeItem = searchTree(aFullPath1, XPR_FALSE);
     }
     else
     {
@@ -1995,7 +1966,7 @@ xpr_bool_t FolderCtrl::beginShcn(xpr_slong_t aEventId, xpr_tchar_t *aFullPath1, 
         if (XPR_IS_NOT_NULL(sSplit))
             sSplit[0] = XPR_STRING_LITERAL('\0');
 
-        sParentTreeItem = searchTree(sParent, XPR_FALSE, XPR_FALSE);
+        sParentTreeItem = searchTree(sParent, XPR_FALSE);
     }
 
     if (XPR_IS_NULL(sParentTreeItem))
@@ -2197,12 +2168,12 @@ xpr_bool_t FolderCtrl::updateShcnTvItemData(LPTVITEMDATA aTvItemData, HTREEITEM 
     LPTVITEMDATA sTvItemData2;
     xpr_sint_t sIconIndex;
 
-    CString sName;
+    xpr::string sName;
     HTREEITEM sTreeItem = GetChildItem(aParentTreeItem);
     while (XPR_IS_NOT_NULL(sTreeItem))
     {
         sName = GetItemText(sTreeItem);
-        if (_tcsicmp(sName, aShNotifyInfo->mNewName) == 0)
+        if (sName.compare_case(aShNotifyInfo->mNewName) == 0)
         {
             // folder icon change
             sTvItem.mask  = TVIF_IMAGE | TVIF_HANDLE;
@@ -2212,7 +2183,7 @@ xpr_bool_t FolderCtrl::updateShcnTvItemData(LPTVITEMDATA aTvItemData, HTREEITEM 
             sIconIndex = GetItemIconIndex(aTvItemData->mFullPidl, XPR_FALSE);
 
             // folder name upper/lower case
-            if (_tcscmp(sName, aShNotifyInfo->mNewName) != 0 || sIconIndex != sTvItem.iImage)
+            if (sName != aShNotifyInfo->mNewName || sIconIndex != sTvItem.iImage)
             {
                 SetItemText(sTreeItem, aShNotifyInfo->mNewName);
 
@@ -2351,7 +2322,7 @@ xpr_bool_t FolderCtrl::OnShcnMediaInsRem(Shcn *aShcn, xpr_bool_t aInserted)
     xpr::string sDispFullPath;
     GetDispFullPath(sFullPidl, sDispFullPath);
 
-    HTREEITEM sParentTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_FALSE);
+    HTREEITEM sParentTreeItem = searchTree(sDispFullPath, XPR_FALSE);
     if (XPR_IS_NULL(sParentTreeItem))
         return XPR_TRUE;
 
@@ -2385,7 +2356,7 @@ xpr_bool_t FolderCtrl::OnShcnMediaInsRem(Shcn *aShcn, xpr_bool_t aInserted)
             GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
             if (XPR_IS_FALSE(aInserted))
             {
-                CString sOldName = GetItemText(sTreeItem);
+                xpr::string sOldName = GetItemText(sTreeItem);
                 if (sOldName != sName)
                 {
                     collapseAll(sTreeItem);
@@ -2416,7 +2387,7 @@ xpr_bool_t FolderCtrl::OnShcnUpdateDrive(const xpr_tchar_t *aDrive)
     {
         xpr::string sDispFullPath;
         GetDispFullPath(sPidl, sDispFullPath);
-        sTreeItem = searchTree(sDispFullPath.c_str(), XPR_FALSE, XPR_FALSE);
+        sTreeItem = searchTree(sDispFullPath, XPR_FALSE);
     }
     COM_FREE(sPidl);
 
@@ -2426,7 +2397,6 @@ xpr_bool_t FolderCtrl::OnShcnUpdateDrive(const xpr_tchar_t *aDrive)
     xpr::string sName;
     LPTVITEMDATA sTvItemData = XPR_NULL;
     HTREEITEM sChildTreeItem = GetChildItem(sTreeItem);
-    CString sTemp = GetItemText(sTreeItem);
     if (XPR_IS_NULL(sChildTreeItem))
         return sResult;
 
@@ -2436,7 +2406,7 @@ xpr_bool_t FolderCtrl::OnShcnUpdateDrive(const xpr_tchar_t *aDrive)
         if (XPR_IS_NOT_NULL(sTvItemData))
         {
             GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_INFOLDER, sName);
-            CString sText = GetItemText(sChildTreeItem);
+            xpr::string sText = GetItemText(sChildTreeItem);
             if (sText != sName)
             {
                 SetItemText(sChildTreeItem, sName.c_str());
@@ -3770,7 +3740,7 @@ void FolderCtrl::setChangeNotify(xpr::string aPath, xpr_bool_t aAllSubTree, xpr_
         xpr::string sFullPath;
         GetDispFullPath(sFullPidl, sFullPath);
 
-        HTREEITEM sTreeItem = searchTree(sFullPath.c_str(), XPR_FALSE, XPR_FALSE);
+        HTREEITEM sTreeItem = searchTree(sFullPath, XPR_FALSE);
         if (XPR_IS_NOT_NULL(sTreeItem))
         {
             changeRecursiveNotify(sTreeItem, aAllSubTree, aEnable);
@@ -3853,7 +3823,7 @@ HTREEITEM FolderCtrl::insertPartialNetComRootItem(LPITEMIDLIST aFullPidl)
     GetDispFullPath(aFullPidl, sFullPath);
 
     HTREEITEM sTreeItem;
-    sTreeItem = searchTree(sFullPath.c_str(), XPR_FALSE, XPR_FALSE);
+    sTreeItem = searchTree(sFullPath, XPR_FALSE);
     if (XPR_IS_NOT_NULL(sTreeItem))
     {
         return sTreeItem;
@@ -3864,7 +3834,7 @@ HTREEITEM FolderCtrl::insertPartialNetComRootItem(LPITEMIDLIST aFullPidl)
     WnetMgr::instance().getNetFullPath(sNetFolder);
 
     HTREEITEM sParentTreeItem;
-    sParentTreeItem = searchTree(sNetFolder.c_str(), XPR_FALSE, XPR_TRUE);
+    sParentTreeItem = searchTree(sNetFolder, XPR_TRUE);
     if (XPR_IS_NULL(sParentTreeItem))
     {
         return XPR_NULL;
@@ -3935,7 +3905,7 @@ HTREEITEM FolderCtrl::insertPartialNetComRootItem(LPITEMIDLIST aFullPidl)
     return sTreeItem;
 }
 
-HTREEITEM FolderCtrl::searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
+HTREEITEM FolderCtrl::searchAndSelectItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
 {
     if (XPR_IS_NULL(aFullPidl))
         return XPR_NULL;
@@ -3967,7 +3937,7 @@ HTREEITEM FolderCtrl::searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
 
                     Expand(sSelTreeItem, TVE_EXPAND);
 
-                    sTreeItem = searchTree(sName, XPR_TRUE, XPR_TRUE);
+                    sTreeItem = searchTreeWithinSelItem(sName);
                     if (XPR_IS_NULL(sTreeItem))
                     {
                         SetRedraw(XPR_FALSE);
@@ -3987,7 +3957,7 @@ HTREEITEM FolderCtrl::searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
                         }
 
                         Expand(sSelTreeItem, TVE_EXPAND);
-                        sTreeItem = searchTree(sName, XPR_TRUE, XPR_TRUE);
+                        sTreeItem = searchTreeWithinSelItem(sName);
 
                         SetRedraw();
                     }
@@ -4008,7 +3978,7 @@ HTREEITEM FolderCtrl::searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
         if (sFind != xpr::string::npos)
             sNetComFullPath.erase(sFind);
 
-        if (searchTree(sNetComFullPath.c_str(), XPR_FALSE, XPR_FALSE) == XPR_FALSE)
+        if (searchTree(sNetComFullPath, XPR_FALSE) == XPR_FALSE)
         {
             xpr_sint_t sSplitCount = 0;
 
@@ -4039,7 +4009,7 @@ HTREEITEM FolderCtrl::searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate)
     }
 
     if (XPR_IS_NULL(sTreeItem))
-        sTreeItem = searchTree(sFullPath.c_str(), XPR_FALSE, XPR_TRUE);
+        sTreeItem = searchTree(sFullPath, XPR_TRUE);
 
     if (XPR_IS_NOT_NULL(sTreeItem))
     {

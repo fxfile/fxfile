@@ -22,16 +22,19 @@ class SelNameDlg : public CDialog
     typedef CDialog super;
 
 public:
+    typedef std::list<xpr::string> PatternList;
+
+public:
     SelNameDlg(xpr_bool_t aSelect);
 
 public:
-    const xpr_tchar_t *getSelName(void) { return mName; }
-    xpr_bool_t isOnlySel(void) { return mOnlySel; }
+    const PatternList &getPatternList(void) { return mPatternList; }
+    xpr_bool_t isOnlySel(void) const { return mOnlySel; }
 
 protected:
     xpr_bool_t  mSelect;
     xpr_bool_t  mOnlySel;
-    xpr_tchar_t mName[XPR_MAX_PATH + 1];
+    PatternList mPatternList;
 
 protected:
     DlgState  *mDlgState;

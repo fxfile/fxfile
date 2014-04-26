@@ -13,9 +13,9 @@
 
 namespace fxfile
 {
-CString GetKeyName(xpr_uint_t aVirtKey);
-void    ConvertStringToFormat(const xpr_tchar_t *aString, xpr_tchar_t *aFormat);
-void    ConvertDoubleAmpersand(xpr_tchar_t *aText, xpr_tchar_t *aTemp);
+void GetKeyName(xpr_uint_t aVirtKey, xpr::string &aKeyName);
+void ConvertStringToFormat(const xpr_tchar_t *aString, xpr_tchar_t *aFormat);
+void ConvertDoubleAmpersand(xpr_tchar_t *aText, xpr_tchar_t *aTemp);
 } // namespace fxfile
 
 #endif // __FXFILE_KEYBOARD_H__

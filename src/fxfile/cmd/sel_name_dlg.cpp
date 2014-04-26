@@ -14,6 +14,8 @@
 #include "dlg_state.h"
 #include "dlg_state_manager.h"
 
+#include "xpr_string_tokenizer.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -97,7 +99,8 @@ void SelNameDlg::OnOK(void)
 {
     mOnlySel = ((CButton *)GetDlgItem(IDC_SEL_NAME_SEL_ONLY))->GetCheck();
 
-    if (mComboBox.GetWindowText(mName, XPR_MAX_PATH) <= 0)
+    xpr_tchar_t sName[XPR_MAX_PATH + 1] = {0,};
+    if (mComboBox.GetWindowText(sName, XPR_MAX_PATH) <= 0)
     {
         xpr_tchar_t sMsg[0xff] = {0};
         if (mSelect == XPR_TRUE)
@@ -108,6 +111,20 @@ void SelNameDlg::OnOK(void)
 
         mComboBox.SetFocus();
         return;
+    }
+
+    xpr::string sPattern;
+
+    xpr::StringTokenizer sStringTokenizer(sName, XPR_STRING_LITERAL(";"));
+    while (sStringTokenizer.next() == XPR_TRUE)
+    {
+        sPattern = sStringTokenizer.getToken();
+        sPattern.trim();
+
+        if (sPattern.empty() == XPR_FALSE)
+        {
+            mPatternList.push_back(sPattern);
+        }
     }
 
     // dialog state

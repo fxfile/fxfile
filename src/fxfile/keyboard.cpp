@@ -16,7 +16,7 @@
 
 namespace fxfile
 {
-CString GetKeyName(xpr_uint_t aVirtKey)
+void GetKeyName(xpr_uint_t aVirtKey, xpr::string &aKeyName)
 {
     xpr_slong_t sScan = MapVirtualKey(aVirtKey, 0) << 16;
 
@@ -24,20 +24,24 @@ CString GetKeyName(xpr_uint_t aVirtKey)
     if ((VK_PRIOR <= aVirtKey && aVirtKey <= VK_HELP) || (aVirtKey == VK_DIVIDE))
         sScan |= 0x01000000L;
 
-    CString sKeyName;
     xpr_sint_t sBufferLen = 64;
+    xpr_tchar_t *sKeyName;
     xpr_sint_t sLen;
 
     do
     {
+        aKeyName.clear();
+
         sBufferLen *= 2;
-        xpr_tchar_t *sStr = sKeyName.GetBufferSetLength(sBufferLen);
-        sLen = ::GetKeyNameText(sScan, sStr, sBufferLen + 1);
-        sKeyName.ReleaseBuffer(sLen);
+        aKeyName.reserve(sBufferLen + 1);
+
+        sKeyName = const_cast<xpr_tchar_t *>(aKeyName.data());
+
+        sLen = ::GetKeyNameText(sScan, sKeyName, sBufferLen + 1);
+
+        aKeyName.update();
     }
     while (sLen == sBufferLen);
-
-    return sKeyName;
 }
 
 void ConvertStringToFormat(const xpr_tchar_t *aString, xpr_tchar_t *aFormat)

@@ -141,8 +141,10 @@ public:
 	BCMenuData *BCMenu::FindMenuItem(UINT nID);
 	BCMenu *FindMenuOption(int nId,int& nLoc);
 	BCMenuData *FindMenuOption(wchar_t *lpstrText);
-	BOOL GetMenuText(UINT id, CString &string,UINT nFlags = MF_BYPOSITION );
+	BOOL GetMenuText(UINT id, xpr::string &string, UINT nFlags = MF_BYPOSITION);
+	BOOL GetMenuText(UINT id, CString &string, UINT nFlags = MF_BYPOSITION);
 	BOOL GetMenuText(UINT id, LPTSTR lpszString, UINT nFlags = MF_BYPOSITION);
+	BOOL SetMenuText(UINT id, const xpr::string& string, UINT nFlags = MF_BYPOSITION);
 	BOOL SetMenuText(UINT id, CString& string, UINT nFlags = MF_BYPOSITION);
 	BOOL SetMenuText(UINT id, LPTSTR lpszString, UINT nFlags = MF_BYPOSITION);
 	BOOL SetMenuAccelKey(UINT id, LPCTSTR lpcszAccelKey, UINT nFlags = MF_BYPOSITION);

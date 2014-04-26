@@ -37,6 +37,52 @@ xpr_bool_t TreeCtrlEx::hasChildItem(HTREEITEM aTreeItem) const
     return (sTvItem.cChildren != 0) ? XPR_TRUE : XPR_FALSE;
 }
 
+HTREEITEM TreeCtrlEx::findChildItem(HTREEITEM aTreeItem, const xpr::string &aFindName, xpr_bool_t aCaseSensitivity) const
+{
+    XPR_ASSERT(aTreeItem != XPR_NULL);
+
+    HTREEITEM sChildTreeItem = CTreeCtrl::GetChildItem(aTreeItem);
+    if (XPR_IS_NOT_NULL(sChildTreeItem))
+    {
+        return findNextItem(sChildTreeItem, aFindName, aCaseSensitivity);
+    }
+
+    return XPR_NULL;
+}
+
+HTREEITEM TreeCtrlEx::findNextItem(HTREEITEM aTreeItem, const xpr::string &aFindName, xpr_bool_t aCaseSensitivity) const
+{
+    XPR_ASSERT(aTreeItem != XPR_NULL);
+
+    HTREEITEM sTreeItem = aTreeItem;
+    xpr::string sItemName;
+
+    do
+    {
+        sItemName = CTreeCtrl::GetItemText(sTreeItem);
+
+        if (XPR_IS_TRUE(aCaseSensitivity))
+        {
+            if (aFindName.compare(sItemName) == 0)
+            {
+                return sTreeItem;
+            }
+        }
+        else
+        {
+            if (aFindName.compare_case(sItemName) == 0)
+            {
+                return sTreeItem;
+            }
+        }
+
+        sTreeItem = CTreeCtrl::GetNextSiblingItem(sTreeItem);
+    }
+    while (XPR_IS_NOT_NULL(sTreeItem));
+
+    return XPR_NULL;
+}
+
 xpr_bool_t TreeCtrlEx::isVistaEnhanced(void) const
 {
     return mVistaEnhanced;

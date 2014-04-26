@@ -6548,7 +6548,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
     COLORREF     sBkgndColor;
     xpr_bool_t   sListHasFocus;
     CRect        sBoundsRect, sIconRect, sLabelRect;
-    CString      sLabel = GetItemText(sItemIndex, 0);
+    xpr::string  sLabel = GetItemText(sItemIndex, 0);
     xpr_sint_t   sOffset = sDC->GetTextExtent(XPR_STRING_LITERAL(" ")).cx * 2;
 
     LPLVITEMDATA sLvItemData = ((LPLVITEMDATA)aNmLvCustomDraw->nmcd.lItemlParam);
@@ -6722,9 +6722,9 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
     sTextRect.right -= 1;
 
     if (sLvItem.state & LVIS_FOCUSED)
-        sDC->DrawText(sLabel, sTextRect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EDITCONTROL);
+        sDC->DrawText(sLabel.c_str(), sTextRect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EDITCONTROL);
     else
-        sDC->DrawText(sLabel, sTextRect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EDITCONTROL | DT_END_ELLIPSIS);
+        sDC->DrawText(sLabel.c_str(), sTextRect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EDITCONTROL | DT_END_ELLIPSIS);
 
     // Draw the focus
     if (sLvItem.state & LVIS_FOCUSED && XPR_IS_TRUE(sListHasFocus))
