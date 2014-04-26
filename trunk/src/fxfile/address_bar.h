@@ -29,8 +29,7 @@ public:
     xpr_bool_t explore(const xpr_tchar_t *aFullPath, xpr_bool_t aNotifyBuddy = XPR_FALSE);
     xpr_bool_t explore(LPITEMIDLIST aFullPidl, xpr_bool_t aNotifyBuddy = XPR_FALSE);
 
-    CString getFullPath(xpr_sint_t aIndex) const;
-    void getFullPath(xpr_sint_t aIndex, xpr_tchar_t *aFullPath) const;
+    void getFullPath(xpr_sint_t aIndex, xpr::string &aFullPath) const;
 
     xpr_bool_t execute(const xpr_tchar_t *aPath);
     void setSystemImageList(CImageList *aSmallImgList);

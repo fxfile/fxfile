@@ -29,12 +29,11 @@ ExplorerCtrlPrint::~ExplorerCtrlPrint(void)
 
 xpr_sint_t ExplorerCtrlPrint::getRowCount(void) const
 {
-    if (XPR_IS_NULL(mListCtrl))
-        return 0;
+    XPR_ASSERT(mListCtrl != XPR_NULL);
 
     ExplorerCtrl *sExplorerCtrl = dynamic_cast<ExplorerCtrl *>(mListCtrl);
-    if (XPR_IS_NULL(sExplorerCtrl))
-        return mListCtrl->GetItemCount();
+
+    XPR_ASSERT(sExplorerCtrl != XPR_NULL);
 
     xpr_sint_t i;
     xpr_sint_t sCount;
@@ -52,13 +51,15 @@ xpr_sint_t ExplorerCtrlPrint::getRowCount(void) const
     return sCount;
 }
 
-CString ExplorerCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const
+void ExplorerCtrlPrint::getItemText(xpr_sint_t aRow, xpr_sint_t aColumn, xpr::string &aText) const
 {
-    ASSERT(aColumn >= 0 && aColumn < mPageColumns);
-    ASSERT(aRow >= 0 && aRow < mRowCount);
+    XPR_ASSERT(mListCtrl != XPR_NULL);
+
+    XPR_ASSERT(aColumn >= 0 && aColumn < mPageColumns);
+    XPR_ASSERT(aRow >= 0 && aRow < mRowCount);
 
     aRow++;
 
-    return mListCtrl->GetItemText(aRow, mColumns[aColumn]);
+    aText = mListCtrl->GetItemText(aRow, mColumns[aColumn]);
 }
 } // namespace fxfile

@@ -442,32 +442,32 @@ void AccelTableDlg::OnSelchangeCommands(void)
 
     mCurKeysWnd.ResetContent();
 
-    xpr_sint_t i, sIndex;
-    xpr_tchar_t sKey[0xff] = {0};
-    xpr_tchar_t sComKey[0xff] = {0};
-    CString sVirKeyName;
+    xpr_sint_t  i, sIndex;
+    xpr::string sKey;
+    xpr::string sComKey;
+    xpr::string sVirKeyName;
 
     for (i = 0; i < mCount; ++i)
     {
-        sComKey[0] = '\0';
+        sComKey.clear();
 
         if (mAccel[i].cmd == sCommand->mId)
         {
-            if (mAccel[i].fVirt & FCONTROL) _tcscat(sComKey, XPR_STRING_LITERAL("Ctrl + "));
-            if (mAccel[i].fVirt & FSHIFT)   _tcscat(sComKey, XPR_STRING_LITERAL("Shift + "));
-            if (mAccel[i].fVirt & FALT)     _tcscat(sComKey, XPR_STRING_LITERAL("Alt + "));
+            if (mAccel[i].fVirt & FCONTROL) sComKey += XPR_STRING_LITERAL("Ctrl + ");
+            if (mAccel[i].fVirt & FSHIFT)   sComKey += XPR_STRING_LITERAL("Shift + ");
+            if (mAccel[i].fVirt & FALT)     sComKey += XPR_STRING_LITERAL("Alt + ");
 
             if (mAccel[i].fVirt & FVIRTKEY)
             {
-                sVirKeyName = GetKeyName(mAccel[i].key);
-                _stprintf(sKey, XPR_STRING_LITERAL("%s%s"), sComKey, sVirKeyName);
+                GetKeyName(mAccel[i].key, sVirKeyName);
+                sKey.format(XPR_STRING_LITERAL("%s%s"), sComKey.c_str(), sVirKeyName.c_str());
             }
             else
             {
-                _stprintf(sKey, XPR_STRING_LITERAL("%s%c"), sComKey, mAccel[i].key);
+                sKey.format(XPR_STRING_LITERAL("%s%c"), sComKey.c_str(), mAccel[i].key);
             }
 
-            sIndex = mCurKeysWnd.AddString(sKey);
+            sIndex = mCurKeysWnd.AddString(sKey.c_str());
             mCurKeysWnd.SetItemData(sIndex, MAKELONG(mAccel[i].fVirt, mAccel[i].key));
         }
     }

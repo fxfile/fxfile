@@ -34,6 +34,8 @@ public:
 
 public:
     xpr_bool_t hasChildItem(HTREEITEM aTreeItem) const;
+    HTREEITEM findChildItem(HTREEITEM aTreeItem, const xpr::string &aFindName, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
+    HTREEITEM findNextItem(HTREEITEM aTreeItem, const xpr::string &aFindName, xpr_bool_t aCaseSensitivity = XPR_TRUE) const;
 
     xpr_bool_t isVistaEnhanced(void) const;
     void enableVistaEnhanced(xpr_bool_t aEnable);

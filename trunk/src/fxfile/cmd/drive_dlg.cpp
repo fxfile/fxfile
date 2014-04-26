@@ -264,7 +264,7 @@ xpr_bool_t DriveDlg::PreTranslateMessage(MSG* pMsg)
             if (sDrivePath[0] < 'A')
                 sDrivePath[0] = 'A' + sDrive - 1;
 
-            CString sText;
+            xpr::string sText;
             HTREEITEM sTreeItem = mTreeCtrl.GetRootItem();
             while (sTreeItem != XPR_NULL)
             {

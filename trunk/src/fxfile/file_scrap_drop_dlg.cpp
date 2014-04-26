@@ -221,7 +221,7 @@ void FileScrapDropDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr
 
         const xpr_tchar_t *sStringId;
         const xpr_tchar_t *sString;
-        CString sMenuText;
+        xpr::string sMenuText;
         CommandStringTable &sCommandStringTable = CommandStringTable::instance();
 
         xpr_sint_t i;
@@ -237,7 +237,7 @@ void FileScrapDropDlg::OnInitMenuPopup(CMenu* pPopupMenu, xpr_uint_t nIndex, xpr
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     pBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = gApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText);
                     pBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else

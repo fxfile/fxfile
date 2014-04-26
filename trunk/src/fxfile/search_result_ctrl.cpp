@@ -561,7 +561,7 @@ void SearchResultCtrl::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr
 
         const xpr_tchar_t *sStringId;
         const xpr_tchar_t *sString;
-        CString sMenuText;
+        xpr::string sMenuText;
         CommandStringTable &sCommandStringTable = CommandStringTable::instance();
 
         xpr_sint_t i;
@@ -577,7 +577,7 @@ void SearchResultCtrl::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = gApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText);
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else

@@ -81,12 +81,12 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
     SetDlgItemText(IDC_ABOUT_PROGRAM, sProgram.c_str());
 
     // set windows version
-    CString sWindows;
-    sWindows.Format(XPR_STRING_LITERAL("Microsoft (R) Windows %d.%d build %d"), 
+    xpr::string sWindows;
+    sWindows.format(XPR_STRING_LITERAL("Microsoft (R) Windows %d.%d build %d"), 
         LOWORD(sUserEnv.mOSVerInfo.dwMajorVersion),
         LOWORD(sUserEnv.mOSVerInfo.dwMinorVersion),
         LOWORD(sUserEnv.mOSVerInfo.dwBuildNumber));
-    SetDlgItemText(IDC_ABOUT_WINDOWS, sWindows);
+    SetDlgItemText(IDC_ABOUT_WINDOWS, sWindows.c_str());
 
     SetWindowText(gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.title")));
     SetDlgItemText(IDC_ABOUT_LABEL_ACCEPT, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.accept")));

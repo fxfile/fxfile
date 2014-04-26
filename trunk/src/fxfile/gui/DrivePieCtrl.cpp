@@ -177,33 +177,33 @@ void DrivePieCtrl::drawLegends(CDC &aDC)
     sLine2Rect.bottom = sClientRect.bottom - sClientRect.Height()/3 + DEFAULT_MARGIN/2;
     sLine3Rect.top = sLine2Rect.bottom + DEFAULT_MARGIN;
 
-    CString sTitle;
+    xpr::string sTitle;
     CFont *sFont = GetParent()->GetFont();
     CFont *sOldFont = aDC.SelectObject(sFont);
 
     if (mTotalSize > 1024.0*1024.0*1024)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f GB"), mTotalSizeText.c_str(), mTotalSize/1024.0/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f GB"), mTotalSizeText.c_str(), mTotalSize/1024.0/1024.0/1024.0);
     else if (mTotalSize > 1024.0*1024.0)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f MB"), mTotalSizeText.c_str(), mTotalSize/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f MB"), mTotalSizeText.c_str(), mTotalSize/1024.0/1024.0);
     else
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f KB"), mTotalSizeText.c_str(), mTotalSize/1024.0);
-    aDC.TextOut(sLine1Rect.left + DEFAULT_MARGIN, sLine1Rect.top + DEFAULT_MARGIN, sTitle);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f KB"), mTotalSizeText.c_str(), mTotalSize/1024.0);
+    aDC.TextOut(sLine1Rect.left + DEFAULT_MARGIN, sLine1Rect.top + DEFAULT_MARGIN, sTitle.c_str());
 
     if (mUsedSize > 1024.0*1024.0*1024)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f GB"), mUsedSizeText.c_str(), mUsedSize/1024.0/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f GB"), mUsedSizeText.c_str(), mUsedSize/1024.0/1024.0/1024.0);
     else if (mUsedSize > 1024.0*1024.0)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f MB"), mUsedSizeText.c_str(), mUsedSize/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f MB"), mUsedSizeText.c_str(), mUsedSize/1024.0/1024.0);
     else
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f KB"), mUsedSizeText.c_str(), mUsedSize/1024.0);
-    aDC.TextOut(sLine2Rect.left + DEFAULT_MARGIN + sLine2Rect.Width()/5, sLine2Rect.top, sTitle);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f KB"), mUsedSizeText.c_str(), mUsedSize/1024.0);
+    aDC.TextOut(sLine2Rect.left + DEFAULT_MARGIN + sLine2Rect.Width()/5, sLine2Rect.top, sTitle.c_str());
 
     if (mFreeSize > 1024.0*1024.0*1024)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f GB"), mFreeSizeText.c_str(), mFreeSize/1024.0/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f GB"), mFreeSizeText.c_str(), mFreeSize/1024.0/1024.0/1024.0);
     else if (mFreeSize > 1024.0*1024.0)
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f MB"), mFreeSizeText.c_str(), mFreeSize/1024.0/1024.0);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f MB"), mFreeSizeText.c_str(), mFreeSize/1024.0/1024.0);
     else
-        sTitle.Format(XPR_STRING_LITERAL("%s: %2.2f KB"), mFreeSizeText.c_str(), mFreeSize/1024.0);
-    aDC.TextOut(sLine3Rect.left + DEFAULT_MARGIN + sLine3Rect.Width()/5, sLine3Rect.top - DEFAULT_MARGIN, sTitle);
+        sTitle.format(XPR_STRING_LITERAL("%s: %2.2f KB"), mFreeSizeText.c_str(), mFreeSize/1024.0);
+    aDC.TextOut(sLine3Rect.left + DEFAULT_MARGIN + sLine3Rect.Width()/5, sLine3Rect.top - DEFAULT_MARGIN, sTitle.c_str());
 
     aDC.SelectObject(sOldFont);
 

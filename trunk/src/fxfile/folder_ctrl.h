@@ -84,8 +84,9 @@ public:
     void       setUpdate(xpr_bool_t aUpdate);
     xpr_bool_t isInit(void) const { return mInit; }
 
-    HTREEITEM searchTree(const CString &aSearchName, xpr_bool_t aWithinSelItem, xpr_bool_t aExpand);
-    HTREEITEM searchSel(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate = XPR_FALSE);
+    HTREEITEM searchTree(const xpr::string &aSearchName, xpr_bool_t aExpand);
+    HTREEITEM searchTreeWithinSelItem(const xpr::string &aSearchName);
+    HTREEITEM searchAndSelectItem(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdate = XPR_FALSE);
 
     LPARAM GetItemData(HTREEITEM aTreeItem) const;
 

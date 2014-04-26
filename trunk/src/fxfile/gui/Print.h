@@ -18,8 +18,8 @@ public:
     virtual ~Print(void);
 
 public:
-    void setDocTitle(const CString &aName);
-    void setAppName(const CString &aName);
+    void setDocTitle(const xpr::string &aName);
+    void setAppName(const xpr::string &aName);
     void setMarginPixel(CRect aMarginRect);
     void getMarginPixel(CRect &aMarginRect);
 
@@ -31,15 +31,15 @@ public:
 
 protected:
     void drawRect(CDC *aDC, CRect aRect, COLORREF aColor);
-    CFont *createFont(CDC *aDC, CString aName = XPR_STRING_LITERAL(""), xpr_sint_t aPoints = 0, xpr_bool_t aBold = XPR_FALSE, xpr_bool_t aItalic = XPR_FALSE);
+    CFont *createFont(CDC *aDC, const xpr::string &aName = XPR_STRING_LITERAL(""), xpr_sint_t aPoints = 0, xpr_bool_t aBold = XPR_FALSE, xpr_bool_t aItalic = XPR_FALSE);
     xpr_float_t getTextRatioX(CDC *aDC);
     CRect getPaperRect(CDC *aDC);
     CRect getPageRect(void);
     CSize getCharSize(CDC *aDC, CFont *aFont);
 
 protected:   
-    CString     mAppName;
-    CString     mDocName;
+    xpr::string mAppName;
+    xpr::string mDocName;
     xpr_float_t mRatioX; 
     CRect       mPageRect;
     CRect       mPaperRect;

@@ -207,10 +207,10 @@ xpr_bool_t PictureViewer::OnInitDialog(void)
         mLock        = mDlgState->getStateI(XPR_STRING_LITERAL("Lock"),           LOCK_WINDOW);
         mAutoHide    = mDlgState->getStateB(XPR_STRING_LITERAL("Auto Hide"),      XPR_FALSE);
         mFileName    = mDlgState->getStateB(XPR_STRING_LITERAL("Show File Name"), XPR_TRUE);
-        CString sPos = mDlgState->getStateS(XPR_STRING_LITERAL("Window"),         XPR_STRING_LITERAL(""));
+        xpr::string sWindowPos = mDlgState->getStateS(XPR_STRING_LITERAL("Window"),     XPR_STRING_LITERAL(""));
 
         CRect sRect(mPopupRect);
-        if (sPos.IsEmpty() == XPR_TRUE)
+        if (sWindowPos.empty() == XPR_TRUE)
         {
             CRect sWindowRect;
             gFrame->GetWindowRect(&sWindowRect);
@@ -220,7 +220,7 @@ xpr_bool_t PictureViewer::OnInitDialog(void)
             mPopupRect.bottom += sWindowRect.top  + 20;
             sRect = mPopupRect;
         }
-        _stscanf(sPos, XPR_STRING_LITERAL("%d,%d,%d,%d"), &sRect.left, &sRect.top, &sRect.right, &sRect.bottom);
+        _stscanf(sWindowPos.c_str(), XPR_STRING_LITERAL("%d,%d,%d,%d"), &sRect.left, &sRect.top, &sRect.right, &sRect.bottom);
         SetWindowPos(XPR_NULL, sRect.left, sRect.top, sRect.Width(), sRect.Height(), SWP_NOZORDER);
     }
 
@@ -730,7 +730,7 @@ void PictureViewer::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
 
         const xpr_tchar_t *sStringId;
         const xpr_tchar_t *sString;
-        CString sMenuText;
+        xpr::string sMenuText;
         CommandStringTable &sCommandStringTable = CommandStringTable::instance();
 
         xpr_sint_t i;
@@ -746,7 +746,7 @@ void PictureViewer::OnInitMenuPopup(CMenu *aPopupMenu, xpr_uint_t aIndex, xpr_bo
                     // if sId(xpr_uint_t) is -1, it's sub-menu.
                     sBCPopupMenu->GetMenuText(i, sMenuText, MF_BYPOSITION);
 
-                    sString = gApp.loadString(sMenuText.GetBuffer());
+                    sString = gApp.loadString(sMenuText);
                     sBCPopupMenu->SetMenuText(i, (xpr_tchar_t *)sString, MF_BYPOSITION);
                 }
                 else

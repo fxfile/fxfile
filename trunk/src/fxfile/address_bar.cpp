@@ -740,38 +740,32 @@ xpr_bool_t AddressBar::explore(const xpr_tchar_t *aFullPath, xpr_bool_t aNotifyB
     return sResult;
 }
 
-CString AddressBar::getFullPath(xpr_sint_t aIndex) const
+void AddressBar::getFullPath(xpr_sint_t aIndex, xpr::string &aFullPath) const
 {
-    CString sFullPath;
+    aFullPath.clear();
 
     LPABITEMDATA sCbItemData = (LPABITEMDATA)GetItemData(aIndex);
     if (XPR_IS_NOT_NULL(sCbItemData))
     {
+        CString sName;
         xpr_sint_t sLevel = sCbItemData->mLevel;
-        GetLBText(aIndex, sFullPath);
+
+        GetLBText(aIndex, sName);
+        aFullPath = sName;
 
         xpr_sint_t i;
-        CString strName;
         for (i = aIndex - 1; i >= 0; --i)
         {
             sCbItemData = (LPABITEMDATA)GetItemData(i);
             if (sCbItemData->mLevel < (xpr_uint_t)sLevel)
             {
-                GetLBText(i, strName);
-                sFullPath.Insert(0, XPR_STRING_LITERAL("\\"));
-                sFullPath.Insert(0, strName);
+                GetLBText(i, sName);
+                aFullPath.insert(0, XPR_STRING_LITERAL("\\"));
+                aFullPath.insert(0, sName);
                 sLevel--;
             }
         }
     }
-
-    return sFullPath;
-}
-
-void AddressBar::getFullPath(xpr_sint_t aIndex, xpr_tchar_t *aFullPath) const
-{
-    if (XPR_IS_NOT_NULL(aFullPath))
-        _tcscpy(aFullPath, getFullPath(aIndex));
 }
 
 xpr_bool_t AddressBar::execute(const xpr_tchar_t *aPath)

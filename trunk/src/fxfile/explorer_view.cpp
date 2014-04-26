@@ -378,7 +378,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
         LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
         if (XPR_IS_NOT_NULL(sTvItemData))
         {
-            sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
+            sFolderCtrl->searchAndSelectItem(sTvItemData->mFullPidl, XPR_FALSE);
         }
     }
 
@@ -1901,7 +1901,7 @@ xpr_bool_t ExplorerView::visibleFolderPane(xpr_bool_t aVisible, xpr_bool_t aLoad
                     LPTVITEMDATA sTvItemData = sExplorerCtrl->getFolderData();
                     if (XPR_IS_NOT_NULL(sTvItemData))
                     {
-                        HTREEITEM sTreeItem = sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
+                        HTREEITEM sTreeItem = sFolderCtrl->searchAndSelectItem(sTvItemData->mFullPidl, XPR_FALSE);
                         if (XPR_IS_NOT_NULL(sTreeItem))
                         {
                             if (gOpt->mConfig.mFolderTreeInitNoExpand == XPR_FALSE)
@@ -2143,7 +2143,7 @@ void ExplorerView::OnActivateView(xpr_bool_t aActivate, CView *aActivateView, CV
                         FolderCtrl *sFolderCtrl = getFolderCtrl();
                         if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sFolderCtrl->m_hWnd))
                         {
-                            sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
+                            sFolderCtrl->searchAndSelectItem(sTvItemData->mFullPidl, XPR_FALSE);
                         }
                     }
 
@@ -2208,7 +2208,7 @@ void ExplorerView::onTabChangedCurTab(TabCtrl &aTabCtrl, xpr_size_t aOldTab, xpr
                     FolderCtrl *sFolderCtrl = getFolderCtrl();
                     if (XPR_IS_NOT_NULL(sFolderCtrl) && XPR_IS_NOT_NULL(sFolderCtrl->m_hWnd))
                     {
-                        sFolderCtrl->searchSel(sTvItemData->mFullPidl, XPR_FALSE);
+                        sFolderCtrl->searchAndSelectItem(sTvItemData->mFullPidl, XPR_FALSE);
                     }
 
                     // update tab text and image
@@ -2673,7 +2673,7 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
         FolderCtrl *sFolderCtrl = getFolderCtrl();
         if (aUpdateBuddy == XPR_TRUE && XPR_IS_NOT_NULL(sFolderCtrl))
         {
-            sFolderCtrl->searchSel(aFullPidl);
+            sFolderCtrl->searchAndSelectItem(aFullPidl);
         }
     }
 

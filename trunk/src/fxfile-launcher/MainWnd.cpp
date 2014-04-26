@@ -176,7 +176,7 @@ void MainWnd::install(void)
     mInstalled = ::InstallHook(m_hWnd, WM_KEY_HOOKED);
     if (mInstalled == FALSE)
     {
-        CString sMsg = _T("Error!\r\n\r\nUnable to install hook");
+        const TCHAR *sMsg = _T("Error!\r\n\r\nUnable to install hook");
         ::MessageBox(NULL, sMsg, _T("fxfile-launcher"), MB_OK | MB_ICONSTOP);
     }
 }

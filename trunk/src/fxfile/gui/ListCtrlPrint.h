@@ -37,14 +37,14 @@ protected:
     CRect getHeaderRect(void);
     CRect getFooterRect(void);
     CRect getCellRect(xpr_sint_t aRow, xpr_sint_t aColumn);
-    CString getColumnHeading(xpr_sint_t aColumn);
+    void getColumnHeading(xpr_sint_t aColumn, xpr::string &aText);
     CRect getColumnRect(xpr_sint_t aColumn);
     xpr_sint_t getColumnWidth(xpr_sint_t aColumn);
     xpr_sint_t getColumnFormat(xpr_sint_t aColumn);
     xpr_sint_t getPageRows(void);
     xpr_sint_t getPageColumns(void);
 
-    virtual CString getItemText(xpr_sint_t aRow, xpr_sint_t aColumn) const;
+    virtual void getItemText(xpr_sint_t aRow, xpr_sint_t aColumn, xpr::string &aText) const;
     virtual xpr_sint_t getRowCount(void) const;
 
 protected:

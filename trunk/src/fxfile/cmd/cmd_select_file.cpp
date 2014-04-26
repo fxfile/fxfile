@@ -32,50 +32,20 @@ void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
     if (sDlg.DoModal() != IDOK)
         return;
 
-    xpr_bool_t sOnlySel = sDlg.isOnlySel();
-    const xpr_tchar_t *sSelName = sDlg.getSelName();
-    xpr_tchar_t (*sPattern)[XPR_MAX_PATH + 1] = XPR_NULL;
+    xpr_bool_t                     sOnlySel     = sDlg.isOnlySel();
+    const SelNameDlg::PatternList &sPatternList = sDlg.getPatternList();
 
-    xpr_sint_t i = 0, j;
-    xpr_sint_t sSepCount = 0;
-    xpr_sint_t sCount = (xpr_sint_t)_tcslen(sSelName);
-    for ( i =0; i < sCount; ++i)
+    if (sPatternList.empty() == false)
     {
-        if (sSelName[i] == XPR_STRING_LITERAL(';'))
-            sSepCount++;
-    }
-
-    xpr_tchar_t *sLastExt = (xpr_tchar_t *)_tcsrchr(sSelName, XPR_STRING_LITERAL(';'));
-    if (XPR_IS_NULL(sLastExt) && sSepCount == 0)
-    {
-        sSepCount++;
-        sPattern = new xpr_tchar_t[1][XPR_MAX_PATH + 1];
-        _tcscpy(sPattern[0], sSelName);
-    }
-    else
-    {
-        if (_tcscmp(sLastExt+1, XPR_STRING_LITERAL("")) != 0)
-            sSepCount++;
-
-        CString sName;
-        sPattern = new xpr_tchar_t[sSepCount][XPR_MAX_PATH + 1];
-        for (i = 0; i < sSepCount; ++i)
-        {
-            AfxExtractSubString(sName, sSelName, i, XPR_STRING_LITERAL(';'));
-            sName.TrimLeft();
-            sName.TrimRight();
-            _tcscpy(sPattern[i], sName);
-        }
-    }
-
-    if (sSepCount > 0)
-    {
-        xpr_bool_t sResult = XPR_FALSE;
+        xpr_sint_t i;
+        xpr_sint_t sCount;
         xpr_sint_t sFirst = -1;
-
+        xpr_bool_t sResult = XPR_FALSE;
+        SelNameDlg::PatternList::const_iterator sIterator;
         LPLVITEMDATA sLvItemData;
         xpr_tchar_t sName[XPR_MAX_PATH + 1];
         xpr_tchar_t sPath[XPR_MAX_PATH + 1];
+
         sCount = aExplorerCtrl.GetItemCount();
         for (i = 0; i < sCount; ++i)
         {
@@ -96,9 +66,11 @@ void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
                     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_INFOLDER, sName);
                 }
 
-                for (j = 0; j < sSepCount; ++j)
+                FXFILE_STL_FOR_EACH(sIterator, sPatternList)
                 {
-                    if (fnmatch(sPattern[j], sName, FNM_CASEFOLD) != FNM_NOMATCH)
+                    const xpr::string &sPattern = *sIterator;
+
+                    if (fnmatch(sPattern.c_str(), sName, FNM_CASEFOLD) != FNM_NOMATCH)
                     {
                         sResult = XPR_TRUE;
                         break;
@@ -131,8 +103,6 @@ void selectName(ExplorerCtrl &aExplorerCtrl, xpr_bool_t aSelect)
         if (XPR_IS_TRUE(aSelect) && sFirst != -1)
             aExplorerCtrl.EnsureVisible(sFirst, XPR_FALSE);
     }
-
-    XPR_SAFE_DELETE_ARRAY(sPattern);
 }
 
 void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
@@ -141,90 +111,62 @@ void selectName(SearchResultCtrl &aSearchResultCtrl, xpr_bool_t aSelect)
     if (sDlg.DoModal() != IDOK)
         return;
 
-    xpr_bool_t sOnlySel = sDlg.isOnlySel();
-    const xpr_tchar_t *sSelName = sDlg.getSelName();
-    xpr_tchar_t (*sPattern)[XPR_MAX_PATH + 1] = XPR_NULL;
+    xpr_bool_t                     sOnlySel     = sDlg.isOnlySel();
+    const SelNameDlg::PatternList &sPatternList = sDlg.getPatternList();
 
-    xpr_sint_t i = 0, j;
-    xpr_sint_t sSepCount = 0;
-    xpr_sint_t sCount = (xpr_sint_t)_tcslen(sSelName);
-    for (i = 0; i < sCount; ++i)
+    if (sPatternList.empty() == false)
     {
-        if (sSelName[i] == ';')
-            sSepCount++;
-    }
+        xpr_bool_t sResult = XPR_FALSE;
+        xpr_sint_t i, sCount;
+        xpr_sint_t sFirst = -1;
+        SrItemData *sSrItemData = XPR_NULL;
+        xpr_tchar_t sName[XPR_MAX_PATH + 1];
+        SelNameDlg::PatternList::const_iterator sIterator;
 
-    xpr_tchar_t *sLastExt = (xpr_tchar_t *)_tcsrchr(sSelName, ';');
-    if (XPR_IS_NULL(sLastExt) && sSepCount == 0)
-    {
-        sSepCount++;
-        sPattern = new xpr_tchar_t[1][XPR_MAX_PATH + 1];
-        _tcscpy(sPattern[0], sSelName);
-    }
-    else
-    {
-        if (_tcscmp(sLastExt+1, XPR_STRING_LITERAL("")))
-            sSepCount++;
-
-        CString sName;
-        sPattern = new xpr_tchar_t[sSepCount][XPR_MAX_PATH + 1];
-        for (i = 0; i < sSepCount; ++i)
+        sCount = aSearchResultCtrl.GetItemCount();
+        for (i = 0; i < sCount; ++i)
         {
-            AfxExtractSubString(sName, sSelName, i, ';');
-            sName.TrimLeft();
-            sName.TrimRight();
-            _tcscpy(sPattern[i], sName);
-        }
-    }
+            sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
 
-    xpr_bool_t sResult = XPR_FALSE;
+            XPR_ASSERT(sSrItemData != XPR_NULL);
 
-    xpr_sint_t sFirst = -1;
-    SrItemData *sSrItemData = XPR_NULL;
-    xpr_tchar_t sName[XPR_MAX_PATH + 1];
+            _tcscpy(sName, sSrItemData->mFileName);
 
-    sCount = aSearchResultCtrl.GetItemCount();
-    for (i = 0; i < sCount; ++i)
-    {
-        sSrItemData = (SrItemData *)aSearchResultCtrl.GetItemData(i);
-        if (XPR_IS_NULL(sSrItemData))
-            continue;
+            sResult = XPR_FALSE;
 
-        _tcscpy(sName, sSrItemData->mFileName);
-
-        sResult = XPR_FALSE;
-        for (j = 0; j < sSepCount; ++j)
-        {
-            if (fnmatch(sPattern[j], sName, FNM_CASEFOLD) != FNM_NOMATCH)
+            FXFILE_STL_FOR_EACH(sIterator, sPatternList)
             {
-                sResult = XPR_TRUE;
-                break;
+                const xpr::string &sPattern = *sIterator;
+
+                if (fnmatch(sPattern.c_str(), sName, FNM_CASEFOLD) != FNM_NOMATCH)
+                {
+                    sResult = XPR_TRUE;
+                    break;
+                }
+            }
+
+            if (XPR_IS_TRUE(sResult))
+            {
+                aSearchResultCtrl.SetItemState(i, XPR_IS_TRUE(aSelect) ? LVIS_SELECTED : 0, LVIS_SELECTED);
+                if (XPR_IS_TRUE(aSelect) && sFirst == -1)
+                {
+                    aSearchResultCtrl.SetSelectionMark(i);
+                    aSearchResultCtrl.SetItemState(i, LVIS_FOCUSED, LVIS_FOCUSED);
+                    sFirst = i;
+                }
+            }
+            else
+            {
+                if (XPR_IS_TRUE(sOnlySel) || XPR_IS_NULL(sSrItemData))
+                    aSearchResultCtrl.SetItemState(i, 0, LVIS_SELECTED);
             }
         }
 
-        if (XPR_IS_TRUE(sResult))
-        {
-            aSearchResultCtrl.SetItemState(i, XPR_IS_TRUE(aSelect) ? LVIS_SELECTED : 0, LVIS_SELECTED);
-            if (XPR_IS_TRUE(aSelect) && sFirst == -1)
-            {
-                aSearchResultCtrl.SetSelectionMark(i);
-                aSearchResultCtrl.SetItemState(i, LVIS_FOCUSED, LVIS_FOCUSED);
-                sFirst = i;
-            }
-        }
-        else
-        {
-            if (XPR_IS_TRUE(sOnlySel) || XPR_IS_NULL(sSrItemData))
-                aSearchResultCtrl.SetItemState(i, 0, LVIS_SELECTED);
-        }
+        if (XPR_IS_TRUE(aSelect) && sFirst != -1)
+            aSearchResultCtrl.EnsureVisible(sFirst, XPR_FALSE);
+
+        aSearchResultCtrl.SetFocus();
     }
-
-    if (XPR_IS_TRUE(aSelect) && sFirst != -1)
-        aSearchResultCtrl.EnsureVisible(sFirst, XPR_FALSE);
-
-    XPR_SAFE_DELETE_ARRAY(sPattern);
-
-    aSearchResultCtrl.SetFocus();
 }
 } // namespace anonymous
 
