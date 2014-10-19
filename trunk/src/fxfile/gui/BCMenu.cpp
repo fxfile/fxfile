@@ -1108,6 +1108,10 @@ void BCMenu::drawText(CDC *aDC, const CRect &aItemRect, UINT aItemState, const C
     {
         sTextRect.right -= m_nIconX;
     }
+    else
+    {
+        sTextRect.right -= TEXT_OFFSET_X;
+    }
 
     NONCLIENTMETRICS sNonClientMetrics = {0};
     sNonClientMetrics.cbSize = sizeof(NONCLIENTMETRICS);
