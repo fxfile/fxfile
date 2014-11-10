@@ -16,7 +16,7 @@
 
 namespace fxfile
 {
-class FileChangeWatcher : protected Thread, public fxfile::base::Singleton<FileChangeWatcher>
+class FileChangeWatcher : protected xpr::Thread::Runnable, public fxfile::base::Singleton<FileChangeWatcher>
 {
     friend class fxfile::base::Singleton<FileChangeWatcher>;
 
@@ -80,8 +80,9 @@ public:
     void unregisterAllWatches(void);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
+
     xpr_sint_t delayNotify(HANDLE aNotifyHandle, xpr_bool_t aResetTimer);
 
 protected:
@@ -89,6 +90,7 @@ protected:
     WatchMap   mWatchMap;
     xpr::Mutex mMutex;
 
+    Thread   mThread;
     HANDLE   mEvent;
 };
 } // namespace fxfile

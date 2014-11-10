@@ -162,7 +162,7 @@ void BookmarkEditDlg::OnDestroy(void)
     super::OnDestroy();
 
     if (mShellIcon != XPR_NULL)
-        mShellIcon->Stop(1000);
+        mShellIcon->stopThread();
 
     xpr_sint_t i;
     xpr_sint_t sCount;

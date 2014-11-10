@@ -29,7 +29,7 @@ AttrTime::AttrTime(void)
 
 AttrTime::~AttrTime(void)
 {
-    Stop();
+    stop();
 
     mPathDeque.clear();
 
@@ -116,16 +116,24 @@ const xpr_tchar_t *AttrTime::getPath(xpr_sint_t aIndex)
     return mPathDeque[aIndex].c_str();
 }
 
-xpr_bool_t AttrTime::OnPreEntry(void)
+xpr_bool_t AttrTime::start(void)
 {
     mProcessedCount = 0;
     mSucceededCount = 0;
     mStatus = StatusChanging;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned AttrTime::OnEntryProc(void)
+void AttrTime::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t AttrTime::runThread(xpr::Thread &aThread)
 {
     xpr_sint_t sDepth = 0;
     DWORD sAttributes;
@@ -138,7 +146,7 @@ unsigned AttrTime::OnEntryProc(void)
     sIterator = mPathDeque.begin();
     for (; sIterator != mPathDeque.end(); ++sIterator)
     {
-        if (IsStop() == XPR_TRUE)
+        if (mThread.isStop() == XPR_TRUE)
             break;
 
         sPath = *sIterator;
@@ -175,7 +183,7 @@ unsigned AttrTime::OnEntryProc(void)
 
     {
         xpr::MutexGuard sLockGuard(mMutex);
-        mStatus = (IsStop() == XPR_TRUE) ? StatusStopped : StatusChangeCompleted;
+        mStatus = (mThread.isStop() == XPR_TRUE) ? StatusStopped : StatusChangeCompleted;
     }
 
     ::PostMessage(mHwnd, mMsg, (WPARAM)XPR_NULL, (LPARAM)XPR_NULL);
@@ -185,7 +193,7 @@ unsigned AttrTime::OnEntryProc(void)
 
 xpr_bool_t AttrTime::OnRcsvDirAttrTimeProc(const xpr::string &strDir, DWORD sAttributes, xpr_sint_t sDepth)
 {
-    if (IsStop() == XPR_TRUE)
+    if (mThread.isStop() == XPR_TRUE)
         return XPR_TRUE;
 
     xpr::string sPath = strDir + XPR_STRING_LITERAL('\\');
@@ -224,7 +232,7 @@ xpr_bool_t AttrTime::OnRcsvDirAttrTimeProc(const xpr::string &strDir, DWORD sAtt
             }
         }
 
-        if (IsStop() == XPR_TRUE)
+        if (mThread.isStop() == XPR_TRUE)
             break;
     }
     while (::FindNextFile(sFile, &sWin32FindData));

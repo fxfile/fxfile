@@ -275,7 +275,7 @@ void CrcCreateDlg::OnOK(void)
     {
         if (mCrcCreate->getStatus() == CrcCreate::StatusCreating)
         {
-            mCrcCreate->Stop();
+            mCrcCreate->stop();
             return;
         }
     }
@@ -301,7 +301,7 @@ void CrcCreateDlg::OnOK(void)
     for (; sIterator != mListDeque.end(); ++sIterator)
         mCrcCreate->addPath(*sIterator);
 
-    if (mCrcCreate->Start())
+    if (mCrcCreate->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -310,7 +310,7 @@ void CrcCreateDlg::OnOK(void)
 
 LRESULT CrcCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mCrcCreate->Stop();
+    mCrcCreate->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

@@ -35,7 +35,7 @@ TextMerge::TextMerge(void)
 
 TextMerge::~TextMerge(void)
 {
-    Stop();
+    stop();
 
     mPathDeque.clear();
 }
@@ -63,15 +63,23 @@ void TextMerge::addPath(const xpr_tchar_t *aPath)
         mPathDeque.push_back(aPath);
 }
 
-xpr_bool_t TextMerge::OnPreEntry(void)
+xpr_bool_t TextMerge::start(void)
 {
     mSucceededCount = 0;
     mStatus = StatusMerging;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned TextMerge::OnEntryProc(void)
+void TextMerge::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t TextMerge::runThread(xpr::Thread &aThread)
 {
     xpr_rcode_t sRcode;
     xpr_sint_t sOpenMode;
@@ -95,7 +103,7 @@ unsigned TextMerge::OnEntryProc(void)
         sIterator = mPathDeque.begin();
         for (; sIterator != mPathDeque.end(); ++sIterator)
         {
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
             sPath = *sIterator;
@@ -123,7 +131,7 @@ unsigned TextMerge::OnEntryProc(void)
                                       sTextReadLen * sizeof(xpr_tchar_t),
                                       (sizeof(xpr_tchar_t) == 2) ? xpr::CharSetUtf16 : xpr::CharSetMultiBytes);
 
-            } while (IsStop() == XPR_FALSE);
+            } while (mThread.isStop() == XPR_FALSE);
 
             sFileIo.close();
 
@@ -140,7 +148,7 @@ unsigned TextMerge::OnEntryProc(void)
 
     {
         xpr::MutexGuard sLockGuard(mMutex);
-        mStatus = (IsStop() == XPR_TRUE) ? StatusStopped : StatusMergeCompleted;
+        mStatus = (mThread.isStop() == XPR_TRUE) ? StatusStopped : StatusMergeCompleted;
     }
 
     ::PostMessage(mHwnd, mMsg, (WPARAM)0, (LPARAM)0);

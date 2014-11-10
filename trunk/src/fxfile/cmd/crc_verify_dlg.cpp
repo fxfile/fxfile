@@ -267,7 +267,7 @@ void CrcVerifyDlg::OnOK(void)
     {
         if (mCrcVerify->getStatus() == CrcVerify::StatusVerifying)
         {
-            mCrcVerify->Stop();
+            mCrcVerify->stop();
             return;
         }
     }
@@ -280,7 +280,7 @@ void CrcVerifyDlg::OnOK(void)
         return;
     }
 
-    if (mCrcVerify->Start())
+    if (mCrcVerify->start())
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -291,7 +291,7 @@ LRESULT CrcVerifyDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
     DWORD sResult = (DWORD)wParam;
 
-    mCrcVerify->Stop();
+    mCrcVerify->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

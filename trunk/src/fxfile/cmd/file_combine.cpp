@@ -70,7 +70,7 @@ void FileCombine::setBufferSize(DWORD aBufferSize)
     mBufferSize = aBufferSize;
 }
 
-xpr_bool_t FileCombine::OnPreEntry(void)
+xpr_bool_t FileCombine::start(void)
 {
     if (IsExistFile(mPath) == XPR_FALSE)
     {
@@ -87,10 +87,18 @@ xpr_bool_t FileCombine::OnPreEntry(void)
     mStatus = StatusCombining;
     mCombinedCount = 0;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned FileCombine::OnEntryProc(void)
+void FileCombine::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t FileCombine::runThread(xpr::Thread &aThread)
 {
     Status sStatus = StatusNone;
 
@@ -132,7 +140,7 @@ unsigned FileCombine::OnEntryProc(void)
         sRcode = sDestFileIo.open(sDestPath, sOpenMode);
         if (XPR_RCODE_IS_SUCCESS(sRcode))
         {
-            for (; IsStop() == XPR_FALSE; ++sIndex)
+            for (; mThread.isStop() == XPR_FALSE; ++sIndex)
             {
                 _stprintf(sIndexText, XPR_STRING_LITERAL(".%03d"), sIndex);
                 sPath = sBasePath + sIndexText;
@@ -146,7 +154,7 @@ unsigned FileCombine::OnEntryProc(void)
                     mCombinedCount++;
                 }
 
-                while (IsStop() == XPR_FALSE)
+                while (mThread.isStop() == XPR_FALSE)
                 {
                     sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
                     if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
@@ -165,7 +173,7 @@ unsigned FileCombine::OnEntryProc(void)
             sStatus = StatusCombineCompleted;
 
             // crc checking
-            if (IsStop() == XPR_FALSE && IsExistFile(sCrcFile.c_str()) == XPR_TRUE)
+            if (mThread.isStop() == XPR_FALSE && IsExistFile(sCrcFile.c_str()) == XPR_TRUE)
             {
                 fxfile::base::ConfFileEx sConfFile(sCrcFile.c_str());
                 sConfFile.load();
@@ -221,7 +229,7 @@ unsigned FileCombine::OnEntryProc(void)
         sStatus = StatusNotCombine;
     }
 
-    if (IsStop() == XPR_TRUE)
+    if (mThread.isStop() == XPR_TRUE)
         sStatus = StatusStopped;
 
     {

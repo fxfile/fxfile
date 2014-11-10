@@ -11,14 +11,14 @@
 #define __FXFILE_FILE_LIST_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class FileList : public Thread
+class FileList : protected xpr::Thread::Runnable
 {
 public:
     enum Status
@@ -51,6 +51,9 @@ public:
     void setTextFile(const xpr_tchar_t *aTextFile);
     void addPath(const xpr_tchar_t *aPath);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     xpr_uint_t getFlags(void);
     void setFlags(xpr_uint_t aFlags);
     void setSplitChar(const xpr_tchar_t *aSplitChar);
@@ -58,8 +61,8 @@ public:
     Status getStatus(void);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND         mHwnd;
@@ -77,6 +80,7 @@ protected:
 
     Status       mStatus;
     xpr::Mutex   mMutex;
+    Thread       mThread;
 };
 } // namespace cmd
 } // namespace fxfile

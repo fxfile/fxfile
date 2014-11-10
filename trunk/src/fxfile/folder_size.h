@@ -11,7 +11,7 @@
 #define __FXFILE_FOLDER_SIZE_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 
 namespace fxfile
 {

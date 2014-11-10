@@ -11,14 +11,14 @@
 #define __FXFILE_MULTI_RENAME_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class MultiRename : public Thread
+class MultiRename : protected xpr::Thread::Runnable
 {
 public:
     enum
@@ -65,13 +65,16 @@ public:
     void addPath(const xpr_tchar_t *aDir, const xpr_tchar_t *aOld, const xpr_tchar_t *aNew);
     void addPath(const xpr::string &aDir, const xpr::string &aOld, const xpr::string &aNew);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     Status getStatus(xpr_size_t *aPreparedCount = XPR_NULL, xpr_size_t *aValidatedCount = XPR_NULL, xpr_size_t *aRenamedCount = XPR_NULL);
     Result getItemResult(xpr_size_t aIndex);
     xpr_sint_t getInvalidItem(void);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND       mHwnd;
@@ -97,6 +100,7 @@ protected:
     xpr_size_t   mRenamedCount;
     Status       mStatus;
     xpr::Mutex   mMutex;
+    Thread       mThread;
 };
 } // namespace cmd
 } // namespace fxfile

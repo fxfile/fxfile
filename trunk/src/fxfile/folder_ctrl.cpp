@@ -236,11 +236,7 @@ void FolderCtrl::OnDestroy(void)
 
     ShellChangeNotify::instance().unregisterWatch(mShcnId);
 
-    if (XPR_IS_NOT_NULL(mShellIcon))
-    {
-        mShellIcon->Stop();
-        XPR_SAFE_DELETE(mShellIcon);
-    }
+    XPR_SAFE_DELETE(mShellIcon);
 
     mDropTarget.Revoke();
 

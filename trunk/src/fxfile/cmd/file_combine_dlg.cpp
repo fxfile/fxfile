@@ -135,7 +135,7 @@ void FileCombineDlg::setDestDir(const xpr_tchar_t *aDestDir)
 xpr_bool_t FileCombineDlg::DestroyWindow(void) 
 {
     if (mFileCombine != XPR_NULL)
-        mFileCombine->Stop();
+        mFileCombine->stop();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -259,7 +259,7 @@ void FileCombineDlg::OnOK(void)
     {
         if (mFileCombine->GetStatus() == FileCombine::StatusCombining)
         {
-            mFileCombine->Stop();
+            mFileCombine->stop();
             return;
         }
     }
@@ -331,7 +331,7 @@ void FileCombineDlg::OnOK(void)
     mFileCombine->setPath(sPath);
     mFileCombine->setDestDir(sDestDir);
 
-    if (mFileCombine->Start())
+    if (mFileCombine->start() == XPR_TRUE)
     {
         xpr_sint_t sCount = 0;
 
@@ -407,7 +407,7 @@ void FileCombineDlg::OnTimer(UINT_PTR nIDEvent)
 
 LRESULT FileCombineDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mFileCombine->Stop();
+    mFileCombine->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

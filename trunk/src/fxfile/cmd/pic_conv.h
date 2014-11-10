@@ -11,7 +11,7 @@
 #define __FXFILE_PIC_CONV_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 #include "gfl/libgfl.h"
@@ -24,7 +24,7 @@ namespace fxfile
 {
 namespace cmd
 {
-class PicConv : public Thread
+class PicConv : protected xpr::Thread::Runnable
 {
 public:
     enum Status
@@ -47,12 +47,15 @@ public:
     void setKeepOrg(xpr_bool_t aKeepOrg);
     void setColorMode(xpr_bool_t aAllApply, GFL_MODE aGflMode, GFL_MODE_PARAMS aGflModeParams);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     xpr_size_t getCount(void);
     Status getStatus(xpr_size_t *aProcessedCount = XPR_NULL, xpr_size_t *aSucceededCount = XPR_NULL);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     xpr_bool_t       mKeepOrg;
@@ -77,6 +80,7 @@ protected:
     xpr_size_t mProcessedCount;
     xpr_size_t mSucceededCount;
     xpr::Mutex mMutex;
+    Thread     mThread;
 };
 } // namespace cmd
 } // namespace fxfile

@@ -11,7 +11,7 @@
 #define __FXFILE_BATCH_CREATE_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
@@ -32,7 +32,7 @@ namespace cmd
 #define FXFILE_BATCH_CREATE_FORMAT_DIGIT_DEF    (1)
 #define FXFILE_BATCH_CREATE_FORMAT_DIGIT_MAX    (XPR_MAX_PATH)
 
-class BatchCreate : public Thread
+class BatchCreate : protected xpr::Thread::Runnable
 {
 public:
     enum CreateType
@@ -81,13 +81,16 @@ public:
     xpr_size_t getCount(void) const;
     void clear(void);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     Status getStatus(xpr_size_t *aPreparedCount = XPR_NULL, xpr_size_t *aValidatedCount = XPR_NULL, xpr_size_t *aCreatedCount = XPR_NULL) const;
     Result getItemResult(xpr_size_t aIndex) const;
     xpr_sint_t getInvalidItem(void) const;
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND       mHwnd;
@@ -109,6 +112,7 @@ protected:
     xpr_size_t mCreatedCount;
     Status     mStatus;
     mutable xpr::Mutex mMutex;
+    Thread     mThread;
 };
 } // namespace cmd
 } // namespace fxfile

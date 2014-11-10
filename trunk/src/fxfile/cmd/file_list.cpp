@@ -29,7 +29,7 @@ FileList::FileList(void)
 
 FileList::~FileList(void)
 {
-    Stop();
+    stop();
 
     mPathDeque.clear();
 }
@@ -82,14 +82,22 @@ void FileList::addPath(const xpr_tchar_t *aPath)
     mPathDeque.push_back(aPath);
 }
 
-xpr_bool_t FileList::OnPreEntry(void)
+xpr_bool_t FileList::start(void)
 {
     mStatus = StatusCreating;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned FileList::OnEntryProc(void)
+void FileList::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t FileList::runThread(xpr::Thread &aThread)
 {
     xpr_bool_t sByLine    = XPR_TEST_BITS(mFlags, FlagsByLine);
     xpr_bool_t sOnlyFile  = XPR_TEST_BITS(mFlags, FlagsOnlyFile);
@@ -127,7 +135,7 @@ unsigned FileList::OnEntryProc(void)
         sIterator = mPathDeque.begin();
         for (; sIterator != mPathDeque.end(); ++sIterator)
         {
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
             sPath = *sIterator;
@@ -219,7 +227,7 @@ unsigned FileList::OnEntryProc(void)
 
         {
             xpr::MutexGuard sLockGuard(mMutex);
-            mStatus = IsStop() ? StatusStopped : StatusCreateCompleted;
+            mStatus = mThread.isStop() ? StatusStopped : StatusCreateCompleted;
         }
     }
     else

@@ -19,19 +19,35 @@ const xpr_tchar_t kUnknownThreadName[] = XPR_STRING_LITERAL("XPR - Unknown Threa
 struct ThreadParam
 {
     Thread           *mThread;
-    Thread::Delegate *mDelegate;
+    Thread::Runnable *mRunnable;
 };
 
-Thread::Thread(const xpr_tchar_t *aThreadName)
+static const xpr_sint_t gThreadPrirityTable[] =
+{
+    THREAD_PRIORITY_IDLE,          // 0  ThreadPriorityMin
+    THREAD_PRIORITY_LOWEST,        // 1
+    THREAD_PRIORITY_LOWEST,        // 2
+    THREAD_PRIORITY_BELOW_NORMAL,  // 3
+    THREAD_PRIORITY_BELOW_NORMAL,  // 4
+    THREAD_PRIORITY_NORMAL,        // 5  ThreadPriorityNormal
+    THREAD_PRIORITY_ABOVE_NORMAL,  // 6
+    THREAD_PRIORITY_ABOVE_NORMAL,  // 7
+    THREAD_PRIORITY_HIGHEST,       // 8
+    THREAD_PRIORITY_HIGHEST,       // 9
+    THREAD_PRIORITY_TIME_CRITICAL, // 10 ThreadPriorityMax
+};
+
+Thread::Thread(const xpr::string *aThreadName)
     : mThreadId(0)
     , mThreadState(ThreadStateNone)
+    , mPriority(5)
     , mExitCode(0)
 {
     mHandle.mHandle = XPR_NULL;
 
     if (XPR_IS_NOT_NULL(aThreadName))
     {
-        mThreadName = aThreadName;
+        mThreadName = *aThreadName;
     }
     else
     {
@@ -44,39 +60,40 @@ Thread::~Thread(void)
     join();
 }
 
-xpr_uint_t XPR_STDCALL Thread::ThreadEntry(void *sParam)
+xpr_uint_t XPR_STDCALL Thread::threadEntry(void *sParam)
 {
     xpr_uint_t sExitCode = 0;
 
     Thread *sThread = XPR_NULL;
-    Delegate *sDelegate = XPR_NULL;
+    Runnable *sRunnable = XPR_NULL;
 
     ThreadParam *sThreadParam = (ThreadParam *)sParam;
     if (sThreadParam != XPR_NULL)
     {
         sThread = sThreadParam->mThread;
-        sDelegate = sThreadParam->mDelegate;
+        sRunnable = sThreadParam->mRunnable;
 
         XPR_SAFE_DELETE(sThreadParam);
     }
 
-    if (sThread != XPR_NULL && sDelegate != XPR_NULL)
+    if (sThread != XPR_NULL && sRunnable != XPR_NULL)
     {
         sThread->mThreadState = ThreadStateRunning;
 
-        sExitCode = sDelegate->onThreadMain(*sThread);
+        sExitCode = sRunnable->runThread(*sThread);
 
         sThread->mExitCode = (xpr_uint_t)sExitCode;
         sThread->mThreadState = ThreadStateTerminated;
     }
 
     ::_endthreadex(sExitCode);
+
     return 0;
 }
 
-xpr_rcode_t Thread::start(Delegate *aDelegate, xpr_size_t aStackSize)
+xpr_rcode_t Thread::start(Runnable *aRunnable, xpr_size_t aStackSize)
 {
-    if (aDelegate == XPR_NULL)
+    if (aRunnable == XPR_NULL)
         return XPR_RCODE_EINVAL;
 
     if (mHandle.mHandle != XPR_NULL)
@@ -87,14 +104,22 @@ xpr_rcode_t Thread::start(Delegate *aDelegate, xpr_size_t aStackSize)
         return XPR_RCODE_ENOMEM;
 
     sThreadParam->mThread = this;
-    sThreadParam->mDelegate = aDelegate;
+    sThreadParam->mRunnable = aRunnable;
 
+    HANDLE sHandle;
     xpr_uint_t sThreadId = 0;
 
-    mHandle.mHandle = (HANDLE)::_beginthreadex(XPR_NULL, 0, ThreadEntry, this, 0, &sThreadId);
-    if (mHandle.mHandle == XPR_NULL)
-        return XPR_RCODE_GET_OS_ERROR();
+    sHandle = (HANDLE)::_beginthreadex(XPR_NULL, 0, threadEntry, sThreadParam, 0, &sThreadId);
+    if (sHandle == XPR_NULL)
+    {
+        XPR_SAFE_DELETE(sThreadParam);
 
+        return XPR_RCODE_GET_OS_ERROR();
+    }
+
+    setPriority(mPriority);
+
+    mHandle.mHandle = sHandle;
     mThreadId = (ThreadId)sThreadId;
 
     return XPR_RCODE_SUCCESS;
@@ -112,10 +137,17 @@ xpr_rcode_t Thread::join(xpr_sint_t *aExitCode)
         {
             if (::GetExitCodeThread(mHandle.mHandle, &sExitCode) == XPR_TRUE)
             {
-                *aExitCode = sExitCode;
-            }
+                sRcode = XPR_RCODE_SUCCESS;
 
-            sRcode = XPR_RCODE_SUCCESS;
+                if (XPR_IS_NOT_NULL(aExitCode))
+                {
+                    *aExitCode = sExitCode;
+                }
+            }
+            else
+            {
+                sRcode = XPR_RCODE_GET_OS_ERROR();
+            }
         }
         else
         {
@@ -150,9 +182,14 @@ ThreadId Thread::getThreadId(void) const
     return mThreadId;
 }
 
-Thread::ThreadState Thread::getThreadState(void) const
+ThreadState Thread::getThreadState(void) const
 {
     return mThreadState;
+}
+
+xpr_sint_t Thread::getThreadPriority(void) const
+{
+    return mPriority;
 }
 
 void Thread::getThreadName(xpr::string &aThreadName) const
@@ -181,6 +218,30 @@ xpr_bool_t Thread::isEqual(const Thread &aThread) const
         return XPR_TRUE;
 
     return XPR_FALSE;
+}
+
+xpr_bool_t Thread::isRunning(void) const
+{
+    ThreadState sThreadState = getThreadState();
+
+    return (sThreadState == ThreadStateRunning) ? XPR_TRUE : XPR_FALSE;
+}
+
+void Thread::setPriority(xpr_sint_t aPriority)
+{
+    if (XPR_IS_RANGE(ThreadPriorityMin, aPriority, ThreadPriorityMax))
+    {
+        mPriority = gThreadPrirityTable[aPriority];
+
+        if (XPR_IS_NOT_NULL(mHandle.mHandle))
+        {
+            ::SetThreadPriority(mHandle.mHandle, mPriority);
+        }
+    }
+    else
+    {
+        // out of range
+    }
 }
 
 void Thread::swap(Thread &aThread)

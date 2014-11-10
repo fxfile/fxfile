@@ -11,13 +11,13 @@
 #define __FXFILE_ADV_FILE_CHANGE_WATCHER_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "pattern.h"
 #include "thread.h"
 
 namespace fxfile
 {
-class AdvFileChangeWatcher : protected ThreadHandler, public fxfile::base::Singleton<AdvFileChangeWatcher>
+class AdvFileChangeWatcher : protected xpr::Thread::Runnable, public fxfile::base::Singleton<AdvFileChangeWatcher>
 {
     friend class fxfile::base::Singleton<AdvFileChangeWatcher>;
 
@@ -102,10 +102,10 @@ public:
     void unregisterAllWatches(void);
 
 protected:
-    xpr_bool_t OnThreadPreEntry(Thread &aThread);
-    unsigned OnThreadEntryProc(Thread &aThread);
-    unsigned OnMonitorThreadEntryProc(void);
-    unsigned OnNotifyThreadEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
+    xpr_sint_t runMonitorThread(Thread &aThread);
+    xpr_sint_t runNotifyThread(Thread &aThread);
 
 protected:
     xpr_bool_t getRootPath(const xpr::string &aPath, xpr::string &aRootPath);

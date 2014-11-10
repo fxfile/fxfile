@@ -191,7 +191,9 @@ void SearchResultCtrl::OnDestroy(void)
     ShellChangeNotify::instance().unregisterWatch(mShcnId);
 
     if (XPR_IS_NOT_NULL(mShellIcon))
-        mShellIcon->Stop();
+    {
+        mShellIcon->stopThread();
+    }
 }
 
 void SearchResultCtrl::OnWindowPosChanging(WINDOWPOS FAR *aWindowPos)

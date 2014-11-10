@@ -148,7 +148,7 @@ void TextMergeDlg::addPath(const xpr_tchar_t *aPath)
 xpr_bool_t TextMergeDlg::DestroyWindow(void) 
 {
     if (mTextMerge != XPR_NULL)
-        mTextMerge->Stop();
+        mTextMerge->stop();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -238,7 +238,7 @@ void TextMergeDlg::OnOK(void)
     {
         if (mTextMerge->getStatus() == TextMerge::StatusMerging)
         {
-            mTextMerge->Stop();
+            mTextMerge->stop();
             return;
         }
     }
@@ -264,7 +264,7 @@ void TextMergeDlg::OnOK(void)
     for (; sIterator != mPathDeque.end(); ++sIterator)
         mTextMerge->addPath(sIterator->c_str());
 
-    if (mTextMerge->Start() == XPR_TRUE)
+    if (mTextMerge->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -295,7 +295,7 @@ void TextMergeDlg::OnTimer(UINT_PTR nIDEvent)
 
 LRESULT TextMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mTextMerge->Stop();
+    mTextMerge->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

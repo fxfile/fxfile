@@ -237,7 +237,7 @@ void AttrTimeDlg::OnDestroy(void)
 
     if (mAttrTime != XPR_NULL)
     {
-        mAttrTime->Stop();
+        mAttrTime->stop();
     }
 
     if (XPR_IS_NOT_NULL(mDlgState))
@@ -343,7 +343,7 @@ void AttrTimeDlg::OnOK(void)
     {
         if (mAttrTime->getStatus() == AttrTime::StatusChanging)
         {
-            mAttrTime->Stop();
+            mAttrTime->stop();
             return;
         }
     }
@@ -430,7 +430,7 @@ void AttrTimeDlg::OnOK(void)
     for (; sIterator != mList.end(); ++sIterator)
         mAttrTime->addPath(*sIterator);
 
-    if (mAttrTime->Start())
+    if (mAttrTime->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -439,7 +439,7 @@ void AttrTimeDlg::OnOK(void)
 
 LRESULT AttrTimeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mAttrTime->Stop();
+    mAttrTime->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

@@ -41,14 +41,17 @@ xpr_bool_t FileChangeWatcher::create(void)
     if (XPR_IS_NULL(mEvent))
         return XPR_FALSE;
 
-    return Start();
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
 void FileChangeWatcher::destroy(void)
 {
     unregisterAllWatches();
 
-    Stop();
+    mThread.stop();
+    mThread.join();
 
     CLOSE_HANDLE(mEvent);
 }
@@ -96,7 +99,7 @@ FileChangeWatcher::WatchId FileChangeWatcher::registerWatch(WatchItem *aWatchIte
         return InvalidWatchId;
     }
 
-    if (IsRunning() == XPR_FALSE)
+    if (mThread.isRunning() == XPR_FALSE)
         create();
 
     WatchId sWatchId = (WatchId)sNotifyHandle;
@@ -163,13 +166,10 @@ void FileChangeWatcher::unregisterAllWatches(void)
     SetEvent(mEvent);
 }
 
-xpr_bool_t FileChangeWatcher::OnPreEntry(void)
+xpr_sint_t FileChangeWatcher::runThread(xpr::Thread &aThread)
 {
-    return XPR_TRUE;
-}
+    Thread &sThread = (Thread &)aThread;
 
-unsigned FileChangeWatcher::OnEntryProc(void)
-{
     typedef std::vector<HANDLE> HandleVector;
     HandleVector sNotifyHandles;
 
@@ -189,7 +189,7 @@ unsigned FileChangeWatcher::OnEntryProc(void)
     DWORD sIdle;
     DWORD sResult;
 
-    while (IsStop() == XPR_FALSE)
+    while (sThread.isStop() == XPR_FALSE)
     {
         sIdle = kIdleTime;
 
@@ -223,7 +223,7 @@ unsigned FileChangeWatcher::OnEntryProc(void)
         sCount = sNotifyHandles.size();
         sHandles = &sNotifyHandles[0];
 
-        while (IsStop() == XPR_FALSE)
+        while (sThread.isStop() == XPR_FALSE)
         {
             sTimeout = XPR_FALSE;
 

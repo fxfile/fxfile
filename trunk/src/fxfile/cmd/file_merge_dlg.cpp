@@ -166,7 +166,7 @@ void FileMergeDlg::setDestPath(const xpr_tchar_t *aDestPath)
 xpr_bool_t FileMergeDlg::DestroyWindow(void) 
 {
     if (mFileMerge != XPR_NULL)
-        mFileMerge->Stop();
+        mFileMerge->stop();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -275,7 +275,7 @@ void FileMergeDlg::OnOK(void)
     {
         if (mFileMerge->getStatus() == FileMerge::StatusMerging)
         {
-            mFileMerge->Stop();
+            mFileMerge->stop();
             return;
         }
     }
@@ -314,7 +314,7 @@ void FileMergeDlg::OnOK(void)
     for (; sIterator != mPathDeque.end(); ++sIterator)
         mFileMerge->addPath(sIterator->c_str());
 
-    if (mFileMerge->Start())
+    if (mFileMerge->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -360,7 +360,7 @@ void FileMergeDlg::OnTimer(UINT_PTR nIDEvent)
 
 LRESULT FileMergeDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mFileMerge->Stop();
+    mFileMerge->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

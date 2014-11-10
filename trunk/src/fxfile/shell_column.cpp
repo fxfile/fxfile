@@ -38,7 +38,7 @@ ShellColumn::~ShellColumn(void)
         mColumnInfoMap.clear();
     }
 
-    Stop();
+    mThread.join();
 
     CLOSE_HANDLE(mEvent);
 
@@ -252,10 +252,20 @@ xpr_bool_t ShellColumn::getAsyncColumnText(AsyncInfo *aAsyncInfo)
     if (XPR_IS_NULL(aAsyncInfo->mHwnd) || aAsyncInfo->mMsg <= 0 || XPR_IS_NULL(aAsyncInfo->mShellFolder2) || XPR_IS_NULL(aAsyncInfo->mPidl))
         return XPR_FALSE;
 
-    if (IsRunning() == XPR_FALSE)
+    if (mThread.isRunning() == XPR_FALSE)
     {
-        SetPriority(THREAD_PRIORITY_BELOW_NORMAL);
-        Start();
+        CLOSE_HANDLE(mEvent);
+
+        mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE, XPR_FALSE, XPR_NULL);
+
+        mThread.setPriority(xpr::ThreadPriorityNormal);
+
+        xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+        if (XPR_RCODE_IS_NOT_SUCCESS(sRcode))
+        {
+            CLOSE_HANDLE(mEvent);
+            return XPR_FALSE;
+        }
     }
 
     {
@@ -268,17 +278,10 @@ xpr_bool_t ShellColumn::getAsyncColumnText(AsyncInfo *aAsyncInfo)
     return XPR_TRUE;
 }
 
-xpr_bool_t ShellColumn::OnPreEntry()
+xpr_sint_t ShellColumn::runThread(xpr::Thread &aThread)
 {
-    CLOSE_HANDLE(mEvent);
+    Thread &sThread = (Thread &)aThread;
 
-    mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE, XPR_FALSE, XPR_NULL);
-
-    return XPR_TRUE;
-}
-
-unsigned ShellColumn::OnEntryProc()
-{
     // important!!!
     ::OleInitialize(XPR_NULL);
 
@@ -286,15 +289,14 @@ unsigned ShellColumn::OnEntryProc()
     AsyncInfo *sAsyncInfo;
 
     DWORD sWait;
-    HANDLE sEvents[2] = { mStopThread, mEvent };
 
     while (true)
     {
-        sWait = ::WaitForMultipleObjects(2, sEvents, XPR_FALSE, INFINITE);
-        if (sWait == WAIT_OBJECT_0)
+        sWait = ::WaitForSingleObject(mEvent, INFINITE);
+        if (sThread.isStop() == XPR_TRUE)
             break;
 
-        if (sWait != WAIT_OBJECT_0+1)
+        if (sWait != WAIT_OBJECT_0)
             continue;
 
         {

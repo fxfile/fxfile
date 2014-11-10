@@ -194,7 +194,7 @@ BookmarkMgr::~BookmarkMgr(void)
 
     if (mShellIcon != XPR_NULL)
     {
-        mShellIcon->Stop(1000);
+        mShellIcon->stopThread();
         XPR_SAFE_DELETE(mShellIcon);
     }
 
@@ -393,7 +393,7 @@ void BookmarkMgr::clear(void)
     if (mShellIcon != XPR_NULL)
     {
         mShellIcon->clear();
-        mShellIcon->Stop(1000);
+        mShellIcon->stopThread();
     }
 
     BookmarkItem *sBookmark;

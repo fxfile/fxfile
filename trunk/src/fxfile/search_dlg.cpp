@@ -472,7 +472,7 @@ void SearchDlg::OnDestroy(void)
     super::OnDestroy();
 
     if (mSearchFile != XPR_NULL)
-        mSearchFile->Stop();
+        mSearchFile->stop();
 }
 
 void SearchDlg::OnClose(void) 
@@ -1017,7 +1017,7 @@ void SearchDlg::OnStart(void)
     {
         if (mSearchFile->getStatus() == SearchFile::StatusSearching)
         {
-            mSearchFile->Stop();
+            mSearchFile->stop();
             return;
         }
     }
@@ -1328,7 +1328,7 @@ void SearchDlg::OnStart(void)
     sIncDirDeque.clear();
     sExcDirDeque.clear();
 
-    if (mSearchFile->Start() == XPR_TRUE)
+    if (mSearchFile->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         startAnimation();
@@ -1341,7 +1341,7 @@ void SearchDlg::OnCancel(void)
     {
         if (mSearchFile->getStatus() == SearchFile::StatusSearching)
         {
-            mSearchFile->Stop();
+            mSearchFile->stop();
         }
     }
 

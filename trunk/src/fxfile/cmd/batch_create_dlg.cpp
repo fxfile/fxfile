@@ -361,7 +361,7 @@ void BatchCreateDlg::OnOK(void)
             sStatus == BatchCreate::StatusVerifying ||
             sStatus == BatchCreate::StatusCreating)
         {
-            mBatchCreate->Stop();
+            mBatchCreate->stop();
             return;
         }
     }
@@ -492,7 +492,7 @@ void BatchCreateDlg::OnOK(void)
     mProgressCtrl.SetRange32(0, (xpr_sint_t)sCount);
     mProgressCtrl.SetPos(0);
 
-    if (mBatchCreate->Start())
+    if (mBatchCreate->start() == XPR_TRUE)
     {
         setEnableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -505,7 +505,7 @@ void BatchCreateDlg::OnOK(void)
 
 LRESULT BatchCreateDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mBatchCreate->Stop();
+    mBatchCreate->stop();
 
     KillTimer(TM_ID_STATUS);
     setEnableWindow(XPR_TRUE);

@@ -73,6 +73,8 @@ xpr_rcode_t getFileCrcSfv(const xpr_tchar_t *aPath, xpr_char_t *aCrcVal)
     const xpr_sint_t sSize = HASH_size(&sHashCtx);
     const xpr_uint8_t *sHashValue = (const xpr_uint8_t *)HASH_final(&sHashCtx);
 
+    aCrcVal[0] = '\0';
+
     for (i = 0; i < sSize; ++i)
     {
         sprintf(aCrcVal + strlen(aCrcVal), XPR_MBCS_STRING_LITERAL("%02x"), (xpr_sint_t)sHashValue[i]);
@@ -129,6 +131,8 @@ xpr_rcode_t getFileCrcMd5(const xpr_tchar_t *aPath, xpr_char_t *aCrcVal)
     xpr_sint_t i;
     const xpr_sint_t sSize = HASH_size(&sHashCtx);
     const xpr_uint8_t *sHashValue = (const xpr_uint8_t *)HASH_final(&sHashCtx);
+
+    aCrcVal[0] = '\0';
 
     for (i = 0; i < sSize; ++i)
     {
