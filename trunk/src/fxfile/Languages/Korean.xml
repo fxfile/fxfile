@@ -1456,6 +1456,7 @@
 			<String ID="popup.cfg.body.appearance.folder_tree.label.explore_delay_time_range">(범위) %1%~%2%, %3%</String>
 			<String ID="popup.cfg.body.appearance.folder_tree.check.linkage">파일 리스트와 연동(&amp;L)</String>
 			<String ID="popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage">단일 폴더 트리일 경우, 파일 리스트와의 연동(&amp;L)</String>
+			<String ID="popup.cfg.body.appearance.folder_tree.check.classic_theme_style">고전 테마 적용(&amp;M)</String>
 
 			<String ID="popup.cfg.body.appearance.file_list.check.show_parent_folder">상위 폴더 [..] 표시하기(&amp;P)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.show_each_drive">드라이브 표시(&amp;D)</String>
@@ -1464,6 +1465,7 @@
 			<String ID="popup.cfg.body.appearance.file_list.check.show_24-hour_format">24시간제 시간 표시(&amp;T)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.show_2_digits_year">2자리 년도 사용(&amp;Y)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.show_grid_lines">그리드 라인(&amp;G)</String>
+			<String ID="popup.cfg.body.appearance.file_list.check.classic_theme_style">고전 테마 적용(&amp;M)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.full_row_selection">전체 행 선택(&amp;F)</String>
 			<String ID="popup.cfg.body.appearance.file_list.check.use_custom_icon">사용자 정의 아이콘 사용하기(&amp;I):</String>
 			<String ID="popup.cfg.body.appearance.file_list.label.show_list_type">항목 표시(&amp;L):</String>

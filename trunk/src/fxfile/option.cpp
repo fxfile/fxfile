@@ -128,8 +128,6 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.address_full_path"),                          OptionKey::TypeBoolean, &Option::mConfig.mAddressFullPath,              (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.tooltip"),                                    OptionKey::TypeBoolean, &Option::mConfig.mTooltip,                      (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.tooltip_with_file_name"),                     OptionKey::TypeBoolean, &Option::mConfig.mTooltipWithFileName,          (void *)XPR_FALSE                      },
-    { XPR_STRING_LITERAL("config.grid_lines"),                                 OptionKey::TypeBoolean, &Option::mConfig.mGridLines,                    (void *)XPR_FALSE                      },
-    { XPR_STRING_LITERAL("config.full_row_select"),                            OptionKey::TypeBoolean, &Option::mConfig.mFullRowSelect,                (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_extension_type"),                        OptionKey::TypeInteger, &Option::mConfig.mFileExtType,                  (void *)0                              },
     { XPR_STRING_LITERAL("config.new_item_popup"),                             OptionKey::TypeBoolean, &Option::mConfig.mNewItemDlg,                   (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.single_rename_type"),                         OptionKey::TypeBoolean, &Option::mConfig.mSingleRenameType,             (void *)SINGLE_RENAME_TYPE_DEFAULT     },
@@ -215,6 +213,7 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.folder_tree.init_no_expand"),                 OptionKey::TypeBoolean, &Option::mConfig.mFolderTreeInitNoExpand,       (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.folder_tree.select_delay"),                   OptionKey::TypeBoolean, &Option::mConfig.mFolderTreeSelDelay,           (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.folder_tree.select_delay_time"),              OptionKey::TypeInteger, &Option::mConfig.mFolderTreeSelDelayTime,       (void *)DEF_FLD_SEL_DELAY_MSEC         },
+    { XPR_STRING_LITERAL("config.folder_tree.theme_style"),                    OptionKey::TypeBoolean, &Option::mConfig.mFolderTreeClassicThemeStyle,  (void *)XPR_FALSE                      },
 
     { XPR_STRING_LITERAL("config.view1.file_list.background_image"),           OptionKey::TypeBoolean, &Option::mConfig.mFileListBkgndImage[0],        (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.view2.file_list.background_image"),           OptionKey::TypeBoolean, &Option::mConfig.mFileListBkgndImage[1],        (void *)XPR_FALSE                      },
@@ -296,6 +295,9 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.file_list.custom_icon_path_32"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile[1],    (void *)XPR_STRING_LITERAL("")         },
     { XPR_STRING_LITERAL("config.file_list.size_unit_single_selected"),        OptionKey::TypeInteger, &Option::mConfig.mSingleSelFileSizeUnit,        (void *)SIZE_UNIT_DEFAULT              },
     { XPR_STRING_LITERAL("config.file_list.size_unit_multiple_selected"),      OptionKey::TypeInteger, &Option::mConfig.mMultiSelFileSizeUnit,         (void *)SIZE_UNIT_DEFAULT              },
+    { XPR_STRING_LITERAL("config.file_list.theme_style"),                      OptionKey::TypeBoolean, &Option::mConfig.mFileListClassicThemeStyle,    (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.file_list.grid_lines"),                       OptionKey::TypeBoolean, &Option::mConfig.mFileListGridLines,            (void *)XPR_FALSE                      },
+    { XPR_STRING_LITERAL("config.file_list.full_row_select"),                  OptionKey::TypeBoolean, &Option::mConfig.mFileListFullRowSelect,        (void *)XPR_FALSE                      },
 
     { XPR_STRING_LITERAL("config.thumbnail.width"),                            OptionKey::TypeInteger, &Option::mConfig.mThumbnailWidth,               (void *)DEF_THUMB_SIZE                 },
     { XPR_STRING_LITERAL("config.thumbnail.height"),                           OptionKey::TypeInteger, &Option::mConfig.mThumbnailHeight,              (void *)DEF_THUMB_SIZE                 },

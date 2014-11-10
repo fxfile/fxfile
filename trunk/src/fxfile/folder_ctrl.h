@@ -50,6 +50,7 @@ public:
         xpr_bool_t  mInitNoExpand;
         xpr_bool_t  mSelDelay;
         xpr_sint_t  mSelDelayTime;
+        xpr_bool_t  mClassicThemeStyle;
 
         xpr_bool_t  mExternalCopyFileOp;
         xpr_bool_t  mExternalMoveFileOp;

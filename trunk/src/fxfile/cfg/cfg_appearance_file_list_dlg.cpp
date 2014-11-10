@@ -72,6 +72,7 @@ xpr_bool_t CfgAppearanceFileListDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_24-hour_format")));
     SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_2_digits_year")));
     SetDlgItemText(IDC_CFG_FILE_LIST_SHOW_GRID_LINES,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.show_grid_lines")));
+    SetDlgItemText(IDC_CFG_FILE_LIST_CLASSIC_THEME_STYLE,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.classic_theme_style")));
     SetDlgItemText(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.full_row_selection")));
     SetDlgItemText(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.check.use_custom_icon")));
     SetDlgItemText(IDC_CFG_FILE_LIST_LABEL_SHOW_LIST_TYPE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.label.show_list_type")));
@@ -102,8 +103,9 @@ void CfgAppearanceFileListDlg::onInit(const Option::Config &aConfig)
             sComboBox->SetCurSel(sIndex);
     }
 
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES     ))->SetCheck(aConfig.mGridLines ? 1 : 0);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION  ))->SetCheck(aConfig.mFullRowSelect ? 1 : 0);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES     ))->SetCheck(aConfig.mFileListGridLines);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_CLASSIC_THEME_STYLE ))->SetCheck(aConfig.mFileListClassicThemeStyle);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION  ))->SetCheck(aConfig.mFileListFullRowSelect);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->SetCheck(aConfig.mFileListParentFolder);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->SetCheck(aConfig.mFileListShowDrive);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->SetCheck(aConfig.mFileListShowDriveItem);
@@ -121,15 +123,16 @@ void CfgAppearanceFileListDlg::onInit(const Option::Config &aConfig)
 
 void CfgAppearanceFileListDlg::onApply(Option::Config &aConfig)
 {
-    aConfig.mGridLines             = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES     ))->GetCheck();
-    aConfig.mFullRowSelect         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION  ))->GetCheck();
-    aConfig.mFileListParentFolder  = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->GetCheck();
-    aConfig.mFileListShowDrive     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->GetCheck();
-    aConfig.mFileListShowDriveItem = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->GetCheck();
-    aConfig.mFileListShowDriveSize = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE    ))->GetCheck();
-    aConfig.mFileList24HourTime    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT ))->GetCheck();
-    aConfig.mFileList2YearDate     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->GetCheck();
-    aConfig.mFileListCustomIcon    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->GetCheck();
+    aConfig.mFileListGridLines         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES    ))->GetCheck();
+    aConfig.mFileListClassicThemeStyle = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_CLASSIC_THEME_STYLE))->GetCheck();
+    aConfig.mFileListFullRowSelect     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION ))->GetCheck();
+    aConfig.mFileListParentFolder      = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER ))->GetCheck();
+    aConfig.mFileListShowDrive         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE    ))->GetCheck();
+    aConfig.mFileListShowDriveItem     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM    ))->GetCheck();
+    aConfig.mFileListShowDriveSize     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE   ))->GetCheck();
+    aConfig.mFileList24HourTime        = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT))->GetCheck();
+    aConfig.mFileList2YearDate         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR ))->GetCheck();
+    aConfig.mFileListCustomIcon        = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON    ))->GetCheck();
 
     GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mFileListCustomIconFile[0], XPR_MAX_PATH);
     GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mFileListCustomIconFile[1], XPR_MAX_PATH);

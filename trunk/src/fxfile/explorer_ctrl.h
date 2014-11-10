@@ -54,8 +54,6 @@ public:
         xpr_bool_t  mShowSystemAttribute;
         xpr_bool_t  mTooltip;
         xpr_bool_t  mTooltipWithFileName;
-        xpr_bool_t  mGridLines;
-        xpr_bool_t  mFullRowSelect;
         xpr_sint_t  mFileExtType;
         xpr_sint_t  mRenameExtType;
         xpr_bool_t  mRenameByMouse;
@@ -90,6 +88,9 @@ public:
         xpr_sint_t  mDefaultSortOrder;
         xpr_bool_t  mNoSort;
         xpr_bool_t  mExitVerifyViewSet;
+        xpr_bool_t  mClassicThemeStyle;
+        xpr_bool_t  mGridLines;
+        xpr_bool_t  mFullRowSelect;
 
         xpr_sint_t  mThumbnailWidth;
         xpr_sint_t  mThumbnailHeight;

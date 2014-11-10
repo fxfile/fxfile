@@ -122,8 +122,6 @@ public:
         xpr_bool_t      mAddressFullPath;
         xpr_bool_t      mTooltip;
         xpr_bool_t      mTooltipWithFileName;
-        xpr_bool_t      mGridLines;
-        xpr_bool_t      mFullRowSelect;
         xpr_sint_t      mFileExtType;
         xpr_sint_t      mRenameExtType;
         xpr_sint_t      mSingleRenameType;
@@ -150,6 +148,7 @@ public:
         xpr_sint_t      mFolderTreeSelDelayTime;
         xpr_bool_t      mFolderTreeLinkage;
         xpr_bool_t      mFolderTreeLinkageOnSingle;
+        xpr_bool_t      mFolderTreeClassicThemeStyle;
 
         // layout
         xpr_bool_t      mShowAddressBar;
@@ -202,6 +201,9 @@ public:
         xpr_sint_t      mFileListDefaultSortOrder;
         xpr_bool_t      mFileListNoSort;
         xpr_bool_t      mFileListExitVerifyViewSet;
+        xpr_bool_t      mFileListClassicThemeStyle;
+        xpr_bool_t      mFileListGridLines;
+        xpr_bool_t      mFileListFullRowSelect;
 
         // thumbnail
         xpr_sint_t      mThumbnailWidth;
