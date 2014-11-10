@@ -470,7 +470,7 @@ void ExplorerCtrl::OnDestroy(void)
     // stop icon thread
     if (XPR_IS_NOT_NULL(mShellIcon))
     {
-        mShellIcon->Stop();
+        mShellIcon->stopThread();
     }
 
     super::OnDestroy();
@@ -489,7 +489,7 @@ void ExplorerCtrl::OnDestroy(void)
     {
         Thumbnail &sThumbnail = Thumbnail::instance();
 
-        sThumbnail.Stop();
+        sThumbnail.stop();
 
         if (mOption.mThumbnailSaveCache == XPR_TRUE)
             sThumbnail.saveCache();
@@ -575,7 +575,8 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
         if (XPR_IS_FALSE(sLoad))
             sThumbnail.create();
 
-        sThumbnail.Start();
+        sThumbnail.stop();
+        sThumbnail.start();
         sThumbnail.setThumbPriority(mOption.mThumbnailPriority);
 
         xpr_bool_t sVisible = IsWindowVisible();

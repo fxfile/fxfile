@@ -454,16 +454,17 @@ xpr_bool_t AdvFileChangeWatcher::create(void)
         return XPR_FALSE;
     }
 
-    mMonitorThread.SetThreadHandler(dynamic_cast<ThreadHandler *>(this));
-    mNotifyThread.SetThreadHandler(dynamic_cast<ThreadHandler *>(this));
+    xpr_rcode_t sRcode;
 
-    if (mMonitorThread.Start() == XPR_FALSE)
+    sRcode = mMonitorThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+    if (XPR_RCODE_IS_NOT_SUCCESS(sRcode))
     {
         destroy();
         return XPR_FALSE;
     }
 
-    if (mNotifyThread.Start() == XPR_FALSE)
+    sRcode = mNotifyThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+    if (XPR_RCODE_IS_NOT_SUCCESS(sRcode))
     {
         destroy();
         return XPR_FALSE;
@@ -474,10 +475,12 @@ xpr_bool_t AdvFileChangeWatcher::create(void)
 
 void AdvFileChangeWatcher::destroy(void)
 {
-    unregisterAllTasks();
+    //unregisterAllTasks();
 
-    mNotifyThread.Stop();
-    mMonitorThread.Stop();
+    mNotifyThread.stop();
+    mMonitorThread.stop();
+    mNotifyThread.join();
+    mMonitorThread.join();
 
     clearTasks(mTaskList);
     clearNotifies(mNotifyList);
@@ -507,7 +510,7 @@ AdvFileChangeWatcher::AdvWatchId AdvFileChangeWatcher::registerWatch(AdvWatchIte
 
         mTaskList.push_back(sTask);
 
-        if (mMonitorThread.IsRunning() == XPR_FALSE)
+        if (mMonitorThread.isRunning() == XPR_FALSE)
             create();
 
         ::SetEvent(mTaskEvent);
@@ -524,7 +527,7 @@ AdvFileChangeWatcher::AdvWatchId AdvFileChangeWatcher::modifyWatch(AdvWatchId aO
     if (aOldAdvWatchId == InvalidAdvWatchId)
         return registerWatch(aAdvWatchItem);
 
-    if (mMonitorThread.IsRunning() == XPR_FALSE)
+    if (mMonitorThread.isRunning() == XPR_FALSE)
         return InvalidAdvWatchId;
 
     {
@@ -550,7 +553,7 @@ void AdvFileChangeWatcher::unregisterWatch(AdvWatchId aAdvWatchId)
     if (aAdvWatchId == InvalidAdvWatchId)
         return;
 
-    if (mMonitorThread.IsRunning() == XPR_FALSE)
+    if (mMonitorThread.isRunning() == XPR_FALSE)
         return;
 
     {
@@ -568,7 +571,7 @@ void AdvFileChangeWatcher::unregisterWatch(AdvWatchId aAdvWatchId)
 
 void AdvFileChangeWatcher::unregisterAllWatches(void)
 {
-    if (!mMonitorThread.IsRunning())
+    if (!mMonitorThread.isRunning())
         return;
 
     {
@@ -603,23 +606,20 @@ xpr_bool_t AdvFileChangeWatcher::getRootPath(const xpr::string &aPath, xpr::stri
     return aRootPath.empty() ? XPR_FALSE : XPR_TRUE;
 }
 
-xpr_bool_t AdvFileChangeWatcher::OnThreadPreEntry(Thread &theThread)
+xpr_sint_t AdvFileChangeWatcher::runThread(xpr::Thread &aThread)
 {
-    return XPR_TRUE;
-}
+    Thread &sThread = (Thread &)aThread;
 
-unsigned AdvFileChangeWatcher::OnThreadEntryProc(Thread &theThread)
-{
-    if (theThread == mMonitorThread)
-        return OnMonitorThreadEntryProc();
+    if (aThread == mMonitorThread)
+        return runMonitorThread(sThread);
 
-    if (theThread == mNotifyThread)
-        return OnNotifyThreadEntryProc();
+    if (aThread == mNotifyThread)
+        return runNotifyThread(sThread);
 
     return 0;
 }
 
-unsigned AdvFileChangeWatcher::OnMonitorThreadEntryProc(void)
+xpr_sint_t AdvFileChangeWatcher::runMonitorThread(Thread &aThread)
 {
     DriveWatchMap::iterator sIterator;
     DriveWatchItem *sDriveWatchItem;
@@ -629,7 +629,7 @@ unsigned AdvFileChangeWatcher::OnMonitorThreadEntryProc(void)
 
     DWORD sResult;
 
-    while (!mMonitorThread.IsStop())
+    while (mMonitorThread.isStop() == XPR_FALSE)
     {
         sResult = ::WaitForSingleObject(mTaskEvent, kIdleTime);
         if (sResult == WAIT_OBJECT_0)
@@ -652,7 +652,7 @@ unsigned AdvFileChangeWatcher::OnMonitorThreadEntryProc(void)
             sIterator = mDriveWatchMap.begin();
             for (; sIterator != mDriveWatchMap.end(); ++sIterator)
             {
-                if (mMonitorThread.IsStop())
+                if (mMonitorThread.isStop() == XPR_TRUE)
                     break;
 
                 sDriveWatchItem = sIterator->second;
@@ -928,7 +928,7 @@ void AdvFileChangeWatcher::clearTasks(TaskList &aTaskList)
     aTaskList.clear();
 }
 
-unsigned AdvFileChangeWatcher::OnNotifyThreadEntryProc(void)
+xpr_sint_t AdvFileChangeWatcher::runNotifyThread(Thread &aThread)
 {
     DWORD sResult;
     NotifyList sNotifyList;
@@ -939,7 +939,7 @@ unsigned AdvFileChangeWatcher::OnNotifyThreadEntryProc(void)
     xpr_sint64_t sTime, sDiff;
     xpr_size_t sNotifyCount;
 
-    while (mNotifyThread.IsStop() == XPR_FALSE)
+    while (mNotifyThread.isStop() == XPR_FALSE)
     {
         sResult = ::WaitForSingleObject(mNotifyEvent, kIdleTime);
         if (sResult == WAIT_OBJECT_0)
@@ -1054,6 +1054,9 @@ void AdvFileChangeWatcher::clearNotifies(NotifyList &aNotifyList)
 
 void AdvFileChangeWatcher::clearNotifies(NotifyMap &aNotifyMap)
 {
+    if (aNotifyMap.empty() == true)
+        return;
+
     NotifyMap::iterator sIterator;
 
     sIterator = aNotifyMap.begin();

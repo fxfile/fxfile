@@ -4,7 +4,7 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "xpr_rcode.h"
 
 namespace xpr

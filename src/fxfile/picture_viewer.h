@@ -11,7 +11,7 @@
 #define __FXFILE_PICTURE_VIEWER_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 
 #include "gui/BCMenu.h"
 #include "gfl/libgfl.h"

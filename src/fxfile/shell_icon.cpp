@@ -26,7 +26,7 @@ ShellIcon::ShellIcon(void)
 
 ShellIcon::~ShellIcon(void)
 {
-    Stop();
+    stopThread();
 
     CLOSE_HANDLE(mEvent);
 
@@ -50,6 +50,15 @@ void ShellIcon::clear(void)
     mIconDeque.clear();
 }
 
+void ShellIcon::stopThread(void)
+{
+    mThread.stop();
+
+    ::SetEvent(mEvent);
+
+    mThread.join();
+}
+
 void ShellIcon::setOwner(HWND aHwnd, xpr_uint_t aMsg)
 {
     mHwnd = aHwnd;
@@ -64,10 +73,20 @@ xpr_bool_t ShellIcon::getAsyncIcon(AsyncIcon *aAsyncIcon)
     if ((XPR_IS_NULL(aAsyncIcon->mShellFolder) || XPR_IS_NULL(aAsyncIcon->mPidl)) && (aAsyncIcon->mPath.empty() == XPR_TRUE))
         return XPR_FALSE;
 
-    if (IsRunning() == XPR_FALSE)
+    if (mThread.isRunning() == XPR_FALSE)
     {
-        SetPriority(THREAD_PRIORITY_BELOW_NORMAL);
-        Start();
+        CLOSE_HANDLE(mEvent);
+
+        mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE, XPR_FALSE, XPR_NULL);
+
+        mThread.setPriority(3); // THREAD_PRIORITY_BELOW_NORMAL
+
+        xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+        if (XPR_RCODE_IS_NOT_SUCCESS(sRcode))
+        {
+            CLOSE_HANDLE(mEvent);
+            return XPR_FALSE;
+        }
     }
 
     {
@@ -80,16 +99,7 @@ xpr_bool_t ShellIcon::getAsyncIcon(AsyncIcon *aAsyncIcon)
     return XPR_TRUE;
 }
 
-xpr_bool_t ShellIcon::OnPreEntry(void)
-{
-    CLOSE_HANDLE(mEvent);
-
-    mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE, XPR_FALSE, XPR_NULL);
-
-    return XPR_TRUE;
-}
-
-unsigned ShellIcon::OnEntryProc(void)
+xpr_sint_t ShellIcon::runThread(xpr::Thread &aThread)
 {
     // important!!!
     ::OleInitialize(XPR_NULL);
@@ -99,7 +109,7 @@ unsigned ShellIcon::OnEntryProc(void)
 
     DWORD sWait;
 
-    while (IsStop() == XPR_FALSE)
+    while (mThread.isStop() == XPR_FALSE)
     {
         sWait = ::WaitForSingleObject(mEvent, 10);
         if (sWait != WAIT_OBJECT_0)

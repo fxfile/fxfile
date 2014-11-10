@@ -112,7 +112,7 @@ xpr_bool_t FileListDlg::OnInitDialog(void)
 xpr_bool_t FileListDlg::DestroyWindow(void)
 {
     if (mFileList != XPR_NULL)
-        mFileList->Stop();
+        mFileList->stop();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -179,7 +179,7 @@ void FileListDlg::OnOK(void)
     {
         if (mFileList->getStatus() == FileList::StatusCreating)
         {
-            mFileList->Stop();
+            mFileList->stop();
             return;
         }
     }
@@ -220,7 +220,7 @@ void FileListDlg::OnOK(void)
     for (; sIterator != mPathDeque.end(); ++sIterator)
         mFileList->addPath(sIterator->c_str());
 
-    if (mFileList->Start())
+    if (mFileList->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
     }
@@ -228,7 +228,7 @@ void FileListDlg::OnOK(void)
 
 LRESULT FileListDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mFileList->Stop();
+    mFileList->stop();
 
     FileList::Status sStatus;
     sStatus = mFileList->getStatus();

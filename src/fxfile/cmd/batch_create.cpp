@@ -49,7 +49,8 @@ BatchCreate::BatchCreate(void)
 
 BatchCreate::~BatchCreate(void)
 {
-    Stop();
+    mThread.stop();
+    mThread.join();
 
     clear();
 }
@@ -183,17 +184,25 @@ void BatchCreate::clear(void)
     mNewDeque.clear();
 }
 
-xpr_bool_t BatchCreate::OnPreEntry(void)
+xpr_bool_t BatchCreate::start(void)
 {
     mInvalidItem = -1;
     mValidatedCount = 0;
     mCreatedCount = 0;
     mStatus = StatusPreparing;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned BatchCreate::OnEntryProc(void)
+void BatchCreate::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t BatchCreate::runThread(xpr::Thread &aThread)
 {
     CreateType sCreateType = getCreateType();
 
@@ -246,7 +255,7 @@ unsigned BatchCreate::OnEntryProc(void)
 
         XPR_ASSERT(sItem != XPR_NULL);
 
-        if (IsStop() == XPR_TRUE)
+        if (mThread.isStop() == XPR_TRUE)
             break;
 
         sPath = sItem->mPath;
@@ -300,7 +309,7 @@ unsigned BatchCreate::OnEntryProc(void)
         mStatus = StatusCreating;
     }
 
-    if (IsStop() == XPR_FALSE && XPR_IS_FALSE(sInvalid))
+    if (mThread.isStop() == XPR_FALSE && XPR_IS_FALSE(sInvalid))
     {
         xpr_rcode_t sRcode;
         xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
@@ -313,7 +322,7 @@ unsigned BatchCreate::OnEntryProc(void)
 
             XPR_ASSERT(sItem != XPR_NULL);
 
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
             sItem->mResult = ResultNone;
@@ -351,7 +360,7 @@ unsigned BatchCreate::OnEntryProc(void)
 
     sHashPathMap.clear();
 
-    if (IsStop() == XPR_TRUE)
+    if (mThread.isStop() == XPR_TRUE)
     {
         sStatus = StatusStopped;
     }

@@ -216,9 +216,6 @@ void PicConvDlg::OnDestroy(void)
 {
     super::OnDestroy();
 
-    if (mPicConv != XPR_NULL)
-        mPicConv->Stop();
-
     XPR_SAFE_DELETE(mPicConv);
 
     XPR_SAFE_DELETE(mGflSaveParams);
@@ -315,7 +312,7 @@ void PicConvDlg::OnOK(void)
     {
         if (mPicConv->getStatus() == PicConv::StatusConverting)
         {
-            mPicConv->Stop();
+            mPicConv->stop();
             return;
         }
     }
@@ -363,7 +360,7 @@ void PicConvDlg::OnOK(void)
         mPicConv->addPath(sPicItem->mPath.c_str());
     }
 
-    if (mPicConv->Start() == XPR_TRUE)
+    if (mPicConv->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -372,7 +369,7 @@ void PicConvDlg::OnOK(void)
 
 LRESULT PicConvDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mPicConv->Stop();
+    mPicConv->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);
@@ -429,7 +426,7 @@ LRESULT PicConvDlg::OnPicColor(WPARAM wParam, LPARAM lParam)
     }
     else
     {
-        mPicConv->StopEvent();
+        mPicConv->stop();
     }
 
     mPicConv->setColorMode(sAllApply, sMode, sModeParams);

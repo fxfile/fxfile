@@ -30,7 +30,7 @@ CrcCreate::CrcCreate(void)
 
 CrcCreate::~CrcCreate(void)
 {
-    Stop();
+    stop();
 
     mPathDeque.clear();
 }
@@ -75,16 +75,24 @@ const xpr_tchar_t *CrcCreate::getPath(xpr_sint_t aIndex)
     return mPathDeque[aIndex].c_str();
 }
 
-xpr_bool_t CrcCreate::OnPreEntry(void)
+xpr_bool_t CrcCreate::start(void)
 {
     mProcessedCount = 0;
     mSucceededCount = 0;
     mStatus = StatusCreating;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned CrcCreate::OnEntryProc(void)
+void CrcCreate::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t CrcCreate::runThread(xpr::Thread &aThread)
 {
     xpr_rcode_t sRcode;
     xpr_sint_t sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
@@ -126,7 +134,7 @@ unsigned CrcCreate::OnEntryProc(void)
         sIterator = mPathDeque.begin();
         for (i = 0; sIterator != mPathDeque.end(); ++sIterator, ++i)
         {
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
             sPath = *sIterator;
@@ -177,7 +185,7 @@ unsigned CrcCreate::OnEntryProc(void)
 
             if (mMethod == 0)
             {
-                sTextFileWriter->writeFormatLine(XPR_STRING_LITERAL("%s %08X"), sFileName.c_str(), sCrcValue);
+                sTextFileWriter->writeFormatLine(XPR_STRING_LITERAL("%s %08s"), sFileName.c_str(), sCrcValue);
             }
             else
             {
@@ -207,7 +215,7 @@ unsigned CrcCreate::OnEntryProc(void)
 
         {
             xpr::MutexGuard sLockGuard(mMutex);
-            mStatus = IsStop() ? StatusStopped : StatusCreateCompleted;
+            mStatus = mThread.isStop() ? StatusStopped : StatusCreateCompleted;
         }
     }
     else

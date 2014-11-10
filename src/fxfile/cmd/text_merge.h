@@ -11,14 +11,14 @@
 #define __FXFILE_TEXT_MERGE_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class TextMerge : public Thread
+class TextMerge : protected xpr::Thread::Runnable
 {
 public:
     enum Status
@@ -41,11 +41,14 @@ public:
     void setEncoding(xpr_bool_t aEncoding);
     void addPath(const xpr_tchar_t *aPath);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     Status getStatus(xpr_size_t *aSucceededCount = XPR_NULL);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND         mHwnd;
@@ -60,6 +63,7 @@ protected:
     xpr_size_t   mSucceededCount;
     Status       mStatus;
     xpr::Mutex   mMutex;
+    Thread       mThread;
 };
 } // namespace cmd
 } // namespace fxfile

@@ -53,7 +53,7 @@ void Thumbnail::create(void)
 
 void Thumbnail::destroy(void)
 {
-    Stop();
+    stop();
 
     clearAysncImage();
 
@@ -62,6 +62,24 @@ void Thumbnail::destroy(void)
     XPR_SAFE_DELETE(mThumbImgList);
 
     mIdMgr = 0;
+}
+
+void Thumbnail::start(void)
+{
+    CLOSE_HANDLE(mEvent);
+
+    mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE, XPR_FALSE, XPR_NULL);
+
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+}
+
+void Thumbnail::stop(void)
+{
+    mThread.stop();
+
+    ::SetEvent(mEvent);
+
+    mThread.join();
 }
 
 xpr_bool_t Thumbnail::loadCache(void)
@@ -139,14 +157,16 @@ void Thumbnail::setThumbPriority(xpr_sint_t aPriority)
 {
     switch (aPriority)
     {
-    case THUMBNAIL_PRIORITY_BELOW_NORMAL: aPriority = THREAD_PRIORITY_BELOW_NORMAL; break;
-    case THUMBNAIL_PRIORITY_ABOVE_NORMAL: aPriority = THREAD_PRIORITY_ABOVE_NORMAL; break;
+    case THUMBNAIL_PRIORITY_BELOW_NORMAL: aPriority = 3; break;
+    case THUMBNAIL_PRIORITY_ABOVE_NORMAL: aPriority = 7; break;
 
     case THUMBNAIL_PRIORITY_NORMAL:
-    default:                              aPriority = THREAD_PRIORITY_NORMAL;       break;
+    default:
+        aPriority = xpr::ThreadPriorityNormal;
+        break;
     }
 
-    SetPriority(aPriority);
+    mThread.setPriority(aPriority);
 }
 
 void Thumbnail::verifyThumb(void)
@@ -295,15 +315,6 @@ xpr_sint_t Thumbnail::IdToImage(xpr_uint_t aThumbImageId)
     return sIterator->second;
 }
 
-xpr_bool_t Thumbnail::OnPreEntry()
-{
-    CLOSE_HANDLE(mEvent);
-
-    mEvent = ::CreateEvent(XPR_NULL, XPR_TRUE ,XPR_FALSE, XPR_NULL);
-
-    return XPR_TRUE;
-}
-
 void GetDIBFromBitmap(GFL_BITMAP *bitmap, BITMAPINFOHEADER *bitmap_info, xpr_uchar_t **data)
 {
     register xpr_sint_t i, j, bytes_per_line; 
@@ -379,8 +390,9 @@ void GetDIBFromBitmap(GFL_BITMAP *bitmap, BITMAPINFOHEADER *bitmap_info, xpr_uch
     }
 }
 
-unsigned Thumbnail::OnEntryProc(void)
+xpr_sint_t Thumbnail::runThread(xpr::Thread &aThread)
 {
+
     HWND sHwnd;
     xpr_uint_t sMsg;
     xpr_tchar_t sPath[XPR_MAX_PATH + 1];
@@ -403,15 +415,15 @@ unsigned Thumbnail::OnEntryProc(void)
     CRect sDestRect;
 
     DWORD sWait;
-    HANDLE sEvents[2] = { mStopThread, mEvent };
 
     while (true)
     {
-        sWait = ::WaitForMultipleObjects(2, sEvents, XPR_FALSE, INFINITE);
-        if (sWait == WAIT_OBJECT_0)
+        sWait = ::WaitForSingleObject(mEvent, INFINITE);
+
+        if (mThread.isStop() == XPR_TRUE)
             break;
 
-        if (sWait != WAIT_OBJECT_0+1)
+        if (sWait != WAIT_OBJECT_0)
             continue;
 
         {
@@ -542,7 +554,7 @@ unsigned Thumbnail::OnEntryProc(void)
 
 void Thumbnail::clearAysncImage(void)
 {
-    if (XPR_IS_NOT_NULL(mThread))
+    if (mThread.getThreadState() != xpr::ThreadStateNone)
     {
         xpr::MutexGuard sLockGuard(mMutex);
 

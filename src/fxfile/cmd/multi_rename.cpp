@@ -29,7 +29,7 @@ MultiRename::MultiRename(void)
 
 MultiRename::~MultiRename(void)
 {
-    Stop();
+    stop();
 
     RenDeque::iterator sIterator;
     RenItem *sRenItem;
@@ -93,17 +93,25 @@ void MultiRename::addPath(const xpr::string &aDir, const xpr::string &aOld, cons
     addPath(aDir.c_str(), aOld.c_str(), aNew.c_str());
 }
 
-xpr_bool_t MultiRename::OnPreEntry(void)
+xpr_bool_t MultiRename::start(void)
 {
     mInvalidItem = -1;
     mValidatedCount = 0;
     mRenamedCount = 0;
     mStatus = StatusPreparing;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned MultiRename::OnEntryProc(void)
+void MultiRename::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t MultiRename::runThread(xpr::Thread &aThread)
 {
     xpr_bool_t sReadOnlyRename = isFlag(FlagReadOnlyRename);
 
@@ -164,7 +172,7 @@ unsigned MultiRename::OnEntryProc(void)
         if (XPR_IS_NULL(sRenItem))
             continue;
 
-        if (IsStop())
+        if (mThread.isStop())
             break;
 
         sSrc = sRenItem->mDir + XPR_STRING_LITERAL('\\') + sRenItem->mOld;
@@ -221,7 +229,7 @@ unsigned MultiRename::OnEntryProc(void)
         mStatus = StatusRenaming;
     }
 
-    if (IsStop() == XPR_FALSE && XPR_IS_FALSE(sInvalid))
+    if (mThread.isStop() == XPR_FALSE && XPR_IS_FALSE(sInvalid))
     {
         sIterator = mRenDeque.begin();
         for (; sIterator != mRenDeque.end(); ++sIterator)
@@ -230,7 +238,7 @@ unsigned MultiRename::OnEntryProc(void)
             if (XPR_IS_NULL(sRenItem))
                 continue;
 
-            if (IsStop())
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
             sRenItem->mResult = ResultNone;
@@ -318,7 +326,7 @@ unsigned MultiRename::OnEntryProc(void)
     sHashOldPathMap.clear();
     sHashNewPathMap.clear();
 
-    if (IsStop() == XPR_TRUE)
+    if (mThread.isStop() == XPR_TRUE)
     {
         sStatus = StatusStopped;
     }

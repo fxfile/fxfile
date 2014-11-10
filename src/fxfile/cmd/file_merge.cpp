@@ -58,7 +58,7 @@ void FileMerge::setBufferSize(DWORD aBufferSize)
     mBufferSize = aBufferSize;
 }
 
-xpr_bool_t FileMerge::OnPreEntry(void)
+xpr_bool_t FileMerge::start(void)
 {
     xpr::string sDestDir = mDestPath;
     xpr_size_t sFind = sDestDir.rfind(XPR_STRING_LITERAL('\\'));
@@ -74,10 +74,18 @@ xpr_bool_t FileMerge::OnPreEntry(void)
     mStatus = StatusMerging;
     mMergedCount = 0;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned FileMerge::OnEntryProc(void)
+void FileMerge::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t FileMerge::runThread(xpr::Thread &aThread)
 {
     Status sStatus = StatusNone;
 
@@ -112,7 +120,7 @@ unsigned FileMerge::OnEntryProc(void)
                     mMergedCount++;
                 }
 
-                while (IsStop() == XPR_FALSE)
+                while (mThread.isStop() == XPR_FALSE)
                 {
                     sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
                     if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
@@ -126,7 +134,7 @@ unsigned FileMerge::OnEntryProc(void)
                 sFileIo.close();
             }
 
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
         }
 
@@ -140,7 +148,7 @@ unsigned FileMerge::OnEntryProc(void)
         sStatus = StatusNotWritable;
     }
 
-    if (IsStop())
+    if (mThread.isStop() == XPR_TRUE)
         sStatus = StatusStopped;
 
     {

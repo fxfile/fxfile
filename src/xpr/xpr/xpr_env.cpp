@@ -7,7 +7,7 @@
 #include "xpr_env.h"
 #include "xpr_config.h"
 #include "xpr_rcode.h"
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "xpr_memory.h"
 #include "xpr_debug.h"
 

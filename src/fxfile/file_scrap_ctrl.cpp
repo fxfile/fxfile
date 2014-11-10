@@ -174,8 +174,7 @@ void FileScrapCtrl::OnDestroy(void)
 {
     super::OnDestroy();
 
-    if (XPR_IS_NOT_NULL(mShellIcon))
-        mShellIcon->Stop();
+    XPR_SAFE_DELETE(mShellIcon);
 }
 
 void FileScrapCtrl::clearList(void)

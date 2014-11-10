@@ -9,7 +9,7 @@
 #pragma once
 
 #include "xpr_types.h"
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 
 namespace fxfile
 {

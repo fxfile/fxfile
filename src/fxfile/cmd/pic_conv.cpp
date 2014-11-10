@@ -35,7 +35,7 @@ PicConv::PicConv(void)
 
 PicConv::~PicConv(void)
 {
-    Stop();
+    stop();
 
     mPathDeque.clear();
 
@@ -75,7 +75,7 @@ void PicConv::setColorMode(xpr_bool_t aAllApply, GFL_MODE aGflMode, GFL_MODE_PAR
         ::SetEvent(mEvent);
 }
 
-xpr_bool_t PicConv::OnPreEntry(void)
+xpr_bool_t PicConv::start(void)
 {
     mStatus = StatusConverting;
     mProcessedCount = 0;
@@ -84,10 +84,18 @@ xpr_bool_t PicConv::OnPreEntry(void)
     CLOSE_HANDLE(mEvent);
     mEvent = ::CreateEvent(XPR_NULL, XPR_FALSE, XPR_FALSE, XPR_NULL);
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned PicConv::OnEntryProc(void)
+void PicConv::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t PicConv::runThread(xpr::Thread &aThread)
 {
     mAllApply = XPR_FALSE;
 
@@ -105,7 +113,7 @@ unsigned PicConv::OnEntryProc(void)
     sIterator = mPathDeque.begin();
     for (; sIterator != mPathDeque.end(); ++sIterator)
     {
-        if (IsStop() == XPR_TRUE)
+        if (mThread.isStop() == XPR_TRUE)
             break;
 
         sPath = *sIterator;
@@ -139,7 +147,7 @@ unsigned PicConv::OnEntryProc(void)
                     {
                         ::WaitForSingleObject(mEvent, INFINITE);
 
-                        if (IsStop() == XPR_TRUE)
+                        if (mThread.isStop() == XPR_TRUE)
                             break;
                     }
                     else
@@ -188,7 +196,7 @@ unsigned PicConv::OnEntryProc(void)
 
     {
         xpr::MutexGuard sLockGuard(mMutex);
-        mStatus = IsStop() ? StatusStopped : StatusConvertCompleted;
+        mStatus = mThread.isStop() ? StatusStopped : StatusConvertCompleted;
     }
 
     ::PostMessage(mHwnd, mMsg, (WPARAM)XPR_NULL, (LPARAM)XPR_NULL);

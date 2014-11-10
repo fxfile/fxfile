@@ -11,14 +11,14 @@
 #define __FXFILE_FILE_SPLIT_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class FileSplit : public Thread
+class FileSplit : protected xpr::Thread::Runnable
 {
 public:
     enum
@@ -52,11 +52,14 @@ public:
     void setSplitSize(xpr_sint64_t aUnitSize);
     void setBufferSize(xpr_size_t aBufferSize);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     Status getStatus(xpr_size_t *aSplitedCount = XPR_NULL);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
     void setStatus(Status aStatus);
 
@@ -73,6 +76,7 @@ protected:
     xpr_size_t   mSplitedCount;
     Status       mStatus;
     xpr::Mutex   mMutex;
+    Thread       mThread;
 };
 } // namespace cmd
 } // namespace fxfile

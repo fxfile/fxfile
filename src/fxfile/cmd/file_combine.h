@@ -11,14 +11,14 @@
 #define __FXFILE_FILE_COMBINE_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class FileCombine : public Thread
+class FileCombine : protected xpr::Thread::Runnable
 {
 public:
     enum Status
@@ -44,11 +44,14 @@ public:
     void setDestDir(const xpr_tchar_t *aDestDir);
     void setBufferSize(DWORD aBufferSize);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     Status GetStatus(xpr_size_t *aCombinedCount = XPR_NULL);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND         mHwnd;
@@ -61,6 +64,7 @@ protected:
     xpr_size_t   mCombinedCount;
     Status       mStatus;
     xpr::Mutex   mMutex;
+    Thread       mThread;
 };
 } // namespace cmd
 } // namespace fxfile

@@ -35,7 +35,7 @@ SearchFile::SearchFile(void)
 
 SearchFile::~SearchFile(void)
 {
-    Stop();
+    mThread.join();
 
     SearchDir *sSearchDir;
     SearchDirDeque::iterator sIterator;
@@ -213,7 +213,7 @@ void SearchFile::addExcludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder)
     mSearchExcDirDeque.push_back(sSearchDir);
 }
 
-xpr_bool_t SearchFile::OnPreEntry(void)
+xpr_bool_t SearchFile::start()
 {
     mSearchedCount = 0;
     mStatus = StatusSearching;
@@ -237,11 +237,21 @@ xpr_bool_t SearchFile::OnPreEntry(void)
     if (XPR_IS_NULL(mBuffer))
         mBuffer = new xpr_byte_t[MAX_SEARCH_TEXT_BUF_SIZE + 1];
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned SearchFile::OnEntryProc(void)
+void SearchFile::stop()
 {
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t SearchFile::runThread(xpr::Thread &aThread)
+{
+    Thread &sThread = (Thread &)aThread;
+
     clock_t sStartClock, sStopClock;
     sStartClock = clock();
 
@@ -262,7 +272,7 @@ unsigned SearchFile::OnEntryProc(void)
 
     {
         xpr::MutexGuard sLockGuard(mMutex);
-        mStatus = IsStop() ? StatusStopped : StatusSearchCompleted;
+        mStatus = (mThread.isStop() == XPR_TRUE) ? StatusStopped : StatusSearchCompleted;
         mSearchTime = sStopClock - sStartClock;
     }
 
@@ -273,7 +283,7 @@ unsigned SearchFile::OnEntryProc(void)
 
 void SearchFile::searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, xpr_bool_t aSubFolder)
 {
-    if (IsStop())
+    if (mThread.isStop() == XPR_TRUE)
         return;
 
     if (mSearchExcDirDeque.empty() == false)
@@ -357,7 +367,7 @@ void SearchFile::searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, 
                 }
             }
 
-            if (IsStop())
+            if (mThread.isStop() == XPR_TRUE)
                 break;
         }
         while (::FindNextFile(sFindFile, &mWin32FindData));

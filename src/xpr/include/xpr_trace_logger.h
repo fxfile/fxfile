@@ -11,7 +11,7 @@
 #include "xpr_types.h"
 #include "xpr_char_set.h"
 #include "xpr_file_io.h"
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 
 namespace xpr
 {

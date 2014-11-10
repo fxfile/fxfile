@@ -28,7 +28,7 @@ CrcVerify::CrcVerify(void)
 
 CrcVerify::~CrcVerify(void)
 {
-    Stop();
+    stop();
 
     mCrcFileDeque.clear();
 }
@@ -215,23 +215,26 @@ void CrcVerify::resetVerifyResult(void)
     }
 }
 
-xpr_bool_t CrcVerify::OnPreEntry(void) 
+xpr_bool_t CrcVerify::start(void)
 {
     resetVerifyResult();
 
     mStatus = StatusVerifying;
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned CrcVerify::OnEntryProc(void)
+void CrcVerify::stop(void)
 {
-    xpr::string sFile;
-    xpr_char_t *sCode;
-    xpr_sint_t sMethod;
-    xpr_rcode_t sRcode;
-    VerifyResult sResult;
+    mThread.stop();
+    mThread.join();
+}
 
+xpr_sint_t CrcVerify::runThread(xpr::Thread &aThread)
+{
+    xpr_rcode_t sRcode;
     xpr_char_t sCrcValue[100];
 
     CrcFileDeque::iterator sCrcIterator;
@@ -245,47 +248,44 @@ unsigned CrcVerify::OnEntryProc(void)
         sFileIterator = sCrcFile.mVerifyFileDeque.begin();
         for (; sFileIterator != sCrcFile.mVerifyFileDeque.end(); ++sFileIterator)
         {
-            if (IsStop() == XPR_TRUE)
+            if (mThread.isStop() == XPR_TRUE)
                 break;
 
-            sFile   = sFileIterator->mPath;
-            sCode   = sFileIterator->mCrcCode;
-            sMethod = sFileIterator->mMethod;
-            sResult = VerifyResultNone;
+            VerifyFile &sVerifyFile = *sFileIterator;
 
-            if (sMethod == 0)
+            sVerifyFile.mResult = VerifyResultNone;
+
+            if (sVerifyFile.mMethod == 0)
             {
-                sRcode = getFileCrcSfv(sFile.c_str(), sCrcValue);
+                sRcode = getFileCrcSfv(sVerifyFile.mPath.c_str(), sCrcValue);
             }
             else
             {
-                sRcode = getFileCrcMd5(sFile.c_str(), sCrcValue);
+                sRcode = getFileCrcMd5(sVerifyFile.mPath.c_str(), sCrcValue);
             }
 
             if (XPR_RCODE_IS_ERROR(sRcode))
             {
-                sResult = VerifyResultFailed;
+                sVerifyFile.mResult = VerifyResultFailed;
             }
             else
             {
-                sResult = VerifyResultEqualed;
+                sVerifyFile.mResult = VerifyResultEqualed;
 
-                if (_stricmp(sCode, sCrcValue))
+                if (_stricmp(sVerifyFile.mCrcCode, sCrcValue))
                 {
-                    sResult = VerifyResultNotEqualed;
+                    sVerifyFile.mResult = VerifyResultNotEqualed;
                 }
             }
-
-            sFileIterator->mResult = sResult;
         }
 
-        if (IsStop() == XPR_TRUE)
+        if (mThread.isStop() == XPR_TRUE)
             break;
     }
 
     {
         xpr::MutexGuard sLockGuard(mMutex);
-        mStatus = IsStop() ? StatusStopped : StatusVerifyCompleted;
+        mStatus = mThread.isStop() ? StatusStopped : StatusVerifyCompleted;
     }
 
     ::PostMessage(mHwnd, mMsg, (WPARAM)mStatus, (LPARAM)XPR_NULL);

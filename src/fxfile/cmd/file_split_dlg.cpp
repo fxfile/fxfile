@@ -193,7 +193,7 @@ void FileSplitDlg::setDestDir(const xpr_tchar_t *aDestDir)
 xpr_bool_t FileSplitDlg::DestroyWindow(void) 
 {
     if (mFileSplit != XPR_NULL)
-        mFileSplit->Stop();
+        mFileSplit->stop();
 
     if (XPR_IS_NOT_NULL(mDlgState))
     {
@@ -355,7 +355,7 @@ void FileSplitDlg::OnOK(void)
     {
         if (mFileSplit->getStatus() == FileSplit::StatusSplitting)
         {
-            mFileSplit->Stop();
+            mFileSplit->stop();
             return;
         }
     }
@@ -420,7 +420,7 @@ void FileSplitDlg::OnOK(void)
     mFileSplit->setSplitSize(sSplitSize);
     mFileSplit->setFlags(sFlags);
 
-    if (mFileSplit->Start())
+    if (mFileSplit->start() == XPR_TRUE)
     {
         enableWindow(XPR_FALSE);
         SetTimer(TM_ID_STATUS, 100, XPR_NULL);
@@ -474,7 +474,7 @@ void FileSplitDlg::OnTimer(UINT_PTR nIDEvent)
 
 LRESULT FileSplitDlg::OnFinalize(WPARAM wParam, LPARAM lParam)
 {
-    mFileSplit->Stop();
+    mFileSplit->stop();
 
     KillTimer(TM_ID_STATUS);
     enableWindow(XPR_TRUE);

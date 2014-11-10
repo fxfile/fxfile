@@ -24,7 +24,7 @@ enum
     THUMBNAIL_PRIORITY_NORMAL
 };
 
-class Thumbnail : public Thread, public fxfile::base::Singleton<Thumbnail>
+class Thumbnail : public xpr::Thread::Runnable, public fxfile::base::Singleton<Thumbnail>
 {
     friend class fxfile::base::Singleton<Thumbnail>;
 
@@ -37,6 +37,9 @@ public:   ~Thumbnail(void);
 public:
     void create(void);
     void destroy(void);
+
+    void start(void);
+    void stop(void);
 
     xpr_bool_t loadCache(void);
     void saveCache(void);
@@ -58,8 +61,8 @@ public:
     void clearAysncImage(void);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
     inline xpr_sint_t IdToImage(xpr_uint_t aThumbImageId);
 
@@ -73,6 +76,7 @@ protected:
     IdMap      mIdMap;
     xpr_uint_t mIdMgr;
 
+    Thread     mThread;
     HANDLE     mEvent;
     xpr::Mutex mMutex;
     static DWORD WINAPI ThumbThreadProc(LPVOID lpParam);

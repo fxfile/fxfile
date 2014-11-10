@@ -13,55 +13,31 @@
 
 namespace fxfile
 {
-class Thread;
-
-class ThreadHandler
-{
-public:
-    virtual xpr_bool_t OnThreadPreEntry(Thread &aThread) = 0;
-    virtual unsigned OnThreadEntryProc(Thread &aThread) = 0;
-};
-
-class Thread
+class Thread : public xpr::Thread
 {
 public:
     Thread(void);
     virtual ~Thread(void);
 
 public:
-    void SetThreadHandler(ThreadHandler *aHandler);
+    virtual xpr_rcode_t start(xpr::Thread::Runnable *aRunnable, xpr_size_t aStackSize = 0);
 
-public:
-    xpr_bool_t Start(void);
-    void Stop(DWORD aStopMillseconds = INFINITE, xpr_bool_t aForcely = XPR_TRUE);
-    void StopEvent(void);
-
-    xpr_bool_t IsRunning(void);
-    xpr_bool_t IsStop(void);
-    unsigned GetThreadId(void) const;
-
-    xpr_sint_t GetPriority(void);
-    void SetPriority(xpr_sint_t aPriority);
-
-    bool operator == (const Thread &aThread) const;
-    bool operator != (const Thread &aThread) const;
+    virtual void stop(void);
+    xpr_bool_t isStop(void) const;
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-
-    virtual unsigned OnEntryProc(void);
-
-private:
-    static unsigned __stdcall EntryProc(void *aParam);
-
-protected:
-    ThreadHandler *mHandler;
-
-    HANDLE     mThread;
-    HANDLE     mStopThread;
-    unsigned   mThreadId;
-    xpr_sint_t mPriority;
+    volatile xpr_bool_t mStop;
 };
+
+inline void Thread::stop(void)
+{
+    mStop = XPR_TRUE;
+}
+
+inline xpr_bool_t Thread::isStop(void) const
+{
+    return mStop;
+}
 } // namespace fxfile
 
 #endif // __FXFILE_THREAD_H__

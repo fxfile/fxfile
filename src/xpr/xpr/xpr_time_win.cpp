@@ -5,7 +5,7 @@
 // found in the LICENSE file.
 
 #include "xpr_time.h"
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "xpr_debug.h"
 #include "xpr_system.h"
 #include "xpr_math.h"

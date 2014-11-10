@@ -77,7 +77,7 @@ void FileSplit::setBufferSize(xpr_size_t aBufferSize)
     mBufferSize = aBufferSize;
 }
 
-xpr_bool_t FileSplit::OnPreEntry(void)
+xpr_bool_t FileSplit::start(void)
 {
     if (mUnitSize <= 10)
         mUnitSize = 10;
@@ -97,10 +97,18 @@ xpr_bool_t FileSplit::OnPreEntry(void)
     mSplitedCount = 0;
     setStatus(StatusSplitting);
 
-    return XPR_TRUE;
+    xpr_rcode_t sRcode = mThread.start(dynamic_cast<xpr::Thread::Runnable *>(this));
+
+    return XPR_RCODE_IS_SUCCESS(sRcode);
 }
 
-unsigned FileSplit::OnEntryProc(void)
+void FileSplit::stop(void)
+{
+    mThread.stop();
+    mThread.join();
+}
+
+xpr_sint_t FileSplit::runThread(xpr::Thread &aThread)
 {
     xpr_char_t *sCrcCode = XPR_NULL;
     if (XPR_TEST_BITS(mFlags, FlagCrcFile))
@@ -145,7 +153,7 @@ unsigned FileSplit::OnEntryProc(void)
         sFileName = mPath.substr(mPath.rfind(XPR_STRING_LITERAL('\\'))+1);
         sIndex = 1;
 
-        while (IsStop() == XPR_FALSE)
+        while (mThread.isStop() == XPR_FALSE)
         {
             sRcode = sFileIo.read(sBuffer, mBufferSize, &sRead);
             if (XPR_RCODE_IS_ERROR(sRcode) || sRead == 0)
@@ -209,7 +217,7 @@ unsigned FileSplit::OnEntryProc(void)
                 if (sWritedBuffer == sRead)
                     break;
 
-            } while (IsStop() == XPR_FALSE);
+            } while (mThread.isStop() == XPR_FALSE);
 
             if (XPR_RCODE_IS_ERROR(sRcode))
                 break;
@@ -222,7 +230,7 @@ unsigned FileSplit::OnEntryProc(void)
 
         sFileIo.close();
 
-        if (IsStop() == XPR_FALSE && XPR_IS_NOT_NULL(sCrcCode))
+        if (mThread.isStop() == XPR_FALSE && XPR_IS_NOT_NULL(sCrcCode))
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s.crc"), mDestDir.c_str(), sFileName.c_str());
@@ -256,7 +264,7 @@ unsigned FileSplit::OnEntryProc(void)
             }
         }
 
-        if (IsStop() == XPR_FALSE && XPR_TEST_BITS(mFlags, FlagBatFile))
+        if (mThread.isStop() == XPR_FALSE && XPR_TEST_BITS(mFlags, FlagBatFile))
         {
             xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
             _stprintf(sPath, XPR_STRING_LITERAL("%s\\%s.bat"), mDestDir.c_str(), sFileName.c_str());
@@ -294,7 +302,7 @@ unsigned FileSplit::OnEntryProc(void)
             }
         }
 
-        if (IsStop() == XPR_FALSE && XPR_TEST_BITS(mFlags, FlagDelOrgFile))
+        if (mThread.isStop() == XPR_FALSE && XPR_TEST_BITS(mFlags, FlagDelOrgFile))
         {
             ::DeleteFile(mPath.c_str());
         }
@@ -302,7 +310,7 @@ unsigned FileSplit::OnEntryProc(void)
         XPR_SAFE_DELETE_ARRAY(sBuffer);
         XPR_SAFE_DELETE_ARRAY(sCrcCode);
 
-        sStatus = IsStop() ? StatusStopped : StatusSplitCompleted;
+        sStatus = mThread.isStop() ? StatusStopped : StatusSplitCompleted;
     }
 
     setStatus(sStatus);

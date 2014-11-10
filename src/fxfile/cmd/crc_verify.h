@@ -11,14 +11,14 @@
 #define __FXFILE_CRC_VERIFY_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 namespace cmd
 {
-class CrcVerify : public Thread
+class CrcVerify : protected xpr::Thread::Runnable
 {
 public:
     enum Status
@@ -65,6 +65,9 @@ public:
     void addCrcPath(const xpr_tchar_t *aPath);
     void init(void);
 
+    xpr_bool_t start(void);
+    void stop(void);
+
     xpr_size_t getCrcCount(void);
     xpr_size_t getVerifyCount(xpr_size_t aCrc);
     const xpr_tchar_t *getCrcPath(xpr_size_t aCrc);
@@ -75,8 +78,8 @@ public:
 protected:
     void resetVerifyResult(void);
 
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     HWND       mHwnd;
@@ -95,6 +98,7 @@ protected:
 
     Status     mStatus;
     xpr::Mutex mMutex;
+    Thread     mThread;
 };
 } // namespace cmd
 } // namespace fxfile

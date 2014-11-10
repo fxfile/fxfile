@@ -11,14 +11,14 @@
 #define __FXFILE_SEARCH_FILE_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
 typedef void (WINAPI *SearchResultFunc)(const xpr_tchar_t *aFolder, WIN32_FIND_DATA *aWin32FindData, LPARAM aParam);
 
-class SearchFile : public Thread
+class SearchFile : protected xpr::Thread::Runnable
 {
 public:
     enum
@@ -60,11 +60,14 @@ public:
     void setData(LPARAM aParam);
     void setResultFunc(SearchResultFunc aSearchResultFunc);
 
+    xpr_bool_t start();
+    void stop();
+
     Status getStatus(xpr_size_t *aSearchedCount = XPR_NULL, clock_t *aSearchTime = XPR_NULL);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
     void searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, xpr_bool_t aSubFolder);
     xpr_bool_t searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t *aFileName);
@@ -101,6 +104,7 @@ protected:
     xpr_bool_t mSystem;
     xpr_sint_t mMatchFlags;
 
+    Thread     mThread;
     clock_t    mSearchTime;
     xpr_size_t mSearchedCount;
     Status     mStatus;

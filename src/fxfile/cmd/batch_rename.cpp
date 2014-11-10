@@ -556,13 +556,15 @@ xpr_bool_t BatchRename::start(void)
 
     mMultiRename->setBackupName(mBackup.c_str());
 
-    return mMultiRename->Start();
+    return mMultiRename->start();
 }
 
 void BatchRename::stop(void)
 {
     if (XPR_IS_NOT_NULL(mMultiRename))
-        mMultiRename->Stop();
+    {
+        mMultiRename->stop();
+    }
 }
 
 MultiRename::Status BatchRename::getStatus(xpr_size_t *aPreparedCount, xpr_size_t *aValidatedCount, xpr_size_t *aRenamedCount) const

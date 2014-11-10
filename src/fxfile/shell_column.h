@@ -17,7 +17,7 @@
 
 namespace fxfile
 {
-class ShellColumn : public Thread, public fxfile::base::Singleton<ShellColumn>
+class ShellColumn : public xpr::Thread::Runnable, public fxfile::base::Singleton<ShellColumn>
 {
     friend class fxfile::base::Singleton<ShellColumn>;
 
@@ -95,8 +95,8 @@ protected:
     void setBaseItem(LPITEMIDLIST aFullPidl);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     typedef std::map<ColumnId, ColumnInfo *> ColumnInfoMap;
@@ -105,6 +105,7 @@ protected:
     typedef std::deque<AsyncInfo *> AsyncDeque;
     AsyncDeque mAsyncDeque;
 
+    Thread     mThread;
     HANDLE     mEvent;
     xpr::Mutex mMutex;
 

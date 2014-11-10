@@ -11,12 +11,12 @@
 #define __FXFILE_SHELL_ICON_H__ 1
 #pragma once
 
-#include "xpr_thread_sync.h"
+#include "xpr_mutex.h"
 #include "thread.h"
 
 namespace fxfile
 {
-class ShellIcon : public Thread
+class ShellIcon : protected Thread::Runnable
 {
 public:
     enum
@@ -86,18 +86,21 @@ public:
     xpr_bool_t getAsyncIcon(AsyncIcon *aAsyncIcon);
     void clear(void);
 
+    void stopThread(void);
+
 public:
     static HICON getIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, const xpr::string &aPath, xpr_bool_t aFastNetIcon, xpr_bool_t aLarge = XPR_FALSE);
     static HICON extractIcon(const xpr::string &aIconPath, xpr_sint_t aIconIndex, xpr_bool_t aLarge = XPR_FALSE);
 
 protected:
-    virtual xpr_bool_t OnPreEntry(void);
-    virtual unsigned OnEntryProc(void);
+    // from xpr::Thread::Runnable
+    xpr_sint_t runThread(xpr::Thread &aThread);
 
 protected:
     typedef std::deque<AsyncIcon *> IconDeque;
     IconDeque mIconDeque;
 
+    Thread     mThread;
     HANDLE     mEvent;
     xpr::Mutex mMutex;
 
