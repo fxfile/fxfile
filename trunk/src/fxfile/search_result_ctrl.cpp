@@ -1815,7 +1815,7 @@ void SearchResultCtrl::sortItems(xpr_sint_t aColumn)
 
 void SearchResultCtrl::sortItems(xpr_sint_t aColumn, xpr_bool_t aAscending)
 {
-    if (gOpt->mConfig.mExplorerNoSort == XPR_TRUE)
+    if (gOpt->mConfig.mFileListNoSort == XPR_TRUE)
         return;
 
     mSortColumn = aColumn;

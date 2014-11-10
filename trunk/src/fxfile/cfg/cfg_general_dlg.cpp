@@ -95,7 +95,7 @@ void CfgGeneralDlg::onInit(const Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_GENERAL_SHOW_TOOLTIP_WITH_NAME  ))->SetCheck(aConfig.mTooltipWithFileName);
     ((CButton *)GetDlgItem(IDC_CFG_GENERAL_TITLE_FULL_PATH         ))->SetCheck(aConfig.mTitleFullPath);
     ((CButton *)GetDlgItem(IDC_CFG_GENERAL_CREATE_BY_POPUP         ))->SetCheck(aConfig.mNewItemDlg);
-    ((CButton *)GetDlgItem(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM))->SetCheck(aConfig.mExplorerGoUpSelSubFolder);
+    ((CButton *)GetDlgItem(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM))->SetCheck(aConfig.mFileListGoUpSelSubFolder);
 
     ((CComboBox *)GetDlgItem(IDC_CFG_GENERAL_EXTENSION))->SetCurSel(aConfig.mFileExtType);
 }
@@ -111,7 +111,7 @@ void CfgGeneralDlg::onApply(Option::Config &aConfig)
     aConfig.mTitleFullPath            = ((CButton   *)GetDlgItem(IDC_CFG_GENERAL_TITLE_FULL_PATH         ))->GetCheck();
     aConfig.mFileExtType              = ((CComboBox *)GetDlgItem(IDC_CFG_GENERAL_EXTENSION               ))->GetCurSel();
     aConfig.mNewItemDlg               = ((CButton   *)GetDlgItem(IDC_CFG_GENERAL_CREATE_BY_POPUP         ))->GetCheck();
-    aConfig.mExplorerGoUpSelSubFolder = ((CButton   *)GetDlgItem(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM))->GetCheck();
+    aConfig.mFileListGoUpSelSubFolder = ((CButton   *)GetDlgItem(IDC_CFG_GENERAL_GO_UP_AND_SEL_CHILD_ITEM))->GetCheck();
 }
 } // namespace cfg
 } // namespace fxfile

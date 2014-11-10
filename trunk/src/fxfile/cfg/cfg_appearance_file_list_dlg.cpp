@@ -98,53 +98,53 @@ void CfgAppearanceFileListDlg::onInit(const Option::Config &aConfig)
         sIndex = sComboBox->AddString(sText);
         sComboBox->SetItemData(sIndex, (DWORD_PTR)i);
 
-        if (i == aConfig.mExplorerSizeUnit)
+        if (i == aConfig.mFileListSizeUnit)
             sComboBox->SetCurSel(sIndex);
     }
 
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES     ))->SetCheck(aConfig.mGridLines ? 1 : 0);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION  ))->SetCheck(aConfig.mFullRowSelect ? 1 : 0);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->SetCheck(aConfig.mExplorerParentFolder);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->SetCheck(aConfig.mExplorerShowDrive);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->SetCheck(aConfig.mExplorerShowDriveItem);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE    ))->SetCheck(aConfig.mExplorerShowDriveSize);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT ))->SetCheck(aConfig.mExplorer24HourTime);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->SetCheck(aConfig.mExplorer2YearDate);
-    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->SetCheck(aConfig.mExplorerCustomIcon);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->SetCheck(aConfig.mFileListParentFolder);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->SetCheck(aConfig.mFileListShowDrive);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->SetCheck(aConfig.mFileListShowDriveItem);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE    ))->SetCheck(aConfig.mFileListShowDriveSize);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT ))->SetCheck(aConfig.mFileList24HourTime);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->SetCheck(aConfig.mFileList2YearDate);
+    ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->SetCheck(aConfig.mFileListCustomIcon);
 
-    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mExplorerCustomIconFile[0]);
-    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mExplorerCustomIconFile[1]);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mFileListCustomIconFile[0]);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mFileListCustomIconFile[1]);
 
-    ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE))->SetCurSel(aConfig.mExplorerListType);
-    ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->SetCurSel(aConfig.mExplorerNameCaseType);
+    ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE))->SetCurSel(aConfig.mFileListListType);
+    ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->SetCurSel(aConfig.mFileListNameCaseType);
 }
 
 void CfgAppearanceFileListDlg::onApply(Option::Config &aConfig)
 {
     aConfig.mGridLines             = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_GRID_LINES     ))->GetCheck();
     aConfig.mFullRowSelect         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_FULL_ROW_SELECTION  ))->GetCheck();
-    aConfig.mExplorerParentFolder  = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->GetCheck();
-    aConfig.mExplorerShowDrive     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->GetCheck();
-    aConfig.mExplorerShowDriveItem = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->GetCheck();
-    aConfig.mExplorerShowDriveSize = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE    ))->GetCheck();
-    aConfig.mExplorer24HourTime    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT ))->GetCheck();
-    aConfig.mExplorer2YearDate     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->GetCheck();
-    aConfig.mExplorerCustomIcon    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->GetCheck();
+    aConfig.mFileListParentFolder  = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_PARENT_FOLDER  ))->GetCheck();
+    aConfig.mFileListShowDrive     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_EACH_DRIVE     ))->GetCheck();
+    aConfig.mFileListShowDriveItem = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_ITEM     ))->GetCheck();
+    aConfig.mFileListShowDriveSize = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_DRIVE_USAGE    ))->GetCheck();
+    aConfig.mFileList24HourTime    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_24_HOUR_FORMAT ))->GetCheck();
+    aConfig.mFileList2YearDate     = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->GetCheck();
+    aConfig.mFileListCustomIcon    = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->GetCheck();
 
-    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mExplorerCustomIconFile[0], XPR_MAX_PATH);
-    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mExplorerCustomIconFile[1], XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mFileListCustomIconFile[0], XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mFileListCustomIconFile[1], XPR_MAX_PATH);
 
     xpr_sint_t sCurSel;
     CComboBox *sComboBox;
 
-    aConfig.mExplorerSizeUnit = SIZE_UNIT_DEFAULT;
+    aConfig.mFileListSizeUnit = SIZE_UNIT_DEFAULT;
     sComboBox = (CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SIZE_UNIT);
     sCurSel = sComboBox->GetCurSel();
     if (sCurSel != CB_ERR)
-        aConfig.mExplorerSizeUnit = (xpr_sint_t)sComboBox->GetItemData(sCurSel);
+        aConfig.mFileListSizeUnit = (xpr_sint_t)sComboBox->GetItemData(sCurSel);
 
-    aConfig.mExplorerListType     = ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE))->GetCurSel();
-    aConfig.mExplorerNameCaseType = ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->GetCurSel();
+    aConfig.mFileListListType     = ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE))->GetCurSel();
+    aConfig.mFileListNameCaseType = ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->GetCurSel();
 }
 
 xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHeight, xpr::string &aPath, xpr_bool_t &aSatisfied)

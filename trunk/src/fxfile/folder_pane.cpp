@@ -166,8 +166,8 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
 
     if (aOption.mConfig.mFolderTreeBkgndColorType[mViewIndex] == COLOR_TYPE_FILE_LIST)
     {
-        sOption.mBkgndColorType       = aOption.mConfig.mExplorerBkgndColorType[mViewIndex];
-        sOption.mBkgndColor           = aOption.mConfig.mExplorerBkgndColor[mViewIndex];
+        sOption.mBkgndColorType       = aOption.mConfig.mFileListBkgndColorType[mViewIndex];
+        sOption.mBkgndColor           = aOption.mConfig.mFileListBkgndColor[mViewIndex];
     }
     else
     {
@@ -183,8 +183,8 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
 
     if (aOption.mConfig.mFolderTreeTextColorType[mViewIndex] == COLOR_TYPE_FILE_LIST)
     {
-        sOption.mTextColorType        = aOption.mConfig.mExplorerTextColorType[mViewIndex];
-        sOption.mTextColor            = aOption.mConfig.mExplorerTextColor[mViewIndex];
+        sOption.mTextColorType        = aOption.mConfig.mFileListTextColorType[mViewIndex];
+        sOption.mTextColor            = aOption.mConfig.mFileListTextColor[mViewIndex];
     }
     else
     {

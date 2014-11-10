@@ -37,16 +37,16 @@ protected:
 private:
     struct ViewColor
     {
-        xpr_sint_t  mExplorerTextColorType;
-        xpr_uint_t  mExplorerTextColor;
-        xpr_sint_t  mExplorerBkgndColorType;
-        xpr_uint_t  mExplorerBkgndColor;
+        xpr_sint_t  mFileListTextColorType;
+        xpr_uint_t  mFileListTextColor;
+        xpr_sint_t  mFileListBkgndColorType;
+        xpr_uint_t  mFileListBkgndColor;
         xpr_sint_t  mFolderTreeTextColorType;
         xpr_uint_t  mFolderTreeTextColor;
         xpr_sint_t  mFolderTreeBkgndColorType;
         xpr_uint_t  mFolderTreeBkgndColor;
-        xpr_sint_t  mExplorerBkgndImage;
-        xpr::string mExplorerBkgndImagePath;
+        xpr_sint_t  mFileListBkgndImage;
+        xpr::string mFileListBkgndImagePath;
         xpr_sint_t  mFolderTreeHighlightColor;
         xpr_sint_t  mFolderTreeHighlight;
     };

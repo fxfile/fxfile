@@ -497,8 +497,8 @@ void FolderSyncDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
                 xpr_tchar_t sDate[0xff] = {0};
                 xpr_tchar_t sTime[0xff] = {0};
 
-                const xpr_tchar_t *sDateFormat = gOpt->mConfig.mExplorer2YearDate  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
-                const xpr_tchar_t *sTimeFormat = gOpt->mConfig.mExplorer24HourTime ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
+                const xpr_tchar_t *sDateFormat = gOpt->mConfig.mFileList2YearDate  ? XPR_STRING_LITERAL("yy-MM-dd") : XPR_STRING_LITERAL("yyyy-MM-dd");
+                const xpr_tchar_t *sTimeFormat = gOpt->mConfig.mFileList24HourTime ? XPR_STRING_LITERAL("HH:mm")    : XPR_STRING_LITERAL("tt hh:mm");
 
                 GetDateFormat(XPR_NULL, 0, &sLocalSystemTime, sDateFormat, sDate, 0xfe);
                 GetTimeFormat(XPR_NULL, 0, &sLocalSystemTime, sTimeFormat, sTime, 0xfe);

@@ -299,7 +299,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
     xpr_bool_t sLastNewTab = XPR_FALSE;
 
     // load last tabs
-    switch (gOpt->mConfig.mExplorerInitFolderType[mViewIndex])
+    switch (gOpt->mConfig.mFileListInitFolderType[mViewIndex])
     {
     case INIT_TYPE_LAST_FOLDER:
     case INIT_TYPE_LAST_TAB:
@@ -487,10 +487,10 @@ LPITEMIDLIST ExplorerView::getInitFolder(xpr_sint_t  aIndex,
         sInitFolderType = aFlags & InitFolderCfgInit;
         if (sInitFolderType != 0)
         {
-            if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER ||
-                gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
+            if (gOpt->mConfig.mFileListInitFolderType[mViewIndex] == INIT_TYPE_INIT_FOLDER ||
+                gOpt->mConfig.mFileListInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
             {
-                const xpr_tchar_t *sInitFolder = gOpt->mConfig.mExplorerInitFolder[mViewIndex];
+                const xpr_tchar_t *sInitFolder = gOpt->mConfig.mFileListInitFolder[mViewIndex];
                 if (sInitFolder[0] != 0)
                 {
                     sFullPidl = Path2Pidl(sInitFolder);
@@ -606,7 +606,7 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
     {
         xpr_bool_t sSaveFolder = XPR_TRUE;
 
-        if (gOpt->mConfig.mExplorerNoNetLastFolder[sViewIndex] == XPR_TRUE)
+        if (gOpt->mConfig.mFileListNoNetLastFolder[sViewIndex] == XPR_TRUE)
         {
             if (IsNetItem(sTvItemData->mFullPidl) == XPR_TRUE)
                 sSaveFolder = XPR_FALSE;
@@ -701,7 +701,7 @@ void ExplorerView::saveOption(void)
 
     gOpt->mMain.mView[mViewIndex].mCurTab = mTabCtrl->getCurTab();
 
-    if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
+    if (gOpt->mConfig.mFileListInitFolderType[mViewIndex] == INIT_TYPE_LAST_TAB)
     {
         sTabCount = getTabCount();
         for (i = 0; i < sTabCount; ++i)
@@ -719,7 +719,7 @@ void ExplorerView::saveOption(void)
             }
         }
     }
-    else if (gOpt->mConfig.mExplorerInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER ||
+    else if (gOpt->mConfig.mFileListInitFolderType[mViewIndex] == INIT_TYPE_LAST_FOLDER ||
              XPR_IS_TRUE(gOpt->mConfig.mSaveHistory))
     {
         if (XPR_IS_NOT_NULL(sExplorerCtrl))
@@ -735,7 +735,7 @@ void ExplorerView::saveOption(void)
     }
 
     // save view style
-    if (gOpt->mConfig.mExplorerSaveViewStyle == XPR_TRUE)
+    if (gOpt->mConfig.mFileListSaveViewStyle == XPR_TRUE)
     {
         if (XPR_IS_NOT_NULL(sExplorerCtrl))
         {

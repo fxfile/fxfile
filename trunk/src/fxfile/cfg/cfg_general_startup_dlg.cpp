@@ -99,9 +99,9 @@ void CfgGeneralStartupDlg::onInit(const Option::Config &aConfig)
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
         pViewStartup = new ViewStartup;
-        pViewStartup->mExplorerInitFolderType  = aConfig.mExplorerInitFolderType[i];
-        pViewStartup->mExplorerNoNetLastFolder = aConfig.mExplorerNoNetLastFolder[i];
-        pViewStartup->mExplorerInitFolder      = aConfig.mExplorerInitFolder[i];
+        pViewStartup->mFileListInitFolderType  = aConfig.mFileListInitFolderType[i];
+        pViewStartup->mFileListNoNetLastFolder = aConfig.mFileListNoNetLastFolder[i];
+        pViewStartup->mFileListInitFolder      = aConfig.mFileListInitFolder[i];
 
         sStringId.format(XPR_STRING_LITERAL("popup.cfg.body.general.startup.combo.view%d"), i + 1);
 
@@ -130,9 +130,9 @@ void CfgGeneralStartupDlg::onApply(Option::Config &aConfig)
 
         XPR_ASSERT(sViewStartup != XPR_NULL);
 
-        aConfig.mExplorerInitFolderType[i]  = sViewStartup->mExplorerInitFolderType;
-        aConfig.mExplorerNoNetLastFolder[i] = sViewStartup->mExplorerNoNetLastFolder;
-        _tcscpy(aConfig.mExplorerInitFolder[i], sViewStartup->mExplorerInitFolder.c_str());
+        aConfig.mFileListInitFolderType[i]  = sViewStartup->mFileListInitFolderType;
+        aConfig.mFileListNoNetLastFolder[i] = sViewStartup->mFileListNoNetLastFolder;
+        _tcscpy(aConfig.mFileListInitFolder[i], sViewStartup->mFileListInitFolder.c_str());
     }
 }
 
@@ -201,7 +201,7 @@ void CfgGeneralStartupDlg::OnSelChangeView(void)
 void CfgGeneralStartupDlg::loadViewStartup(const ViewStartup &aViewStartup)
 {
     xpr_sint_t sCurSel = 2;
-    switch (aViewStartup.mExplorerInitFolderType)
+    switch (aViewStartup.mFileListInitFolderType)
     {
     case INIT_TYPE_NONE:        sCurSel = 0; break;
     case INIT_TYPE_INIT_FOLDER: sCurSel = 1; break;
@@ -210,9 +210,9 @@ void CfgGeneralStartupDlg::loadViewStartup(const ViewStartup &aViewStartup)
     }
     ((CComboBox *)GetDlgItem(IDC_CFG_STARTUP_VIEW_STARTUP))->SetCurSel(sCurSel);
 
-    ((CButton *)GetDlgItem(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER))->SetCheck(aViewStartup.mExplorerNoNetLastFolder);
+    ((CButton *)GetDlgItem(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER))->SetCheck(aViewStartup.mFileListNoNetLastFolder);
 
-    SetDlgItemText(IDC_CFG_STARTUP_VIEW_FOLDER, aViewStartup.mExplorerInitFolder.c_str());
+    SetDlgItemText(IDC_CFG_STARTUP_VIEW_FOLDER, aViewStartup.mFileListInitFolder.c_str());
 }
 
 void CfgGeneralStartupDlg::saveViewStartup(ViewStartup &aViewStartup)
@@ -222,18 +222,18 @@ void CfgGeneralStartupDlg::saveViewStartup(ViewStartup &aViewStartup)
     xpr_sint_t sCurSel = sStartupComboBox->GetCurSel();
     switch (sCurSel)
     {
-    case 0:  aViewStartup.mExplorerInitFolderType = INIT_TYPE_NONE;        break;
-    case 1:  aViewStartup.mExplorerInitFolderType = INIT_TYPE_INIT_FOLDER; break;
-    case 3:  aViewStartup.mExplorerInitFolderType = INIT_TYPE_LAST_TAB;    break;
-    default: aViewStartup.mExplorerInitFolderType = INIT_TYPE_LAST_FOLDER; break;
+    case 0:  aViewStartup.mFileListInitFolderType = INIT_TYPE_NONE;        break;
+    case 1:  aViewStartup.mFileListInitFolderType = INIT_TYPE_INIT_FOLDER; break;
+    case 3:  aViewStartup.mFileListInitFolderType = INIT_TYPE_LAST_TAB;    break;
+    default: aViewStartup.mFileListInitFolderType = INIT_TYPE_LAST_FOLDER; break;
     }
     sStartupComboBox->SetCurSel(sCurSel);
 
-    aViewStartup.mExplorerNoNetLastFolder = ((CButton *)GetDlgItem(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER))->GetCheck();
+    aViewStartup.mFileListNoNetLastFolder = ((CButton *)GetDlgItem(IDC_CFG_STARTUP_VIEW_NO_LAST_NETWORK_FOLDER))->GetCheck();
 
     xpr_tchar_t sExplorerInitFolder[XPR_MAX_PATH + 1] = {0};
     GetDlgItemText(IDC_CFG_STARTUP_VIEW_FOLDER, sExplorerInitFolder, XPR_MAX_PATH);
-    aViewStartup.mExplorerInitFolder = sExplorerInitFolder;
+    aViewStartup.mFileListInitFolder = sExplorerInitFolder;
 }
 
 void CfgGeneralStartupDlg::saveViewStartup(void)

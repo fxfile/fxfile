@@ -562,34 +562,34 @@ void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &
     sOption.mCustomFont                       = aOption.mConfig.mCustomFont;
     _tcscpy(sOption.mCustomFontText,            aOption.mConfig.mCustomFontText);
 
-    sOption.mBkgndImage                       = aOption.mConfig.mExplorerBkgndImage[mViewIndex];
-    _tcscpy(sOption.mBkgndImagePath,            aOption.mConfig.mExplorerBkgndImagePath[mViewIndex]);
-    sOption.mBkgndColorType                   = aOption.mConfig.mExplorerBkgndColorType[mViewIndex];
-    sOption.mBkgndColor                       = aOption.mConfig.mExplorerBkgndColor[mViewIndex];
-    sOption.mTextColorType                    = aOption.mConfig.mExplorerTextColorType[mViewIndex];
-    sOption.mTextColor                        = aOption.mConfig.mExplorerTextColor[mViewIndex];
-    sOption.mSizeUnit                         = aOption.mConfig.mExplorerSizeUnit;
-    sOption.mListType                         = aOption.mConfig.mExplorerListType;
-    sOption.mParentFolder                     = aOption.mConfig.mExplorerParentFolder;
-    sOption.mGoUpSelSubFolder                 = aOption.mConfig.mExplorerGoUpSelSubFolder;
-    sOption.mCustomIcon                       = aOption.mConfig.mExplorerCustomIcon;
-    _tcscpy(sOption.mCustomIconFile[0],         aOption.mConfig.mExplorerCustomIconFile[0]);
-    _tcscpy(sOption.mCustomIconFile[1],         aOption.mConfig.mExplorerCustomIconFile[1]);
-    sOption.m24HourTime                       = aOption.mConfig.mExplorer24HourTime;
-    sOption.m2YearDate                        = aOption.mConfig.mExplorer2YearDate;
-    sOption.mShowDrive                        = aOption.mConfig.mExplorerShowDrive;
-    sOption.mShowDriveItem                    = aOption.mConfig.mExplorerShowDriveItem;
-    sOption.mShowDriveSize                    = aOption.mConfig.mExplorerShowDriveSize;
-    sOption.mNameCaseType                     = aOption.mConfig.mExplorerNameCaseType;
-    sOption.mCreateAndEditText                = aOption.mConfig.mExplorerCreateAndEditText;
-    sOption.mAutoColumnWidth                  = aOption.mConfig.mExplorerAutoColumnWidth;
-    sOption.mSaveViewSet                      = aOption.mConfig.mExplorerSaveViewSet;
-    sOption.mSaveViewStyle                    = aOption.mConfig.mExplorerSaveViewStyle;
-    sOption.mDefaultViewStyle                 = aOption.mConfig.mExplorerDefaultViewStyle;
-    sOption.mDefaultSort                      = aOption.mConfig.mExplorerDefaultSort;
-    sOption.mDefaultSortOrder                 = aOption.mConfig.mExplorerDefaultSortOrder;
-    sOption.mNoSort                           = aOption.mConfig.mExplorerNoSort;
-    sOption.mExitVerifyViewSet                = aOption.mConfig.mExplorerExitVerifyViewSet;
+    sOption.mBkgndImage                       = aOption.mConfig.mFileListBkgndImage[mViewIndex];
+    _tcscpy(sOption.mBkgndImagePath,            aOption.mConfig.mFileListBkgndImagePath[mViewIndex]);
+    sOption.mBkgndColorType                   = aOption.mConfig.mFileListBkgndColorType[mViewIndex];
+    sOption.mBkgndColor                       = aOption.mConfig.mFileListBkgndColor[mViewIndex];
+    sOption.mTextColorType                    = aOption.mConfig.mFileListTextColorType[mViewIndex];
+    sOption.mTextColor                        = aOption.mConfig.mFileListTextColor[mViewIndex];
+    sOption.mSizeUnit                         = aOption.mConfig.mFileListSizeUnit;
+    sOption.mListType                         = aOption.mConfig.mFileListListType;
+    sOption.mParentFolder                     = aOption.mConfig.mFileListParentFolder;
+    sOption.mGoUpSelSubFolder                 = aOption.mConfig.mFileListGoUpSelSubFolder;
+    sOption.mCustomIcon                       = aOption.mConfig.mFileListCustomIcon;
+    _tcscpy(sOption.mCustomIconFile[0],         aOption.mConfig.mFileListCustomIconFile[0]);
+    _tcscpy(sOption.mCustomIconFile[1],         aOption.mConfig.mFileListCustomIconFile[1]);
+    sOption.m24HourTime                       = aOption.mConfig.mFileList24HourTime;
+    sOption.m2YearDate                        = aOption.mConfig.mFileList2YearDate;
+    sOption.mShowDrive                        = aOption.mConfig.mFileListShowDrive;
+    sOption.mShowDriveItem                    = aOption.mConfig.mFileListShowDriveItem;
+    sOption.mShowDriveSize                    = aOption.mConfig.mFileListShowDriveSize;
+    sOption.mNameCaseType                     = aOption.mConfig.mFileListNameCaseType;
+    sOption.mCreateAndEditText                = aOption.mConfig.mFileListCreateAndEditText;
+    sOption.mAutoColumnWidth                  = aOption.mConfig.mFileListAutoColumnWidth;
+    sOption.mSaveViewSet                      = aOption.mConfig.mFileListSaveViewSet;
+    sOption.mSaveViewStyle                    = aOption.mConfig.mFileListSaveViewStyle;
+    sOption.mDefaultViewStyle                 = aOption.mConfig.mFileListDefaultViewStyle;
+    sOption.mDefaultSort                      = aOption.mConfig.mFileListDefaultSort;
+    sOption.mDefaultSortOrder                 = aOption.mConfig.mFileListDefaultSortOrder;
+    sOption.mNoSort                           = aOption.mConfig.mFileListNoSort;
+    sOption.mExitVerifyViewSet                = aOption.mConfig.mFileListExitVerifyViewSet;
 
     sOption.mThumbnailWidth                   = aOption.mConfig.mThumbnailWidth;
     sOption.mThumbnailHeight                  = aOption.mConfig.mThumbnailHeight;
@@ -1457,7 +1457,7 @@ void ExplorerPane::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *a
 
 void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
+    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1480,7 +1480,7 @@ void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle
 
 void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
+    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1503,7 +1503,7 @@ void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
 
 void ExplorerPane::onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending)
 {
-    if (gOpt->mConfig.mExplorerSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
+    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
     {
         xpr_sint_t i;
         xpr_sint_t sViewCount = gFrame->getViewCount();
@@ -1770,7 +1770,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
         SizeFormat::getFormatedNumber(sRealSelFileCount,   sRealSelFileCountText,   XPR_COUNT_OF(sRealSelFileCountText  ) - 1);
         SizeFormat::getFormatedNumber(sRealSelFolderCount, sRealSelFolderCountText, XPR_COUNT_OF(sRealSelFolderCountText) - 1);
 
-        switch (gOpt->mConfig.mExplorerListType)
+        switch (gOpt->mConfig.mFileListListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%s,%s")), sRealSelCountText, sRealSelFolderCountText);
@@ -1787,7 +1787,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
     }
     else
     {
-        switch (gOpt->mConfig.mExplorerListType)
+        switch (gOpt->mConfig.mFileListListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.multiple_selected_folder"), XPR_STRING_LITERAL("%d,%d")), sRealSelCount, sRealSelFolderCount);
@@ -1845,7 +1845,7 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
         SizeFormat::getFormatedNumber(sFileCount,   sFileCountText,   XPR_COUNT_OF(sFileCountText  ) - 1);
         SizeFormat::getFormatedNumber(sFolderCount, sFolderCountText, XPR_COUNT_OF(sFolderCountText) - 1);
 
-        switch (gOpt->mConfig.mExplorerListType)
+        switch (gOpt->mConfig.mFileListListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%s,%s")), sCountText, sFolderCountText);
@@ -1882,7 +1882,7 @@ void ExplorerPane::updateStatusBar(xpr_uint_t aId)
     }
     else
     {
-        switch (gOpt->mConfig.mExplorerListType)
+        switch (gOpt->mConfig.mFileListListType)
         {
         case LIST_TYPE_FOLDER:
             _stprintf(sExplorerCtrlData->mStatusPane0, gApp.loadFormatString(XPR_STRING_LITERAL("explorer_window.status.pane1.folder"), XPR_STRING_LITERAL("%d,%d")), sCount, sFolderCount);
