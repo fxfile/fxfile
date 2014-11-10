@@ -38,9 +38,9 @@ protected:
 private:
     struct ViewStartup
     {
-        xpr_sint_t  mExplorerInitFolderType;
-        xpr_bool_t  mExplorerNoNetLastFolder;
-        xpr::string mExplorerInitFolder;
+        xpr_sint_t  mFileListInitFolderType;
+        xpr_bool_t  mFileListNoNetLastFolder;
+        xpr::string mFileListInitFolder;
     };
 
     void loadViewStartup(const ViewStartup &aViewStartup);

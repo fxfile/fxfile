@@ -171,37 +171,37 @@ public:
         xpr_bool_t      mBookmarkRealPath;
         xpr_bool_t      mBookmarkFastNetIcon;
 
-        // explorer
-        xpr_bool_t      mExplorerBkgndImage[MAX_VIEW_SPLIT];
-        xpr_tchar_t     mExplorerBkgndImagePath[MAX_VIEW_SPLIT][XPR_MAX_PATH + 1];
-        xpr_sint_t      mExplorerBkgndColorType[MAX_VIEW_SPLIT];
-        xpr_uint_t      mExplorerBkgndColor[MAX_VIEW_SPLIT];
-        xpr_sint_t      mExplorerTextColorType[MAX_VIEW_SPLIT];
-        xpr_uint_t      mExplorerTextColor[MAX_VIEW_SPLIT];
-        xpr_sint_t      mExplorerInitFolderType[MAX_VIEW_SPLIT];
-        xpr_tchar_t     mExplorerInitFolder[MAX_VIEW_SPLIT][XPR_MAX_PATH + 1];
-        xpr_bool_t      mExplorerNoNetLastFolder[MAX_VIEW_SPLIT];
-        xpr_sint_t      mExplorerSizeUnit;
-        xpr_sint_t      mExplorerListType;
-        xpr_bool_t      mExplorerParentFolder;
-        xpr_bool_t      mExplorerGoUpSelSubFolder;
-        xpr_bool_t      mExplorerCustomIcon;
-        xpr_tchar_t     mExplorerCustomIconFile[MAX_CUSTOM_ICON][XPR_MAX_PATH + 1];
-        xpr_bool_t      mExplorer24HourTime;
-        xpr_bool_t      mExplorer2YearDate;
-        xpr_bool_t      mExplorerShowDrive;
-        xpr_bool_t      mExplorerShowDriveItem;
-        xpr_bool_t      mExplorerShowDriveSize;
-        xpr_sint_t      mExplorerNameCaseType;
-        xpr_bool_t      mExplorerCreateAndEditText;
-        xpr_bool_t      mExplorerAutoColumnWidth;
-        xpr_sint_t      mExplorerSaveViewSet;
-        xpr_bool_t      mExplorerSaveViewStyle;
-        xpr_sint_t      mExplorerDefaultViewStyle;
-        xpr_sint_t      mExplorerDefaultSort;
-        xpr_sint_t      mExplorerDefaultSortOrder;
-        xpr_bool_t      mExplorerNoSort;
-        xpr_bool_t      mExplorerExitVerifyViewSet;
+        // file list
+        xpr_bool_t      mFileListBkgndImage[MAX_VIEW_SPLIT];
+        xpr_tchar_t     mFileListBkgndImagePath[MAX_VIEW_SPLIT][XPR_MAX_PATH + 1];
+        xpr_sint_t      mFileListBkgndColorType[MAX_VIEW_SPLIT];
+        xpr_uint_t      mFileListBkgndColor[MAX_VIEW_SPLIT];
+        xpr_sint_t      mFileListTextColorType[MAX_VIEW_SPLIT];
+        xpr_uint_t      mFileListTextColor[MAX_VIEW_SPLIT];
+        xpr_sint_t      mFileListInitFolderType[MAX_VIEW_SPLIT];
+        xpr_tchar_t     mFileListInitFolder[MAX_VIEW_SPLIT][XPR_MAX_PATH + 1];
+        xpr_bool_t      mFileListNoNetLastFolder[MAX_VIEW_SPLIT];
+        xpr_sint_t      mFileListSizeUnit;
+        xpr_sint_t      mFileListListType;
+        xpr_bool_t      mFileListParentFolder;
+        xpr_bool_t      mFileListGoUpSelSubFolder;
+        xpr_bool_t      mFileListCustomIcon;
+        xpr_tchar_t     mFileListCustomIconFile[MAX_CUSTOM_ICON][XPR_MAX_PATH + 1];
+        xpr_bool_t      mFileList24HourTime;
+        xpr_bool_t      mFileList2YearDate;
+        xpr_bool_t      mFileListShowDrive;
+        xpr_bool_t      mFileListShowDriveItem;
+        xpr_bool_t      mFileListShowDriveSize;
+        xpr_sint_t      mFileListNameCaseType;
+        xpr_bool_t      mFileListCreateAndEditText;
+        xpr_bool_t      mFileListAutoColumnWidth;
+        xpr_sint_t      mFileListSaveViewSet;
+        xpr_bool_t      mFileListSaveViewStyle;
+        xpr_sint_t      mFileListDefaultViewStyle;
+        xpr_sint_t      mFileListDefaultSort;
+        xpr_sint_t      mFileListDefaultSortOrder;
+        xpr_bool_t      mFileListNoSort;
+        xpr_bool_t      mFileListExitVerifyViewSet;
 
         // thumbnail
         xpr_sint_t      mThumbnailWidth;

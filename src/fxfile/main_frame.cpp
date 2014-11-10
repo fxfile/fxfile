@@ -575,7 +575,7 @@ void MainFrame::saveOption(void)
     ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
 
     // verify view set
-    if (XPR_IS_TRUE(gOpt->mConfig.mExplorerExitVerifyViewSet))
+    if (XPR_IS_TRUE(gOpt->mConfig.mFileListExitVerifyViewSet))
     {
         sViewSetMgr.verify();
     }
@@ -4241,7 +4241,7 @@ void MainFrame::goInitFolder(xpr_sint_t aIndex)
 
     for (; i < sCount; ++i)
     {
-        sInitFolder = gOpt->mConfig.mExplorerInitFolder[i];
+        sInitFolder = gOpt->mConfig.mFileListInitFolder[i];
         if (sInitFolder[0] == 0)
             continue;
 

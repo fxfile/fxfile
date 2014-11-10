@@ -169,16 +169,16 @@ void CfgAppearanceColorDlg::onInit(const Option::Config &aConfig)
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
         pViewColor = new ViewColor;
-        pViewColor->mExplorerTextColorType    = aConfig.mExplorerTextColorType[i];
-        pViewColor->mExplorerTextColor        = aConfig.mExplorerTextColor[i];
-        pViewColor->mExplorerBkgndColorType   = aConfig.mExplorerBkgndColorType[i];
-        pViewColor->mExplorerBkgndColor       = aConfig.mExplorerBkgndColor[i];
+        pViewColor->mFileListTextColorType    = aConfig.mFileListTextColorType[i];
+        pViewColor->mFileListTextColor        = aConfig.mFileListTextColor[i];
+        pViewColor->mFileListBkgndColorType   = aConfig.mFileListBkgndColorType[i];
+        pViewColor->mFileListBkgndColor       = aConfig.mFileListBkgndColor[i];
         pViewColor->mFolderTreeTextColorType  = aConfig.mFolderTreeTextColorType[i];
         pViewColor->mFolderTreeTextColor      = aConfig.mFolderTreeTextColor[i];
         pViewColor->mFolderTreeBkgndColorType = aConfig.mFolderTreeBkgndColorType[i];
         pViewColor->mFolderTreeBkgndColor     = aConfig.mFolderTreeBkgndColor[i];
-        pViewColor->mExplorerBkgndImage       = aConfig.mExplorerBkgndImage[i];
-        pViewColor->mExplorerBkgndImagePath   = aConfig.mExplorerBkgndImagePath[i];
+        pViewColor->mFileListBkgndImage       = aConfig.mFileListBkgndImage[i];
+        pViewColor->mFileListBkgndImagePath   = aConfig.mFileListBkgndImagePath[i];
         pViewColor->mFolderTreeHighlightColor = aConfig.mFolderTreeHighlightColor[i];
         pViewColor->mFolderTreeHighlight      = aConfig.mFolderTreeHighlight[i];
 
@@ -214,17 +214,17 @@ void CfgAppearanceColorDlg::onApply(Option::Config &aConfig)
 
         XPR_ASSERT(sViewColor != XPR_NULL);
 
-        aConfig.mExplorerTextColorType[i]    = sViewColor->mExplorerTextColorType;
-        aConfig.mExplorerTextColor[i]        = sViewColor->mExplorerTextColor;
-        aConfig.mExplorerBkgndColorType[i]   = sViewColor->mExplorerBkgndColorType;
-        aConfig.mExplorerBkgndColor[i]       = sViewColor->mExplorerBkgndColor;
+        aConfig.mFileListTextColorType[i]    = sViewColor->mFileListTextColorType;
+        aConfig.mFileListTextColor[i]        = sViewColor->mFileListTextColor;
+        aConfig.mFileListBkgndColorType[i]   = sViewColor->mFileListBkgndColorType;
+        aConfig.mFileListBkgndColor[i]       = sViewColor->mFileListBkgndColor;
         aConfig.mFolderTreeTextColorType[i]  = sViewColor->mFolderTreeTextColorType;
         aConfig.mFolderTreeTextColor[i]      = sViewColor->mFolderTreeTextColor;
         aConfig.mFolderTreeBkgndColorType[i] = sViewColor->mFolderTreeBkgndColorType;
         aConfig.mFolderTreeBkgndColor[i]     = sViewColor->mFolderTreeBkgndColor;
 
-        aConfig.mExplorerBkgndImage[i]       = sViewColor->mExplorerBkgndImage;
-        _tcscpy(aConfig.mExplorerBkgndImagePath[i], sViewColor->mExplorerBkgndImagePath.c_str());
+        aConfig.mFileListBkgndImage[i]       = sViewColor->mFileListBkgndImage;
+        _tcscpy(aConfig.mFileListBkgndImagePath[i], sViewColor->mFileListBkgndImagePath.c_str());
 
         aConfig.mFolderTreeHighlightColor[i] = sViewColor->mFolderTreeHighlightColor;
         aConfig.mFolderTreeHighlight[i]      = sViewColor->mFolderTreeHighlight;
@@ -314,8 +314,8 @@ void CfgAppearanceColorDlg::loadViewColor(const ViewColor &aViewColor)
     XPR_ASSERT(sFolderTreeTextColorComboBox  != XPR_NULL);
     XPR_ASSERT(sFolderTreeBkgndColorComboBox != XPR_NULL);
 
-    mFileListTextCustomColorCtrl.SetColor(aViewColor.mExplorerTextColor);
-    mFileListBkgndCustomColorCtrl.SetColor(aViewColor.mExplorerBkgndColor);
+    mFileListTextCustomColorCtrl.SetColor(aViewColor.mFileListTextColor);
+    mFileListBkgndCustomColorCtrl.SetColor(aViewColor.mFileListBkgndColor);
     mFolderTreeTextCustomColorCtrl.SetColor(aViewColor.mFolderTreeTextColor);
     mFolderTreeBkgndCustomColorCtrl.SetColor(aViewColor.mFolderTreeBkgndColor);
     mFolderTreeInactiveHighlightColorCtrl.SetColor(aViewColor.mFolderTreeHighlightColor);
@@ -323,7 +323,7 @@ void CfgAppearanceColorDlg::loadViewColor(const ViewColor &aViewColor)
     xpr_sint_t sCurSel;
 
     sCurSel = 0;
-    switch (aViewColor.mExplorerTextColorType)
+    switch (aViewColor.mFileListTextColorType)
     {
     case COLOR_TYPE_CUSTOM:    sCurSel = 1; break;
     case COLOR_TYPE_FILTERING: sCurSel = 2; break;
@@ -332,7 +332,7 @@ void CfgAppearanceColorDlg::loadViewColor(const ViewColor &aViewColor)
     sFileListTextColorComboBox->SetCurSel(sCurSel);
 
     sCurSel = 0;
-    switch (aViewColor.mExplorerBkgndColorType)
+    switch (aViewColor.mFileListBkgndColorType)
     {
     case COLOR_TYPE_CUSTOM:    sCurSel = 1; break;
     case COLOR_TYPE_FILTERING: sCurSel = 2; break;
@@ -361,9 +361,9 @@ void CfgAppearanceColorDlg::loadViewColor(const ViewColor &aViewColor)
     sFolderTreeBkgndColorComboBox->SetCurSel(sCurSel);
 
     ((CButton *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT))->SetCheck(aViewColor.mFolderTreeHighlight);
-    ((CButton *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE         ))->SetCheck(aViewColor.mExplorerBkgndImage);
+    ((CButton *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE         ))->SetCheck(aViewColor.mFileListBkgndImage);
 
-    SetDlgItemText(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH, aViewColor.mExplorerBkgndImagePath.c_str());
+    SetDlgItemText(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH, aViewColor.mFileListBkgndImagePath.c_str());
 }
 
 void CfgAppearanceColorDlg::saveViewColor(ViewColor &aViewColor)
@@ -377,17 +377,17 @@ void CfgAppearanceColorDlg::saveViewColor(ViewColor &aViewColor)
     sCurSel = sFileListTextColorComboBox->GetCurSel();
     switch (sCurSel)
     {
-    case 1:  aViewColor.mExplorerTextColorType = COLOR_TYPE_CUSTOM;    break;
-    case 2:  aViewColor.mExplorerTextColorType = COLOR_TYPE_FILTERING; break;
-    default: aViewColor.mExplorerTextColorType = COLOR_TYPE_DEFAULT;   break;
+    case 1:  aViewColor.mFileListTextColorType = COLOR_TYPE_CUSTOM;    break;
+    case 2:  aViewColor.mFileListTextColorType = COLOR_TYPE_FILTERING; break;
+    default: aViewColor.mFileListTextColorType = COLOR_TYPE_DEFAULT;   break;
     }
 
     sCurSel = sFileListBkgndColorComboBox->GetCurSel();
     switch (sCurSel)
     {
-    case 1:  aViewColor.mExplorerBkgndColorType = COLOR_TYPE_CUSTOM;    break;
-    case 2:  aViewColor.mExplorerBkgndColorType = COLOR_TYPE_FILTERING; break;
-    default: aViewColor.mExplorerBkgndColorType = COLOR_TYPE_DEFAULT;   break;
+    case 1:  aViewColor.mFileListBkgndColorType = COLOR_TYPE_CUSTOM;    break;
+    case 2:  aViewColor.mFileListBkgndColorType = COLOR_TYPE_FILTERING; break;
+    default: aViewColor.mFileListBkgndColorType = COLOR_TYPE_DEFAULT;   break;
     }
 
     sCurSel = sFolderTreeTextColorComboBox->GetCurSel();
@@ -408,20 +408,20 @@ void CfgAppearanceColorDlg::saveViewColor(ViewColor &aViewColor)
     default: aViewColor.mFolderTreeBkgndColorType = COLOR_TYPE_DEFAULT;   break;
     }
 
-    aViewColor.mExplorerTextColor        = mFileListTextCustomColorCtrl.GetColor();
-    aViewColor.mExplorerBkgndColor       = mFileListBkgndCustomColorCtrl.GetColor();
+    aViewColor.mFileListTextColor        = mFileListTextCustomColorCtrl.GetColor();
+    aViewColor.mFileListBkgndColor       = mFileListBkgndCustomColorCtrl.GetColor();
     aViewColor.mFolderTreeTextColor      = mFolderTreeTextCustomColorCtrl.GetColor();
     aViewColor.mFolderTreeBkgndColor     = mFolderTreeBkgndCustomColorCtrl.GetColor();
     aViewColor.mFolderTreeHighlightColor = mFolderTreeInactiveHighlightColorCtrl.GetColor();
     aViewColor.mFolderTreeHighlight      = ((CButton *)GetDlgItem(IDC_CFG_COLOR_FOLDER_TREE_INACTIVE_HIGHLIGHT))->GetCheck();
-    aViewColor.mExplorerBkgndImage       = ((CButton *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE         ))->GetCheck();
+    aViewColor.mFileListBkgndImage       = ((CButton *)GetDlgItem(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE         ))->GetCheck();
 
     xpr_tchar_t sExplorerBkgndImagePath[XPR_MAX_PATH + 1] = {0};
     GetDlgItemText(IDC_CFG_COLOR_FILE_LIST_BKGND_IMAGE_PATH, sExplorerBkgndImagePath, XPR_MAX_PATH);
-    aViewColor.mExplorerBkgndImagePath = sExplorerBkgndImagePath;
+    aViewColor.mFileListBkgndImagePath = sExplorerBkgndImagePath;
 
-    if (aViewColor.mExplorerTextColor        == CLR_DEFAULT) aViewColor.mExplorerTextColor        = mFileListTextCustomColorCtrl.GetDefaultColor();
-    if (aViewColor.mExplorerBkgndColor       == CLR_DEFAULT) aViewColor.mExplorerBkgndColor       = mFileListBkgndCustomColorCtrl.GetDefaultColor();
+    if (aViewColor.mFileListTextColor        == CLR_DEFAULT) aViewColor.mFileListTextColor        = mFileListTextCustomColorCtrl.GetDefaultColor();
+    if (aViewColor.mFileListBkgndColor       == CLR_DEFAULT) aViewColor.mFileListBkgndColor       = mFileListBkgndCustomColorCtrl.GetDefaultColor();
     if (aViewColor.mFolderTreeTextColor      == CLR_DEFAULT) aViewColor.mFolderTreeTextColor      = mFolderTreeTextCustomColorCtrl.GetDefaultColor();
     if (aViewColor.mFolderTreeBkgndColor     == CLR_DEFAULT) aViewColor.mFolderTreeBkgndColor     = mFolderTreeBkgndCustomColorCtrl.GetDefaultColor();
     if (aViewColor.mFolderTreeHighlightColor == CLR_DEFAULT) aViewColor.mFolderTreeHighlightColor = mFolderTreeInactiveHighlightColorCtrl.GetDefaultColor();

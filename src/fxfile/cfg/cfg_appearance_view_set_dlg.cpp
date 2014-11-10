@@ -86,36 +86,36 @@ xpr_bool_t CfgAppearanceViewSetDlg::OnInitDialog(void)
 
 void CfgAppearanceViewSetDlg::onInit(const Option::Config &aConfig)
 {
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NONE              ))->SetCheck(aConfig.mExplorerSaveViewSet == 0);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT           ))->SetCheck(aConfig.mExplorerSaveViewSet == 1);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT))->SetCheck(aConfig.mExplorerSaveViewSet == 2);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_EACH_FOLDER       ))->SetCheck(aConfig.mExplorerSaveViewSet == 3);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE   ))->SetCheck(aConfig.mExplorerSaveViewStyle);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NO_SORT           ))->SetCheck(aConfig.mExplorerNoSort);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH ))->SetCheck(aConfig.mExplorerAutoColumnWidth);
-    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_CLEAN_ON_EXIT     ))->SetCheck(aConfig.mExplorerExitVerifyViewSet);
-    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_VIEW_STYLE))->SetCurSel(aConfig.mExplorerDefaultViewStyle);
-    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT      ))->SetCurSel(aConfig.mExplorerDefaultSort);
-    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT_ORDER))->SetCurSel(aConfig.mExplorerDefaultSortOrder);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NONE              ))->SetCheck(aConfig.mFileListSaveViewSet == 0);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT           ))->SetCheck(aConfig.mFileListSaveViewSet == 1);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT))->SetCheck(aConfig.mFileListSaveViewSet == 2);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_EACH_FOLDER       ))->SetCheck(aConfig.mFileListSaveViewSet == 3);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE   ))->SetCheck(aConfig.mFileListSaveViewStyle);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NO_SORT           ))->SetCheck(aConfig.mFileListNoSort);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH ))->SetCheck(aConfig.mFileListAutoColumnWidth);
+    ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_CLEAN_ON_EXIT     ))->SetCheck(aConfig.mFileListExitVerifyViewSet);
+    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_VIEW_STYLE))->SetCurSel(aConfig.mFileListDefaultViewStyle);
+    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT      ))->SetCurSel(aConfig.mFileListDefaultSort);
+    ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT_ORDER))->SetCurSel(aConfig.mFileListDefaultSortOrder);
 }
 
 void CfgAppearanceViewSetDlg::onApply(Option::Config &aConfig)
 {
-    aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_DEFAULT;
+    aConfig.mFileListSaveViewSet = SAVE_VIEW_SET_DEFAULT;
     if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_NONE))->GetCheck())
-        aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_NONE;
+        aConfig.mFileListSaveViewSet = SAVE_VIEW_SET_NONE;
     else if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_SAME_BETWEEN_SPLIT))->GetCheck())
-        aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_ALL_OF_SAME;
+        aConfig.mFileListSaveViewSet = SAVE_VIEW_SET_ALL_OF_SAME;
     else if (((CButton *)GetDlgItem(IDC_CFG_VIEWSET_EACH_FOLDER))->GetCheck())
-        aConfig.mExplorerSaveViewSet = SAVE_VIEW_SET_EACH_FOLDER;
+        aConfig.mFileListSaveViewSet = SAVE_VIEW_SET_EACH_FOLDER;
 
-    aConfig.mExplorerNoSort            = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NO_SORT           ))->GetCheck();
-    aConfig.mExplorerSaveViewStyle     = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE   ))->GetCheck();
-    aConfig.mExplorerAutoColumnWidth   = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH ))->GetCheck();
-    aConfig.mExplorerExitVerifyViewSet = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_CLEAN_ON_EXIT     ))->GetCheck();
-    aConfig.mExplorerDefaultViewStyle  = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_VIEW_STYLE))->GetCurSel();
-    aConfig.mExplorerDefaultSort       = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT      ))->GetCurSel();
-    aConfig.mExplorerDefaultSortOrder  = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT_ORDER))->GetCurSel();
+    aConfig.mFileListNoSort            = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_NO_SORT           ))->GetCheck();
+    aConfig.mFileListSaveViewStyle     = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_SAVE_VIEW_STYLE   ))->GetCheck();
+    aConfig.mFileListAutoColumnWidth   = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_AUTO_COLUMN_WIDTH ))->GetCheck();
+    aConfig.mFileListExitVerifyViewSet = ((CButton   *)GetDlgItem(IDC_CFG_VIEWSET_CLEAN_ON_EXIT     ))->GetCheck();
+    aConfig.mFileListDefaultViewStyle  = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_VIEW_STYLE))->GetCurSel();
+    aConfig.mFileListDefaultSort       = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT      ))->GetCurSel();
+    aConfig.mFileListDefaultSortOrder  = ((CComboBox *)GetDlgItem(IDC_CFG_VIEWSET_DEFAULT_SORT_ORDER))->GetCurSel();
 }
 
 void CfgAppearanceViewSetDlg::OnClean(void)

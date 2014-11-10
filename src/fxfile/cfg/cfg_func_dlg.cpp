@@ -58,7 +58,7 @@ void CfgFuncDlg::onInit(const Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_FUNC_SHELL_NEW               ))->SetCheck(aConfig.mShellNewMenu);
     ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILELIST_CUR_DIR        ))->SetCheck(aConfig.mFileListCurDir);
     ((CButton *)GetDlgItem(IDC_CFG_FUNC_WORKING_FOLDER_REAL_PATH))->SetCheck(aConfig.mWorkingFolderRealPath);
-    ((CButton *)GetDlgItem(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT))->SetCheck(aConfig.mExplorerCreateAndEditText);
+    ((CButton *)GetDlgItem(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT))->SetCheck(aConfig.mFileListCreateAndEditText);
 
     SetDlgItemText(IDC_CFG_FUNC_NAME_COPY_SEPARATOR, aConfig.mClipboardSeparator);
     ((CEdit *)GetDlgItem(IDC_CFG_FUNC_NAME_COPY_SEPARATOR))->LimitText(MAX_CLIP_SEPARATOR);
@@ -72,7 +72,7 @@ void CfgFuncDlg::onApply(Option::Config &aConfig)
     aConfig.mShellNewMenu              = ((CButton *)GetDlgItem(IDC_CFG_FUNC_SHELL_NEW               ))->GetCheck();
     aConfig.mFileListCurDir            = ((CButton *)GetDlgItem(IDC_CFG_FUNC_FILELIST_CUR_DIR        ))->GetCheck();
     aConfig.mWorkingFolderRealPath     = ((CButton *)GetDlgItem(IDC_CFG_FUNC_WORKING_FOLDER_REAL_PATH))->GetCheck();
-    aConfig.mExplorerCreateAndEditText = ((CButton *)GetDlgItem(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT))->GetCheck();
+    aConfig.mFileListCreateAndEditText = ((CButton *)GetDlgItem(IDC_CFG_FUNC_EDIT_AFTER_CREATING_TEXT))->GetCheck();
 
     GetDlgItemText(IDC_CFG_FUNC_NAME_COPY_SEPARATOR, aConfig.mClipboardSeparator, MAX_CLIP_SEPARATOR);
     if (_tcslen(aConfig.mClipboardSeparator) <= 0)
