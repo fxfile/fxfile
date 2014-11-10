@@ -273,6 +273,9 @@ void FolderCtrl::setOption(Option &aOption)
     if ((XPR_IS_FALSE(mInit)) && (XPR_IS_TRUE(sModifiedHidden) || XPR_IS_TRUE(sModifiedSystem)))
         setHiddenSystem(sModifiedHidden, sModifiedSystem);
 
+    // enable vista enhanced control
+    enableVistaEnhanced(!mOption.mClassicThemeStyle);
+
     // set item height
     if (XPR_IS_TRUE(mOption.mIsItemHeight))
     {

@@ -216,6 +216,7 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
     sOption.mInitNoExpand             = aOption.mConfig.mFolderTreeInitNoExpand;
     sOption.mSelDelay                 = aOption.mConfig.mFolderTreeSelDelay;
     sOption.mSelDelayTime             = aOption.mConfig.mFolderTreeSelDelayTime;
+    sOption.mClassicThemeStyle        = aOption.mConfig.mFolderTreeClassicThemeStyle;
 
     sOption.mExternalCopyFileOp       = aOption.mConfig.mExternalCopyFileOp;
     sOption.mExternalMoveFileOp       = aOption.mConfig.mExternalMoveFileOp;

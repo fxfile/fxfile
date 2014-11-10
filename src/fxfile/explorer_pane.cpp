@@ -553,8 +553,6 @@ void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &
     sOption.mShowSystemAttribute              = aOption.mConfig.mShowSystemAttribute;
     sOption.mTooltip                          = aOption.mConfig.mTooltip;
     sOption.mTooltipWithFileName              = aOption.mConfig.mTooltipWithFileName;
-    sOption.mGridLines                        = aOption.mConfig.mGridLines;
-    sOption.mFullRowSelect                    = aOption.mConfig.mFullRowSelect;
     sOption.mFileExtType                      = aOption.mConfig.mFileExtType;
     sOption.mRenameExtType                    = aOption.mConfig.mRenameExtType;
     sOption.mRenameByMouse                    = aOption.mConfig.mRenameByMouse;
@@ -590,6 +588,9 @@ void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &
     sOption.mDefaultSortOrder                 = aOption.mConfig.mFileListDefaultSortOrder;
     sOption.mNoSort                           = aOption.mConfig.mFileListNoSort;
     sOption.mExitVerifyViewSet                = aOption.mConfig.mFileListExitVerifyViewSet;
+    sOption.mClassicThemeStyle                = aOption.mConfig.mFileListClassicThemeStyle;
+    sOption.mGridLines                        = aOption.mConfig.mFileListGridLines;
+    sOption.mFullRowSelect                    = aOption.mConfig.mFileListFullRowSelect;
 
     sOption.mThumbnailWidth                   = aOption.mConfig.mThumbnailWidth;
     sOption.mThumbnailHeight                  = aOption.mConfig.mThumbnailHeight;

@@ -54,6 +54,7 @@ xpr_bool_t CfgAppearanceFolderTreeDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.explore_delay")));
     SetDlgItemText(IDC_CFG_FOLDER_TREE_LINKAGE,                    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.linkage")));
     SetDlgItemText(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.single_folder_pane_linkage")));
+    SetDlgItemText(IDC_CFG_FOLDER_TREE_CLASSIC_THEME_STYLE,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.folder_tree.check.classic_theme_style")));
 
     return XPR_TRUE;
 }
@@ -64,6 +65,7 @@ void CfgAppearanceFolderTreeDlg::onInit(const Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY             ))->SetCheck(aConfig.mFolderTreeSelDelay);
     ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_LINKAGE                   ))->SetCheck(aConfig.mFolderTreeLinkage);
     ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE))->SetCheck(aConfig.mFolderTreeLinkageOnSingle);
+    ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_CLASSIC_THEME_STYLE       ))->SetCheck(aConfig.mFolderTreeClassicThemeStyle);
 
     SetDlgItemInt(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY_TIME, aConfig.mFolderTreeSelDelayTime);
 
@@ -72,11 +74,12 @@ void CfgAppearanceFolderTreeDlg::onInit(const Option::Config &aConfig)
 
 void CfgAppearanceFolderTreeDlg::onApply(Option::Config &aConfig)
 {
-    aConfig.mFolderTreeInitNoExpand    = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_INIT_NO_EXPAND))->GetCheck();
-    aConfig.mFolderTreeSelDelay        = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY ))->GetCheck();
-    aConfig.mFolderTreeLinkage         = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_LINKAGE))->GetCheck();
-    aConfig.mFolderTreeLinkageOnSingle = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE))->GetCheck();
-    aConfig.mFolderTreeSelDelayTime    = GetDlgItemInt(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY_TIME);
+    aConfig.mFolderTreeInitNoExpand      = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_INIT_NO_EXPAND))->GetCheck();
+    aConfig.mFolderTreeSelDelay          = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY ))->GetCheck();
+    aConfig.mFolderTreeLinkage           = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_LINKAGE))->GetCheck();
+    aConfig.mFolderTreeLinkageOnSingle   = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_SINGLE_FOLDER_PANE_LINKAGE))->GetCheck();
+    aConfig.mFolderTreeClassicThemeStyle = ((CButton *)GetDlgItem(IDC_CFG_FOLDER_TREE_CLASSIC_THEME_STYLE))->GetCheck();
+    aConfig.mFolderTreeSelDelayTime      = GetDlgItemInt(IDC_CFG_FOLDER_TREE_EXPLORE_DELAY_TIME);
 
     if (aConfig.mFolderTreeSelDelayTime < MIN_FLD_SEL_DELAY_MSEC) aConfig.mFolderTreeSelDelayTime = DEF_FLD_SEL_DELAY_MSEC;
     if (aConfig.mFolderTreeSelDelayTime > MAX_FLD_SEL_DELAY_MSEC) aConfig.mFolderTreeSelDelayTime = DEF_FLD_SEL_DELAY_MSEC;

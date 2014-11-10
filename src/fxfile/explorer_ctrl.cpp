@@ -2629,6 +2629,9 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
 
     SetExtendedStyle(sExStyle);
 
+    // enable vista enhanced control
+    enableVistaEnhanced(!aNewOption.mClassicThemeStyle);
+
     // redraw header control
     mHeaderCtrl->Invalidate();
 
