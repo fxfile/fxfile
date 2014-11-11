@@ -17,6 +17,7 @@
 
 #include "sys_img_list.h"
 #include "size_format.h"
+#include "option.h"
 
 #include "cmd/input_dlg.h"
 #include "command_string_table.h"
@@ -110,6 +111,8 @@ xpr_sint_t FileScrapPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
             SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
             mFileScrapCtrl->SetImageList(&sSysImgListMgr.mSysImgList16, LVSIL_SMALL);
             mFileScrapCtrl->SetImageList(&sSysImgListMgr.mSysImgList32, LVSIL_NORMAL);
+
+            setChangedOption(*gOpt);
         }
         else
         {
@@ -1003,5 +1006,7 @@ void FileScrapPane::onRemovedAllItems(FileScrap &aFileScrap, FileScrap::Group *a
 
 void FileScrapPane::setChangedOption(Option &aOption)
 {
+    // enable vista enhanced control
+    mFileScrapCtrl->enableVistaEnhanced(!aOption.mConfig.mFileListClassicThemeStyle);
 }
 } // namespace fxfile
