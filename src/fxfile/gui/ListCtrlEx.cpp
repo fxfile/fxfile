@@ -57,20 +57,16 @@ void ListCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
     {
         // enable explorer theme
         SetWindowTheme(m_hWnd, XPR_WIDE_STRING_LITERAL("explorer"), XPR_NULL);
-
-        DWORD sExStyle = GetExtendedStyle();
-        sExStyle |= LVS_EX_DOUBLEBUFFER; // support from WinXP
-        SetExtendedStyle(sExStyle);
     }
     else
     {
         // diable explorer theme
         SetWindowTheme(m_hWnd, XPR_NULL, XPR_NULL);
-
-        DWORD sExStyle = GetExtendedStyle();
-        sExStyle &= ~LVS_EX_DOUBLEBUFFER;
-        SetExtendedStyle(sExStyle);
     }
+
+    DWORD sExStyle = GetExtendedStyle();
+    sExStyle |= LVS_EX_DOUBLEBUFFER; // support from WinXP
+    SetExtendedStyle(sExStyle);
 
     mVistaEnhanced = aEnable;
 }
