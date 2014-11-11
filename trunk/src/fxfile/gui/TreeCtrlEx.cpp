@@ -90,6 +90,9 @@ xpr_bool_t TreeCtrlEx::isVistaEnhanced(void) const
 
 void TreeCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
 {
+    DWORD sExStyleMask = TVS_EX_DOUBLEBUFFER | TVS_EX_FADEINOUTEXPANDOS | TVS_EX_AUTOHSCROLL;
+    DWORD sExStyle     = TVS_EX_DOUBLEBUFFER;
+
     if (XPR_IS_TRUE(aEnable))
     {
         // enable explorer theme
@@ -97,8 +100,7 @@ void TreeCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
 
         ModifyStyle(TVS_HASLINES, TVS_FULLROWSELECT | TVS_TRACKSELECT);
 
-        DWORD sExStyle = TVS_EX_DOUBLEBUFFER | TVS_EX_FADEINOUTEXPANDOS | TVS_EX_AUTOHSCROLL;
-        SetExtendedStyle(sExStyle, sExStyle);
+        sExStyle = sExStyleMask;
     }
     else
     {
@@ -106,10 +108,9 @@ void TreeCtrlEx::enableVistaEnhanced(xpr_bool_t aEnable)
         SetWindowTheme(m_hWnd, XPR_NULL, XPR_NULL);
 
         ModifyStyle(TVS_FULLROWSELECT | TVS_TRACKSELECT, TVS_HASLINES);
-
-        DWORD sExStyle = TVS_EX_DOUBLEBUFFER | TVS_EX_FADEINOUTEXPANDOS | TVS_EX_AUTOHSCROLL;
-        SetExtendedStyle(sExStyle, 0);
     }
+
+    SetExtendedStyle(sExStyleMask, sExStyle);
 
     mVistaEnhanced = aEnable;
 }
