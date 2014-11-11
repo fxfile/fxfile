@@ -14,6 +14,7 @@
 
 #include "sys_img_list.h"
 #include "size_format.h"
+#include "option.h"
 
 #include "gui/StatusBar.h"
 
@@ -96,6 +97,8 @@ xpr_sint_t SearchResultPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
             SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
             mSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList16, LVSIL_SMALL);
             mSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList32, LVSIL_NORMAL);
+
+            setChangedOption(*gOpt);
         }
         else
         {
@@ -310,5 +313,7 @@ xpr_bool_t SearchResultPane::onOpenFolder(SearchResultCtrl &aSearchResultCtrl, L
 
 void SearchResultPane::setChangedOption(Option &aOption)
 {
+    // enable vista enhanced control
+    mSearchResultCtrl->enableVistaEnhanced(!aOption.mConfig.mFileListClassicThemeStyle);
 }
 } // namespace fxfile
