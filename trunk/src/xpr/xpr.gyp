@@ -313,7 +313,6 @@
                 './include/xpr_tchar.h',
                 './include/xpr_text_file_io.h',
                 './include/xpr_thread.h',
-                './include/xpr_thread_sync.h',
                 './include/xpr_time.h',
                 './include/xpr_trace_logger.h',
                 './include/xpr_types.h',
