@@ -61,13 +61,25 @@ xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::string &aDir)
         sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
         sUpdateHomeDir += kUpdateDir;
 
-        sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
-        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        if (xpr::FileSys::exist(sUpdateHomeDir) == XPR_TRUE)
         {
-            aDir = sUpdateHomeDir;
-
-            return XPR_TRUE;
+            sResult = XPR_TRUE;
         }
+        else
+        {
+            sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                sResult = XPR_TRUE;
+            }
+        }
+    }
+
+    if (XPR_IS_TRUE(sResult))
+    {
+        aDir = sUpdateHomeDir;
+
+        return XPR_TRUE;
     }
 
     sRcode = xpr::FileSys::getTempDir(sUpdateHomeDir);
@@ -78,13 +90,25 @@ xpr_bool_t UpdateInfoManager::getDefaultUpdateHomeDir(xpr::string &aDir)
         sUpdateHomeDir += XPR_FILE_SEPARATOR_STRING;
         sUpdateHomeDir += kUpdateDir;
 
-        sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
-        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        if (xpr::FileSys::exist(sUpdateHomeDir) == XPR_TRUE)
         {
-            aDir = sUpdateHomeDir;
-
-            return XPR_TRUE;
+            sResult = XPR_TRUE;
         }
+        else
+        {
+            sRcode = xpr::FileSys::mkdir_recursive(sUpdateHomeDir);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                sResult = XPR_TRUE;
+            }
+        }
+    }
+
+    if (XPR_IS_TRUE(sResult))
+    {
+        aDir = sUpdateHomeDir;
+
+        return XPR_TRUE;
     }
 
     return XPR_FALSE;
@@ -174,32 +198,6 @@ xpr_rcode_t UpdateInfoManager::readUpdateInfo(UpdateInfo &aUpdateInfo)
     }
 
     return XPR_RCODE_SUCCESS;
-}
-
-void UpdateInfoManager::getCheckedVersion(const UpdateInfo &aUpdateInfo, xpr_tchar_t *aCheckedVersion, xpr_size_t aMaxLen)
-{
-    XPR_ASSERT(aCheckedVersion != XPR_NULL);
-
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-
-    sInputBytes = wcslen(aUpdateInfo.mCheckedVersion) * sizeof(xpr_wchar_t);
-    sOutputBytes = aMaxLen * sizeof(xpr_tchar_t);
-    XPR_UTF16_TO_TCS(aUpdateInfo.mCheckedVersion, &sInputBytes, aCheckedVersion, &sOutputBytes);
-    aCheckedVersion[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
-}
-
-void UpdateInfoManager::getDownloadedFilePath(const UpdateInfo &aUpdateInfo, xpr_tchar_t *aDownloadedFilePath, xpr_size_t aMaxLen)
-{
-    XPR_ASSERT(aDownloadedFilePath != XPR_NULL);
-
-    xpr_size_t sInputBytes;
-    xpr_size_t sOutputBytes;
-
-    sInputBytes = wcslen(aUpdateInfo.mDownloadedFilePath) * sizeof(xpr_wchar_t);
-    sOutputBytes = aMaxLen * sizeof(xpr_tchar_t);
-    XPR_UTF16_TO_TCS(aUpdateInfo.mDownloadedFilePath, &sInputBytes, aDownloadedFilePath, &sOutputBytes);
-    aDownloadedFilePath[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
 }
 
 /**

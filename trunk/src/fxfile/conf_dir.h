@@ -43,7 +43,7 @@ public:
         TypeThumbnailData,
         TypeThumbnailIndex,
         TypeLauncher,
-        TypeUpdater,
+        TypeUpchecker,
         TypeEnd,
     };
 

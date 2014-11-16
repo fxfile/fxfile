@@ -505,15 +505,11 @@
 			<String ID="popup.about.tab.credits">Credits</String>
 			<String ID="popup.about.tab.info.button.system_info">시스템 정보(&amp;S)...</String>
 			<String ID="popup.about.tab.info.button.report">의견 보내기(&amp;I)...</String>
-			<String ID="popup.about.tab.info.button.update">업데이트(&amp;U)</String>
-			<String ID="popup.about.tab.info.label.update.checking">업데이트 검사 중...</String>
-			<String ID="popup.about.tab.info.label.update.check_failed">업데이트 검사 실패.</String>
-			<String ID="popup.about.tab.info.label.update.checked">새 버전이 존재합니다. (새 버전: v%1%)</String>
-			<String ID="popup.about.tab.info.label.update.downloading">새 버전 다운로드 중... (새 버전: v%1%)</String>
-			<String ID="popup.about.tab.info.label.update.downloaded">최신 버전으로 업데이트가 필요합니다. (새 버전: v%1%)</String>
-			<String ID="popup.about.tab.info.label.update.download_failed">새 버전 다운로드 실패.</String>
-			<String ID="popup.about.tab.info.label.update.latest_version">설치된 프로그램이 최신 버전입니다.</String>
-			<String ID="popup.about.tab.info.msg.installer_execute_error">설치 프로그램 실행 오류 (오류코드: %1%)</String>
+			<String ID="popup.about.tab.info.button.download">새 버전 받기(&amp;D)</String>
+			<String ID="popup.about.tab.info.label.check_status.checking">업데이트 검사 중...</String>
+			<String ID="popup.about.tab.info.label.check_status.check_failed">업데이트 검사 실패.</String>
+			<String ID="popup.about.tab.info.label.check_status.new_version">새 버전이 존재합니다. (새 버전: v%1%)</String>
+			<String ID="popup.about.tab.info.label.check_status.latest_version">설치된 프로그램이 최신 버전입니다.</String>
 
 			<!-- keyboard shortcut popup -->
 			<String ID="popup.accel.title">단축키 설정</String>
@@ -1678,8 +1674,7 @@
 			<String ID="popup.cfg.body.advanced.check.system_tray_show_tray_when_minimizing">최소화시 트레이로 표시(&amp;Z)</String>
 			<String ID="popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring">복원시 초기 폴더로 이동하기(&amp;I)</String>
 			<String ID="popup.cfg.body.advanced.check.system_tray_restore_on_one_click">한번 클릭으로 복원/숨기기(&amp;O)</String>
-			<String ID="popup.cfg.body.advanced.check.update_enable">최신 버전 업데이트 검사</String>
-			<String ID="popup.cfg.body.advanced.check.update_check_minor_version_up">마이너 버전도 업데이트 검사</String>
+			<String ID="popup.cfg.body.advanced.check.update_enable">최신 버전 업데이트 검사(&amp;U)</String>
 			<String ID="popup.cfg.body.advanced.button.remove_recent_file_list">최근 실행된 목록 지우기(&amp;E)</String>
 			<String ID="popup.cfg.body.advanced.button.restore_to_default">기본값 복원(&amp;D)</String>
 			<String ID="popup.cfg.body.advanced.msg.confirm_remove_recent_file_list">최근 실행된 목록을 정말 모두 지우시겠습니까?</String>

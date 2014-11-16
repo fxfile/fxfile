@@ -37,7 +37,6 @@ BEGIN_MESSAGE_MAP(CfgAdvDlg, super)
     ON_BN_CLICKED(IDC_CFG_ADV_TRAY_SHOW,              OnTray)
     ON_BN_CLICKED(IDC_CFG_ADV_DEFAULT,                OnDefault)
     ON_BN_CLICKED(IDC_CFG_ADV_REMOVE_RECENT_FILELIST, OnRemoveRecentFileList)
-    ON_BN_CLICKED(IDC_CFG_ADV_UPDATE_ENABLE,          OnUpdateChecker)
 END_MESSAGE_MAP()
 
 xpr_bool_t CfgAdvDlg::OnInitDialog(void) 
@@ -60,7 +59,6 @@ xpr_bool_t CfgAdvDlg::OnInitDialog(void)
     SetDlgItemText(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_open_init_folder_when_restoring")));
     SetDlgItemText(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.system_tray_restore_on_one_click")));
     SetDlgItemText(IDC_CFG_ADV_UPDATE_ENABLE,                        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_enable")));
-    SetDlgItemText(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.check.update_check_minor_version_up")));
     SetDlgItemText(IDC_CFG_ADV_REMOVE_RECENT_FILELIST,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.remove_recent_file_list")));
     SetDlgItemText(IDC_CFG_ADV_DEFAULT,                              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.advanced.button.restore_to_default")));
 
@@ -80,10 +78,8 @@ void CfgAdvDlg::onInit(const Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->SetCheck(aConfig.mTrayRestoreInitFolder);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->SetCheck(aConfig.mTrayOneClick);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_ENABLE                       ))->SetCheck(aConfig.mUpdateCheckEnable);
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP           ))->SetCheck(aConfig.mUpdateCheckMinorVer);
 
     OnTray();
-    OnUpdateChecker();
 }
 
 void CfgAdvDlg::onApply(Option::Config &aConfig)
@@ -98,7 +94,6 @@ void CfgAdvDlg::onApply(Option::Config &aConfig)
     aConfig.mTrayRestoreInitFolder = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->GetCheck();
     aConfig.mTrayOneClick          = ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->GetCheck();
     aConfig.mUpdateCheckEnable     = ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_ENABLE                       ))->GetCheck();
-    aConfig.mUpdateCheckMinorVer   = ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP           ))->GetCheck();
 }
 
 void CfgAdvDlg::OnTray(void)
@@ -121,7 +116,6 @@ void CfgAdvDlg::OnDefault(void)
     ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_OPEN_INIT_FOLDER_WHEN_RESTORING))->SetCheck(XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_TRAY_RESTORE_ON_ONE_CLICK           ))->SetCheck(XPR_FALSE);
     ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_ENABLE                       ))->SetCheck(XPR_TRUE);
-    ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP           ))->SetCheck(XPR_FALSE);
 
     setModified();
 }
@@ -135,13 +129,6 @@ void CfgAdvDlg::OnRemoveRecentFileList(void)
 
     RecentFileList &sRecentFileList = RecentFileList::instance();
     sRecentFileList.clear();
-}
-
-void CfgAdvDlg::OnUpdateChecker(void)
-{
-    xpr_bool_t sUpdateCheckerEnable = ((CButton *)GetDlgItem(IDC_CFG_ADV_UPDATE_ENABLE))->GetCheck();
-
-    GetDlgItem(IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP)->EnableWindow(sUpdateCheckerEnable);
 }
 } // namespace cfg
 } // namespace fxfile

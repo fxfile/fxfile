@@ -25,13 +25,10 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxfile
 {
-namespace updater
+namespace upchecker
 {
 UpdateChecker::UpdateChecker(void)
-    : mCheckMinorVer(XPR_TRUE)
-    , mCheckInProgress(XPR_FALSE), mChecked(XPR_FALSE)
-    , mNewVersion(XPR_FALSE)
-    , mDownloadInProgress(XPR_FALSE), mDownloaded(XPR_FALSE)
+    : mCheckInProgress(XPR_FALSE), mChecked(XPR_FALSE)
 {
 }
 
@@ -57,12 +54,6 @@ void UpdateChecker::setUrl(const xpr::string &aUrl)
 void UpdateChecker::setDir(const xpr::string &aDir)
 {
     mDir = aDir;
-}
-
-void UpdateChecker::setNowVersion(const xpr::string &aNowVersion, xpr_bool_t aCheckMinorVer)
-{
-    mNowVersion    = aNowVersion;
-    mCheckMinorVer = aCheckMinorVer;
 }
 
 struct DownloadFileData
@@ -205,54 +196,6 @@ xpr_bool_t UpdateChecker::check(void)
     {
         // parse meta-data file
         sResult = MetaDataFile::parseMetaFile(mMetaFilePath, mMetaData);
-        if (XPR_IS_TRUE(sResult))
-        {
-            // check version
-            xpr_sint_t sMetaDataMajorVer = 0;
-            xpr_sint_t sMetaDataMinorVer = 0;
-            xpr_sint_t sMetaDataPatchVer = 0;
-            xpr_sint_t sNowMajorVer      = 0;
-            xpr_sint_t sNowMinorVer      = 0;
-            xpr_sint_t sNowPatchVer      = 0;
-
-            _stscanf(mMetaData.mVersion.c_str(),
-                     XPR_STRING_LITERAL("%d.%d.%d"),
-                     &sMetaDataMajorVer, &sMetaDataMinorVer, &sMetaDataPatchVer);
-
-            _stscanf(mNowVersion.c_str(),
-                     XPR_STRING_LITERAL("%d.%d.%d"),
-                     &sNowMajorVer, &sNowMinorVer, &sNowPatchVer);
-
-            if (sMetaDataMajorVer == sNowMajorVer)
-            {
-                if (XPR_IS_FALSE(mCheckMinorVer))
-                {
-                    mNewVersion = XPR_FALSE;
-                }
-                else
-                {
-                    if (sMetaDataMinorVer == sNowMinorVer)
-                    {
-                        if (sMetaDataPatchVer == sNowPatchVer)
-                        {
-                            mNewVersion = XPR_FALSE;
-                        }
-                        else
-                        {
-                            mNewVersion = (sMetaDataPatchVer > sNowPatchVer) ? XPR_TRUE : XPR_FALSE;
-                        }
-                    }
-                    else
-                    {
-                        mNewVersion = (sMetaDataMinorVer > sNowMinorVer) ? XPR_TRUE : XPR_FALSE;
-                    }
-                }
-            }
-            else
-            {
-                mNewVersion = (sMetaDataMajorVer > sNowMajorVer) ? XPR_TRUE : XPR_FALSE;
-            }
-        }
     }
 
     XPR_SAFE_DELETE(sDownloadFileData);
@@ -274,98 +217,9 @@ xpr_bool_t UpdateChecker::isChecked(void) const
     return mChecked;
 }
 
-void UpdateChecker::getCheckedVersion(xpr::string &aVersion)
+const MetaDataFile::MetaData &UpdateChecker::getMetaData(void) const
 {
-    aVersion = mMetaData.mVersion;
-}
-
-xpr_bool_t UpdateChecker::existNewVersion(void) const
-{
-    return mNewVersion;
-}
-
-xpr_bool_t UpdateChecker::download(void)
-{
-    // [1] check to exist new version
-    if (existNewVersion() == XPR_FALSE)
-    {
-        return XPR_FALSE;
-    }
-
-    // [2] download new version
-    CURL *sCtx = curl_easy_init();
-    if (XPR_IS_NULL(sCtx))
-    {
-        return XPR_FALSE;
-    }
-
-    xpr_size_t  sSplit;
-    xpr::string sFileName;
-    xpr::string sUrl = mMetaData.mFile;
-
-    sSplit = sUrl.find_last_of(XPR_STRING_LITERAL('/'));
-    if (sSplit == xpr::string::npos)
-    {
-        curl_easy_cleanup(sCtx);
-        return XPR_FALSE;
-    }
-    else
-    {
-        sFileName = sUrl.substr(sSplit + 1);
-    }
-
-    mProgramFilePath  = mDir;
-    mProgramFilePath += XPR_FILE_SEPARATOR_STRING;
-    mProgramFilePath += sFileName;
-
-    DownloadFileData *sDownloadFileData = new DownloadFileData;
-    sDownloadFileData->mFirst     = XPR_TRUE;
-    sDownloadFileData->mSleepTime = 1;
-    sDownloadFileData->mFilePath  = mProgramFilePath;
-
-    curl_easy_setopt(sCtx, CURLOPT_NOPROGRESS,    XPR_TRUE);
-    curl_easy_setopt(sCtx, CURLOPT_WRITEFUNCTION, downloadFile);
-    curl_easy_setopt(sCtx, CURLOPT_URL,           sUrl.c_str());
-    curl_easy_setopt(sCtx, CURLOPT_WRITEDATA,     sDownloadFileData);
-
-    // start download
-    mDownloadInProgress = XPR_TRUE;
-
-    const CURLcode sCURLcode = curl_easy_perform(sCtx);
-
-    xpr_bool_t sResult = XPR_FALSE;
-    if (sCURLcode == CURLE_OK)
-    {
-        // verify checksum (crc32, md5, sha-1) for the downloaded file
-        sResult = MetaDataFile::verifyChecksum(mProgramFilePath, mMetaData);
-        if (XPR_IS_TRUE(sResult))
-        {
-            sResult = XPR_TRUE;
-        }
-    }
-
-    XPR_SAFE_DELETE(sDownloadFileData);
-
-    curl_easy_cleanup(sCtx);
-
-    if (XPR_IS_TRUE(sResult))
-    {
-        mDownloaded = XPR_TRUE;
-    }
-
-    mDownloadInProgress = XPR_FALSE;
-
-    return sResult;
-}
-
-xpr_bool_t UpdateChecker::isDownloaded(void)
-{
-    return mDownloaded;
-}
-
-void UpdateChecker::getDownloadedFilePath(xpr::string &aFilePath)
-{
-    aFilePath = mProgramFilePath;
+    return mMetaData;
 }
 } // namespace fxfile
-} // namespace updater
+} // namespace upchecker

@@ -7,11 +7,11 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_UPDATER_MAIN_WND_H__
-#define __FXFILE_UPDATER_MAIN_WND_H__ 1
+#ifndef __FXFILE_UPCHECKER_MAIN_WINDOW_H__
+#define __FXFILE_UPCHECKER_MAIN_WINDOW_H__ 1
 #pragma once
 
-#include "updater_def.h"
+#include "upchecker_def.h"
 
 namespace fxfile
 {
@@ -22,7 +22,7 @@ class UpdateInfoManager;
 
 using namespace base;
 
-namespace updater
+namespace upchecker
 {
 class UpdateChecker;
 
@@ -47,13 +47,13 @@ protected:
 protected:
     struct Config
     {
-        xpr_sint_t  mEnable;
-        xpr::string mCurVer;
-        xpr_sint_t  mCheckMinorVer;
-        xpr_sint_t  mCheckPeriodTime; // unit: hour
+        xpr_sint_t mEnable;
+        xpr_sint_t mCheckPeriodTime; // unit: hour
     };
 
     Config mConfig;
+
+    xpr::string        mConfHomeDir;
 
     UpdateChecker     *mUpdateChecker;
     UpdateInfoManager *mUpdateInfoManager;
@@ -69,6 +69,6 @@ protected:
     afx_msg LRESULT OnCommandExit(WPARAM wParam, LPARAM lParam);
 };
 } // namespace fxfile
-} // namespace updater
+} // namespace upchecker
 
-#endif // __FXFILE_UPDATER_MAIN_WND_H__
+#endif // __FXFILE_UPCHECKER_MAIN_WINDOW_H__

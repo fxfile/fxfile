@@ -21,9 +21,9 @@
 
 #include <atlbase.h>
 
-#include "updater_def.h"
+#include "upchecker_def.h"
 #include "update_info_manager.h"
-#include "updater_manager.h"
+#include "upchecker_manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -60,9 +60,9 @@ void AboutTabInfoDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(AboutTabInfoDlg, super)
     ON_WM_DESTROY()
     ON_WM_TIMER()
-    ON_BN_CLICKED(IDC_ABOUT_REPORT, OnReport)
-    ON_BN_CLICKED(IDC_ABOUT_SYSTEM, OnSystem)
-    ON_BN_CLICKED(IDC_ABOUT_UPDATE, OnUpdate)
+    ON_BN_CLICKED(IDC_ABOUT_REPORT,   OnReport)
+    ON_BN_CLICKED(IDC_ABOUT_SYSTEM,   OnSystem)
+    ON_BN_CLICKED(IDC_ABOUT_DOWNLOAD, OnDownload)
 END_MESSAGE_MAP()
 
 xpr_bool_t AboutTabInfoDlg::OnInitDialog(void) 
@@ -93,10 +93,11 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
     SetDlgItemText(IDOK,                   gApp.loadString(XPR_STRING_LITERAL("popup.common.button.ok")));
     SetDlgItemText(IDC_ABOUT_SYSTEM,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.system_info")));
     SetDlgItemText(IDC_ABOUT_REPORT,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.report")));
-    SetDlgItemText(IDC_ABOUT_UPDATE,       gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.update")));
+    SetDlgItemText(IDC_ABOUT_DOWNLOAD,     gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.button.download")));
+    SetDlgItemText(IDC_ABOUT_CHECK_STATUS, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.check_status.checking")));
 
-    // disable update button
-    GetDlgItem(IDC_ABOUT_UPDATE)->EnableWindow(XPR_FALSE);
+    // disable download button
+    GetDlgItem(IDC_ABOUT_DOWNLOAD)->EnableWindow(XPR_FALSE);
 
     if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))
     {
@@ -105,8 +106,8 @@ xpr_bool_t AboutTabInfoDlg::OnInitDialog(void)
     }
     else
     {
-        GetDlgItem(IDC_ABOUT_UPDATE_INFO)->ShowWindow(SW_HIDE);
-        GetDlgItem(IDC_ABOUT_UPDATE     )->ShowWindow(SW_HIDE);
+        GetDlgItem(IDC_ABOUT_CHECK_STATUS)->ShowWindow(SW_HIDE);
+        GetDlgItem(IDC_ABOUT_DOWNLOAD    )->ShowWindow(SW_HIDE);
     }
 
     return XPR_TRUE;
@@ -136,7 +137,8 @@ void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
 
         xpr_rcode_t sRcode;
         xpr_tchar_t sStatus[0xff];
-        xpr_tchar_t sCheckedVersion[0xff];
+        xpr_tchar_t sNewVer[0xff];
+        xpr_bool_t  sIsLastedVer = XPR_TRUE;
         UpdateInfo  sUpdateInfo = {0};
         xpr::string sUpdateHomeDir;
 
@@ -155,7 +157,7 @@ void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
             {
                 XPR_SAFE_DELETE(mUpdateInfoManager);
 
-                UpdaterManager::checkNow();
+                UpcheckerManager::checkNow();
                 return;
             }
         }
@@ -168,51 +170,33 @@ void AboutTabInfoDlg::OnTimer(UINT_PTR aIdEvent)
                 switch (sUpdateInfo.mStatus)
                 {
                 case kUpdateStatusCheckInProgress:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checking")));
+                    SetDlgItemText(IDC_ABOUT_CHECK_STATUS, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.check_status.checking")));
                     break;
 
                 case kUpdateStatusCheckFailed:
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.check_failed")));
+                    SetDlgItemText(IDC_ABOUT_CHECK_STATUS, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.check_status.check_failed")));
+
+                    XPR_SAFE_DELETE(mUpdateInfoManager); // for recheck
                     break;
 
-                case kUpdateStatusExistNewVer:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
+                case kUpdateStatusChecked:
+                    sIsLastedVer = isLastedVer(sUpdateInfo.mMajorVer, sUpdateInfo.mMinorVer, sUpdateInfo.mPatchVer);
+                    if (XPR_IS_TRUE(sIsLastedVer))
+                    {
+                        _stprintf(sStatus, gApp.loadString(XPR_STRING_LITERAL("popup.about.tab.info.label.check_status.latest_version")));
+                        SetDlgItemText(IDC_ABOUT_CHECK_STATUS, sStatus);
+                    }
+                    else
+                    {
+                        getAppVer(sNewVer, sUpdateInfo.mMajorVer, sUpdateInfo.mMinorVer, sUpdateInfo.mPatchVer);
 
-                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.checked"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    break;
+                        _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.check_status.new_version"), XPR_STRING_LITERAL("%s")), sNewVer);
+                        SetDlgItemText(IDC_ABOUT_CHECK_STATUS, sStatus);
 
-                case kUpdateStatusLastestVer:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.latest_version"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
+                        GetDlgItem(IDC_ABOUT_DOWNLOAD)->EnableWindow(XPR_TRUE);
+                    }
 
                     KillTimer(aIdEvent);
-                    break;
-
-                case kUpdateStatusDownloading:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloading"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    break;
-
-                case kUpdateStatusDownloaded:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.downloaded"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
-                    GetDlgItem(IDC_ABOUT_UPDATE)->ShowWindow(SW_SHOW);
-
-                    KillTimer(aIdEvent);
-                    break;
-
-                case kUpdateStatusDownloadFailed:
-                    UpdateInfoManager::getCheckedVersion(sUpdateInfo, sCheckedVersion, XPR_COUNT_OF(sCheckedVersion) - 1);
-
-                    _stprintf(sStatus, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.label.update.download_failed"), XPR_STRING_LITERAL("%s")), sCheckedVersion);
-                    SetDlgItemText(IDC_ABOUT_UPDATE_INFO, sStatus);
                     break;
                 }
             }
@@ -268,7 +252,9 @@ void AboutTabInfoDlg::OnReport(void)
     XPR_SAFE_DELETE_ARRAY(sBlock);
 
     if (sResult == XPR_FALSE)
-        _stprintf(sVersion, XPR_STRING_LITERAL("1"));
+    {
+        getAppVer(sVersion);
+    }
 
     xpr_tchar_t sUrl[XPR_MAX_URL_LENGTH+50] = {0};
     _stprintf(sUrl, XPR_STRING_LITERAL("mailto:flychk@flychk.com?subject=fxfile v%s - report an issue"), sVersion);
@@ -280,35 +266,17 @@ void AboutTabInfoDlg::OnSystem(void)
     ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), XPR_STRING_LITERAL("msinfo32.exe"), XPR_NULL, XPR_NULL, 0);
 }
 
-void AboutTabInfoDlg::OnUpdate(void)
+void AboutTabInfoDlg::OnDownload(void)
 {
     xpr_rcode_t sRcode;
     UpdateInfo  sUpdateInfo = {0};
-    xpr_tchar_t sDownloadedFilePath[XPR_MAX_PATH + 1] = {0};
 
     sRcode = mUpdateInfoManager->readUpdateInfo(sUpdateInfo);
     if (XPR_RCODE_IS_SUCCESS(sRcode))
     {
-        if (sUpdateInfo.mStatus == kUpdateStatusDownloaded)
+        if (sUpdateInfo.mStatus == kUpdateStatusChecked)
         {
-            UpdateInfoManager::getDownloadedFilePath(sUpdateInfo, sDownloadedFilePath, XPR_MAX_PATH);
-
-            HINSTANCE sInstance = ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sDownloadedFilePath, XPR_NULL, XPR_NULL, SW_SHOW);
-            if ((xpr_sint_t)(xpr_sintptr_t)sInstance < 32)
-            {
-                xpr_sint_t sErrorCode = (xpr_sint_t)(xpr_sintptr_t)sInstance;
-
-                xpr_tchar_t sMsg[0xff] = {0};
-                _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.about.tab.info.msg.installer_execute_error"), XPR_STRING_LITERAL("%d")), sErrorCode);
-                ::MessageBox(XPR_NULL, sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
-
-                if (XPR_IS_TRUE(gOpt->mConfig.mUpdateCheckEnable))
-                {
-                    // restart update checker program
-                    UpdaterManager::shutdownProcess();
-                    UpdaterManager::startupProcess();
-                }
-            }
+            ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sUpdateInfo.mNewUrl, XPR_NULL, XPR_NULL, SW_SHOW);
         }
     }
 }

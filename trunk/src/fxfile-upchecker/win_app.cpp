@@ -10,14 +10,13 @@
 #include "stdafx.h"
 #include "win_app.h"
 #include "main_window.h"
-
-#include "resource.h"
+#include "single_process.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-WinApp theApp;
+WinApp gApp;
 
 WinApp::WinApp(void)
 {
@@ -50,7 +49,15 @@ xpr_bool_t WinApp::InitInstance(void)
     xpr_bool_t sResult = xpr::initialize();
     XPR_ASSERT(sResult == XPR_TRUE);
 
-    SetRegistryKey(_T("fxUpdate"));
+    // check single process
+    if (fxfile::upchecker::SingleProcess::check() == XPR_FALSE)
+    {
+        return XPR_FALSE;
+    }
+
+    fxfile::upchecker::SingleProcess::lock();
+
+    SetRegistryKey(_T("fxfile-upchecker"));
 
     if (mMainWindow.Create() == XPR_FALSE)
     {

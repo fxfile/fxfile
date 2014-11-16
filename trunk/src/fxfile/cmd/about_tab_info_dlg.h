@@ -45,7 +45,7 @@ protected:
     afx_msg void OnTimer(UINT_PTR aIdEvent);
     afx_msg void OnReport(void);
     afx_msg void OnSystem(void);
-    afx_msg void OnUpdate(void);
+    afx_msg void OnDownload(void);
 };
 } // namespace cmd
 } // namespace fxfile

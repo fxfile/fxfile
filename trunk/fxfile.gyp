@@ -20,7 +20,7 @@
                 'src/xpr/xpr.gyp:*',
                 'src/fxfile/fxfile.gyp:*',
                 'src/fxfile-crash/fxfile-crash.gyp:*',
-                'src/fxfile-updater/fxfile-updater.gyp:*',
+                'src/fxfile-upchecker/fxfile-upchecker.gyp:*',
                 'src/fxfile-launcher/fxfile-launcher.gyp:*',
             ],
         }

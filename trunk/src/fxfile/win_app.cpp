@@ -31,7 +31,7 @@
 #include "command_string_table.h"
 #include "shell_registry.h"
 #include "launcher_manager.h"
-#include "updater_manager.h"
+#include "upchecker_manager.h"
 #include "singleton_manager.h"
 #include "single_process.h"
 
@@ -503,18 +503,18 @@ void WinApp::onChangedConfig(Option &aOption)
         LauncherManager::unregisterWinStartup();
     }
 
-    // fxfile-updater
-    UpdaterManager::writeUpdaterConf(aOption.mConfig);
+    // fxfile-upchecker
+    UpcheckerManager::writeConfFile(aOption.mConfig);
 
     if (XPR_IS_TRUE(aOption.mConfig.mUpdateCheckEnable))
     {
-        UpdaterManager::startupProcess();
-        UpdaterManager::registerWinStartup();
+        UpcheckerManager::startupProcess();
+        UpcheckerManager::registerWinStartup();
     }
     else
     {
-        UpdaterManager::shutdownProcess();
-        UpdaterManager::unregisterWinStartup();
+        UpcheckerManager::shutdownProcess();
+        UpcheckerManager::unregisterWinStartup();
     }
 
     // notify changed options to main frame

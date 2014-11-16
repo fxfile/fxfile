@@ -27,7 +27,7 @@ namespace
 
 const xpr_tchar_t kFxFilePath    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\")CFG_PATH_FILENAME;
 
-const xpr_tchar_t kProgramConfDir[] = XPR_STRING_LITERAL("%fxFile%\\conf");
+const xpr_tchar_t kProgramConfDir[] = XPR_STRING_LITERAL("%fxfile%\\conf");
 const xpr_tchar_t kDefConfDir    [] = XPR_STRING_LITERAL("%AppData%\\fxfile\\conf");
 
 const xpr_tchar_t kFxFileSection [] = XPR_STRING_LITERAL(".fxfile");
@@ -221,7 +221,7 @@ const xpr_tchar_t *ConfDir::getFileName(xpr_sint_t aType)
     case TypeThumbnailData:  return XPR_STRING_LITERAL("fxfile-thumbnail.dat");
     case TypeThumbnailIndex: return XPR_STRING_LITERAL("fxfile-thumbnail.idx");
     case TypeLauncher:       return XPR_STRING_LITERAL("fxfile-launcher.conf");
-    case TypeUpdater:        return XPR_STRING_LITERAL("fxfile-updater.conf");
+    case TypeUpchecker:      return XPR_STRING_LITERAL("fxfile-upchecker.conf");
     }
 
     return XPR_NULL;

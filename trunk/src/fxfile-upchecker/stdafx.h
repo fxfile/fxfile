@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_UPDATER_STDAFX_H__
-#define __FXFILE_UPDATER_STDAFX_H__ 1
+#ifndef __FXFILE_UPCHECKER_STDAFX_H__
+#define __FXFILE_UPCHECKER_STDAFX_H__ 1
 #pragma once
 
 #ifndef _SECURE_ATL
@@ -80,4 +80,4 @@
 #endif
 
 
-#endif // __FXFILE_UPDATER_STDAFX_H__
+#endif // __FXFILE_UPCHECKER_STDAFX_H__

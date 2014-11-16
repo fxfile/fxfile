@@ -1084,8 +1084,6 @@ BEGIN
     PUSHBUTTON      "Default(&R)",IDC_CFG_ADV_DEFAULT,192,227,63,14
     CONTROL         "&Enable to check the new version",IDC_CFG_ADV_UPDATE_ENABLE,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,164,254,10
-    CONTROL         "Check minor version up",IDC_CFG_ADV_UPDATE_CHECK_MINOR_VER_UP,
-                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,9,177,246,10
 END
 
 IDD_CFG_APPEARANCE_VIEWSET DIALOGEX 0, 0, 255, 241
@@ -1640,14 +1638,14 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "&System Info...",IDC_ABOUT_SYSTEM,7,76,64,13,WS_GROUP
-    PUSHBUTTON      "Report an &issue...",IDC_ABOUT_REPORT,74,76,64,13,WS_GROUP
+    PUSHBUTTON      "&System Info...",IDC_ABOUT_SYSTEM,7,76,64,14,WS_GROUP
+    PUSHBUTTON      "Report an &issue...",IDC_ABOUT_REPORT,74,76,64,14,WS_GROUP
     LTEXT           "Copyright (C) 2001-2013 Leon Lee. All rights reserved.",IDC_STATIC,7,19,176,8
     LTEXT           "...",IDC_ABOUT_WINDOWS,7,31,168,8
     LTEXT           "Homepage: http://www.flychk.com",IDC_STATIC,7,53,116,8
     LTEXT           "E-mail: flychk@flychk.com",IDC_STATIC,7,64,88,8
-    PUSHBUTTON      "&Update",IDC_ABOUT_UPDATE,7,136,64,13,WS_GROUP
-    LTEXT           "Checking for up-to-date...",IDC_ABOUT_UPDATE_INFO,7,124,159,8
+    PUSHBUTTON      "&Download",IDC_ABOUT_DOWNLOAD,7,135,64,14,WS_GROUP
+    LTEXT           "Checking for up-to-date...",IDC_ABOUT_CHECK_STATUS,7,124,272,8
     LTEXT           "fxfile",IDC_ABOUT_PROGRAM,7,7,176,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,46,272,1
 END

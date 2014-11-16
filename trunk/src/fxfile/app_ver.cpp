@@ -24,12 +24,16 @@ const xpr_tchar_t kStableVer[] = XPR_STRING_LITERAL("stable");
 
 void getAppVer(xpr_tchar_t *aAppVer)
 {
-    if (XPR_IS_NOT_NULL(aAppVer))
-    {
-        _stprintf(aAppVer,
-                  XPR_STRING_LITERAL("%d.%d.%d"),
-                  FXFILE_MAJOR_VER, FXFILE_MINOR_VER, FXFILE_PATCH_VER);
-    }
+    getAppVer(aAppVer, FXFILE_MAJOR_VER, FXFILE_MINOR_VER, FXFILE_PATCH_VER);
+}
+
+void getAppVer(xpr_tchar_t *aAppVer, xpr_sint_t aMajorVer, xpr_sint_t aMinorVer, xpr_sint_t aPatchVer)
+{
+    XPR_ASSERT(aAppVer != XPR_NULL);
+
+    _stprintf(aAppVer,
+              XPR_STRING_LITERAL("%d.%d.%d"),
+              aMajorVer, aMinorVer, aPatchVer);
 }
 
 void getFullAppVer(xpr_tchar_t *aAppVer)
@@ -52,5 +56,37 @@ void getFullAppVer(xpr_tchar_t *aAppVer)
 #endif
                   );
     }
+}
+
+xpr_bool_t isLastedVer(xpr_sint_t aMajorVer, xpr_sint_t aMinorVer, xpr_sint_t aPatchVer)
+{
+    if (aMajorVer > FXFILE_MAJOR_VER)
+    {
+        return XPR_FALSE;
+    }
+    else if (aMajorVer > FXFILE_MAJOR_VER)
+    {
+        return XPR_TRUE;
+    }
+
+    if (aMinorVer > FXFILE_MINOR_VER)
+    {
+        return XPR_FALSE;
+    }
+    else if (aMinorVer > FXFILE_MINOR_VER)
+    {
+        return XPR_TRUE;
+    }
+
+    if (aPatchVer > FXFILE_PATCH_VER)
+    {
+        return XPR_FALSE;
+    }
+    else if (aPatchVer > FXFILE_PATCH_VER)
+    {
+        return XPR_TRUE;
+    }
+
+    return XPR_TRUE;
 }
 } // namespace fxfile
