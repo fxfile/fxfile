@@ -37,7 +37,6 @@ protected:
     afx_msg void OnTray(void);
     afx_msg void OnDefault(void);
     afx_msg void OnRemoveRecentFileList(void);
-    afx_msg void OnUpdateChecker(void);
 };
 } // namespace cfg
 } // namespace fxfile

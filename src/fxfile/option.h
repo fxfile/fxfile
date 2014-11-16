@@ -307,7 +307,6 @@ public:
 
         // update check
         xpr_bool_t      mUpdateCheckEnable;
-        xpr_bool_t      mUpdateCheckMinorVer;
     } mConfig;
 
 protected:

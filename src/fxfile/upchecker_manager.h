@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_UPDATER_MANAGER_H__
-#define __FXFILE_UPDATER_MANAGER_H__ 1
+#ifndef __FXFILE_UPCHECKER_MANAGER_H__
+#define __FXFILE_UPCHECKER_MANAGER_H__ 1
 #pragma once
 
 #include "option.h"
@@ -16,10 +16,10 @@
 
 namespace fxfile
 {
-class UpdaterManager
+class UpcheckerManager
 {
 public:
-    static void writeUpdaterConf(Option::Config &aConfig);
+    static void writeConfFile(Option::Config &aConfig);
     static void startupProcess(void);
     static void shutdownProcess(void);
     static void checkNow(void);
@@ -29,4 +29,4 @@ public:
 };
 } // namespace fxfile
 
-#endif // __FXFILE_UPDATER_MANAGER_H__
+#endif // __FXFILE_UPCHECKER_MANAGER_H__

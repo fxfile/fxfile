@@ -13,7 +13,7 @@
 
 #include "xpr_shm.h"
 #include "xpr_process_sync.h"
-#include "updater_def.h"
+#include "upchecker_def.h"
 
 namespace fxfile
 {
@@ -36,9 +36,6 @@ public:
     // for reader
     xpr_rcode_t openUpdateInfo(void);
     xpr_rcode_t readUpdateInfo(UpdateInfo &aUpdateInfo);
-
-    static void getCheckedVersion(const UpdateInfo &aUpdateInfo, xpr_tchar_t *aCheckedVersion, xpr_size_t aMaxLen);
-    static void getDownloadedFilePath(const UpdateInfo &aUpdateInfo, xpr_tchar_t *aDownloadedFile, xpr_size_t aMaxLen);
 
 public:
     // for writer

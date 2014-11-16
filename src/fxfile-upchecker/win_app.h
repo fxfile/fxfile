@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_UPDATER_WINAPP_H__
-#define __FXFILE_UPDATER_WINAPP_H__ 1
+#ifndef __FXFILE_UPCHECKER_WINAPP_H__
+#define __FXFILE_UPCHECKER_WINAPP_H__ 1
 #pragma once
 
 #ifndef __AFXWIN_H__
@@ -29,12 +29,12 @@ public:
     virtual xpr_sint_t ExitInstance(void);
 
 protected:
-    fxfile::updater::MainWindow mMainWindow;
+    fxfile::upchecker::MainWindow mMainWindow;
 
 protected:
     DECLARE_MESSAGE_MAP()
 };
 
-extern WinApp theApp;
+extern WinApp gApp;
 
-#endif // __FXFILE_UPDATER_WINAPP_H__
+#endif // __FXFILE_UPCHECKER_WINAPP_H__

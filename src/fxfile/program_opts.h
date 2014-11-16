@@ -29,13 +29,13 @@ public:
     static void showVersion(void);
 
 public:
-    inline xpr_bool_t  isShowUsage(void) const { return mShowUsage; }
-    inline xpr_bool_t  isShowVersion(void) const { return mShowVersion; }
-    inline xpr_bool_t  isSelect(void) const { return mSelect; }
-    inline xpr_bool_t  isResetConf(void) const { return mResetConf; }
-    inline void        getWindowSplit(xpr_sint_t &aSplitRowCount, xpr_sint_t &aSplitColumnCount) const { aSplitRowCount = mSplitRowCount; aSplitColumnCount = mSplitColumnCount; }
-    inline xpr::string getDir(xpr_size_t aIndex) { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
-    inline xpr::string getConfDir(void) { return mConfDir; }
+    xpr_bool_t  isShowUsage(void) const { return mShowUsage; }
+    xpr_bool_t  isShowVersion(void) const { return mShowVersion; }
+    xpr_bool_t  isSelect(void) const { return mSelect; }
+    xpr_bool_t  isResetConf(void) const { return mResetConf; }
+    void        getWindowSplit(xpr_sint_t &aSplitRowCount, xpr_sint_t &aSplitColumnCount) const { aSplitRowCount = mSplitRowCount; aSplitColumnCount = mSplitColumnCount; }
+    xpr::string getDir(xpr_size_t aIndex) { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
+    xpr::string getConfDir(void) { return mConfDir; }
 
 private:
     xpr_bool_t  mShowUsage;

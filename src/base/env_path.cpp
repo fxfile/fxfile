@@ -22,8 +22,8 @@ namespace base
 {
 EnvPath::EnvPath(void)
 {
-    addSpec(XPR_STRING_LITERAL("fxFile"),                   CSIDL_FXFILE);
-    addSpec(XPR_STRING_LITERAL("fxFileDrive"),              CSIDL_FXFILE_DRIVE);
+    addSpec(XPR_STRING_LITERAL("fxfile"),                   CSIDL_FXFILE);
+    addSpec(XPR_STRING_LITERAL("fxfileDrive"),              CSIDL_FXFILE_DRIVE);
     addSpec(XPR_STRING_LITERAL("WinDrive"),                 CSIDL_WINDRIVE);
     addSpec(XPR_STRING_LITERAL("Desktop"),                  CSIDL_DESKTOP);
     addSpec(XPR_STRING_LITERAL("Internet"),                 CSIDL_INTERNET);

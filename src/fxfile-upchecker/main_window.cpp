@@ -15,6 +15,7 @@
 #include "update_info_manager.h"
 #include "conf_file_ex.h"
 #include "env_path.h"
+#include "program_opts.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -24,11 +25,11 @@ static char THIS_FILE[] = __FILE__;
 
 namespace fxfile
 {
-namespace updater
+namespace upchecker
 {
-static const xpr_tchar_t kUpdateCheckUrl             [] = XPR_STRING_LITERAL("http://flychk.com/update/fxfile/meta-data"); // TODO: fxfile.org change
+static const xpr_tchar_t kUpdateCheckUrl             [] = XPR_STRING_LITERAL("http://flychk.com/update/fxfile/upchecker_meta-data"); // TODO: fxfile.org change
 
-static const xpr_tchar_t kConfFileName               [] = XPR_STRING_LITERAL("fxfile-updater.conf");
+static const xpr_tchar_t kConfFileName               [] = XPR_STRING_LITERAL("fxfile-upchecker.conf");
 
 static const xpr_tchar_t kEnvAppDataName             [] = XPR_STRING_LITERAL("APPDATA");
 static const xpr_tchar_t kEnvLocalAppDataName        [] = XPR_STRING_LITERAL("LOCALAPPDATA");
@@ -70,7 +71,7 @@ xpr_bool_t MainWindow::registerWindowClass(void)
     WNDCLASS sWndClass = {0};
     HINSTANCE sInstance = AfxGetInstanceHandle();
 
-    if (::GetClassInfo(sInstance, fxfile::base::kUpdaterClassName, &sWndClass) == XPR_FALSE)
+    if (::GetClassInfo(sInstance, fxfile::base::kUpcheckerClassName, &sWndClass) == XPR_FALSE)
     {
         sWndClass.style         = CS_DBLCLKS;
         sWndClass.lpfnWndProc   = ::DefWindowProc;
@@ -81,7 +82,7 @@ xpr_bool_t MainWindow::registerWindowClass(void)
         sWndClass.hCursor       = AfxGetApp()->LoadStandardCursor(IDC_ARROW);
         sWndClass.hbrBackground = ::GetSysColorBrush(COLOR_WINDOW);
         sWndClass.lpszMenuName  = XPR_NULL;
-        sWndClass.lpszClassName = fxfile::base::kUpdaterClassName;
+        sWndClass.lpszClassName = fxfile::base::kUpcheckerClassName;
 
         if (AfxRegisterClass(&sWndClass) == XPR_FALSE)
         {
@@ -97,7 +98,7 @@ BOOL MainWindow::Create(void)
 {
     registerWindowClass();
 
-    return CreateEx(0, fxfile::base::kUpdaterClassName, fxfile::base::kUpdaterClassName, 0, 0, 0, 0, 0, 0, 0);
+    return CreateEx(0, fxfile::base::kUpcheckerClassName, fxfile::base::kUpcheckerClassName, 0, 0, 0, 0, 0, 0, 0);
 }
 
 BEGIN_MESSAGE_MAP(MainWindow, CWnd)
@@ -105,15 +106,26 @@ BEGIN_MESSAGE_MAP(MainWindow, CWnd)
     ON_WM_DESTROY()
     ON_WM_TIMER()
 
-    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPDATER_COMMAND_RELOAD_CONF, OnCommandReloadConf)
-    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPDATER_COMMAND_CHECK_NOW,   OnCommandCheckNow)
-    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPDATER_COMMAND_EXIT,        OnCommandExit)
+    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPCHECKER_COMMAND_RELOAD_CONF, OnCommandReloadConf)
+    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPCHECKER_COMMAND_CHECK_NOW,   OnCommandCheckNow)
+    ON_REGISTERED_MESSAGE(fxfile::base::WM_UPCHECKER_COMMAND_EXIT,        OnCommandExit)
 END_MESSAGE_MAP()
 
 int MainWindow::OnCreate(LPCREATESTRUCT aCreateStruct)
 {
     if (CWnd::OnCreate(aCreateStruct) == -1)
         return -1;
+
+    ProgramOpts sProgramOpts;
+    sProgramOpts.parse();
+
+    const xpr::string &sConfDir = sProgramOpts.getConfDir();
+    if (sConfDir.empty() == XPR_TRUE)
+    {
+        return -1;
+    }
+
+    mConfHomeDir = sConfDir;
 
     xpr_bool_t  sResult;
     xpr::string sUpdateHomeDir;
@@ -133,7 +145,6 @@ int MainWindow::OnCreate(LPCREATESTRUCT aCreateStruct)
         mUpdateChecker = new UpdateChecker;
         mUpdateChecker->setDir(sUpdateHomeDir);
         mUpdateChecker->setUrl(kUpdateCheckUrl);
-        mUpdateChecker->setNowVersion(mConfig.mCurVer, mConfig.mCheckMinorVer);
 
         mUpdateInfoManager = new UpdateInfoManager;
         mUpdateInfoManager->setUpdateHomeDir(sUpdateHomeDir.c_str());
@@ -213,15 +224,11 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
     if (aIdEvent == kTimerIdCheckFirst ||
         aIdEvent == kTimerIdCheck)
     {
-        if (aIdEvent == kTimerIdCheckFirst)
-        {
-            KillTimer(kTimerIdCheckFirst);
-            SetTimer(kTimerIdCheck, mConfig.mCheckPeriodTime, XPR_NULL);
-        }
-
-        xpr_bool_t  sCheck    = XPR_TRUE;
-        xpr_bool_t  sDownload = XPR_TRUE;
+        xpr_bool_t  sNeedCheck = XPR_TRUE;
         xpr_rcode_t sRcode;
+        xpr_sint_t  sMajorVer;
+        xpr_sint_t  sMinorVer;
+        xpr_sint_t  sPatchVer;
         xpr::string sCheckedVersion;
         xpr::string sDownloadedFilePath;
         xpr_size_t  sInputBytes;
@@ -229,16 +236,10 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
 
         if (XPR_IS_TRUE(mUpdateChecker->isChecked()))
         {
-            if (XPR_IS_TRUE(mUpdateChecker->existNewVersion()))
-            {
-                if (XPR_IS_FALSE(mUpdateChecker->isDownloaded()))
-                {
-                    sCheck = XPR_FALSE;
-                }
-            }
+            sNeedCheck = XPR_FALSE;
         }
 
-        if (XPR_IS_TRUE(sCheck))
+        if (XPR_IS_TRUE(sNeedCheck))
         {
             mUpdateInfo.mStatus = kUpdateStatusCheckInProgress;
 
@@ -247,29 +248,27 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
             // check
             if (mUpdateChecker->check() == XPR_TRUE)
             {
-                mUpdateChecker->getCheckedVersion(sCheckedVersion);
+                const MetaDataFile::MetaData &sMetaData = mUpdateChecker->getMetaData();
 
-                sInputBytes = sCheckedVersion.length() * sizeof(xpr_tchar_t);
-                sOutputBytes = FXFILE_UPDATE_MAX_VERSION_LEN * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sCheckedVersion.c_str(), &sInputBytes, mUpdateInfo.mCheckedVersion, &sOutputBytes);
-                mUpdateInfo.mCheckedVersion[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
+                _stscanf(sMetaData.mVersion.c_str(),
+                    XPR_STRING_LITERAL("%d.%d.%d"),
+                    &sMajorVer, &sMinorVer, &sPatchVer);
 
-                mUpdateInfo.mStatus = kUpdateStatusExistNewVer;
+                mUpdateInfo.mStatus   = kUpdateStatusChecked;
+                mUpdateInfo.mMajorVer = sMajorVer;
+                mUpdateInfo.mMinorVer = sMinorVer;
+                mUpdateInfo.mPatchVer = sPatchVer;
+
+                sInputBytes = sMetaData.mNewUrl.length() * sizeof(xpr_tchar_t);
+                sOutputBytes = XPR_MAX_URL_LENGTH * sizeof(xpr_wchar_t);
+                XPR_TCS_TO_UTF16(sMetaData.mNewUrl.c_str(), &sInputBytes, mUpdateInfo.mNewUrl, &sOutputBytes);
+                mUpdateInfo.mNewUrl[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
                 sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
-
-                // exist new version
-                if (mUpdateChecker->existNewVersion() == XPR_TRUE)
+                if (XPR_RCODE_IS_SUCCESS(sRcode))
                 {
-                    // download
-                }
-                else
-                {
-                    mUpdateInfo.mStatus = kUpdateStatusLastestVer;
-
-                    sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
-
-                    sDownload = XPR_FALSE;
+                    KillTimer(aIdEvent);
+                    SetTimer(kTimerIdCheck, mConfig.mCheckPeriodTime, XPR_NULL);
                 }
             }
             else
@@ -277,39 +276,12 @@ void MainWindow::OnTimer(UINT_PTR aIdEvent)
                 mUpdateInfo.mStatus = kUpdateStatusCheckFailed;
 
                 sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
-
-                sDownload = XPR_FALSE;
-            }
-        }
-
-        if (XPR_IS_TRUE(sDownload))
-        {
-            mUpdateInfo.mStatus = kUpdateStatusDownloading;
-
-            sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
-
-            // download
-            if (mUpdateChecker->download() == XPR_TRUE)
-            {
-                mUpdateChecker->getDownloadedFilePath(sDownloadedFilePath);
-
-                sInputBytes = sDownloadedFilePath.length() * sizeof(xpr_tchar_t);
-                sOutputBytes = FXFILE_UPDATE_MAX_FILE_PATH_LEN * sizeof(xpr_wchar_t);
-                XPR_TCS_TO_UTF16(sDownloadedFilePath.c_str(), &sInputBytes, mUpdateInfo.mDownloadedFilePath, &sOutputBytes);
-                mUpdateInfo.mDownloadedFilePath[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
-
-                mUpdateInfo.mStatus = kUpdateStatusDownloaded;
-
-                sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
-
-                // stop update check timer
-                KillTimer(aIdEvent);
-            }
-            else
-            {
-                mUpdateInfo.mStatus = kUpdateStatusDownloadFailed;
-
-                sRcode = mUpdateInfoManager->writeUpdateInfo(mUpdateInfo);
+                if (XPR_RCODE_IS_SUCCESS(sRcode))
+                {
+                    // recheck after 5 seconds
+                    KillTimer(aIdEvent);
+                    SetTimer(kTimerIdCheckFirst, 5000, XPR_NULL);
+                }
             }
         }
 
@@ -442,15 +414,7 @@ xpr_bool_t MainWindow::getConfHomeDirFromConfFile(const xpr::string &aConfPath, 
 
 xpr_bool_t MainWindow::loadConfig(void)
 {
-    xpr::string sConfHomeDir;
-    xpr::string sConfPath;
-
-    if (XPR_IS_FALSE(getConfHomeDir(sConfHomeDir)))
-    {
-        return XPR_FALSE;
-    }
-
-    sConfPath  = sConfHomeDir;
+    xpr::string sConfPath(mConfHomeDir);
     sConfPath += XPR_FILE_SEPARATOR_STRING;
     sConfPath += kConfFileName;
 
@@ -467,10 +431,8 @@ xpr_bool_t MainWindow::loadConfig(void)
         return XPR_FALSE;
     }
 
-    mConfig.mEnable          = sConfFile.getValueB(sSection, kUpdaterConfKeyEnable,          XPR_FALSE);
-    mConfig.mCurVer          = sConfFile.getValueS(sSection, kUpdaterConfKeyCurVer,          XPR_STRING_LITERAL(""));
-    mConfig.mCheckMinorVer   = sConfFile.getValueB(sSection, kUpdaterConfKeyCheckMinorVer,   XPR_TRUE);
-    mConfig.mCheckPeriodTime = sConfFile.getValueI(sSection, kUpdaterConfKeyCheckPeriodTime, 24 * 60 * 60 * 1000);
+    mConfig.mEnable          = sConfFile.getValueB(sSection, kUpcheckerConfKeyEnable,          XPR_FALSE);
+    mConfig.mCheckPeriodTime = sConfFile.getValueI(sSection, kUpcheckerConfKeyCheckPeriodTime, 24 * 60 * 60 * 1000);
 
     return XPR_TRUE;
 }
@@ -511,4 +473,4 @@ LRESULT MainWindow::OnCommandExit(WPARAM wParam, LPARAM lParam)
     return 0;
 }
 } // namespace fxfile
-} // namespace updater
+} // namespace upchecker

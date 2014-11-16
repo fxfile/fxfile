@@ -35,7 +35,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin',
-                    'IntermediateDirectory': '../../obj/fxfile-updater/dbg-x86',
+                    'IntermediateDirectory': '../../obj/fxfile-upchecker/dbg-x86',
                 },
                 
                 'msvs_settings':
@@ -61,7 +61,7 @@
                 'msvs_configuration_attributes':
                 {
                     'OutputDirectory':       '../../bin',
-                    'IntermediateDirectory': '../../obj/fxfile-updater/rel-x86',
+                    'IntermediateDirectory': '../../obj/fxfile-upchecker/rel-x86',
                 },
                 
                 'msvs_settings':
@@ -85,7 +85,7 @@
     'targets':
     [
         {
-            'target_name': 'fxfile-updater',
+            'target_name': 'fxfile-upchecker',
             
             'type': 'executable',
             
@@ -118,15 +118,15 @@
                 },
             },
 
-            'msvs_postbuild': 'mkdir $(TargetDir)x86-unicode\updater\r\n'
-                              'mkdir $(TargetDir)x86-multibyte\updater\r\n'
-                              'mkdir $(TargetDir)x64\updater\r\n'
-                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-unicode\updater /c /r /y\r\n'
-                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-multibyte\updater /c /r /y\r\n'
-                              'xcopy $(TargetDir)*.dll $(TargetDir)x64\updater /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-unicode\updater /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x86-multibyte\updater /c /r /y\r\n'
-                              'xcopy $(TargetPath) $(TargetDir)x64\updater /c /r /y\r\n',
+            'msvs_postbuild': 'mkdir $(TargetDir)x86-unicode\upchecker\r\n'
+                              'mkdir $(TargetDir)x86-multibyte\upchecker\r\n'
+                              'mkdir $(TargetDir)x64\upchecker\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-unicode\upchecker /c /r /y\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x86-multibyte\upchecker /c /r /y\r\n'
+                              'xcopy $(TargetDir)*.dll $(TargetDir)x64\upchecker /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-unicode\upchecker /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x86-multibyte\upchecker /c /r /y\r\n'
+                              'xcopy $(TargetPath) $(TargetDir)x64\upchecker /c /r /y\r\n',
 
             'msvs_precompiled_header': 'stdafx.h',
             'msvs_precompiled_source': 'stdafx.cpp',
@@ -144,6 +144,8 @@
                 '../base/env_path.h',
                 '../base/md5.c',
                 '../base/md5.h',
+                '../base/getopt.c',
+                '../base/getopt.h',
                 '../base/pidl_win.cpp',
                 '../base/pidl_win.h',
                 '../base/sha.c',
@@ -152,23 +154,27 @@
                 '../base/shell_item_win.cpp',
                 '../base/update_info_manager.cpp',
                 '../base/update_info_manager.h',
-                '../base/updater_def.h',
+                '../base/upchecker_def.h',
 
                 './main_window.cpp',
                 './main_window.h',
                 './meta_data_file.cpp',
                 './meta_data_file.h',
+                './program_opts.cpp',
+                './program_opts.h',
                 './resource.h',
+                './single_process.cpp',
+                './single_process.h',
                 './stdafx.cpp',
                 './stdafx.h',
                 './update_checker.cpp',
                 './update_checker.h',
                 './win_app.cpp',
                 './win_app.h',
-                './fxfile-updater.rc',
+                './fxfile-upchecker.rc',
                 
-                './res/fxfile-updater.ico',
-                './res/fxfile-updater.rc2',
+                './res/fxfile-upchecker.ico',
+                './res/fxfile-upchecker.rc2',
             ],
         },
     ],
