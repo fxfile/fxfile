@@ -250,6 +250,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_GO_ROOT,                          new cmd::GoRootCommand);
     aExecutor.bindCommand(ID_GO_UP_BOX,                        new cmd::GoUpBoxCommand);
     aExecutor.bindCommand(ID_GO_FXFILE,                        new cmd::GoFxFileCommand);
+    aExecutor.bindCommand(ID_GO_FXFILE_CONF_FILE,              new cmd::GoFxFileConfFileCommand);
 
     aExecutor.bindCommand(ID_GO_BACKWARD_FIRST, ID_GO_BACKWARD_LAST, new cmd::GoBackwardCommand);
     aExecutor.bindCommand(ID_GO_FORWARD_FIRST,  ID_GO_FORWARD_LAST,  new cmd::GoForwardCommand);

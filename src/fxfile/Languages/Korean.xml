@@ -200,6 +200,7 @@
             <String ID="cmd.go.root">루트 폴더로 이동(&amp;R)</String>
             <String ID="cmd.up_box">위로 상자(&amp;P)...</String>
             <String ID="cmd.go.fxfile">fxfile(&amp;F)</String>
+            <String ID="cmd.go.fxfile_conf_file">fxfile 설정 파일(&amp;C)</String>
 
             <!-- main menu: view -->
             <String ID="cmd.tools.popup">도구 모음(&amp;T)</String>
