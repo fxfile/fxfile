@@ -337,6 +337,11 @@
 			<String ID="cmd.tips">오늘의 팁(&amp;T)...</String>
 			<String ID="cmd.homepage">홈페이지(&amp;P)</String>
 			<String ID="cmd.email">전자 우편(&amp;E)</String>
+
+			<String ID="cmd.command_line_arguments">실행 인자(&amp;A)</String>
+			<String ID="cmd.program_options">프로그램 옵션(&amp;O)</String>
+			<String ID="cmd.environment_variables">환경 변수들(&amp;V)</String>
+
 			<String ID="cmd.about">fxfile 정보(&amp;A)...</String>
 
 			<!-- popup menu: shell -->
@@ -488,6 +493,7 @@
 			<!-- popup common -->
 			<String ID="popup.common.button.ok">확인</String>
 			<String ID="popup.common.button.cancel">취소</String>
+			<String ID="popup.common.button.close">닫기</String>
 			<String ID="popup.common.file_dialog.filter.text_files">텍스트 파일</String>
 			<String ID="popup.common.file_dialog.filter.bitmap_files">비트맵 파일</String>
 			<String ID="popup.common.file_dialog.filter.jpeg_files">Jpeg 파일</String>
@@ -497,6 +503,12 @@
 			<String ID="popup.common.file_dialog.filter.all">모든 파일</String>
 			<String ID="popup.common.color_ctrl.automatic">자동</String>
 			<String ID="popup.common.color_ctrl.other_color">다른 색...</String>
+
+			<!-- info copyable popup command line arguments, program options and environment variables -->
+			<String ID="popup.info_copyable.button.copy">복사(&amp;C)</String>
+			<String ID="popup.command_line_arguments.title">실행 인자</String>
+			<String ID="popup.program_options.title">프로그램 옵션</String>
+			<String ID="popup.environment_variables.title">환경 변수들</String>
 
 			<!-- about popup -->
 			<String ID="popup.about.title">fxfile 정보</String>

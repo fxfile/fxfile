@@ -874,6 +874,8 @@
                 './cmd/go_path_dlg.h',
                 './cmd/history_dlg.cpp',
                 './cmd/history_dlg.h',
+                './cmd/info_copyable_dlg.cpp',
+                './cmd/info_copyable_dlg.h',
                 './cmd/input_dlg.cpp',
                 './cmd/input_dlg.h',
                 './cmd/multi_rename.cpp',
