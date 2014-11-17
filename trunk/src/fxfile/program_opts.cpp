@@ -136,17 +136,24 @@ void ProgramOpts::parse(void)
 void ProgramOpts::showUsage(void)
 {
     xpr::string sMsg;
-    sMsg += XPR_STRING_LITERAL("Usage: fxfile.exe path\r\n");
-    sMsg += XPR_STRING_LITERAL("\r\n");
-    sMsg += XPR_STRING_LITERAL("Available options (use --help for help):\r\n");
-    sMsg += XPR_STRING_LITERAL("-h --help          Usage information\r\n");
-    sMsg += XPR_STRING_LITERAL("-v --version       Show program version\r\n");
-    sMsg += XPR_STRING_LITERAL("-w --window (arg)  Window split (1x1|1x2|1x3|2x1|2x2|2x3)\r\n");
-    sMsg += XPR_STRING_LITERAL("--dir[1-6]         Initial directory by split window\r\n");
-    sMsg += XPR_STRING_LITERAL("-s --select        Select file\r\n");
-    sMsg += XPR_STRING_LITERAL("--reset            Reset configuration\r\n");
-    sMsg += XPR_STRING_LITERAL("--conf_dir (arg)   Configuration directory to load\r\n");
+    getUsage(sMsg);
+
     MessageBox(XPR_NULL, sMsg.c_str(), FXFILE_PROGRAM_NAME, MB_OK | MB_ICONINFORMATION);
+}
+
+void ProgramOpts::getUsage(xpr::string &aUsage)
+{
+    aUsage.clear();
+    aUsage += XPR_STRING_LITERAL("Usage: fxfile.exe path\r\n");
+    aUsage += XPR_STRING_LITERAL("\r\n");
+    aUsage += XPR_STRING_LITERAL("Available options (use --help for help):\r\n");
+    aUsage += XPR_STRING_LITERAL("-h --help          Usage information\r\n");
+    aUsage += XPR_STRING_LITERAL("-v --version       Show program version\r\n");
+    aUsage += XPR_STRING_LITERAL("-w --window (arg)  Window split (1x1|1x2|1x3|2x1|2x2|2x3)\r\n");
+    aUsage += XPR_STRING_LITERAL("--dir[1-6]         Initial directory by split window\r\n");
+    aUsage += XPR_STRING_LITERAL("-s --select        Select file\r\n");
+    aUsage += XPR_STRING_LITERAL("--reset            Reset configuration\r\n");
+    aUsage += XPR_STRING_LITERAL("--conf_dir (arg)   Configuration directory to load\r\n");
 }
 
 void ProgramOpts::showVersion(void)

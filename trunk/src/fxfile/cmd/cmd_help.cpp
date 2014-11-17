@@ -14,6 +14,9 @@
 
 #include "about_dlg.h"
 #include "tip_dlg.h"
+#include "win_app.h"
+#include "program_opts.h"
+#include "info_copyable_dlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -65,6 +68,78 @@ void TipOfTodayCommand::execute(CommandContext &aContext)
 {
     TipDlg sDlg;
     sDlg.DoModal();
+}
+
+xpr_sint_t CmdLineArgsCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void CmdLineArgsCommand::execute(CommandContext &aContext)
+{
+    InfoCopyableDlg sDlg;
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.command_line_arguments.title")));
+    sDlg.setInfo(gApp.m_lpCmdLine);
+    sDlg.DoModal();
+}
+
+xpr_sint_t ProgramOptsCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void ProgramOptsCommand::execute(CommandContext &aContext)
+{
+    xpr::string sUsage;
+    ProgramOpts::getUsage(sUsage);
+
+    InfoCopyableDlg sDlg;
+    sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.program_options.title")));
+    sDlg.setInfo(sUsage);
+    sDlg.setInfoFont(XPR_STRING_LITERAL("Consolas"));
+    sDlg.DoModal();
+}
+
+xpr_sint_t EnvVarsCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void EnvVarsCommand::execute(CommandContext &aContext)
+{
+    xpr::Env *sEnvList;
+    xpr_size_t sCount;
+    xpr_rcode_t sRcode;
+    xpr::string sMsg;
+
+    sRcode = xpr::getEnvList(&sEnvList, &sCount);
+    if (XPR_RCODE_IS_SUCCESS(sRcode))
+    {
+        if (sCount > 0)
+        {
+            xpr::Env *sEnvNode = sEnvList;
+
+            do
+            {
+                sMsg += sEnvNode->mEnvVar;
+
+                if (XPR_IS_NOT_NULL(sEnvNode->mNext))
+                {
+                    sMsg += XPR_STRING_LITERAL("\r\n");
+                }
+
+                sEnvNode = sEnvNode->mNext;
+
+            } while (XPR_IS_NOT_NULL(sEnvNode));
+        }
+
+        InfoCopyableDlg sDlg;
+        sDlg.setTitle(gApp.loadString(XPR_STRING_LITERAL("popup.environment_variables.title")));
+        sDlg.setInfo(sMsg);
+        sDlg.DoModal();
+
+        xpr::freeEnvList(sEnvList);
+    }
 }
 
 xpr_sint_t HompageCommand::canExecute(CommandContext &aContext)

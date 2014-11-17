@@ -228,6 +228,7 @@
 #define IDD_ABOUT_TAB_LICENSE           441
 #define IDD_ABOUT_TAB_CREDITS           442
 #define IDD_CFG_APPEARANCE_TAB          443
+#define IDD_INFO_COPYABLE               444
 #define IDC_ABOUT_WINDOWS               1000
 #define IDC_ABOUT_NAME                  1001
 #define IDC_CREATE_SHORTCUT_STARTUP     1002
@@ -1462,6 +1463,8 @@
 #define IDC_CFG_TAB_CLOSE_ON_DOUBLE_CLICK 1852
 #define IDC_CFG_TAB_AUTO_FIT            1853
 #define IDC_RENAME_TIP_GROUP_TIME_FORMAT 1854
+#define IDC_INFO_COPY                   1855
+#define IDC_INFO_EDIT                   1856
 #define ID_FILE_NEW_FOLDER              30000
 #define ID_FILE_NEW_FILE                30001
 #define ID_FILE_NEW_TEXT                30002
@@ -1729,6 +1732,9 @@
 #define ID_APP_TIP                      36503
 #define ID_APP_HOMEPAGE                 36504
 #define ID_APP_EMAIL                    36505
+#define ID_APP_CMD_LINE_ARGS            36506
+#define ID_APP_ENV_VARS                 36507
+#define ID_APP_PROGRAM_OPTS             36508
 #define ID_DRIVE_DYNAMIC_MENU           43000
 #define ID_DRIVE_FIRST                  43001
 #define ID_DRIVE_LAST                   43026
@@ -1860,8 +1866,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        427
-#define _APS_NEXT_COMMAND_VALUE         50006
-#define _APS_NEXT_CONTROL_VALUE         1855
+#define _APS_NEXT_COMMAND_VALUE         50015
+#define _APS_NEXT_CONTROL_VALUE         1857
 #define _APS_NEXT_SYMED_VALUE           126
 #endif
 #endif

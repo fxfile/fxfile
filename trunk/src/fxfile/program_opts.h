@@ -27,6 +27,7 @@ public:
     void parse(void);
     static void showUsage(void);
     static void showVersion(void);
+    static void getUsage(xpr::string &aUsage);
 
 public:
     xpr_bool_t  isShowUsage(void) const { return mShowUsage; }
@@ -34,8 +35,8 @@ public:
     xpr_bool_t  isSelect(void) const { return mSelect; }
     xpr_bool_t  isResetConf(void) const { return mResetConf; }
     void        getWindowSplit(xpr_sint_t &aSplitRowCount, xpr_sint_t &aSplitColumnCount) const { aSplitRowCount = mSplitRowCount; aSplitColumnCount = mSplitColumnCount; }
-    xpr::string getDir(xpr_size_t aIndex) { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
-    xpr::string getConfDir(void) { return mConfDir; }
+    xpr::string getDir(xpr_size_t aIndex) const { XPR_ASSERT(aIndex < MAX_VIEW_SPLIT); return mDir[aIndex]; }
+    xpr::string getConfDir(void) const { return mConfDir; }
 
 private:
     xpr_bool_t  mShowUsage;

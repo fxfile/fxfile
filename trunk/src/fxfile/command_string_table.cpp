@@ -305,6 +305,9 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_APP_TIP]                        = XPR_STRING_LITERAL("cmd.tips");
     mCommandString[ID_APP_HOMEPAGE]                   = XPR_STRING_LITERAL("cmd.homepage");
     mCommandString[ID_APP_EMAIL]                      = XPR_STRING_LITERAL("cmd.email");
+    mCommandString[ID_APP_CMD_LINE_ARGS]              = XPR_STRING_LITERAL("cmd.command_line_arguments");
+    mCommandString[ID_APP_PROGRAM_OPTS]               = XPR_STRING_LITERAL("cmd.program_options");
+    mCommandString[ID_APP_ENV_VARS]                   = XPR_STRING_LITERAL("cmd.environment_variables");
     mCommandString[ID_APP_ABOUT]                      = XPR_STRING_LITERAL("cmd.about");
 
     // poup menu - scarp floater

@@ -391,6 +391,9 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_APP_HELP_FIND,                    new cmd::HelpFindCommand);
     aExecutor.bindCommand(ID_APP_ACCELERATOR,                  new cmd::HelpAcceleratorCommand);
     aExecutor.bindCommand(ID_APP_TIP,                          new cmd::TipOfTodayCommand);
+    aExecutor.bindCommand(ID_APP_CMD_LINE_ARGS,                new cmd::CmdLineArgsCommand);
+    aExecutor.bindCommand(ID_APP_PROGRAM_OPTS,                 new cmd::ProgramOptsCommand);
+    aExecutor.bindCommand(ID_APP_ENV_VARS,                     new cmd::EnvVarsCommand);
     aExecutor.bindCommand(ID_APP_HOMEPAGE,                     new cmd::HompageCommand);
     aExecutor.bindCommand(ID_APP_EMAIL,                        new cmd::EmailCommand);
     aExecutor.bindCommand(ID_APP_ABOUT,                        new cmd::AboutCommand);

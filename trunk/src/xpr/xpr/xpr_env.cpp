@@ -103,7 +103,15 @@ XPR_DL_API xpr_rcode_t getEnvList(Env **aEnvList, xpr_size_t *aCount)
 
     if (*sEnvStrings != 0)
     {
-        xpr_size_t sLen = _tcslen(sEnvStrings);
+        xpr_size_t sLen;
+
+        // skip internal environment variable
+        while (*sEnvStrings == XPR_STRING_LITERAL('='))
+        {
+            sLen = _tcslen(sEnvStrings);
+
+            sEnvStrings += sLen + 1;
+        }
 
         if (XPR_IS_NOT_NULL(aEnvList))
         {
@@ -114,13 +122,13 @@ XPR_DL_API xpr_rcode_t getEnvList(Env **aEnvList, xpr_size_t *aCount)
             sEnvListHead = sEnvList;
         }
 
+        sLen = _tcslen(sEnvStrings);
+
         sEnvStrings += sLen + 1;
         ++sCount;
 
         while (*sEnvStrings != 0)
         {
-            sLen = _tcslen(sEnvStrings);
-
             if (XPR_IS_NOT_NULL(aEnvList))
             {
                 sEnvList->mNext = new Env;
@@ -129,6 +137,8 @@ XPR_DL_API xpr_rcode_t getEnvList(Env **aEnvList, xpr_size_t *aCount)
 
                 sEnvList = sEnvList->mNext;
             }
+
+            sLen = _tcslen(sEnvStrings);
 
             sEnvStrings += sLen + 1;
             ++sCount;

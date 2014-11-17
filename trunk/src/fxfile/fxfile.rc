@@ -1690,6 +1690,16 @@ BEGIN
     CONTROL         "Move tab on mouse drag",IDC_CFG_TAB_DRAG_MOVE,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,0,120,255,10
 END
 
+IDD_INFO_COPYABLE DIALOGEX 0, 0, 345, 198
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Input"
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,283,177,55,14
+    EDITTEXT        IDC_INFO_EDIT,7,7,331,167,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "&Copy",IDC_INFO_COPY,7,177,55,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2142,6 +2152,14 @@ BEGIN
         RIGHTMARGIN, 163
         BOTTOMMARGIN, 92
     END
+
+    IDD_INFO_COPYABLE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 338
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 191
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -2570,6 +2588,10 @@ BEGIN
         MENUITEM "&Keyboard",                   ID_APP_ACCELERATOR
         MENUITEM SEPARATOR
         MENUITEM "&Tip of the today...",        ID_APP_TIP
+        MENUITEM SEPARATOR
+        MENUITEM "Command line arguments",      ID_APP_CMD_LINE_ARGS
+        MENUITEM "Program options",             ID_APP_PROGRAM_OPTS
+        MENUITEM "Environment variables",       ID_APP_ENV_VARS
         MENUITEM SEPARATOR
         MENUITEM "Home&page",                   ID_APP_HOMEPAGE
         MENUITEM "&E-mail",                     ID_APP_EMAIL
