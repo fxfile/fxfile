@@ -1601,6 +1601,7 @@
 #define ID_GO_SYSTEM_INTERNETCOOKIE     32122
 #define ID_GO_SYSTEM_HISTORY            32123
 #define ID_GO_SYSTEM_APPDATA            32124
+#define ID_GO_FXFILE_CONF_FILE          32125
 #define ID_VIEW_DRIVEBAR                33000
 #define ID_VIEW_BOOKMARKBAR             33001
 #define ID_VIEW_DRIVEBAR_SHORTTEXT      33005

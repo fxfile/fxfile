@@ -2404,6 +2404,7 @@ BEGIN
         MENUITEM "Up the &root folder",         ID_GO_ROOT
         MENUITEM "U&p box...",                  ID_GO_UP_BOX
         MENUITEM SEPARATOR
+        MENUITEM "fxfile's &conf folder",       ID_GO_FXFILE_CONF_FILE
         MENUITEM "fx&file",                     ID_GO_FXFILE
     END
     POPUP "cmd.main_menu.view"

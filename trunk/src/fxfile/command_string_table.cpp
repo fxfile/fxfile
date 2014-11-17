@@ -173,6 +173,7 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_GO_ROOT]                        = XPR_STRING_LITERAL("cmd.go.root");
     mCommandString[ID_GO_UP_BOX]                      = XPR_STRING_LITERAL("cmd.up_box");
     mCommandString[ID_GO_FXFILE]                      = XPR_STRING_LITERAL("cmd.go.fxfile");
+    mCommandString[ID_GO_FXFILE_CONF_FILE]            = XPR_STRING_LITERAL("cmd.go.fxfile_conf_file");
 
     // main menu - view
     mCommandString[ID_VIEW_TOOLBAR]                   = XPR_STRING_LITERAL("cmd.tool_bar");

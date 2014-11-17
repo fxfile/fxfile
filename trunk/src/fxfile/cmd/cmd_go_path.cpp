@@ -18,6 +18,7 @@
 #include "explorer_ctrl.h"
 #include "go_path_dlg.h"
 #include "history_dlg.h"
+#include "conf_dir.h"
 #include "router/cmd_parameters.h"
 #include "router/cmd_parameter_define.h"
 
@@ -713,6 +714,25 @@ void GoFxFileCommand::execute(CommandContext &aContext)
         GetModuleDir(sPath, XPR_MAX_PATH);
 
         LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sPath);
+        if (XPR_IS_NOT_NULL(sFullPidl))
+            sExplorerCtrl->explore(sFullPidl);
+    }
+}
+
+xpr_sint_t GoFxFileConfFileCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void GoFxFileConfFileCommand::execute(CommandContext &aContext)
+{
+    FXFILE_COMMAND_DECLARE_CTRL;
+
+    if (sExplorerCtrl != XPR_NULL)
+    {
+        const xpr_tchar_t *sConfDir = ConfDir::instance().getConfDir();
+
+        LPITEMIDLIST sFullPidl = fxfile::base::Pidl::create(sConfDir);
         if (XPR_IS_NOT_NULL(sFullPidl))
             sExplorerCtrl->explore(sFullPidl);
     }
