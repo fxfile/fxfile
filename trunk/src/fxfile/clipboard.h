@@ -57,6 +57,7 @@ xpr_bool_t DoPasteBitmap(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath);
 xpr_bool_t DoPasteDIB(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath);
 xpr_bool_t GetPreferredDropEffect(CLIPFORMAT aPreferredDropEffectClipFormat, DROPEFFECT &aDropEffect);
 xpr_bool_t GetPreferredDropEffect(COleDataObject *aOleDataObject, CLIPFORMAT aPreferredDropEffectClipFormat, DROPEFFECT &aDropEffect);
+xpr_bool_t IsPasteShellIdList(COleDataObject *aOleDataObject, CLIPFORMAT aShellIDListClipFormat);
 xpr_bool_t IsPasteFileContents(COleDataObject *aOleDataObject, CLIPFORMAT aFileContentsClipFormat, CLIPFORMAT aFileDescriptorClipFormat);
 xpr_bool_t IsPasteInetUrl(COleDataObject *aOleDataObject, CLIPFORMAT aInetUrlClipFormat, CLIPFORMAT aFileContentsClipFormat, CLIPFORMAT aFileDescriptorClipFormat);
 xpr_bool_t IsPasteText(COleDataObject *aOleDataObject);

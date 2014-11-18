@@ -521,7 +521,7 @@ LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimple
         sFormatEtc.lindex   = -1;
         sFormatEtc.tymed    = TYMED_HGLOBAL;
 
-        STGMEDIUM sStgMedium;
+        STGMEDIUM sStgMedium = {0,};
         sComResult = sDataObject->GetData(&sFormatEtc, &sStgMedium);
 
         if (SUCCEEDED(sComResult))
@@ -535,6 +535,11 @@ LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimple
 
             ::GlobalUnlock(sStgMedium.hGlobal);
             ::GlobalFree(sStgMedium.hGlobal);
+
+            if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+            {
+                ::ReleaseStgMedium(&sStgMedium);
+            }
         }
 
         COM_RELEASE(sDataObject);

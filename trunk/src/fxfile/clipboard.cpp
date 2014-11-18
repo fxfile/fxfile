@@ -219,7 +219,11 @@ xpr_bool_t DoPaste(HWND               aHwnd,
             COM_RELEASE(sDesktopShellFolder);
             ::GlobalUnlock(sStgMedium.hGlobal);
             //::GlobalFree(sStgMedium.hGlobal);
-            ::ReleaseStgMedium(&sStgMedium);
+
+            if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+            {
+                ::ReleaseStgMedium(&sStgMedium);
+            }
         }
 
         return sResult;
@@ -280,7 +284,11 @@ xpr_bool_t DoPaste(HWND               aHwnd,
             COM_RELEASE(sShellFolder);
             COM_RELEASE(sDesktopShellFolder);
             ::GlobalUnlock(sStgMedium.hGlobal);
-            ::ReleaseStgMedium(&sStgMedium);
+
+            if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+            {
+                ::ReleaseStgMedium(&sStgMedium);
+            }
 
             if (sFiles > 0)
                 sResult = XPR_TRUE;
@@ -408,35 +416,42 @@ xpr_bool_t DoPasteText(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath)
 
     FORMATETC sTextFormatEtc = { CF_TEXT, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
-    HRESULT sHResult;
-    STGMEDIUM sStgMedium = {0};
-    sHResult = aDataObject->GetData(&sTextFormatEtc, &sStgMedium);
+    HRESULT sComResult;
+    STGMEDIUM sStgMedium = {0,};
+    sComResult = aDataObject->GetData(&sTextFormatEtc, &sStgMedium);
 
-    xpr_char_t *aText = (xpr_char_t *)::GlobalLock(sStgMedium.hGlobal);
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(aText))
+    if (SUCCEEDED(sComResult))
     {
-        xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
-
-        xpr_rcode_t sRcode;
-        xpr_ssize_t sWritten;
-        xpr_sint_t sOpenMode;
-        xpr::FileIo sFileIo;
-
-        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-        sRcode = sFileIo.open(aPath, sOpenMode);
-        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        xpr_char_t *aText = (xpr_char_t *)::GlobalLock(sStgMedium.hGlobal);
+        if (XPR_IS_NOT_NULL(aText))
         {
-            sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+            xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
 
-            sFileIo.close();
+            xpr_rcode_t sRcode;
+            xpr_ssize_t sWritten;
+            xpr_sint_t sOpenMode;
+            xpr::FileIo sFileIo;
 
-            ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
-            sResult = XPR_TRUE;
+            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+            sRcode = sFileIo.open(aPath, sOpenMode);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+
+                sFileIo.close();
+
+                ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
+                sResult = XPR_TRUE;
+            }
+
+            ::GlobalUnlock(sStgMedium.hGlobal);
+        }
+
+        if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sStgMedium);
         }
     }
-
-    if (XPR_IS_NOT_NULL(sStgMedium.hGlobal))
-        ::GlobalUnlock(sStgMedium.hGlobal);
 
     return sResult;
 }
@@ -450,38 +465,45 @@ xpr_bool_t DoPasteUnicodeText(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath
 
     FORMATETC sTextFormatEtc = { CF_UNICODETEXT, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
-    HRESULT sHResult;
-    STGMEDIUM sStgMedium = {0};
-    sHResult = aDataObject->GetData(&sTextFormatEtc, &sStgMedium);
+    HRESULT sComResult;
+    STGMEDIUM sStgMedium = {0,};
+    sComResult = aDataObject->GetData(&sTextFormatEtc, &sStgMedium);
 
-    xpr_wchar_t *aText = (xpr_wchar_t *)::GlobalLock(sStgMedium.hGlobal);
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(aText))
+    if (SUCCEEDED(sComResult))
     {
-        xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
-
-        xpr_rcode_t sRcode;
-        xpr_ssize_t sWritten;
-        xpr_sint_t sOpenMode;
-        xpr::FileIo sFileIo;
-
-        sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
-        sRcode = sFileIo.open(aPath, sOpenMode);
-        if (XPR_RCODE_IS_SUCCESS(sRcode))
+        xpr_wchar_t *aText = (xpr_wchar_t *)::GlobalLock(sStgMedium.hGlobal);
+        if (XPR_IS_NOT_NULL(aText))
         {
-            xpr_ushort_t sUnicodeBOM = 0xFEFF;
-            sRcode = sFileIo.write(&sUnicodeBOM, 2, &sWritten);
+            xpr_sint_t sSize = (xpr_sint_t)::GlobalSize(sStgMedium.hGlobal);
 
-            sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+            xpr_rcode_t sRcode;
+            xpr_ssize_t sWritten;
+            xpr_sint_t sOpenMode;
+            xpr::FileIo sFileIo;
 
-            sFileIo.close();
+            sOpenMode = xpr::FileIo::OpenModeCreate | xpr::FileIo::OpenModeTruncate | xpr::FileIo::OpenModeWriteOnly;
+            sRcode = sFileIo.open(aPath, sOpenMode);
+            if (XPR_RCODE_IS_SUCCESS(sRcode))
+            {
+                xpr_ushort_t sUnicodeBOM = 0xFEFF;
+                sRcode = sFileIo.write(&sUnicodeBOM, 2, &sWritten);
 
-            ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
-            sResult = XPR_TRUE;
+                sRcode = sFileIo.write(aText, sSize - 1, &sWritten);
+
+                sFileIo.close();
+
+                ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
+                sResult = XPR_TRUE;
+            }
+
+            ::GlobalUnlock(sStgMedium.hGlobal);
+        }
+
+        if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sStgMedium);
         }
     }
-
-    if (XPR_IS_NOT_NULL(sStgMedium.hGlobal))
-        ::GlobalUnlock(sStgMedium.hGlobal);
 
     return sResult;
 }
@@ -495,25 +517,33 @@ xpr_bool_t DoPasteBitmap(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath)
 
     FORMATETC sBitmapFormatEtc = { CF_BITMAP, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_GDI };
 
-    HRESULT sHResult;
+    HRESULT sComResult;
     STGMEDIUM sStgMedium = {0};
-    sHResult = aDataObject->GetData(&sBitmapFormatEtc, &sStgMedium);
+    sComResult = aDataObject->GetData(&sBitmapFormatEtc, &sStgMedium);
 
-    HBITMAP sBitmap = sStgMedium.hBitmap;
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sBitmap))
+    if (SUCCEEDED(sComResult))
     {
-        HWND sHwnd = ::GetDesktopWindow();
-        HDC sDC = ::GetDC(sHwnd);
+        HBITMAP sBitmap = sStgMedium.hBitmap;
+        if (XPR_IS_NOT_NULL(sBitmap))
+        {
+            HWND sHwnd = ::GetDesktopWindow();
+            HDC sDC = ::GetDC(sHwnd);
 
-        WriteBitmapFile((xpr_tchar_t *)aPath, sBitmap, sDC);
+            WriteBitmapFile((xpr_tchar_t *)aPath, sBitmap, sDC);
 
-        ::ReleaseDC(sHwnd, sDC);
+            ::ReleaseDC(sHwnd, sDC);
 
-        ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
-        sResult = XPR_TRUE;
+            ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
+            sResult = XPR_TRUE;
+
+            ::DeleteObject(sBitmap);
+        }
+
+        if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sStgMedium);
+        }
     }
-
-    ::DeleteObject(sBitmap);
 
     return sResult;
 }
@@ -527,21 +557,28 @@ xpr_bool_t DoPasteDIB(LPDATAOBJECT aDataObject, const xpr_tchar_t *aPath)
 
     FORMATETC sDibFormatEtc = { CF_DIB, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 
-    HRESULT sHResult;
+    HRESULT sComResult;
     STGMEDIUM sStgMedium = {0};
-    sHResult = aDataObject->GetData(&sDibFormatEtc, &sStgMedium);
+    sComResult = aDataObject->GetData(&sDibFormatEtc, &sStgMedium);
 
-    LPBITMAPINFO sBitmapInfo = (LPBITMAPINFO)::GlobalLock(sStgMedium.hGlobal);
-    if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sBitmapInfo))
+    if (SUCCEEDED(sComResult))
     {
-        WriteBitmapFile((xpr_tchar_t *)aPath, sBitmapInfo);
+        LPBITMAPINFO sBitmapInfo = (LPBITMAPINFO)::GlobalLock(sStgMedium.hGlobal);
+        if (XPR_IS_NOT_NULL(sBitmapInfo))
+        {
+            WriteBitmapFile((xpr_tchar_t *)aPath, sBitmapInfo);
 
-        ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
-        sResult = XPR_TRUE;
+            ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, aPath, XPR_NULL);
+            sResult = XPR_TRUE;
+
+            ::GlobalUnlock(sStgMedium.hGlobal);
+        }
+
+        if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sStgMedium);
+        }
     }
-
-    if (XPR_IS_NOT_NULL(sStgMedium.hGlobal))
-        ::GlobalUnlock(sStgMedium.hGlobal);
 
     return sResult;
 }
@@ -611,6 +648,18 @@ xpr_bool_t IsPasteUnicodeText(COleDataObject *aOleDataObject)
 
     if (aOleDataObject->IsDataAvailable((CLIPFORMAT)CF_UNICODETEXT) == XPR_TRUE)
         return XPR_TRUE;
+
+    return XPR_FALSE;
+}
+
+xpr_bool_t IsPasteShellIdList(COleDataObject *aOleDataObject, CLIPFORMAT aShellIDListClipFormat)
+{
+    XPR_ASSERT(aOleDataObject != XPR_NULL);
+
+    if (aOleDataObject->IsDataAvailable((CLIPFORMAT)aShellIDListClipFormat) == XPR_TRUE)
+    {
+        return XPR_TRUE;
+    }
 
     return XPR_FALSE;
 }
@@ -748,6 +797,11 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
                             sResult = XPR_TRUE;
                         }
                     }
+
+                    if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+                    {
+                        ::ReleaseStgMedium(&sStgMedium);
+                    }
                 }
             }
         }
@@ -757,6 +811,16 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
 
         if (XPR_IS_NOT_NULL(sFileGroupDescA) || XPR_IS_NOT_NULL(sFileGroupDescW))
             ::GlobalFree(sDescriptorStgMedium.hGlobal);
+
+        if (XPR_IS_NOT_NULL(sInetUrlStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sInetUrlStgMedium);
+        }
+
+        if (XPR_IS_NOT_NULL(sDescriptorStgMedium.pUnkForRelease))
+        {
+            ::ReleaseStgMedium(&sDescriptorStgMedium);
+        }
     }
 
     return sResult;
@@ -811,12 +875,13 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
     {
         RemoveLastSplit(aDir);
 
-        xpr_sint_t i, sCount;
+        xpr_sint_t  i, sCount;
         xpr_tchar_t sPath[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sFileName[XPR_MAX_PATH + 1] = {0};
         xpr_tchar_t sExt[XPR_MAX_PATH + 1] = {0};
-        xpr_size_t sInputBytes;
-        xpr_size_t sOutputBytes;
+        xpr_size_t  sInputBytes;
+        xpr_size_t  sOutputBytes;
+        STGMEDIUM   sFileStgMedium = {0,};
 
         sCount = XPR_IS_TRUE(aUnicode) ? sFileGroupDescW->cItems : sFileGroupDescA->cItems;
         for (i = 0; i < sCount; ++i)
@@ -828,8 +893,8 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
 
             sContentsFormatEtc.lindex = i;
 
-            sHResult = aDataObject->GetData(&sContentsFormatEtc, &sStgMedium);
-            if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sStgMedium.pstm))
+            sHResult = aDataObject->GetData(&sContentsFormatEtc, &sFileStgMedium);
+            if (SUCCEEDED(sHResult) && XPR_IS_NOT_NULL(sFileStgMedium.pstm))
             {
                 if (XPR_IS_TRUE(aUnicode))
                 {
@@ -850,17 +915,17 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
 
                 SetNewPath(sPath, aDir, sFileName, sExt);
 
-                switch (sStgMedium.tymed)
+                switch (sFileStgMedium.tymed)
                 {
                 case TYMED_ISTORAGE:
                     {
-                        sHResult = StorageToFile(sStgMedium.pstg, sPath);
+                        sHResult = StorageToFile(sFileStgMedium.pstg, sPath);
                         break;
                     }
 
                 case TYMED_ISTREAM:
                     {
-                        sHResult = StreamToFile(sStgMedium.pstm, sPath);
+                        sHResult = StreamToFile(sFileStgMedium.pstm, sPath);
                         break;
                     }
                 }
@@ -870,12 +935,22 @@ xpr_bool_t DoPasteFileContents(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIP
                     ::SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSH, sPath, XPR_NULL);
                     sResult = XPR_TRUE;
                 }
+
+                if (XPR_IS_NOT_NULL(sFileStgMedium.pUnkForRelease))
+                {
+                    ::ReleaseStgMedium(&sFileStgMedium);
+                }
             }
         }
     }
 
     if (XPR_IS_NOT_NULL(sStgMedium.hGlobal))
         ::GlobalUnlock(sStgMedium.hGlobal);
+
+    if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+    {
+        ::ReleaseStgMedium(&sStgMedium);
+    }
 
     return sResult;
 }
