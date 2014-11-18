@@ -420,6 +420,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
     SetDlgItemText(IDC_SEARCH_GROUP_OPTION, gApp.loadString(XPR_STRING_LITERAL("popup.search.group.option")));
     SetDlgItemText(IDC_SEARCH_SUBFOLDER,    gApp.loadString(XPR_STRING_LITERAL("popup.search.check.sub-folder")));
     SetDlgItemText(IDC_SEARCH_CASE,         gApp.loadString(XPR_STRING_LITERAL("popup.search.check.case")));
+    SetDlgItemText(IDC_SEARCH_REG_EXPR,     gApp.loadString(XPR_STRING_LITERAL("popup.search.check.regular_expressions")));
     SetDlgItemText(IDC_SEARCH_NO_WILDCARD,  gApp.loadString(XPR_STRING_LITERAL("popup.search.check.no_wildcard")));
     SetDlgItemText(IDC_SEARCH_SYSTEM,       gApp.loadString(XPR_STRING_LITERAL("popup.search.check.system")));
     SetDlgItemText(IDC_SEARCH_LABEL_TYPE,   gApp.loadString(XPR_STRING_LITERAL("popup.search.label.type")));
@@ -436,6 +437,7 @@ xpr_bool_t SearchDlg::OnInitDialog(void)
         mDlgState->setEditCtrl(XPR_STRING_LITERAL("Text"),       IDC_SEARCH_TEXT);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("Sub Folder"), IDC_SEARCH_SUBFOLDER);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("Case"),       IDC_SEARCH_CASE);
+        mDlgState->setCheckBox(XPR_STRING_LITERAL("RegExpr"),    IDC_SEARCH_REG_EXPR);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("Only"),       IDC_SEARCH_NO_WILDCARD);
         mDlgState->setCheckBox(XPR_STRING_LITERAL("System"),     IDC_SEARCH_SYSTEM);
         mDlgState->setComboBox(XPR_STRING_LITERAL("Type"),       IDC_SEARCH_TYPE);
@@ -498,6 +500,7 @@ void SearchDlg::enableWindow(xpr_bool_t aEnable)
 
     GetDlgItem(IDC_SEARCH_SUBFOLDER  )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_CASE       )->EnableWindow(aEnable);
+    GetDlgItem(IDC_SEARCH_REG_EXPR   )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_NO_WILDCARD)->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_TYPE       )->EnableWindow(aEnable);
     GetDlgItem(IDC_SEARCH_SYSTEM     )->EnableWindow(aEnable);
@@ -1038,11 +1041,12 @@ void SearchDlg::OnStart(void)
     //----------------------------------------------------------------------
     // options
     //----------------------------------------------------------------------
-    xpr_bool_t sSubFolder  = ((CButton *)GetDlgItem(IDC_SEARCH_SUBFOLDER))->GetCheck();
-    xpr_bool_t sCase       = ((CButton *)GetDlgItem(IDC_SEARCH_CASE))->GetCheck();
+    xpr_bool_t sSubFolder  = ((CButton *)GetDlgItem(IDC_SEARCH_SUBFOLDER  ))->GetCheck();
+    xpr_bool_t sCase       = ((CButton *)GetDlgItem(IDC_SEARCH_CASE       ))->GetCheck();
+    xpr_bool_t sRegExpr    = ((CButton *)GetDlgItem(IDC_SEARCH_REG_EXPR   ))->GetCheck();
     xpr_bool_t sNoWildcard = ((CButton *)GetDlgItem(IDC_SEARCH_NO_WILDCARD))->GetCheck();
-    xpr_bool_t sSystem     = ((CButton *)GetDlgItem(IDC_SEARCH_SYSTEM))->GetCheck();
-    xpr_sint_t sType       = ((CComboBox *)GetDlgItem(IDC_SEARCH_TYPE))->GetCurSel();
+    xpr_bool_t sSystem     = ((CButton *)GetDlgItem(IDC_SEARCH_SYSTEM     ))->GetCheck();
+    xpr_sint_t sType       = ((CComboBox *)GetDlgItem(IDC_SEARCH_TYPE     ))->GetCurSel();
 
     xpr_uint_t sFlags = 0;
     if (sSubFolder   == XPR_TRUE) sFlags |= SearchFile::FlagSubFolder;
@@ -1295,11 +1299,23 @@ void SearchDlg::OnStart(void)
     mSearchFile = new SearchFile;
     mSearchFile->setOwner(m_hWnd, WM_FINALIZE);
 
-    mSearchFile->setFlags(sFlags);
-    mSearchFile->setName(sName, sNoWildcard);
-    mSearchFile->setText(sText);
-    mSearchFile->setResultFunc(OnSearchResult);
-    mSearchFile->setData((LPARAM)sSearchResultCtrl);
+    if (XPR_IS_TRUE(sRegExpr))
+    {
+        sFlags |= SearchFile::FlagRegExpr;
+    }
+
+    if (XPR_IS_TRUE(sNoWildcard))
+    {
+        sFlags |= SearchFile::FlagNoWildcard;
+    }
+
+    SearchFile::SearchParam sParam;
+    sParam.mFlags = sFlags;
+    sParam.mName  = sName;
+    sParam.mText  = sText;
+
+    mSearchFile->setSearchParam(sParam);
+    mSearchFile->setResultFunc(OnSearchResult, (LPARAM)sSearchResultCtrl);
 
     sIterator = sIncDirDeque.begin();
     for (; sIterator != sIncDirDeque.end(); ++sIterator)

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "xpr_mutex.h"
+#include "xpr_reg_expr.h"
 #include "thread.h"
 
 namespace fxfile
@@ -26,9 +27,18 @@ public:
         FlagNone       = 0x00000000,
         FlagSubFolder  = 0x00000001,
         FlagCase       = 0x00000002,
-        FlagSystem     = 0x00000004,
+        FlagRegExpr    = 0x00000004,
+        FlagSystem     = 0x00000008,
+        FlagNoWildcard = 0x00000010,
         FlagTypeFile   = 0x00010000,
         FlagTypeFolder = 0x00020000,
+    };
+
+    struct SearchParam
+    {
+        xpr_uint_t   mFlags;
+        xpr_tchar_t *mName;
+        xpr_tchar_t *mText;
     };
 
     enum Status
@@ -46,35 +56,29 @@ public:
 
 public:
     void setOwner(HWND aHwnd, xpr_uint_t aMsg);
-
-    xpr_bool_t isFlag(xpr_uint_t aFlag);
-    xpr_uint_t getFlags(void);
-    void setFlags(xpr_uint_t aFlags);
-
-    void setName(const xpr_tchar_t *aName, xpr_bool_t aNoWildcard);
-    void setText(const xpr_tchar_t *aText);
+    void setSearchParam(const SearchParam &aParam);
+    void setResultFunc(SearchResultFunc aSearchResultFunc, LPARAM aCallbackParam);
     void addIncludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder);
     void addExcludeDir(const xpr_tchar_t *aDir, xpr_bool_t aSubFolder);
-
-    LPARAM getData(void);
-    void setData(LPARAM aParam);
-    void setResultFunc(SearchResultFunc aSearchResultFunc);
 
     xpr_bool_t start();
     void stop();
 
     Status getStatus(xpr_size_t *aSearchedCount = XPR_NULL, clock_t *aSearchTime = XPR_NULL);
 
-protected:
+private:
     // from xpr::Thread::Runnable
     xpr_sint_t runThread(xpr::Thread &aThread);
 
     void searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, xpr_bool_t aSubFolder);
     xpr_bool_t searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t *aFileName);
 
+    xpr_bool_t isFlag(xpr_uint_t aFlag) const { return XPR_TEST_BITS(mFlags, aFlag); }
+    xpr_uint_t getFlags(void) const { return mFlags; }
+
     inline xpr_bool_t isSearchText(void) const;
 
-protected:
+private:
     HWND         mHwnd;
     xpr_uint_t   mMsg;
 
@@ -91,6 +95,7 @@ protected:
     typedef std::deque<xpr::string> NameDeque;
     typedef std::deque<SearchDir *> SearchDirDeque;
     NameDeque      mNameDeque;
+    std::tr1::tregex mRegExpr;
     SearchDirDeque mSearchIncDirDeque;
     SearchDirDeque mSearchExcDirDeque;
 
@@ -110,7 +115,7 @@ protected:
     Status     mStatus;
     xpr::Mutex mMutex;
 
-    LPARAM           mParam;
+    LPARAM           mCallbackParam;
     SearchResultFunc mSearchResultFunc;
 };
 } // namespace fxfile
