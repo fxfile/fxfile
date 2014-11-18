@@ -539,7 +539,10 @@ void FileScrapDropDlg::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEf
         ::GlobalUnlock(sStgMedium.hGlobal);
     }
 
-    ::ReleaseStgMedium(&sStgMedium);
+    if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+    {
+        ::ReleaseStgMedium(&sStgMedium);
+    }
 }
 
 void FileScrapDropDlg::OnFileScrapClose(void) 

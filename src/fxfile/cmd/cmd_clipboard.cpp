@@ -425,7 +425,7 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
         xpr_bool_t sFileSystem = sFolderCtrl->hasSelShellAttributes(SFGAO_FILESYSTEM);
         LPDATAOBJECT sDataObject = sOleDataObject.GetIDataObject(XPR_FALSE);
 
-        if (XPR_IS_TRUE(sFileSystem))
+        if (XPR_IS_TRUE(sFileSystem) && XPR_IS_FALSE(IsPasteShellIdList(&sOleDataObject, sClipFormat.mShellIDList)))
         {
             if (IsPasteInetUrl(&sOleDataObject, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA) == XPR_TRUE)
             {
@@ -455,7 +455,6 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
                     return;
             }
 
-            xpr_sint_t sResult = 0;
             sExplorerCtrl = sMainFrame->getExplorerCtrl(sFolderCtrl);
 
             if (IsPasteBitmap(&sOleDataObject) == XPR_TRUE)
@@ -566,7 +565,7 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
             xpr_bool_t sFolderFileSystem = sExplorerCtrl->isFileSystemFolder();
             LPDATAOBJECT sDataObject = sOleDataObject.GetIDataObject(XPR_FALSE);
 
-            if (XPR_IS_TRUE(sFolderFileSystem))
+            if (XPR_IS_TRUE(sFolderFileSystem) && XPR_IS_FALSE(IsPasteShellIdList(&sOleDataObject, sClipFormat.mShellIDList)))
             {
                 if (IsPasteInetUrl(&sOleDataObject, sClipFormat.mInetUrl, sClipFormat.mFileContents, sClipFormat.mFileDescriptorA) == XPR_TRUE)
                 {
@@ -595,8 +594,6 @@ void ClipboardFilePasteCommand::execute(CommandContext &aContext)
                     if (sResult)
                         return;
                 }
-
-                xpr_sint_t sResult = 0;
 
                 if (IsPasteBitmap(&sOleDataObject) == XPR_TRUE)
                 {

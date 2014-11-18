@@ -4792,7 +4792,11 @@ DROPEFFECT ExplorerCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeySt
 
                 ::GlobalUnlock(sStgMedium.hGlobal);
                 //::GlobalFree(sStgMedium.hGlobal);
-                ::ReleaseStgMedium(&sStgMedium);
+
+                if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
+                {
+                    ::ReleaseStgMedium(&sStgMedium);
+                }
             }
         }
 
