@@ -27,7 +27,7 @@ SearchFile::SearchFile(void)
     , mStatus(StatusNone)
     , mBuffer(XPR_NULL)
     , mFlags(0)
-    , mParam(XPR_NULL)
+    , mCallbackParam(XPR_NULL)
     , mSearchResultFunc(XPR_NULL)
 {
     memset(&mWin32FindData, 0, sizeof(mWin32FindData));
@@ -68,21 +68,6 @@ void SearchFile::setOwner(HWND aHwnd, xpr_uint_t aMsg)
     mMsg  = aMsg;
 }
 
-xpr_bool_t SearchFile::isFlag(xpr_uint_t aFlag)
-{
-    return XPR_TEST_BITS(mFlags, aFlag);
-}
-
-xpr_uint_t SearchFile::getFlags(void)
-{
-    return mFlags;
-}
-
-void SearchFile::setFlags(xpr_uint_t aFlags)
-{
-    mFlags = aFlags;
-}
-
 static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::string> &aStringDeque)
 {
     if (XPR_IS_NULL(aMultiStr))
@@ -117,49 +102,57 @@ static xpr_size_t MultiStr2List(xpr_tchar_t *aMultiStr, std::deque<xpr::string> 
     return aStringDeque.size();
 }
 
-void SearchFile::setName(const xpr_tchar_t *aName, xpr_bool_t aNoWildcard)
+void SearchFile::setSearchParam(const SearchParam &aParam)
 {
-    if (XPR_IS_NULL(aName))
-        return;
+    XPR_ASSERT(aParam.mName != XPR_NULL);
 
-    xpr_tchar_t *sName = new xpr_tchar_t[_tcslen(aName) + 1];
-    _tcscpy(sName, aName);
+    mFlags = aParam.mFlags;
 
-    MultiStr2List(sName, mNameDeque);
-
-    if (aNoWildcard == XPR_FALSE)
+    if (isFlag(FlagRegExpr))
     {
-        if (mNameDeque.empty() == false)
+        std::tr1::tregex::flag_type sRegExprFlags = std::tr1::regex_constants::ECMAScript;
+        if (isFlag(FlagCase) == XPR_FALSE)
         {
-            NameDeque::iterator sIterator = mNameDeque.begin();
-            for (; sIterator != mNameDeque.end(); ++sIterator)
+            sRegExprFlags |= std::tr1::regex_constants::icase;
+        }
+
+        mRegExpr.assign(aParam.mName, sRegExprFlags);
+    }
+    else
+    {
+        xpr_tchar_t *sName = new xpr_tchar_t[_tcslen(aParam.mName) + 1];
+        _tcscpy(sName, aParam.mName);
+
+        MultiStr2List(sName, mNameDeque);
+
+        if (isFlag(FlagNoWildcard) == XPR_FALSE)
+        {
+            if (mNameDeque.empty() == false)
             {
-                xpr::string &sName = *sIterator;
-
-                sName.trim();
-
-                if (sName.find(XPR_STRING_LITERAL('*')) == xpr::string::npos && sName.find(XPR_STRING_LITERAL('?')) == xpr::string::npos)
+                NameDeque::iterator sIterator = mNameDeque.begin();
+                for (; sIterator != mNameDeque.end(); ++sIterator)
                 {
-                    sName.insert(0, XPR_STRING_LITERAL("*"));
-                    sName.append(XPR_STRING_LITERAL("*"));
+                    xpr::string &sName = *sIterator;
+
+                    sName.trim();
+
+                    if (sName.find(XPR_STRING_LITERAL('*')) == xpr::string::npos && sName.find(XPR_STRING_LITERAL('?')) == xpr::string::npos)
+                    {
+                        sName.insert(0, XPR_STRING_LITERAL("*"));
+                        sName.append(XPR_STRING_LITERAL("*"));
+                    }
                 }
             }
+            else
+            {
+                mNameDeque.push_back(XPR_STRING_LITERAL("*"));
+            }
         }
-        else
-        {
-            mNameDeque.push_back(XPR_STRING_LITERAL("*"));
-        }
+
+        XPR_SAFE_DELETE_ARRAY(sName);
     }
 
-    XPR_SAFE_DELETE_ARRAY(sName);
-}
-
-void SearchFile::setText(const xpr_tchar_t *aText)
-{
-    if (XPR_IS_NULL(aText))
-        return;
-
-    xpr_size_t sLen = _tcslen(aText);
+    xpr_size_t sLen = _tcslen(aParam.mText);
     xpr_size_t sInputBytes;
     xpr_size_t sOutputBytes;
 
@@ -171,12 +164,12 @@ void SearchFile::setText(const xpr_tchar_t *aText)
 
     sInputBytes = sLen * sizeof(xpr_tchar_t);
     sOutputBytes = sLen * sizeof(xpr_char_t);
-    XPR_TCS_TO_MBS(aText, &sInputBytes, mTextA, &sOutputBytes);
+    XPR_TCS_TO_MBS(aParam.mText, &sInputBytes, mTextA, &sOutputBytes);
     mTextA[sOutputBytes / sizeof(xpr_char_t)] = 0;
 
     sInputBytes = sLen * sizeof(xpr_tchar_t);
     sOutputBytes = sLen * sizeof(xpr_wchar_t);
-    XPR_TCS_TO_UTF16(aText, &sInputBytes, mTextW, &sOutputBytes);
+    XPR_TCS_TO_UTF16(aParam.mText, &sInputBytes, mTextW, &sOutputBytes);
     mTextW[sOutputBytes / sizeof(xpr_wchar_t)] = 0;
 
     _strlwr(mTextA);
@@ -230,7 +223,6 @@ xpr_bool_t SearchFile::start()
     else
         mType = 2;
 
-    mFlags = 0;
     if (XPR_IS_FALSE(mCase))
         mMatchFlags |= FNM_CASEFOLD;
 
@@ -333,24 +325,41 @@ void SearchFile::searchRecursive(xpr_sint_t aDepth, const xpr_tchar_t *aFolder, 
             {
                 sMatched = XPR_FALSE;
 
-                sIterator = mNameDeque.begin();
-                for (; sIterator != mNameDeque.end(); ++sIterator)
+                // check to match the file name
+                if (XPR_IS_TRUE(isFlag(FlagRegExpr)))
                 {
-                    xpr::string &sName = *sIterator;
-
-                    if (fnmatch(sName.c_str(), mWin32FindData.cFileName, mMatchFlags) != FNM_NOMATCH)
+                    sMatched = (std::tr1::regex_search(mWin32FindData.cFileName, mRegExpr) == true) ? XPR_TRUE : XPR_FALSE;
+                }
+                else
+                {
+                    sIterator = mNameDeque.begin();
+                    for (; sIterator != mNameDeque.end(); ++sIterator)
                     {
-                        sMatched = XPR_TRUE;
-                        if (isSearchText() == XPR_TRUE)
-                            sMatched = searchText(aFolder, mWin32FindData.cFileName);
-                        break;
+                        xpr::string &sName = *sIterator;
+
+                        if (fnmatch(sName.c_str(), mWin32FindData.cFileName, mMatchFlags) != FNM_NOMATCH)
+                        {
+                            sMatched = XPR_TRUE;
+                            break;
+                        }
                     }
                 }
 
                 if (XPR_IS_TRUE(sMatched))
                 {
-                    if (XPR_IS_NOT_NULL(mSearchResultFunc))
-                        mSearchResultFunc(aFolder, &mWin32FindData, mParam);
+                    // search text in text file
+                    if (isSearchText() == XPR_TRUE)
+                    {
+                        sMatched = searchText(aFolder, mWin32FindData.cFileName);
+                    }
+
+                    if (XPR_IS_TRUE(sMatched))
+                    {
+                        if (XPR_IS_NOT_NULL(mSearchResultFunc))
+                        {
+                            mSearchResultFunc(aFolder, &mWin32FindData, mCallbackParam);
+                        }
+                    }
                 }
             }
 
@@ -534,18 +543,9 @@ SearchFile::Status SearchFile::getStatus(xpr_size_t *aSearchedCount, clock_t *aS
     return mStatus;
 }
 
-LPARAM SearchFile::getData(void)
-{
-    return mParam;
-}
-
-void SearchFile::setData(LPARAM lParam)
-{
-    mParam = lParam;
-}
-
-void SearchFile::setResultFunc(SearchResultFunc aSearchResultFunc)
+void SearchFile::setResultFunc(SearchResultFunc aSearchResultFunc, LPARAM aCallbackParam)
 {
     mSearchResultFunc = aSearchResultFunc;
+    mCallbackParam    = aCallbackParam;
 }
 } // namespace fxfile

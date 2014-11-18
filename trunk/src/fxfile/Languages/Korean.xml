@@ -1823,6 +1823,7 @@
             <String ID="popup.search.label.location">찾는 위치(&amp;L):</String>
             <String ID="popup.search.check.sub-folder">하위 폴더 검색(&amp;F)</String>
             <String ID="popup.search.check.case">대/소문자 구분(&amp;V)</String>
+            <String ID="popup.search.check.regular_expressions">정규 표현식(&amp;R)</String>
             <String ID="popup.search.check.no_wildcard">해당 파일 및 폴더 검색(&amp;W)</String>
             <String ID="popup.search.check.system">시스템 속성 포함(&amp;Y)</String>
             <String ID="popup.search.label.type">종류(&amp;P):</String>
