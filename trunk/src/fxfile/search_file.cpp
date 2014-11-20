@@ -409,6 +409,12 @@ xpr_bool_t SearchFile::searchText(const xpr_tchar_t *aFolder, const xpr_tchar_t 
     else
         sRcode = sFileIo.seekToBegin();
 
+    // unicode text search, if text is only unicode
+    if (mTextA[0] == '\0')
+    {
+        sUnicode = XPR_TRUE;
+    }
+
     // search text in file
     xpr_bool_t sMatched = XPR_FALSE;
     if (XPR_IS_TRUE(sUnicode))
@@ -527,7 +533,7 @@ xpr_bool_t SearchFile::isSearchText(void) const
     if (XPR_IS_NULL(mTextA) || XPR_IS_NULL(mTextW))
         return XPR_FALSE;
 
-    if (mTextA[0] == 0 || mTextW[0] == 0)
+    if (mTextA[0] == '\0' && mTextW[0] == '\0')
         return XPR_FALSE;
 
     return XPR_TRUE;
