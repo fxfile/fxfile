@@ -414,10 +414,11 @@ CWnd *MainFrame::onSplitterPaneCreate(Splitter &aSplitter, xpr_sint_t aRow, xpr_
     xpr_sint_t sMaxRowCount = 0, sMaxColumnCount = 0;
     aSplitter.getMaxSplitCount(sMaxRowCount, sMaxColumnCount);
 
-    xpr_sint_t sViewIndex = 0;
+    xpr_sint_t sViewIndex;
     xpr_sint_t sRowCount = 0, sColumnCount = 0;
     aSplitter.getPaneCount(&sRowCount, &sColumnCount);
-    getViewSplitToViewIndex(sRowCount, sColumnCount, aRow, aColumn, sViewIndex);
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, aRow, aColumn, sViewIndex) == XPR_FALSE)
+        sViewIndex = 0;
 
     sExplorerView->setObserver(dynamic_cast<ExplorerViewObserver *>(this));
     sExplorerView->setViewIndex(sViewIndex);
@@ -457,12 +458,14 @@ void MainFrame::onSplitterActivedPane(Splitter &aSplitter, xpr_sint_t aRow, xpr_
     xpr_sint_t sLastActivedRow = -1, sLastActivedColumn = -1;
     aSplitter.getLastActivedPane(&sLastActivedRow, &sLastActivedColumn);
 
-    xpr_sint_t sLastActivedViewIndex = -1;
-    getViewSplitToViewIndex(sRowCount, sColumnCount, sLastActivedRow, sLastActivedColumn, sLastActivedViewIndex);
+    xpr_sint_t sLastActivedViewIndex;
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, sLastActivedRow, sLastActivedColumn, sLastActivedViewIndex) == XPR_FALSE)
+        sLastActivedViewIndex = 0;
 
     // active new view
-    xpr_sint_t sViewIndex = -1;
-    getViewSplitToViewIndex(sRowCount, sColumnCount, aRow, aColumn, sViewIndex);
+    xpr_sint_t sViewIndex;
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, aRow, aColumn, sViewIndex) == XPR_FALSE)
+        sViewIndex = 0;
 
     xpr_sint_t i;
     xpr_bool_t sActive, sLastActived;
@@ -663,9 +666,10 @@ void MainFrame::setChangedOption(Option &aOption)
 
     // apply new option to explorer view
     xpr_sint_t i;
+    xpr_sint_t sViewCount = getViewCount();
     ExplorerView *sExplorerView;
 
-    for (i = 0; i < MAX_VIEW_SPLIT; ++i)
+    for (i = 0; i < sViewCount; ++i)
     {
         sExplorerView = getExplorerView(i);
         if (XPR_IS_NOT_NULL(sExplorerView))
@@ -2017,11 +2021,12 @@ ExplorerView *MainFrame::getExplorerView(xpr_sint_t aIndex) const
         xpr_sint_t sRowCount = 0, sColumnCount = 0;
         mSplitter.getPaneCount(&sRowCount, &sColumnCount);
 
-        xpr_sint_t sRow = 0, sColumn = 0;
-        getViewIndexToViewSplit(aIndex, sRowCount, sColumnCount, sRow, sColumn);
-
-        CWnd *sWnd = mSplitter.getPaneWnd(sRow, sColumn);
-        sExplorerView = dynamic_cast<ExplorerView *>(sWnd);
+        xpr_sint_t sRow, sColumn;
+        if (getViewSplitFromViewIndex(aIndex, sRowCount, sColumnCount, sRow, sColumn) == XPR_TRUE)
+        {
+            CWnd *sWnd = mSplitter.getPaneWnd(sRow, sColumn);
+            sExplorerView = dynamic_cast<ExplorerView *>(sWnd);
+        }
     }
 
     return sExplorerView;
@@ -3057,8 +3062,9 @@ xpr_sint_t MainFrame::getActiveView(void) const
     xpr_sint_t sRow = 0, sColumn = 0;
     mSplitter.getActivePane(&sRow, &sColumn);
 
-    xpr_sint_t sViewIndex = 0;
-    getViewSplitToViewIndex(sRowCount, sColumnCount, sRow, sColumn, sViewIndex);
+    xpr_sint_t sViewIndex;
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, sRow, sColumn, sViewIndex) == XPR_FALSE)
+        sViewIndex = 0;
 
     return sViewIndex;
 }
@@ -3071,8 +3077,9 @@ xpr_sint_t MainFrame::getLastActivedView(void) const
     xpr_sint_t sRow = 0, sColumn = 0;
     mSplitter.getLastActivedPane(&sRow, &sColumn);
 
-    xpr_sint_t sViewIndex = 0;
-    getViewSplitToViewIndex(sRowCount, sColumnCount, sRow, sColumn, sViewIndex);
+    xpr_sint_t sViewIndex;
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, sRow, sColumn, sViewIndex) == XPR_FALSE)
+        sViewIndex = 0;
 
     return sViewIndex;
 }
@@ -3082,8 +3089,12 @@ void MainFrame::setActiveView(xpr_sint_t aViewIndex)
     xpr_sint_t sRowCount = 0, sColumnCount = 0;
     mSplitter.getPaneCount(&sRowCount, &sColumnCount);
 
-    xpr_sint_t sRow = 0, sColumn = 0;
-    getViewIndexToViewSplit(aViewIndex, sRowCount, sColumnCount, sRow, sColumn);
+    xpr_sint_t sRow, sColumn;
+    if (getViewSplitFromViewIndex(aViewIndex, sRowCount, sColumnCount, sRow, sColumn) == XPR_FALSE)
+    {
+        sRow = 0;
+        sColumn = 0;
+    }
 
     setActiveView(sRow, sColumn);
 }
@@ -3357,8 +3368,9 @@ xpr_sint_t MainFrame::getViewIndex(void) const
     xpr_sint_t sRowCount = 0, sColumnCount = 0;
     mSplitter.getPaneCount(&sRowCount, &sColumnCount);
 
-    xpr_sint_t sViewIndex = 0;
-    getViewSplitToViewIndex(sRowCount, sColumnCount, sRow, sColumn, sViewIndex);
+    xpr_sint_t sViewIndex;
+    if (getViewIndexFromViewSplit(sRowCount, sColumnCount, sRow, sColumn, sViewIndex) == XPR_FALSE)
+        sViewIndex = 0;
 
     return sViewIndex;
 }
@@ -3389,138 +3401,51 @@ xpr_sint_t MainFrame::getViewCount(void) const
 //         | 1 |               | 2 | 3 |                   | 3 | 4 | 5 |
 //         +---+               +---+---+                   +---+---+---+
 //
-void MainFrame::getViewSplitToViewIndex(xpr_sint_t  aRowCount,
-                                        xpr_sint_t  aColumnCount,
-                                        xpr_sint_t  aRow,
-                                        xpr_sint_t  aColumn,
-                                        xpr_sint_t &aViewIndex) const
+xpr_bool_t MainFrame::getViewIndexFromViewSplit(xpr_sint_t  aRowCount,
+                                                xpr_sint_t  aColumnCount,
+                                                xpr_sint_t  aRow,
+                                                xpr_sint_t  aColumn,
+                                                xpr_sint_t &aViewIndex) const
 {
-    aViewIndex = 0;
+    if (aRow < 0 || aColumn < 0 || aRowCount <= 0 || aColumnCount <= 0)
+    {
+        return XPR_FALSE;
+    }
 
-    if (aRowCount == 1 && aColumnCount == 2)
+    xpr_sint_t sViewIndex = aRow * aColumnCount + aColumn;
+    if (XPR_IS_OUT_OF_RANGE(0, sViewIndex, aRowCount * aColumnCount - 1))
     {
-        if (aRow == 0 && aColumn == 1)
-            aViewIndex = 1;
+        return XPR_FALSE;
     }
-    else if (aRowCount == 1 && aColumnCount == 3)
-    {
-        if (aRow == 0 && aColumn == 1)
-            aViewIndex = 1;
-        else if (aRow == 0 && aColumn == 2)
-            aViewIndex = 2;
-    }
-    else if (aRowCount == 2 && aColumnCount == 1)
-    {
-        if (aRow == 1 && aColumn == 0)
-            aViewIndex = 1;
-    }
-    else if (aRowCount == 2 && aColumnCount == 2)
-    {
-        if (aRow == 0 && aColumn == 1)
-            aViewIndex = 1;
-        else if (aRow == 1 && aColumn == 0)
-            aViewIndex = 2;
-        else if (aRow == 1 && aColumn == 1)
-            aViewIndex = 3;
-    }
-    else if (aRowCount == 2 && aColumnCount == 3)
-    {
-        if (aRow == 0 && aColumn == 1)
-            aViewIndex = 1;
-        else if (aRow == 0 && aColumn == 2)
-            aViewIndex = 2;
-        else if (aRow == 1 && aColumn == 0)
-            aViewIndex = 3;
-        else if (aRow == 1 && aColumn == 1)
-            aViewIndex = 4;
-        else if (aRow == 1 && aColumn == 2)
-            aViewIndex = 5;
-    }
+
+    aViewIndex = sViewIndex;
+
+    return XPR_TRUE;
 }
 
-void MainFrame::getViewIndexToViewSplit(xpr_sint_t  aViewIndex,
-                                        xpr_sint_t  aRowCount,
-                                        xpr_sint_t  aColumnCount,
-                                        xpr_sint_t &aRow,
-                                        xpr_sint_t &aColumn) const
+xpr_bool_t MainFrame::getViewSplitFromViewIndex(xpr_sint_t  aViewIndex,
+                                                xpr_sint_t  aRowCount,
+                                                xpr_sint_t  aColumnCount,
+                                                xpr_sint_t &aRow,
+                                                xpr_sint_t &aColumn) const
 {
-    aRow = aColumn = 0;
+    if (aViewIndex < 0 || aRowCount <= 0 || aColumnCount <= 0)
+    {
+        return XPR_FALSE;
+    }
 
-    if (aRowCount == 1 && aColumnCount == 2)
+    xpr_sint_t sRow    = aViewIndex / aColumnCount;
+    xpr_sint_t sColumn = aViewIndex % aColumnCount;
+
+    if (sRow >= aRowCount)
     {
-        if (aViewIndex == 1)
-        {
-            aRow = 0;
-            aColumn = 1;
-        }
+        return XPR_FALSE;
     }
-    else if (aRowCount == 1 && aColumnCount == 3)
-    {
-        if (aViewIndex == 1)
-        {
-            aRow = 0;
-            aColumn = 1;
-        }
-        else if (aViewIndex == 2)
-        {
-            aRow = 0;
-            aColumn = 2;
-        }
-    }
-    else if (aRowCount == 2 && aColumnCount == 1)
-    {
-        if (aViewIndex == 1)
-        {
-            aRow = 1;
-            aColumn = 0;
-        }
-    }
-    else if (aRowCount == 2 && aColumnCount == 2)
-    {
-        if (aViewIndex == 1)
-        {
-            aRow = 0;
-            aColumn = 1;
-        }
-        else if (aViewIndex == 2)
-        {
-            aRow = 1;
-            aColumn = 0;
-        }
-        else if (aViewIndex == 3)
-        {
-            aRow = 1;
-            aColumn = 1;
-        }
-    }
-    else if (aRowCount == 2 && aColumnCount == 3)
-    {
-        if (aViewIndex == 1)
-        {
-            aRow = 0;
-            aColumn = 1;
-        }
-        else if (aViewIndex == 2)
-        {
-            aRow = 0;
-            aColumn = 2;
-        }
-        else if (aViewIndex == 3)
-        {
-            aRow = 1;
-            aColumn = 0;
-        }
-        else if (aViewIndex == 4)
-        {
-            aRow = 1;
-            aColumn = 1;
-        }
-        else if (aViewIndex == 5)
-        {
-            aRow = 1;
-            aColumn = 2;
-        }
-    }
+
+    aRow    = sRow;
+    aColumn = sColumn;
+
+    return XPR_TRUE;
 }
 
 void MainFrame::gotoDrive(xpr_tchar_t aDriveChar)
@@ -4028,14 +3953,15 @@ void MainFrame::moveFocus(xpr_sint_t aCurWnd, xpr_bool_t aShiftKey, xpr_bool_t a
         xpr_sint_t sRow = 0, sColumn = 0;
         mSplitter.getActivePane(&sRow, &sColumn);
 
-        xpr_sint_t sViewIndex = 0;
-        getViewSplitToViewIndex(sRowCount, sColumnCount, sRow, sColumn, sViewIndex);
+        xpr_sint_t sViewIndex;
+        if (getViewIndexFromViewSplit(sRowCount, sColumnCount, sRow, sColumn, sViewIndex) == XPR_FALSE)
+            sViewIndex = 0;
 
         ++sViewIndex;
         if (sViewIndex >= (sRowCount * sColumnCount))
             sViewIndex = 0;
 
-        getViewIndexToViewSplit(sViewIndex, sRowCount, sColumnCount, sRow, sColumn);
+        getViewSplitFromViewIndex(sViewIndex, sRowCount, sColumnCount, sRow, sColumn);
 
         mSplitter.setActivePane(sRow, sColumn);
     }
