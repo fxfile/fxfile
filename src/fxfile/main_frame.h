@@ -106,8 +106,8 @@ public:
     void getViewSplit(xpr_sint_t &aRowCount, xpr_sint_t &aColumnCount) const;
     xpr_sint_t getViewIndex(void) const;
     xpr_sint_t getViewCount(void) const;
-    void getViewSplitToViewIndex(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_sint_t aRow, xpr_sint_t aColumn, xpr_sint_t &aViewIndex) const;
-    void getViewIndexToViewSplit(xpr_sint_t aViewIndex, xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_sint_t &aRow, xpr_sint_t &aColumn) const;
+    xpr_bool_t getViewIndexFromViewSplit(xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_sint_t aRow, xpr_sint_t aColumn, xpr_sint_t &aViewIndex) const;
+    xpr_bool_t getViewSplitFromViewIndex(xpr_sint_t aViewIndex, xpr_sint_t aRowCount, xpr_sint_t aColumnCount, xpr_sint_t &aRow, xpr_sint_t &aColumn) const;
     LPITEMIDLIST getSplitFolder(xpr_sint_t aIndex) const;
 
     xpr_sint_t getActiveView(void) const;
