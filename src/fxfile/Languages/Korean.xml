@@ -338,11 +338,10 @@
             <String ID="cmd.tips">오늘의 팁(&amp;T)...</String>
             <String ID="cmd.homepage">홈페이지(&amp;P)</String>
             <String ID="cmd.email">전자 우편(&amp;E)</String>
-
             <String ID="cmd.command_line_arguments">실행 인자(&amp;A)</String>
             <String ID="cmd.program_options">프로그램 옵션(&amp;O)</String>
             <String ID="cmd.environment_variables">환경 변수들(&amp;V)</String>
-
+            <String ID="cmd.donation">기부하기(&amp;D)</String>
             <String ID="cmd.about">fxfile 정보(&amp;A)...</String>
 
             <!-- popup menu: shell -->
