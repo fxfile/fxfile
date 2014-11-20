@@ -276,7 +276,9 @@ void AboutTabInfoDlg::OnDownload(void)
     {
         if (sUpdateInfo.mStatus == kUpdateStatusChecked)
         {
-            ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sUpdateInfo.mNewUrl, XPR_NULL, XPR_NULL, SW_SHOW);
+            xpr::string sNewUrl(sUpdateInfo.mNewUrl);
+
+            ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), sNewUrl.c_str(), XPR_NULL, XPR_NULL, SW_SHOW);
         }
     }
 }
