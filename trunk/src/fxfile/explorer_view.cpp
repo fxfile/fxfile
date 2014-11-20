@@ -2710,8 +2710,11 @@ void ExplorerView::onExplored(TabPane &aTabPane, xpr_uint_t aId, LPITEMIDLIST aF
 
     if (gFrame->getActiveView() == mViewIndex)
     {
-        // update main title
-        gFrame->setMainTitle(aFullPidl);
+        if (sTab != -1 && sTab == sCurTab)
+        {
+            // update main title
+            gFrame->setMainTitle(aFullPidl);
+        }
     }
 }
 
