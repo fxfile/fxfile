@@ -1737,6 +1737,7 @@
 #define ID_APP_CMD_LINE_ARGS            36506
 #define ID_APP_ENV_VARS                 36507
 #define ID_APP_PROGRAM_OPTS             36508
+#define ID_APP_DONATION                 36509
 #define ID_DRIVE_DYNAMIC_MENU           43000
 #define ID_DRIVE_FIRST                  43001
 #define ID_DRIVE_LAST                   43026

@@ -26,6 +26,7 @@ FXFILE_COMMAND_DECLARE_CLASS(ProgramOptsCommand);
 FXFILE_COMMAND_DECLARE_CLASS(EnvVarsCommand);
 FXFILE_COMMAND_DECLARE_CLASS(HompageCommand);
 FXFILE_COMMAND_DECLARE_CLASS(EmailCommand);
+FXFILE_COMMAND_DECLARE_CLASS(DonationCommand);
 FXFILE_COMMAND_DECLARE_CLASS(AboutCommand);
 } // namespace cmd
 } // namespace fxfile

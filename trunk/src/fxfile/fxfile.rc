@@ -2598,6 +2598,8 @@ BEGIN
         MENUITEM "Home&page",                   ID_APP_HOMEPAGE
         MENUITEM "&E-mail",                     ID_APP_EMAIL
         MENUITEM SEPARATOR
+        MENUITEM "&Donation",                   ID_APP_DONATION
+        MENUITEM SEPARATOR
         MENUITEM "&About fxfile...",            ID_APP_ABOUT
     END
 END

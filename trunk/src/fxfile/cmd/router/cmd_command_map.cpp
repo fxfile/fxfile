@@ -397,6 +397,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
     aExecutor.bindCommand(ID_APP_ENV_VARS,                     new cmd::EnvVarsCommand);
     aExecutor.bindCommand(ID_APP_HOMEPAGE,                     new cmd::HompageCommand);
     aExecutor.bindCommand(ID_APP_EMAIL,                        new cmd::EmailCommand);
+    aExecutor.bindCommand(ID_APP_DONATION,                     new cmd::DonationCommand);
     aExecutor.bindCommand(ID_APP_ABOUT,                        new cmd::AboutCommand);
 
     //

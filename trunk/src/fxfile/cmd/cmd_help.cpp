@@ -162,6 +162,16 @@ void EmailCommand::execute(CommandContext &aContext)
     ::ShellExecute(XPR_NULL, XPR_STRING_LITERAL("open"), XPR_STRING_LITERAL("mailto:flychk@flychk.com"), XPR_NULL, XPR_NULL, 0);
 }
 
+xpr_sint_t DonationCommand::canExecute(CommandContext &aContext)
+{
+    return StateEnable;
+}
+
+void DonationCommand::execute(CommandContext &aContext)
+{
+    NavigateURL(XPR_STRING_LITERAL("http://flychk.com/flyExplorer/donate.php"));
+}
+
 xpr_sint_t AboutCommand::canExecute(CommandContext &aContext)
 {
     return StateEnable;
