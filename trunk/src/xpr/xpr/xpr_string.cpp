@@ -2320,10 +2320,7 @@ xpr_size_t String::copy(xpr_wchar_t *aString, xpr_size_t aLength, xpr_size_t aPo
         sLength = mLength - aPos;
     }
 
-    xpr_tchar_t *sString      = mString + aPos;
-    xpr_size_t   sInputBytes  = sLength * sizeof(xpr_tchar_t);
-    xpr_size_t   sOutputBytes = sLength * sizeof(xpr_wchar_t);
-    XPR_MBS_TO_UTF16(sString, &sInputBytes, aString, &sOutputBytes);
+    memcpy(aString, mString + aPos, sLength * sizeof(xpr_wchar_t));
     aString[sLength] = 0;
 
     return sLength;
@@ -2797,6 +2794,11 @@ xpr_size_t String::find_last_of(const xpr_wchar_t *aString, xpr_size_t aPos, xpr
     if (aPos != npos && aPos >= mLength)
     {
         return npos;
+    }
+
+    if (aPos == npos)
+    {
+        aPos = mLength - 1;
     }
 
 #if defined(XPR_CFG_UNICODE)
