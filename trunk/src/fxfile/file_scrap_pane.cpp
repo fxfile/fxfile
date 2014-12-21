@@ -15,7 +15,7 @@
 #include "file_scrap_toolbar.h"
 #include "main_frame.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "size_format.h"
 #include "option.h"
 
@@ -108,9 +108,9 @@ xpr_sint_t FileScrapPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
         if (mFileScrapCtrl->Create(this, CTRL_ID_FILE_SCRAP, CRect(0, 0, 0, 0)) == XPR_TRUE)
         {
-            SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
-            mFileScrapCtrl->SetImageList(&sSysImgListMgr.mSysImgList16, LVSIL_SMALL);
-            mFileScrapCtrl->SetImageList(&sSysImgListMgr.mSysImgList32, LVSIL_NORMAL);
+            ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
+            mFileScrapCtrl->SetImageList(&sImgListManager.mSysImgList16, LVSIL_SMALL);
+            mFileScrapCtrl->SetImageList(&sImgListManager.mSysImgList32, LVSIL_NORMAL);
 
             setChangedOption(*gOpt);
         }

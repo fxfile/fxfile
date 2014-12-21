@@ -11,7 +11,7 @@
 #include "cmd_sort.h"
 
 #include "resource.h"
-#include "view_set.h"
+#include "folder_layout.h"
 #include "explorer_ctrl.h"
 
 #ifdef _DEBUG
@@ -30,27 +30,26 @@ xpr_sint_t SortCommand::canExecute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        ColumnSortInfo *sColumnSortInfo = sExplorerCtrl->getSortInfo();
-        if (XPR_IS_NOT_NULL(sColumnSortInfo))
-        {
-            xpr_bool_t sChecked = XPR_FALSE;
-            if (sColumnSortInfo->mFormatId == GUID_NULL)
-            {
-                switch (sCommandId)
-                {
-                case ID_VIEW_ARRAY_NAME: sChecked = (sColumnSortInfo->mPropertyId == 0); break;
-                case ID_VIEW_ARRAY_SIZE: sChecked = (sColumnSortInfo->mPropertyId == 1); break;
-                case ID_VIEW_ARRAY_TYPE: sChecked = (sColumnSortInfo->mPropertyId == 2); break;
-                case ID_VIEW_ARRAY_DATE: sChecked = (sColumnSortInfo->mPropertyId == 3); break;
-                case ID_VIEW_ARRAY_ATTR: sChecked = (sColumnSortInfo->mPropertyId == 4); break;
-                case ID_VIEW_ARRAY_EXT:  sChecked = (sColumnSortInfo->mPropertyId == 5); break;
-                default:                 sChecked = XPR_FALSE; break;
-                }
-            }
+        const ColumnId sColumnId = sExplorerCtrl->getSortColumnId();
+        xpr_bool_t sAscending    = sExplorerCtrl->getSortAscending();
 
-            if (XPR_IS_TRUE(sChecked))
-                sState |= StateRadio;
+        xpr_bool_t sChecked = XPR_FALSE;
+        if (XPR_IS_TRUE(sColumnId.mFormatId.none()))
+        {
+            switch (sCommandId)
+            {
+            case ID_VIEW_ARRAY_NAME: sChecked = (sColumnId.mPropertyId == 0); break;
+            case ID_VIEW_ARRAY_SIZE: sChecked = (sColumnId.mPropertyId == 1); break;
+            case ID_VIEW_ARRAY_TYPE: sChecked = (sColumnId.mPropertyId == 2); break;
+            case ID_VIEW_ARRAY_DATE: sChecked = (sColumnId.mPropertyId == 3); break;
+            case ID_VIEW_ARRAY_ATTR: sChecked = (sColumnId.mPropertyId == 4); break;
+            case ID_VIEW_ARRAY_EXT:  sChecked = (sColumnId.mPropertyId == 5); break;
+            default:                 sChecked = XPR_FALSE;                    break;
+            }
         }
+
+        if (XPR_IS_TRUE(sChecked))
+            sState |= StateRadio;
     }
 
     return sState;
@@ -62,7 +61,8 @@ void SortCommand::execute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        ColumnId sColumnId = {0};
+        ColumnId sColumnId;
+
         switch (sCommandId)
         {
         case ID_VIEW_ARRAY_NAME: sColumnId.mPropertyId = 0; break;
@@ -71,6 +71,10 @@ void SortCommand::execute(CommandContext &aContext)
         case ID_VIEW_ARRAY_DATE: sColumnId.mPropertyId = 3; break;
         case ID_VIEW_ARRAY_ATTR: sColumnId.mPropertyId = 4; break;
         case ID_VIEW_ARRAY_EXT:  sColumnId.mPropertyId = 5; break;
+
+        default:
+            XPR_ASSERT(0);
+            break;
         }
 
         sExplorerCtrl->sortItems(&sColumnId);
@@ -85,7 +89,9 @@ xpr_sint_t SortAscendingCommand::canExecute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        if (sExplorerCtrl->getSortInfo()->mAscending == XPR_TRUE)
+        xpr_bool_t sAscending = sExplorerCtrl->getSortAscending();
+
+        if (sAscending == XPR_TRUE)
             sState |= StateRadio;
     }
 
@@ -98,7 +104,9 @@ void SortAscendingCommand::execute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        sExplorerCtrl->sortItems(sExplorerCtrl->getSortInfo(), XPR_TRUE);
+        ColumnId sColumnId = sExplorerCtrl->getSortColumnId();
+
+        sExplorerCtrl->sortItems(&sColumnId, XPR_TRUE);
     }
 }
 
@@ -110,7 +118,9 @@ xpr_sint_t SortDecendingCommand::canExecute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        if (sExplorerCtrl->getSortInfo()->mAscending == XPR_FALSE)
+        xpr_bool_t sAscending = sExplorerCtrl->getSortAscending();
+
+        if (sAscending == XPR_FALSE)
             sState |= StateRadio;
     }
 
@@ -123,7 +133,9 @@ void SortDecendingCommand::execute(CommandContext &aContext)
 
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        sExplorerCtrl->sortItems(sExplorerCtrl->getSortInfo(), XPR_FALSE);
+        ColumnId sColumnId = sExplorerCtrl->getSortColumnId();
+
+        sExplorerCtrl->sortItems(&sColumnId, XPR_FALSE);
     }
 }
 } // namespace cmd

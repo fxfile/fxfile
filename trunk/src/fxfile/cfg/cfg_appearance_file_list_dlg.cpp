@@ -35,8 +35,10 @@ void CfgAppearanceFileListDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CfgAppearanceFileListDlg, super)
-    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH_BROWSE, OnCustomIcon16x16Browse)
-    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH_BROWSE, OnCustomIcon32x32Browse)
+    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH_BROWSE,  OnCustomIcon16Browse)
+    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH_BROWSE,  OnCustomIcon32Browse)
+    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_48_PATH_BROWSE,  OnCustomIcon48Browse)
+    ON_BN_CLICKED(IDC_CFG_FILE_LIST_CUSTOM_ICON_256_PATH_BROWSE, OnCustomIcon256Browse)
 END_MESSAGE_MAP()
 
 xpr_bool_t CfgAppearanceFileListDlg::OnInitDialog(void) 
@@ -114,8 +116,10 @@ void CfgAppearanceFileListDlg::onInit(const Option::Config &aConfig)
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR  ))->SetCheck(aConfig.mFileList2YearDate);
     ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON     ))->SetCheck(aConfig.mFileListCustomIcon);
 
-    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mFileListCustomIconFile[0]);
-    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mFileListCustomIconFile[1]);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH,  aConfig.mFileListCustomIconFile16);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH,  aConfig.mFileListCustomIconFile32);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_48_PATH,  aConfig.mFileListCustomIconFile48);
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_256_PATH, aConfig.mFileListCustomIconFile256);
 
     ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_LIST_TYPE))->SetCurSel(aConfig.mFileListListType);
     ((CComboBox *)GetDlgItem(IDC_CFG_FILE_LIST_ITEM_TEXT_CASE))->SetCurSel(aConfig.mFileListNameCaseType);
@@ -134,8 +138,10 @@ void CfgAppearanceFileListDlg::onApply(Option::Config &aConfig)
     aConfig.mFileList2YearDate         = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_SHOW_2_DIGITS_YEAR ))->GetCheck();
     aConfig.mFileListCustomIcon        = ((CButton *)GetDlgItem(IDC_CFG_FILE_LIST_USE_CUSTOM_ICON    ))->GetCheck();
 
-    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH, aConfig.mFileListCustomIconFile[0], XPR_MAX_PATH);
-    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, aConfig.mFileListCustomIconFile[1], XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_16_PATH,  aConfig.mFileListCustomIconFile16,  XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH,  aConfig.mFileListCustomIconFile32,  XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_48_PATH,  aConfig.mFileListCustomIconFile48,  XPR_MAX_PATH);
+    GetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_256_PATH, aConfig.mFileListCustomIconFile256, XPR_MAX_PATH);
 
     xpr_sint_t sCurSel;
     CComboBox *sComboBox;
@@ -184,7 +190,7 @@ xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHe
     return XPR_TRUE;
 }
 
-void CfgAppearanceFileListDlg::OnCustomIcon16x16Browse(void) 
+void CfgAppearanceFileListDlg::OnCustomIcon16Browse(void) 
 {
     xpr_bool_t sSatisfied = XPR_FALSE;
     xpr::string sPath;
@@ -204,7 +210,7 @@ void CfgAppearanceFileListDlg::OnCustomIcon16x16Browse(void)
     setModified();
 }
 
-void CfgAppearanceFileListDlg::OnCustomIcon32x32Browse(void) 
+void CfgAppearanceFileListDlg::OnCustomIcon32Browse(void) 
 {
     xpr_bool_t sSatisfied = XPR_FALSE;
     xpr::string sPath;
@@ -221,6 +227,46 @@ void CfgAppearanceFileListDlg::OnCustomIcon32x32Browse(void)
     }
 
     SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_32_PATH, sPath.c_str());
+    setModified();
+}
+
+void CfgAppearanceFileListDlg::OnCustomIcon48Browse(void) 
+{
+    xpr_bool_t sSatisfied = XPR_FALSE;
+    xpr::string sPath;
+
+    if (loadImage(48, 48, sPath, sSatisfied) == XPR_FALSE)
+        return;
+
+    if (sSatisfied == XPR_FALSE)
+    {
+        xpr_tchar_t sMsg[XPR_MAX_PATH + 0xff + 1] = {0};
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
+        MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_48_PATH, sPath.c_str());
+    setModified();
+}
+
+void CfgAppearanceFileListDlg::OnCustomIcon256Browse(void) 
+{
+    xpr_bool_t sSatisfied = XPR_FALSE;
+    xpr::string sPath;
+
+    if (loadImage(256, 256, sPath, sSatisfied) == XPR_FALSE)
+        return;
+
+    if (sSatisfied == XPR_FALSE)
+    {
+        xpr_tchar_t sMsg[XPR_MAX_PATH + 0xff + 1] = {0};
+        _stprintf(sMsg, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.msg.not_bitmap"), XPR_STRING_LITERAL("%s")), sPath.c_str());
+        MessageBox(sMsg, XPR_NULL, MB_OK | MB_ICONSTOP);
+        return;
+    }
+
+    SetDlgItemText(IDC_CFG_FILE_LIST_CUSTOM_ICON_256_PATH, sPath.c_str());
     setModified();
 }
 } // namespace cfg

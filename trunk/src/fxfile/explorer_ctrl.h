@@ -20,7 +20,7 @@
 #include "gui/ListCtrlEx.h"
 
 #include "fxfile_def.h"
-#include "view_set.h"
+#include "folder_layout.h"
 
 namespace fxfile
 {
@@ -29,8 +29,6 @@ class ShellIcon;
 class ContextMenu;
 
 class ExplorerCtrlObserver;
-
-#define LVS_THUMBNAIL 4
 
 struct FileSysItem
 {
@@ -43,8 +41,6 @@ typedef std::deque<FileSysItem *> FileSysItemDeque;
 class ExplorerCtrl : public ListCtrlEx, public DropTargetObserver
 {
     typedef ListCtrlEx super;
-
-    enum FolderType;
 
 public:
     struct Option
@@ -72,7 +68,10 @@ public:
         xpr_bool_t  mParentFolder;
         xpr_bool_t  mGoUpSelSubFolder;
         xpr_bool_t  mCustomIcon;
-        xpr_tchar_t mCustomIconFile[MAX_CUSTOM_ICON][XPR_MAX_PATH + 1];
+        xpr_tchar_t mCustomIconFile16[XPR_MAX_PATH + 1];
+        xpr_tchar_t mCustomIconFile32[XPR_MAX_PATH + 1];
+        xpr_tchar_t mCustomIconFile48[XPR_MAX_PATH + 1];
+        xpr_tchar_t mCustomIconFile256[XPR_MAX_PATH + 1];
         xpr_bool_t  m24HourTime;
         xpr_bool_t  m2YearDate;
         xpr_bool_t  mShowDrive;
@@ -81,13 +80,12 @@ public:
         xpr_sint_t  mNameCaseType;
         xpr_bool_t  mCreateAndEditText;
         xpr_bool_t  mAutoColumnWidth;
-        xpr_sint_t  mSaveViewSet;
+        xpr_sint_t  mSaveFolderLayout;
         xpr_bool_t  mSaveViewStyle;
         xpr_sint_t  mDefaultViewStyle;
         xpr_sint_t  mDefaultSort;
         xpr_sint_t  mDefaultSortOrder;
         xpr_bool_t  mNoSort;
-        xpr_bool_t  mExitVerifyViewSet;
         xpr_bool_t  mClassicThemeStyle;
         xpr_bool_t  mGridLines;
         xpr_bool_t  mFullRowSelect;
@@ -145,11 +143,12 @@ public:
 
     static LPITEMIDLIST getDefInitFolder(void);
 
+    FolderType getFolderType(void) const;
+    xpr_bool_t isFolderType(FolderType aFolderType) const;
+
     void loadHistory(HistoryDeque *aBackwardDeque,
                      HistoryDeque *aForwardDeque,
                      HistoryDeque *aHistoryDeque);
-
-    void saveOption(void);
 
     // file processing
     void createFolder(const xpr::string &aNewFolder, xpr_bool_t aEditDirectly);
@@ -219,7 +218,7 @@ public:
     // column
     xpr_sint_t addColumn(ColumnId *aColumnId, xpr_sint_t aInsert = -1);
     xpr_bool_t deleteColumn(ColumnId *aColumnId, xpr_sint_t *aIndex = XPR_NULL);
-    void       useColumn(ColumnId *aColumnId, xpr_bool_t aOtherApply = XPR_TRUE);
+    void       useColumn(ColumnId *aColumnId, xpr_bool_t aNotifyToObserver = XPR_TRUE);
     xpr_bool_t isUseColumn(ColumnId *aColumnId) const;
     ColumnId  *getColumnId(xpr_sint_t aColumnIndex) const;
     xpr_sint_t getColumnFromId(ColumnId *aColumnId) const;
@@ -228,11 +227,11 @@ public:
     void setColumnDataList(ColumnDataList &aUseColumnList);
 
     // sort
-    void            resortItems(void);
-    void            sortItems(ColumnId *aColumnId);
-    void            sortItems(ColumnId *aColumnId, xpr_bool_t aAscending, xpr_bool_t aOtherApply = XPR_TRUE);
-    ColumnSortInfo *getSortInfo(void) const;
-    ColumnSortData *getSortData(void) const;
+    void resortItems(void);
+    void sortItems(ColumnId *aColumnId);
+    void sortItems(ColumnId *aColumnId, xpr_bool_t aAscending, xpr_bool_t aNotifyToObserver = XPR_TRUE);
+    const ColumnId &getSortColumnId(void) const;
+    xpr_bool_t      getSortAscending(void) const;
 
     // parent
     xpr_bool_t goUp(void);
@@ -260,12 +259,22 @@ public:
     const HistoryDeque *getHistoryDeque(void) const;
 
     // view style
-    DWORD getViewStyle(void) const;
-    void  setViewStyle(DWORD aStyle, xpr_bool_t aRefresh = XPR_FALSE, xpr_bool_t aOtherApply = XPR_TRUE);
+    xpr_sint_t getViewStyle(void) const;
+    void setViewStyle(xpr_sint_t aViewStyle, xpr_bool_t aRefresh = XPR_FALSE, xpr_bool_t aNotifyToObserver = XPR_TRUE);
+    void setViewStyleChange(const FolderLayoutChange &aFolderLayoutChange);
+    void syncFolderLayout(void);
+    void saveToFolderLayout(FolderLayout &aFolderLayout) const;
+    FolderLayout *getFolderLayout(void) const;
+    FolderLayout *getFolderLayout(FolderType aFolderType) const;
+    void saveFolderLayout(void);
+    void saveFolderLayout(xpr_sint_t aSaveFolderLayout);
 
     // image list
-    CImageList *getImageList(xpr_bool_t aLarge) const;
-    void        setImageList(CImageList *aLargeImgList, CImageList *aSmallImgList);
+    CImageList *getImageList(xpr_bool_t aNormal) const;
+    void        setImageList(CImageList *aExtraLargeImgList,
+                             CImageList *aLargeImgList,
+                             CImageList *aMediumImgList,
+                             CImageList *aSmallImgList);
 
     // custom font
     void setCustomFont(xpr_bool_t aCustomFont, xpr_tchar_t *aFontText);
@@ -298,9 +307,6 @@ protected:
     void       preEnumeration(LPTVITEMDATA aNewTvItemData);
     xpr_bool_t insertPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex);
     void       postEnumeration(xpr_bool_t aUpdateBuddy);
-
-    FolderType getFolderType(void) const;
-    xpr_bool_t isFolderType(FolderType aFolderType) const;
 
     void watchFileChange(void);
 
@@ -382,7 +388,6 @@ protected:
     inline xpr_bool_t beginShcn(DWORD aEventId);
     inline void endShcn(DWORD aEventId, xpr_bool_t aResult);
 
-    xpr_bool_t isThumbnail(void) const;
     xpr_uint_t getThumbImageId(const xpr_tchar_t *aPath);
 
     // shell context menu
@@ -408,14 +413,12 @@ protected:
 
     struct DefColumnInfo;
 
-    void           initColumn(xpr_bool_t aForcelyInit = XPR_FALSE);
-    void           releaseColumn(xpr_bool_t aDeleteColumn = XPR_TRUE);
-    void           saveColumn(void);
-    void           deleteAllColumns(void);
-    xpr_bool_t     getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const;
-    xpr_bool_t     setViewSet(const FolderViewSet *aFolderViewSet);
-    void           getViewSetKey(xpr_tchar_t *aEntry) const;
-    DefColumnInfo *getDefColumnInfo(xpr_sint_t *aDefColumnCount = XPR_NULL) const;
+    void          loadFolderLayout(void);
+    void          deleteAllColumns(void);
+    void          loadFolderLayout(xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo);
+    FolderLayout *newFolderLayout(void);
+    FolderLayout *newFolderLayout(FolderType aFolderType);
+    void          getDefColumnInfo(xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const;
 
     void insertNameHash(LPLVITEMDATA aLvItemData);
     void eraseNameHash(LPLVITEMDATA aLvItemData);
@@ -444,6 +447,7 @@ protected:
     xpr_bool_t   mSorted;
     xpr_bool_t   mUpdated;
     xpr_bool_t   mVisible;
+    xpr_bool_t   mFirstExplore;
 
     // history
     xpr_bool_t  mGo;
@@ -475,6 +479,7 @@ protected:
     xpr_bool_t mScrollDownTimer;
     xpr_bool_t mScrollLeftTimer;
     xpr_bool_t mScrollRightTimer;
+    DropTarget mDropTarget;
 
     ShellIcon  *mShellIcon;
     xpr_size_t  mRealSelCount;
@@ -484,24 +489,31 @@ protected:
     LPITEMIDLIST mCopyFullPidl;
     LPITEMIDLIST mMoveFullPidl;
 
-    // thumbnail
-    xpr_bool_t mThumbnail;
+    // folder layout
+    xpr_sint_t    mViewStyle;
+    FolderLayout *mFolderLayout;
+    FolderLayout *mDefaultFolderLayout;
+    FolderLayout *mComputerFolderLayout;
+    FolderLayout *mVirtualFolderLayout;
 
+    CImageList *mExtraLargeImgList;
     CImageList *mLargeImgList;
+    CImageList *mMediumImgList;
+    CImageList *mNormalImgList;
     CImageList *mSmallImgList;
     CFont      *mCustomFont;
 
-    ColumnSortData mColumnSortData;
+    struct SortData;
+    ColumnId   mSortColumnId;
+    xpr_bool_t mSortAscending;
+    xpr_sint_t mSortColumn;
 
-    static DefColumnInfo mDefColumnDefault[];    // Column Default
-    static DefColumnInfo mDefColumnMyComputer[]; // Column My Computer
-    static DefColumnInfo mDefColumnVirtual[];    // Column Virtual
+    static DefColumnInfo mDefColumnDefault[];  // Column Default
+    static DefColumnInfo mDefColumnComputer[]; // Column Computer
+    static DefColumnInfo mDefColumnVirtual[];  // Column Virtual
 
     DefColumnInfo *mDefColumnInfo;
     xpr_sint_t     mDefColumnCount;
-
-    // Drag & Drop
-    DropTarget mDropTarget;
 
 protected:
     virtual xpr_bool_t PreCreateWindow(CREATESTRUCT &aCreateStruct);

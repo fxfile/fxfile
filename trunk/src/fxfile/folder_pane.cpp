@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "folder_pane.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "file_scrap.h"
 #include "clip_format.h"
 
@@ -116,7 +116,7 @@ xpr_sint_t FolderPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
         return -1;
     }
 
-    mFolderCtrl->setImageList(&SysImgListMgr::instance().mSysImgList16);
+    mFolderCtrl->setImageList(&SingletonManager::get<ImgListManager>().mSysImgList16);
 
     CWnd *sToolTipWnd = FromHandle((HWND)mFolderCtrl->SendMessage(TVM_GETTOOLTIPS));
     if (XPR_IS_NOT_NULL(sToolTipWnd))

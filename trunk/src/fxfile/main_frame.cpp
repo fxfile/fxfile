@@ -20,7 +20,7 @@
 #include "size_format.h"
 #include "wnet_mgr.h"
 #include "clip_format.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "context_menu.h"
 #include "recent_file_list.h"
 #include "winapi_ex.h"
@@ -44,7 +44,7 @@
 #include "file_scrap_drop_dlg.h"
 #include "path_bar.h"
 #include "address_bar.h"
-#include "view_set.h"
+#include "folder_layout_manager.h"
 #include "picture_viewer.h"
 #include "search_dlg.h"
 #include "wait_dlg.h"
@@ -251,7 +251,9 @@ void MainFrame::init(void)
 {
     gFrame = this;
 
-    SysImgListMgr::instance().getSystemImgList();
+    // load system image list
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
+    sImgListManager.loadSystemImgList();
 
     // load file scrap
     if (XPR_IS_TRUE(gOpt->mConfig.mFileScrapSave))
@@ -262,9 +264,9 @@ void MainFrame::init(void)
         FileScrap::instance().load(sPath);
     }
 
-    // load view set
-    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
-    sViewSetMgr.load();
+    // load folder layout
+    FolderLayoutManager &sFolderLayoutManager = SingletonManager::get<FolderLayoutManager>();
+    sFolderLayoutManager.load();
 
     // set option
     setOption(*gOpt);
@@ -575,16 +577,16 @@ void MainFrame::saveOption(void)
         sFileScrap.save(sPath);
     }
 
-    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
+    FolderLayoutManager &sFolderLayoutManager = SingletonManager::get<FolderLayoutManager>();
 
-    // verify view set
-    if (XPR_IS_TRUE(gOpt->mConfig.mFileListExitVerifyViewSet))
+    // verify folder layout
+    if (XPR_IS_TRUE(gOpt->mConfig.mFileListExitVerifyFolderLayout))
     {
-        sViewSetMgr.verify();
+        sFolderLayoutManager.verify();
     }
 
-    // save view set
-    sViewSetMgr.save();
+    // save folder layout
+    sFolderLayoutManager.save();
 
     // save dialog states
     DlgStateManager &sDlgStateManager = DlgStateManager::instance();
@@ -1485,7 +1487,7 @@ xpr_sint_t MainFrame::insertDrivePopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInser
     xpr_tchar_t sTemp[XPR_MAX_PATH + 1];
     xpr_tchar_t *sColon = XPR_NULL;
     SHFILEINFO sShFileInfo = {0};
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     xpr_sint_t i, sCount = 0;
     xpr_sint_t nPos = 0;
@@ -1511,7 +1513,7 @@ xpr_sint_t MainFrame::insertDrivePopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInser
             _tcscpy(sColon, sTemp);
         }
 
-        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, sId, sText, &sSysImgListMgr.mSysImgList16, sShFileInfo.iIcon);
+        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, sId, sText, &sImgListManager.mSysImgList16, sShFileInfo.iIcon);
 
         nPos += (xpr_sint_t)_tcslen(sDriveStrings)+1;
         sCount++;
@@ -1600,7 +1602,7 @@ xpr_sint_t MainFrame::insertGoUpPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert
     xpr_tchar_t sText[XPR_MAX_PATH + 1] = {0};
     LPITEMIDLIST sFullPidl = fxfile::base::Pidl::clone(sTvItemData->mFullPidl);
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     LPITEMIDLIST sFullPidl2 = sFullPidl;
     for (i = 0; ; ++i)
@@ -1621,7 +1623,7 @@ xpr_sint_t MainFrame::insertGoUpPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aInsert
         GetName(sFullPidl, SHGDN_INFOLDER, sText);
 
         sIconIndex = GetItemIconIndex(sFullPidl, XPR_FALSE);
-        aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_GO_UP_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
+        aPopupMenu->InsertMenu(aInsert, MF_STRING | MF_BYPOSITION, ID_GO_UP_FIRST+i, sText, &sImgListManager.mSysImgList16, sIconIndex);
     }
 
     COM_FREE(sFullPidl);
@@ -1646,7 +1648,7 @@ xpr_sint_t MainFrame::insertGoBackwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t a
     LPITEMIDLIST sFullPidl = XPR_NULL;
     HistoryDeque::const_reverse_iterator sReverseIterator;
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     sCount = (xpr_sint_t)sBackwardDeque->size();
     if (sCount > gOpt->mConfig.mBackwardMenuCount)
@@ -1660,7 +1662,7 @@ xpr_sint_t MainFrame::insertGoBackwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t a
         GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = GetItemIconIndex(sFullPidl, XPR_FALSE);
 
-        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_BACKWARD_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
+        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_BACKWARD_FIRST+i, sText, &sImgListManager.mSysImgList16, sIconIndex);
     }
 
     return sCount;
@@ -1683,7 +1685,7 @@ xpr_sint_t MainFrame::insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     LPITEMIDLIST sFullPidl = XPR_NULL;
     HistoryDeque::const_reverse_iterator sReverseIterator;
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     sCount = (xpr_sint_t)sForwardDeque->size();
     if (sCount > gOpt->mConfig.mBackwardMenuCount)
@@ -1697,7 +1699,7 @@ xpr_sint_t MainFrame::insertGoForwardPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
         GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = GetItemIconIndex(sFullPidl, XPR_FALSE);
 
-        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_FORWARD_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
+        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_FORWARD_FIRST+i, sText, &sImgListManager.mSysImgList16, sIconIndex);
     }
 
     return sCount;
@@ -1720,7 +1722,7 @@ xpr_sint_t MainFrame::insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
     LPITEMIDLIST sFullPidl = XPR_NULL;
     HistoryDeque::const_reverse_iterator sReverseIterator;
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     sCount = (xpr_sint_t)sHistoryDeque->size();
     if (sCount > gOpt->mConfig.mHistoryMenuCount)
@@ -1734,7 +1736,7 @@ xpr_sint_t MainFrame::insertGoHistoryPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aI
         GetName(sFullPidl, SHGDN_INFOLDER, sText);
         sIconIndex = GetItemIconIndex(sFullPidl, XPR_FALSE);
 
-        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_HISTORY_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sIconIndex);
+        aPopupMenu->InsertMenu(aInsert + i, MF_STRING | MF_BYPOSITION, ID_GO_HISTORY_FIRST+i, sText, &sImgListManager.mSysImgList16, sIconIndex);
     }
 
     return sCount;
@@ -2938,7 +2940,7 @@ xpr_sint_t MainFrame::insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aIn
     if (sCount <= 0)
         return 0;
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     for (i = 0; i < sCount; ++i)
     {
@@ -2948,7 +2950,7 @@ xpr_sint_t MainFrame::insertShellNewPopupMenu(BCMenu *aPopupMenu, xpr_sint_t aIn
 
         _tcscpy(sText, sItem->mFileType.c_str());
 
-        aPopupMenu->InsertMenu(aInsert+i, MF_STRING | MF_BYPOSITION, ID_FILE_NEW_FIRST+i, sText, &sSysImgListMgr.mSysImgList16, sItem->mIconIndex);
+        aPopupMenu->InsertMenu(aInsert+i, MF_STRING | MF_BYPOSITION, ID_FILE_NEW_FIRST+i, sText, &sImgListManager.mSysImgList16, sItem->mIconIndex);
     }
 
     return sCount;

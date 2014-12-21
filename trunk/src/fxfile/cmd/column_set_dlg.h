@@ -11,7 +11,7 @@
 #define __FXFILE_COLUMN_SET_DLG_H__ 1
 #pragma once
 
-#include "view_set.h"
+#include "folder_layout.h"
 
 namespace fxfile
 {

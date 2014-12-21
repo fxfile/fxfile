@@ -215,8 +215,10 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_VIEW_PIC_HIDE]                  = XPR_STRING_LITERAL("cmd.picture.hide");
     mCommandString[ID_VIEW_PIC_CLOSE]                 = XPR_STRING_LITERAL("cmd.picture.close");
     mCommandString[ID_VIEW_STYLE]                     = XPR_STRING_LITERAL("cmd.view_style");
-    mCommandString[ID_VIEW_STYLE_LARGEICONS]          = XPR_STRING_LITERAL("cmd.view_style.large_icons");
-    mCommandString[ID_VIEW_STYLE_SMALLICONS]          = XPR_STRING_LITERAL("cmd.view_style.small_icons");
+    mCommandString[ID_VIEW_STYLE_EXTRA_LARGE_ICONS]   = XPR_STRING_LITERAL("cmd.view_style.extra_large_icons");
+    mCommandString[ID_VIEW_STYLE_LARGE_ICONS]         = XPR_STRING_LITERAL("cmd.view_style.large_icons");
+    mCommandString[ID_VIEW_STYLE_MEDIUM_ICONS]        = XPR_STRING_LITERAL("cmd.view_style.medium_icons");
+    mCommandString[ID_VIEW_STYLE_SMALL_ICONS]         = XPR_STRING_LITERAL("cmd.view_style.small_icons");
     mCommandString[ID_VIEW_STYLE_LIST]                = XPR_STRING_LITERAL("cmd.view_style.list");
     mCommandString[ID_VIEW_STYLE_DETAILS]             = XPR_STRING_LITERAL("cmd.view_style.details");
     mCommandString[ID_VIEW_STYLE_THUMBNAIL]           = XPR_STRING_LITERAL("cmd.view_style.thumbnail");
@@ -382,10 +384,10 @@ void CommandStringTable::loadCommands(void)
     mCommandString[ID_BATCH_RENAME_FORMAT_MENU_LAST_WRITE_SECOND]       = XPR_STRING_LITERAL("cmd.batch_rename.format.file_modified_time.second");
 
     // poup menu - search result
-    mCommandString[ID_SR_VIEW_ICON]                   = XPR_STRING_LITERAL("cmd.search_result.view_style.large_icon");
-    mCommandString[ID_SR_VIEW_SMALLICON]              = XPR_STRING_LITERAL("cmd.search_result.view_style.small_icon");
+    mCommandString[ID_SR_VIEW_ICON]                   = XPR_STRING_LITERAL("cmd.search_result.view_style.large_icons");
+    mCommandString[ID_SR_VIEW_SMALLICON]              = XPR_STRING_LITERAL("cmd.search_result.view_style.small_icons");
     mCommandString[ID_SR_VIEW_LIST]                   = XPR_STRING_LITERAL("cmd.search_result.view_style.list");
-    mCommandString[ID_SR_VIEW_DETAIL]                 = XPR_STRING_LITERAL("cmd.search_result.view_style.detail");
+    mCommandString[ID_SR_VIEW_DETAIL]                 = XPR_STRING_LITERAL("cmd.search_result.view_style.details");
     mCommandString[ID_SR_REMOVE_LIST]                 = XPR_STRING_LITERAL("cmd.search_result.remove_list");
     mCommandString[ID_SR_ADD_FILE_SCRAP]              = XPR_STRING_LITERAL("cmd.search_result.add_all_to_scrap");
     mCommandString[ID_SR_CLOSE]                       = XPR_STRING_LITERAL("cmd.search_result.close");

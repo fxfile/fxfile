@@ -35,7 +35,7 @@ public:
         TypeBookmark,
         TypeFileScrap,
         TypeSearchDir,
-        TypeViewSet,
+        TypeFolderLayout,
         TypeDlgState,
         TypeAccel,
         TypeCoolBar,

@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "drive_toolbar.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "drive_shcn.h"
 #include "context_menu.h"
 #include "file_op_thread.h"
@@ -76,7 +76,7 @@ xpr_sint_t DriveToolBar::OnCreate(LPCREATESTRUCT lpCreateStruct)
     sToolBarCtrl.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_MIXEDBUTTONS);
 
     sToolBarCtrl.SetBitmapSize(CSize(16,16));
-    sToolBarCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16);
+    sToolBarCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mSysImgList16);
 
     CRect sRect;
     GetClientRect(&sRect);

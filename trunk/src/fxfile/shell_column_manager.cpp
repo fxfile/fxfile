@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "shell_column.h"
+#include "shell_column_manager.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,13 +16,13 @@
 
 namespace fxfile
 {
-ShellColumn::ShellColumn(void)
+ShellColumnManager::ShellColumnManager(void)
     : mEvent(XPR_NULL)
     , mFullPidl(XPR_NULL)
 {
 }
 
-ShellColumn::~ShellColumn(void)
+ShellColumnManager::~ShellColumnManager(void)
 {
     {
         ColumnInfo *sColumnInfo;
@@ -57,14 +57,14 @@ ShellColumn::~ShellColumn(void)
     }
 }
 
-void ShellColumn::setBaseItem(LPITEMIDLIST aFullPidl)
+void ShellColumnManager::setBaseItem(LPITEMIDLIST aFullPidl)
 {
     COM_FREE(mFullPidl);
 
     mFullPidl = aFullPidl;
 }
 
-void ShellColumn::loadColumn(void)
+void ShellColumnManager::loadColumn(void)
 {
     if (isLoadedColumn() == XPR_TRUE)
         return;
@@ -109,7 +109,7 @@ void ShellColumn::loadColumn(void)
             if (FAILED(sShellFolder2->MapColumnToSCID(sColumnIndex, &sShColumnId)))
                 break;
 
-            sColumnId.mFormatId   = sShColumnId.fmtid;
+            sColumnId.mFormatId.fromBuffer((const byte *)&sShColumnId.fmtid);
             sColumnId.mPropertyId = sShColumnId.pid;
 
             sColumnInfo = new ColumnInfo;
@@ -129,12 +129,12 @@ void ShellColumn::loadColumn(void)
     COM_RELEASE(sShellFolder);
 }
 
-xpr_bool_t ShellColumn::isLoadedColumn(void)
+xpr_bool_t ShellColumnManager::isLoadedColumn(void)
 {
     return mColumnInfoMap.empty() ? XPR_FALSE : XPR_TRUE;
 }
 
-xpr_sint_t ShellColumn::getDetailColumn(const ColumnId &aColumnId)
+xpr_sint_t ShellColumnManager::getDetailColumn(const ColumnId &aColumnId)
 {
     if (isLoadedColumn() == XPR_FALSE)
         loadColumn();
@@ -153,7 +153,7 @@ xpr_sint_t ShellColumn::getDetailColumn(const ColumnId &aColumnId)
     return sColumnInfo->mColumn;
 }
 
-ColumnInfo *ShellColumn::getColumnInfo(const ColumnId &aColumnId)
+ColumnInfo *ShellColumnManager::getColumnInfo(const ColumnId &aColumnId)
 {
     if (isLoadedColumn() == XPR_FALSE)
         loadColumn();
@@ -167,7 +167,7 @@ ColumnInfo *ShellColumn::getColumnInfo(const ColumnId &aColumnId)
     return sIterator->second;
 }
 
-xpr_sint_t ShellColumn::getAvgCharWidth(CWnd *aWnd)
+xpr_sint_t ShellColumnManager::getAvgCharWidth(CWnd *aWnd)
 {
     if (XPR_IS_NULL(aWnd))
         return 6;
@@ -192,7 +192,7 @@ xpr_sint_t ShellColumn::getAvgCharWidth(CWnd *aWnd)
     return sAvgCharWidth;
 }
 
-xpr_bool_t ShellColumn::isAsyncColumn(LPSHELLFOLDER2 aShellFolder2, const ColumnId &aColumnId)
+xpr_bool_t ShellColumnManager::isAsyncColumn(LPSHELLFOLDER2 aShellFolder2, const ColumnId &aColumnId)
 {
     if (XPR_IS_NULL(aShellFolder2))
         return XPR_FALSE;
@@ -214,7 +214,7 @@ xpr_bool_t ShellColumn::isAsyncColumn(LPSHELLFOLDER2 aShellFolder2, const Column
     return XPR_FALSE;
 }
 
-xpr_bool_t ShellColumn::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST aPidl, xpr_sint_t aColumnIndex, xpr_tchar_t *aText, xpr_sint_t aMaxLen)
+xpr_bool_t ShellColumnManager::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST aPidl, xpr_sint_t aColumnIndex, xpr_tchar_t *aText, xpr_sint_t aMaxLen)
 {
     if (XPR_IS_NULL(aShellFolder2) || XPR_IS_NULL(aPidl) || XPR_IS_NULL(aText))
         return XPR_FALSE;
@@ -233,7 +233,7 @@ xpr_bool_t ShellColumn::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST
     return sResult;
 }
 
-xpr_bool_t ShellColumn::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST aPidl, const ColumnId &aColumnId, xpr_tchar_t *aText, xpr_sint_t aMaxLen)
+xpr_bool_t ShellColumnManager::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST aPidl, const ColumnId &aColumnId, xpr_tchar_t *aText, xpr_sint_t aMaxLen)
 {
     if (XPR_IS_NULL(aShellFolder2) || XPR_IS_NULL(aPidl) || XPR_IS_NULL(aText))
         return XPR_FALSE;
@@ -244,7 +244,7 @@ xpr_bool_t ShellColumn::getColumnText(LPSHELLFOLDER2 aShellFolder2, LPITEMIDLIST
     return getColumnText(aShellFolder2, aPidl, sColumnIndex, aText, aMaxLen);
 }
 
-xpr_bool_t ShellColumn::getAsyncColumnText(AsyncInfo *aAsyncInfo)
+xpr_bool_t ShellColumnManager::getAsyncColumnText(AsyncInfo *aAsyncInfo)
 {
     if (XPR_IS_NULL(aAsyncInfo))
         return XPR_FALSE;
@@ -278,7 +278,7 @@ xpr_bool_t ShellColumn::getAsyncColumnText(AsyncInfo *aAsyncInfo)
     return XPR_TRUE;
 }
 
-xpr_sint_t ShellColumn::runThread(xpr::Thread &aThread)
+xpr_sint_t ShellColumnManager::runThread(xpr::Thread &aThread)
 {
     Thread &sThread = (Thread &)aThread;
 
@@ -317,7 +317,7 @@ xpr_sint_t ShellColumn::runThread(xpr::Thread &aThread)
 
         sAsyncInfo->mText[0] = XPR_STRING_LITERAL('\0');
 
-        sResult = ShellColumn::getColumnText(
+        sResult = ShellColumnManager::getColumnText(
             sAsyncInfo->mShellFolder2,
             sAsyncInfo->mPidl,
             sAsyncInfo->mColumnIndex,
@@ -363,7 +363,7 @@ xpr_sint_t ShellColumn::runThread(xpr::Thread &aThread)
     return 0;
 }
 
-void ShellColumn::clearAsyncColumn(xpr_uint_t uCode)
+void ShellColumnManager::clearAsyncColumn(xpr_uint_t uCode)
 {
     xpr::MutexGuard sLockGuard(mMutex);
 

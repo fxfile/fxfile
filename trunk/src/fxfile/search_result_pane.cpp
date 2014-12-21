@@ -12,7 +12,7 @@
 #include "tab_pane_observer.h"
 #include "search_result_ctrl.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "size_format.h"
 #include "option.h"
 
@@ -94,9 +94,9 @@ xpr_sint_t SearchResultPane::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
         if (mSearchResultCtrl->Create(this, CTRL_ID_SEARCH_RESULT, CRect(0, 0, 0, 0)) == XPR_TRUE)
         {
-            SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
-            mSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList16, LVSIL_SMALL);
-            mSearchResultCtrl->SetImageList(&sSysImgListMgr.mSysImgList32, LVSIL_NORMAL);
+            ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
+            mSearchResultCtrl->SetImageList(&sImgListManager.mSysImgList16, LVSIL_SMALL);
+            mSearchResultCtrl->SetImageList(&sImgListManager.mSysImgList32, LVSIL_NORMAL);
 
             setChangedOption(*gOpt);
         }

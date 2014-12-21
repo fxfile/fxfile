@@ -125,7 +125,7 @@ xpr_bool_t ColumnSetDlg::OnInitDialog(void)
             if (_tcslen(sName) == 0)
                 continue;
 
-            sColumnId.mFormatId   = sShColumnId.fmtid;
+            sColumnId.mFormatId.fromBuffer((const xpr_byte_t *)&sShColumnId.fmtid);
             sColumnId.mPropertyId = sShColumnId.pid;
 
             sIterator = mListMap.find(sColumnId);
@@ -137,7 +137,7 @@ xpr_bool_t ColumnSetDlg::OnInitDialog(void)
             sColumnItemData->mWidth      = sShellDetails.cxChar * mAvgCharWidth;
             sColumnItemData->mAlign      = sShellDetails.fmt;
             sColumnItemData->mName       = sName;
-            sColumnItemData->mFormatId   = sShColumnId.fmtid;
+            sColumnItemData->mFormatId.fromBuffer((const xpr_byte_t *)&sShColumnId.fmtid);
             sColumnItemData->mPropertyId = sShColumnId.pid;
 
             mListDeque.push_back(sColumnItemData);
@@ -356,7 +356,7 @@ void ColumnSetDlg::OnLvnGetdispinfoList(NMHDR *pNMHDR, LRESULT *pResult)
         case 0:
             {
                 _tcscpy(sLvItem.pszText, sColumnItemData->mName.c_str());
-                if (sColumnItemData->mFormatId != GUID_NULL)
+                if (XPR_IS_FALSE(sColumnItemData->mFormatId.none()))
                     _tcscat(sLvItem.pszText, XPR_STRING_LITERAL(" *"));
                 break;
             }

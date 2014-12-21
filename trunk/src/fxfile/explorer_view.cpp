@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "explorer_view.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "bookmark.h"
 #include "context_menu.h"
 #include "file_scrap.h"
@@ -224,7 +224,7 @@ void ExplorerView::setViewIndex(xpr_sint_t aViewIndex)
     }
 }
 
-XPR_INLINE void loadHistory(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplorerCtrl)
+XPR_INLINE void loadTabOption(Option::Main::Tab &aTabOption, ExplorerCtrl &aExplorerCtrl)
 {
     LPITEMIDLIST sFullPidl;
     Option::Main::HistoryList::iterator sHistoryIterator;
@@ -320,8 +320,8 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
                 sExplorerCtrl = getExplorerCtrl(sTab);
                 if (XPR_IS_NOT_NULL(sExplorerCtrl))
                 {
-                    // load history
-                    loadHistory(*sTabOption, *sExplorerCtrl);
+                    // load tab option
+                    loadTabOption(*sTabOption, *sExplorerCtrl);
                 }
             }
 
@@ -354,7 +354,7 @@ xpr_sint_t ExplorerView::OnCreate(LPCREATESTRUCT aCreateStruct)
                 Option::Main::Tab *sTabOption = *sIterator;
                 XPR_ASSERT(sTabOption != XPR_NULL);
 
-                loadHistory(*sTabOption, *sExplorerCtrl);
+                loadTabOption(*sTabOption, *sExplorerCtrl);
             }
         }
     }
@@ -680,6 +680,33 @@ XPR_INLINE void saveTabOption(Option::Main::Tab &aTab, const ExplorerCtrl &aExpl
             }
         }
     }
+
+    // save folder layout
+    if (gOpt->mConfig.mFileListSaveFolderLayout == SAVE_FOLDER_LAYOUT_DEFAULT)
+    {
+        FolderLayout *sFolderLayout;
+
+        sFolderLayout = aExplorerCtrl.getFolderLayout(FOLDER_DEFAULT);
+        if (XPR_IS_NOT_NULL(sFolderLayout))
+        {
+            aTab.mDefaultFolderLayout = new FolderLayout;
+            sFolderLayout->clone(*aTab.mDefaultFolderLayout);
+        }
+
+        sFolderLayout = aExplorerCtrl.getFolderLayout(FOLDER_COMPUTER);
+        if (XPR_IS_NOT_NULL(sFolderLayout))
+        {
+            aTab.mComputerFolderLayout = new FolderLayout;
+            sFolderLayout->clone(*aTab.mComputerFolderLayout);
+        }
+
+        sFolderLayout = aExplorerCtrl.getFolderLayout(FOLDER_VIRTUAL);
+        if (XPR_IS_NOT_NULL(sFolderLayout))
+        {
+            aTab.mVirtualFolderLayout = new FolderLayout;
+            sFolderLayout->clone(*aTab.mVirtualFolderLayout);
+        }
+    }
 }
 
 void ExplorerView::saveOption(void)
@@ -715,6 +742,8 @@ void ExplorerView::saveOption(void)
 
                 gOpt->mMain.mView[mViewIndex].mTabDeque.push_back(sTabOption);
 
+                sExplorerCtrl->syncFolderLayout();
+
                 saveTabOption(*sTabOption, *sExplorerCtrl);
             }
         }
@@ -729,17 +758,10 @@ void ExplorerView::saveOption(void)
             {
                 gOpt->mMain.mView[mViewIndex].mTabDeque.push_back(sTabOption);
 
+                sExplorerCtrl->syncFolderLayout();
+
                 saveTabOption(*sTabOption, *sExplorerCtrl);
             }
-        }
-    }
-
-    // save view style
-    if (gOpt->mConfig.mFileListSaveViewStyle == XPR_TRUE)
-    {
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        {
-            gOpt->mMain.mViewStyle[mViewIndex] = sExplorerCtrl->getViewStyle();
         }
     }
 
@@ -1099,8 +1121,8 @@ xpr_bool_t ExplorerView::createTabCtrl(void)
     HICON sIcon = (HICON)::LoadImage(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDI_TAB_NEW), IMAGE_ICON, 0, 0, 0);
     mTabCtrl->setTabIcon(sIcon);
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
-    mTabCtrl->setImageList(&sSysImgListMgr.mSysImgList16);
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
+    mTabCtrl->setImageList(&sImgListManager.mSysImgList16);
 
     if (XPR_IS_FALSE(gOpt->mConfig.mTabShowOneTab))
     {
@@ -1182,6 +1204,7 @@ xpr_sint_t ExplorerView::newTab(LPCITEMIDLIST aInitFolder)
 
         mExplorerPane->setViewIndex(mViewIndex);
         mExplorerPane->setObserver(dynamic_cast<TabPaneObserver *>(this));
+        mExplorerPane->setExplorerObserver(dynamic_cast<ExplorerPaneObserver *>(this));
 
         xpr_uint_t sExplorerPaneId = generateTabPaneId();
         if (mExplorerPane->Create(this, sExplorerPaneId, CRect(0,0,0,0)) == XPR_TRUE)
@@ -2835,5 +2858,82 @@ xpr_bool_t ExplorerView::openFolder(LPCITEMIDLIST aFullPidl)
     }
 
     return sResult;
+}
+
+xpr_bool_t ExplorerView::onLoadFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, FolderLayout &aFolderLayout)
+{
+    xpr_sint_t i, sTabCount, sTabIndexOfTabOption = -1;
+    ExplorerCtrl *sExplorerCtrl;
+
+    sTabCount = getTabCount();
+    for (i = 0; i < sTabCount; ++i)
+    {
+        sExplorerCtrl = getExplorerCtrl(i);
+        if (XPR_IS_NOT_NULL(sExplorerCtrl))
+        {
+            ++sTabIndexOfTabOption;
+
+            if (&aExplorerCtrl == sExplorerCtrl)
+            {
+                Option::Main::TabDeque &sTabDeque = gOpt->mMain.mView[mViewIndex].mTabDeque;
+
+                if (FXFILE_STL_IS_INDEXABLE(sTabIndexOfTabOption, sTabDeque))
+                {
+                    Option::Main::Tab *sTabOption = sTabDeque[sTabIndexOfTabOption];
+
+                    switch (aFolderType)
+                    {
+                    case FOLDER_DEFAULT:
+                        if (XPR_IS_NOT_NULL(sTabOption->mDefaultFolderLayout))
+                        {
+                            XPR_ASSERT(sTabOption != XPR_NULL);
+
+                            sTabOption->mDefaultFolderLayout->clone(aFolderLayout);
+                            XPR_SAFE_DELETE(sTabOption->mDefaultFolderLayout);
+
+                            return XPR_TRUE;
+                        }
+                        break;
+
+                    case FOLDER_COMPUTER:
+                        if (XPR_IS_NOT_NULL(sTabOption->mComputerFolderLayout))
+                        {
+                            XPR_ASSERT(sTabOption != XPR_NULL);
+
+                            sTabOption->mComputerFolderLayout->clone(aFolderLayout);
+                            XPR_SAFE_DELETE(sTabOption->mComputerFolderLayout);
+
+                            return XPR_TRUE;
+                        }
+                        break;
+
+                    case FOLDER_VIRTUAL:
+                        if (XPR_IS_NOT_NULL(sTabOption->mVirtualFolderLayout))
+                        {
+                            XPR_ASSERT(sTabOption != XPR_NULL);
+
+                            sTabOption->mVirtualFolderLayout->clone(aFolderLayout);
+                            XPR_SAFE_DELETE(sTabOption->mVirtualFolderLayout);
+
+                            return XPR_TRUE;
+                        }
+                        break;
+
+                    default:
+                        XPR_ASSERT(0);
+                        break;
+                    }
+                }
+
+                break;
+            }
+        }
+    }
+
+    return XPR_FALSE;
+}
+
+void ExplorerView::onFolderLayoutChange(ExplorerCtrl &aExplorerCtrl, const FolderLayoutChange &aFolderLayoutChange)
+{
 }
 } // namespace fxfile

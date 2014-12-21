@@ -11,7 +11,8 @@
 #define __FXFILE_EXPLORER_CTRL_OBSERVER_H__ 1
 #pragma once
 
-#include "view_set.h"
+#include "fxfile_def.h"
+#include "folder_layout.h"
 
 namespace fxfile
 {
@@ -21,6 +22,8 @@ class ExplorerCtrlObserver
 {
 public:
     virtual void onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy, const xpr_tchar_t *aCurPath) = 0;
+    virtual xpr_bool_t onLoadFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, FolderLayout &aFolderLayout) = 0;
+    virtual void onSaveFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, xpr_sint_t aSaveFolderLayout, const FolderLayout &aFolderLayout) = 0;
     virtual void onUpdateStatus(ExplorerCtrl &aExplorerCtrl, xpr_size_t aRealSelCount) = 0;
     virtual void onUpdateFreeSize(ExplorerCtrl &aExplorerCtrl) = 0;
     virtual void onSetFocus(ExplorerCtrl &aExplorerCtrl) = 0;
@@ -33,10 +36,7 @@ public:
     virtual xpr_sint_t onDrop(ExplorerCtrl &aExplorerCtrl, COleDataObject *aOleDataObject, xpr_tchar_t *aTargetDir) = 0;
     virtual xpr_bool_t onGetExecParam(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath, xpr_tchar_t *aParam, xpr_size_t aMaxLen) = 0;
     virtual void onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath) = 0;
-    virtual void onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh) = 0;
-    virtual void onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId) = 0;
-    virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending) = 0;
-    virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth) = 0;
+    virtual void onFolderLayoutChange(ExplorerCtrl &aExplorerCtrl, const FolderLayoutChange &aFolderLayoutChange) = 0;
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl) = 0;
     virtual void onRunFile(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl) = 0;
 };

@@ -47,6 +47,8 @@ public:
     ~WinApp(void);
 
 public:
+    xpr_bool_t isInitialized(void) const { return mInitialized; }
+
     void saveAllOptions(void);
 
 public:
@@ -66,11 +68,12 @@ protected:
     virtual xpr_bool_t InitInstance(void);
     virtual xpr_sint_t ExitInstance(void);
 
-protected:
+private:
     // from OptionObserver
     virtual void onChangedConfig(Option &aOption);
 
-protected:
+private:
+    xpr_bool_t                       mInitialized;
     fxfile::base::LanguageTable     *mLanguageTable;
     fxfile::base::StringTable       *mStringTable;
     fxfile::base::FormatStringTable *mFormatStringTable;

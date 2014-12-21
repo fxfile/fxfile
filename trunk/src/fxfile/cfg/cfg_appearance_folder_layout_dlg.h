@@ -7,8 +7,8 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_CFG_APPEARANCE_VIEW_SET_DLG_H__
-#define __FXFILE_CFG_APPEARANCE_VIEW_SET_DLG_H__ 1
+#ifndef __FXFILE_CFG_APPEARANCE_FOLDER_LAYOUT_DLG_H__
+#define __FXFILE_CFG_APPEARANCE_FOLDER_LAYOUT_DLG_H__ 1
 #pragma once
 
 #include "cfg_dlg.h"
@@ -17,16 +17,20 @@ namespace fxfile
 {
 namespace cfg
 {
-class CfgAppearanceViewSetDlg : public CfgDlg
+class CfgAppearanceFolderLayoutDlg : public CfgDlg
 {
     typedef CfgDlg super;
 
 public:
-    CfgAppearanceViewSetDlg(void);
+    CfgAppearanceFolderLayoutDlg(void);
 
 protected:
     virtual void onInit(const Option::Config &aConfig);
     virtual void onApply(Option::Config &aConfig);
+
+private:
+    static xpr_sint_t getCurSelFromViewStyle(xpr_sint_t aViewStyle);
+    static xpr_sint_t getViewStyleFromCurSel(xpr_sint_t aCurSel);
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
@@ -40,4 +44,4 @@ protected:
 } // namespace cfg
 } // namespace fxfile
 
-#endif // __FXFILE_CFG_APPEARANCE_VIEW_SET_DLG_H__
+#endif // __FXFILE_CFG_APPEARANCE_FOLDER_LAYOUT_DLG_H__

@@ -32,9 +32,6 @@ public:
     xpr_bool_t  toString(xpr::string &aString, xpr_bool_t aWithBrace = XPR_TRUE) const;
     xpr_bool_t  fromString(const xpr::string &aString);
 
-    void        toGuid(Guid &aGuid) const;
-    void        fromGuid(const Guid &aGuid);
-
 public:
     xpr_size_t  getBufferSize(void) const;
     xpr_bool_t  toBuffer(xpr_byte_t *aBuffer) const;
@@ -42,10 +39,6 @@ public:
 
 public:
     Guid& operator = (const Guid &aGuid);
-    bool  operator < (const Guid &aGuid) const;
-    bool  operator > (const Guid &aGuid) const;
-    bool  operator == (const Guid &aGuid) const;
-    bool  operator != (const Guid &aGuid) const;
 
 protected:
     xpr_uint32_t mData1;
@@ -53,6 +46,28 @@ protected:
     xpr_uint16_t mData3;
     xpr_uint8_t  mData4[8];
 };
+
+XPR_INLINE bool operator== (const Guid &aGuid1, const Guid &aGuid2)
+{
+    return (aGuid1.compare(aGuid2) == 0) ? true : false;
+}
+
+XPR_INLINE bool operator!= (const Guid &aGuid1, const Guid &aGuid2)
+{
+    return (aGuid1.compare(aGuid2) != 0) ? true : false;
+}
+
+XPR_INLINE bool operator< (const Guid &aGuid1, const Guid &aGuid2)
+{
+    return (aGuid1.compare(aGuid2) < 0) ? true : false;
+}
+
+XPR_INLINE bool operator> (const Guid &aGuid1, const Guid &aGuid2)
+{
+    return (aGuid1.compare(aGuid2) > 0) ? true : false;
+}
+
+const Guid GuidNone;
 } // namespace xpr
 
 #endif // __XPR_GUID_H__

@@ -11,7 +11,7 @@
 #include "single_rename_dlg.h"
 
 #include "rename_helper.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 
 #include "option.h"
 #include "resource.h"
@@ -60,7 +60,7 @@ xpr_bool_t SingleRenameDlg::OnInitDialog(void)
 
     const xpr_tchar_t *sEditName = mRenameHelper->getEditName();
     xpr_sint_t sIconIndex = mRenameHelper->getIconIndex();
-    HICON sIcon = SysImgListMgr::instance().mSysImgList32.ExtractIcon(sIconIndex);
+    HICON sIcon = SingletonManager::get<ImgListManager>().mSysImgList32.ExtractIcon(sIconIndex);
 
     xpr_tchar_t sDesc[XPR_MAX_PATH * 2] = {0};
     _stprintf(sDesc, gApp.loadFormatString(XPR_STRING_LITERAL("popup.rename.label.top_desc"), XPR_STRING_LITERAL("%s")), sEditName);

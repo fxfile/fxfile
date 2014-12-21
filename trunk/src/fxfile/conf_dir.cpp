@@ -213,7 +213,7 @@ const xpr_tchar_t *ConfDir::getFileName(xpr_sint_t aType)
     case TypeBookmark:       return XPR_STRING_LITERAL("fxfile-bookmark.conf");
     case TypeFileScrap:      return XPR_STRING_LITERAL("fxfile-file_scrap.conf");
     case TypeSearchDir:      return XPR_STRING_LITERAL("fxfile-search_dir.conf");
-    case TypeViewSet:        return XPR_STRING_LITERAL("fxfile-view_set.conf");
+    case TypeFolderLayout:   return XPR_STRING_LITERAL("fxfile-folder_layout.conf");
     case TypeDlgState:       return XPR_STRING_LITERAL("fxfile-dlg_state.conf");
     case TypeAccel:          return XPR_STRING_LITERAL("fxfile-accel.dat");
     case TypeCoolBar:        return XPR_STRING_LITERAL("fxfile-coolbar.dat");

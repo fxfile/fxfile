@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "cfg_appearance_filtering_dlg.h"
 
-#include "../sys_img_list.h"
+#include "../img_list_manager.h"
 #include "../option.h"
 #include "../resource.h"
 
@@ -65,7 +65,7 @@ xpr_bool_t CfgAppearanceFilteringDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(0, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.name")),      LVCFMT_LEFT, 100, -1);
     mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.list.column.extension")), LVCFMT_LEFT, 245, -1);
 
-    mListCtrl.SetImageList(&SysImgListMgr::instance().mCusImgList16, LVSIL_SMALL);
+    mListCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mCustomImgList16, LVSIL_SMALL);
 
     xpr_tchar_t sText[0xff] = {0};
     _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.label.max_filter"), XPR_STRING_LITERAL("%d")), MAX_FILTER);

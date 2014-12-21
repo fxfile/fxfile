@@ -63,6 +63,17 @@ public:
         return _ttoi(sValue);
     }
 
+    inline xpr_sint_t getValueI(const ConfFile::Key *aKey, const xpr_sint_t aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        return _ttoi(sValue);
+    }
+
     inline xpr_sint64_t getValueI64(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr_sint64_t aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
@@ -77,6 +88,17 @@ public:
     inline xpr_sint64_t getValueI64(const ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr_sint64_t aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        return _ttoi64(sValue);
+    }
+
+    inline xpr_sint64_t getValueI64(const ConfFile::Key *aKey, const xpr_sint64_t aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
         {
             return aDefValue;
@@ -107,6 +129,17 @@ public:
         return _ttoi(sValue);
     }
 
+    inline xpr_bool_t getValueB(const ConfFile::Key *aKey, const xpr_bool_t aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        return _ttoi(sValue);
+    }
+
     inline xpr_double_t getValueF(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr_double_t aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
@@ -129,6 +162,17 @@ public:
         return _tstof(sValue);
     }
 
+    inline xpr_double_t getValueF(const ConfFile::Key *aKey, const xpr_double_t aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        return _tstof(sValue);
+    }
+
     inline const xpr_tchar_t *getValueS(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const xpr_tchar_t *aDefValue)
     {
         return super::getValue(aSection, aKey, aDefValue);
@@ -137,6 +181,11 @@ public:
     inline const xpr_tchar_t *getValueS(const ConfFile::Section *aSection, const xpr_tchar_t *aKey, const xpr_tchar_t *aDefValue)
     {
         return super::getValue(aSection, aKey, aDefValue);
+    }
+
+    inline const xpr_tchar_t *getValueS(const ConfFile::Key *aKey, const xpr_tchar_t *aDefValue)
+    {
+        return super::getValue(aKey, aDefValue);
     }
 
     inline RECT getValueR(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const RECT &aDefValue)
@@ -157,6 +206,21 @@ public:
     inline RECT getValueR(const ConfFile::Section *aSection, const xpr_tchar_t *aKey, const RECT &aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        RECT sRect = aDefValue;
+
+        _stscanf(sValue, XPR_STRING_LITERAL("%d,%d,%d,%d"), &sRect.left, &sRect.top, &sRect.right, &sRect.bottom);
+
+        return sRect;
+    }
+
+    inline RECT getValueR(const ConfFile::Key *aKey, const RECT &aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
         {
             return aDefValue;
@@ -199,6 +263,21 @@ public:
         return sSize;
     }
 
+    inline SIZE getValueZ(const ConfFile::Key *aKey, const SIZE &aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        SIZE sSize = aDefValue;
+
+        _stscanf(sValue, XPR_STRING_LITERAL("%d,%d"), &sSize.cx, &sSize.cy);
+
+        return sSize;
+    }
+
     inline POINT getValueP(const xpr_tchar_t *aSection, const xpr_tchar_t *aKey, const POINT &aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
@@ -217,6 +296,21 @@ public:
     inline POINT getValueP(const ConfFile::Section *aSection, const xpr_tchar_t *aKey, const POINT &aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        POINT sPoint = aDefValue;
+
+        _stscanf(sValue, XPR_STRING_LITERAL("%d,%d"), &sPoint.x, &sPoint.y);
+
+        return sPoint;
+    }
+
+    inline POINT getValueP(const ConfFile::Key *aKey, const POINT &aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
         {
             return aDefValue;
@@ -264,6 +358,38 @@ public:
     inline COLORREF getValueC(const ConfFile::Section *aSection, const xpr_tchar_t *aKey, const COLORREF &aDefValue)
     {
         const xpr_tchar_t *sValue = super::getValue(aSection, aKey, XPR_NULL);
+        if (XPR_IS_NULL(sValue))
+        {
+            return aDefValue;
+        }
+
+        COLORREF sColor = aDefValue;
+
+        xpr_sint_t r = GetRValue(aDefValue);
+        xpr_sint_t g = GetGValue(aDefValue);
+        xpr_sint_t b = GetBValue(aDefValue);
+
+        if (sValue[0] == '#')
+        {
+            _stscanf(sValue + 1, XPR_STRING_LITERAL("%02x%02x%02x"), &r, &g, &b);
+        }
+        else if (_tcschr(sValue, ',') != XPR_NULL)
+        {
+            _stscanf(sValue, XPR_STRING_LITERAL("%d,%d,%d"), &r, &g, &b);
+        }
+        else
+        {
+            _stscanf(sValue, XPR_STRING_LITERAL("%02x%02x%02x"), &r, &g, &b);
+        }
+
+        sColor = RGB((xpr_byte_t)r, (xpr_byte_t)g, (xpr_byte_t)b);
+
+        return sColor;
+    }
+
+    inline COLORREF getValueC(const ConfFile::Key *aKey, const COLORREF &aDefValue)
+    {
+        const xpr_tchar_t *sValue = super::getValue(aKey, XPR_NULL);
         if (XPR_IS_NULL(sValue))
         {
             return aDefValue;

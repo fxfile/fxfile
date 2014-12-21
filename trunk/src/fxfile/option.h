@@ -26,6 +26,7 @@ class ConfFileEx;
 namespace fxfile
 {
 class History;
+class FolderLayout;
 
 class Option
 {
@@ -76,7 +77,6 @@ public:
         xpr_sint_t      mViewSplitColumnCount;
         xpr_double_t    mViewSplitRatio[MAX_VIEW_SPLIT_COLUMN + MAX_VIEW_SPLIT_ROW - 2];
         xpr_sint_t      mViewSplitSize[MAX_VIEW_SPLIT_COLUMN + MAX_VIEW_SPLIT_ROW - 2];
-        xpr_bool_t      mViewStyle[MAX_VIEW_SPLIT];
         xpr_tchar_t     mWorkingFolder[MAX_WORKING_FOLDER][XPR_MAX_PATH * 2 + 1];
         xpr_bool_t      mFileScrapDrop;
         xpr_bool_t      mPictureViewer;
@@ -92,10 +92,20 @@ public:
 
         struct Tab
         {
+            Tab(void);
+            ~Tab(void);
+
+            void clearFolderLayout(void);
+
             xpr::string mPath;
+
             HistoryList mBackwardList;
             HistoryList mForwardList;
             HistoryList mHistoryList;
+
+            FolderLayout *mDefaultFolderLayout;
+            FolderLayout *mComputerFolderLayout;
+            FolderLayout *mVirtualFolderLayout;
         };
 
         struct View
@@ -185,7 +195,10 @@ public:
         xpr_bool_t      mFileListParentFolder;
         xpr_bool_t      mFileListGoUpSelSubFolder;
         xpr_bool_t      mFileListCustomIcon;
-        xpr_tchar_t     mFileListCustomIconFile[MAX_CUSTOM_ICON][XPR_MAX_PATH + 1];
+        xpr_tchar_t     mFileListCustomIconFile16[XPR_MAX_PATH + 1];
+        xpr_tchar_t     mFileListCustomIconFile32[XPR_MAX_PATH + 1];
+        xpr_tchar_t     mFileListCustomIconFile48[XPR_MAX_PATH + 1];
+        xpr_tchar_t     mFileListCustomIconFile256[XPR_MAX_PATH + 1];
         xpr_bool_t      mFileList24HourTime;
         xpr_bool_t      mFileList2YearDate;
         xpr_bool_t      mFileListShowDrive;
@@ -194,13 +207,12 @@ public:
         xpr_sint_t      mFileListNameCaseType;
         xpr_bool_t      mFileListCreateAndEditText;
         xpr_bool_t      mFileListAutoColumnWidth;
-        xpr_sint_t      mFileListSaveViewSet;
-        xpr_bool_t      mFileListSaveViewStyle;
+        xpr_sint_t      mFileListSaveFolderLayout;
         xpr_sint_t      mFileListDefaultViewStyle;
         xpr_sint_t      mFileListDefaultSort;
         xpr_sint_t      mFileListDefaultSortOrder;
         xpr_bool_t      mFileListNoSort;
-        xpr_bool_t      mFileListExitVerifyViewSet;
+        xpr_bool_t      mFileListExitVerifyFolderLayout;
         xpr_bool_t      mFileListClassicThemeStyle;
         xpr_bool_t      mFileListGridLines;
         xpr_bool_t      mFileListFullRowSelect;

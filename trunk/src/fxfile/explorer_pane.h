@@ -31,6 +31,7 @@ class ActivateBar;
 class DrivePathBar;
 class ContentsWnd;
 class ExplorerStatusBar;
+class ExplorerPaneObserver;
 
 class ExplorerPane
     : public TabPane
@@ -46,6 +47,8 @@ public:
     virtual ~ExplorerPane(void);
 
 public:
+    void setExplorerObserver(ExplorerPaneObserver *aExplorerPaneObserver);
+
     xpr_bool_t Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect);
 
 public:
@@ -99,7 +102,7 @@ public:
 
     void updateStatusBar(xpr_uint_t aId);
 
-protected:
+private:
     class ExplorerCtrlData;
 
     xpr_bool_t createAddressBar(void);
@@ -137,10 +140,13 @@ protected:
 
     ExplorerCtrlData *getExplorerCtrlData(xpr_uint_t aId = InvalidId) const;
 
+    void getFolderLayoutKey(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aSaveFolderLayout, xpr::string &aKey) const;
+
 protected:
     typedef std::map<xpr_uint_t, ExplorerCtrlData *> ExplorerCtrlMap;
-    ExplorerCtrlMap mExplorerCtrlMap;
-    xpr_uint_t      mCurExplorerCtrlId;
+    ExplorerCtrlMap       mExplorerCtrlMap;
+    xpr_uint_t            mCurExplorerCtrlId;
+    ExplorerPaneObserver *mExplorerPaneObserver;
 
     ContentsWnd       *mContentsWnd;
     AddressBar        *mAddressBar;
@@ -160,6 +166,8 @@ protected:
 protected:
     // from ExplorerCtrlObserver
     virtual void onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy, const xpr_tchar_t *aCurPath);
+    virtual xpr_bool_t onLoadFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, FolderLayout &aFolderLayout);
+    virtual void onSaveFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, xpr_sint_t aSaveFolderLayout, const FolderLayout &aFolderLayout);
     virtual void onUpdateStatus(ExplorerCtrl &aExplorerCtrl, xpr_size_t aRealSelCount);
     virtual void onUpdateFreeSize(ExplorerCtrl &aExplorerCtrl);
     virtual void onSetFocus(ExplorerCtrl &aExplorerCtrl);
@@ -172,10 +180,7 @@ protected:
     virtual xpr_sint_t onDrop(ExplorerCtrl &aExplorerCtrl, COleDataObject *aOleDataObject, xpr_tchar_t *aTargetDir);
     virtual xpr_bool_t onGetExecParam(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath, xpr_tchar_t *aParam, xpr_size_t aMaxLen);
     virtual void onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *aPath);
-    virtual void onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh);
-    virtual void onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId);
-    virtual void onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending);
-    virtual void onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth);
+    virtual void onFolderLayoutChange(ExplorerCtrl &aExplorerCtrl, const FolderLayoutChange &aFolderLayoutChange);
     virtual void onMoveFocus(ExplorerCtrl &aExplorerCtrl);
     virtual void onRunFile(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl);
 
