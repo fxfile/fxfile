@@ -171,12 +171,15 @@ xpr_sint_t Pidl::compare(LPCITEMIDLIST aPidl1, LPCITEMIDLIST aPidl2)
         return -1;
     }
 
-    if (Pidl::getSize(aPidl1) != Pidl::getSize(aPidl2))
+    xpr_size_t sSize1 = Pidl::getSize(aPidl1);
+    xpr_size_t sSize2 = Pidl::getSize(aPidl2);
+
+    if (sSize1 != sSize2)
     {
         return -1;
     }
 
-    xpr_sint_t sResult = memcmp(aPidl1, aPidl2, Pidl::getSize(aPidl1));
+    xpr_sint_t sResult = memcmp(aPidl1, aPidl2, sSize1);
 
     return sResult;
 }
@@ -534,7 +537,6 @@ LPITEMIDLIST Pidl::getFullPidl(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aSimple
             sFullPidl = concat(sFolderPidl, sChildPidl);
 
             ::GlobalUnlock(sStgMedium.hGlobal);
-            ::GlobalFree(sStgMedium.hGlobal);
 
             if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
             {
