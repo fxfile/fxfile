@@ -107,7 +107,6 @@ xpr_bool_t DoPaste(HWND               aHwnd,
         sDropEffect = *((DROPEFFECT *)::GlobalLock(sGlobal));
 
         ::GlobalUnlock(sGlobal);
-        //::GlobalFree(sGlobal);
     }
 
     return DoPaste(aHwnd, &sOleDataObject, XPR_FALSE, aShellIDListClipFormat, sDropEffect, aTarget, aLinkSuffix, aMsg, aCopy);
@@ -218,7 +217,6 @@ xpr_bool_t DoPaste(HWND               aHwnd,
             COM_RELEASE(sShellFolder);
             COM_RELEASE(sDesktopShellFolder);
             ::GlobalUnlock(sStgMedium.hGlobal);
-            //::GlobalFree(sStgMedium.hGlobal);
 
             if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
             {
@@ -808,9 +806,6 @@ xpr_bool_t DoPasteInetUrl(LPDATAOBJECT aDataObject, xpr_tchar_t *aDir, CLIPFORMA
 
         if (XPR_IS_NOT_NULL(sUrl))
             ::GlobalUnlock(sInetUrlStgMedium.hGlobal);
-
-        if (XPR_IS_NOT_NULL(sFileGroupDescA) || XPR_IS_NOT_NULL(sFileGroupDescW))
-            ::GlobalFree(sDescriptorStgMedium.hGlobal);
 
         if (XPR_IS_NOT_NULL(sInetUrlStgMedium.pUnkForRelease))
         {
