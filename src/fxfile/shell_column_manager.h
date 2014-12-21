@@ -7,22 +7,22 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_SHELL_COLUMN_H__
-#define __FXFILE_SHELL_COLUMN_H__ 1
+#ifndef __FXFILE_SHELL_COLUMN_MANAGER_H__
+#define __FXFILE_SHELL_COLUMN_MANAGER_H__ 1
 #pragma once
 
 #include "thread.h"
 #include "pattern.h"
-#include "view_set.h"
+#include "folder_layout.h"
 
 namespace fxfile
 {
-class ShellColumn : public xpr::Thread::Runnable, public fxfile::base::Singleton<ShellColumn>
+class ShellColumnManager : public xpr::Thread::Runnable, public fxfile::base::Singleton<ShellColumnManager>
 {
-    friend class fxfile::base::Singleton<ShellColumn>;
+    friend class fxfile::base::Singleton<ShellColumnManager>;
 
-protected: ShellColumn(void);
-public:   ~ShellColumn(void);
+protected: ShellColumnManager(void);
+public:   ~ShellColumnManager(void);
 
 public:
     enum
@@ -55,7 +55,6 @@ public:
             mMsg                  = 0;
             mIndex                = -1;
             mSignature            = 0;
-            mColumnId.mFormatId   = GUID_NULL;
             mColumnId.mPropertyId = -1;
             mColumnIndex          = -1;
             mShellFolder2         = XPR_NULL;
@@ -113,4 +112,4 @@ protected:
 };
 } // namespace fxfile
 
-#endif // __FXFILE_SHELL_COLUMN_H__
+#endif // __FXFILE_SHELL_COLUMN_MANAGER_H__

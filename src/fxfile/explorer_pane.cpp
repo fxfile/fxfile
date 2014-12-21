@@ -9,8 +9,9 @@
 
 #include "stdafx.h"
 #include "explorer_pane.h"
+#include "explorer_pane_observer.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "bookmark.h"
 #include "context_menu.h"
 #include "file_scrap.h"
@@ -19,6 +20,7 @@
 #include "size_format.h"
 #include "recent_file_list.h"
 #include "clipboard.h"
+#include "folder_layout_manager.h"
 
 #include "gui/DropTarget.h"
 #include "gui/MemDC.h"
@@ -95,6 +97,7 @@ protected:
 ExplorerPane::ExplorerPane(void)
     : TabPane(TabTypeExplorer)
     , mCurExplorerCtrlId(0)
+    , mExplorerPaneObserver(XPR_NULL)
     , mAddressBar(XPR_NULL), mPathBar(XPR_NULL), mDrivePathBar(XPR_NULL), mContentsWnd(XPR_NULL), mStatusBar(XPR_NULL)
     , mIsDrivePathBar(XPR_FALSE)
     , mContentsStyle(CONTENTS_NONE), mMarginRect(CRect(CONTENTS_EXPLORER_STYLE_WIDTH, 0, 0, 0))
@@ -104,6 +107,11 @@ ExplorerPane::ExplorerPane(void)
 
 ExplorerPane::~ExplorerPane(void)
 {
+}
+
+void ExplorerPane::setExplorerObserver(ExplorerPaneObserver *aExplorerPaneObserver)
+{
+    mExplorerPaneObserver = aExplorerPaneObserver;
 }
 
 xpr_bool_t ExplorerPane::Create(CWnd *aParentWnd, xpr_uint_t aId, const RECT &aRect)
@@ -222,7 +230,9 @@ void ExplorerPane::saveOption(void)
     ExplorerCtrl *sExplorerCtrl = getExplorerCtrl();
     if (XPR_IS_NOT_NULL(sExplorerCtrl))
     {
-        sExplorerCtrl->saveOption();
+        // save folder layout
+        sExplorerCtrl->syncFolderLayout();
+        sExplorerCtrl->saveFolderLayout();
     }
 }
 
@@ -571,8 +581,10 @@ void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &
     sOption.mParentFolder                     = aOption.mConfig.mFileListParentFolder;
     sOption.mGoUpSelSubFolder                 = aOption.mConfig.mFileListGoUpSelSubFolder;
     sOption.mCustomIcon                       = aOption.mConfig.mFileListCustomIcon;
-    _tcscpy(sOption.mCustomIconFile[0],         aOption.mConfig.mFileListCustomIconFile[0]);
-    _tcscpy(sOption.mCustomIconFile[1],         aOption.mConfig.mFileListCustomIconFile[1]);
+    _tcscpy(sOption.mCustomIconFile16,          aOption.mConfig.mFileListCustomIconFile16);
+    _tcscpy(sOption.mCustomIconFile32,          aOption.mConfig.mFileListCustomIconFile32);
+    _tcscpy(sOption.mCustomIconFile48,          aOption.mConfig.mFileListCustomIconFile48);
+    _tcscpy(sOption.mCustomIconFile256,         aOption.mConfig.mFileListCustomIconFile256);
     sOption.m24HourTime                       = aOption.mConfig.mFileList24HourTime;
     sOption.m2YearDate                        = aOption.mConfig.mFileList2YearDate;
     sOption.mShowDrive                        = aOption.mConfig.mFileListShowDrive;
@@ -581,13 +593,11 @@ void ExplorerPane::setExplorerOption(ExplorerCtrl *aExplorerCtrl, const Option &
     sOption.mNameCaseType                     = aOption.mConfig.mFileListNameCaseType;
     sOption.mCreateAndEditText                = aOption.mConfig.mFileListCreateAndEditText;
     sOption.mAutoColumnWidth                  = aOption.mConfig.mFileListAutoColumnWidth;
-    sOption.mSaveViewSet                      = aOption.mConfig.mFileListSaveViewSet;
-    sOption.mSaveViewStyle                    = aOption.mConfig.mFileListSaveViewStyle;
+    sOption.mSaveFolderLayout                 = aOption.mConfig.mFileListSaveFolderLayout;
     sOption.mDefaultViewStyle                 = aOption.mConfig.mFileListDefaultViewStyle;
     sOption.mDefaultSort                      = aOption.mConfig.mFileListDefaultSort;
     sOption.mDefaultSortOrder                 = aOption.mConfig.mFileListDefaultSortOrder;
     sOption.mNoSort                           = aOption.mConfig.mFileListNoSort;
-    sOption.mExitVerifyViewSet                = aOption.mConfig.mFileListExitVerifyViewSet;
     sOption.mClassicThemeStyle                = aOption.mConfig.mFileListClassicThemeStyle;
     sOption.mGridLines                        = aOption.mConfig.mFileListGridLines;
     sOption.mFullRowSelect                    = aOption.mConfig.mFileListFullRowSelect;
@@ -786,7 +796,7 @@ xpr_bool_t ExplorerPane::createAddressBar(void)
 
         if (mAddressBar->Create(this, CTRL_ID_ADDRESS_BAR, CRect(0,0,0,300)) == XPR_TRUE)
         {
-            mAddressBar->setSystemImageList(&SysImgListMgr::instance().mSysImgList16);
+            mAddressBar->setSystemImageList(&SingletonManager::get<ImgListManager>().mSysImgList16);
             mAddressBar->setCustomFont(gOpt->mConfig.mCustomFontText);
         }
         else
@@ -1301,6 +1311,58 @@ void ExplorerPane::onExplore(ExplorerCtrl &aExplorerCtrl, LPITEMIDLIST aFullPidl
     }
 }
 
+xpr_bool_t ExplorerPane::onLoadFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, FolderLayout &aFolderLayout)
+{
+    xpr_bool_t sLoaded = XPR_FALSE;
+
+    if (XPR_IS_FALSE(gApp.isInitialized()))
+    {
+        if (gOpt->mConfig.mFileListSaveFolderLayout == SAVE_FOLDER_LAYOUT_DEFAULT)
+        {
+            if (XPR_IS_NOT_NULL(mExplorerPaneObserver))
+            {
+                sLoaded = mExplorerPaneObserver->onLoadFolderLayout(aExplorerCtrl, aFolderType, aFolderLayout);
+            }
+        }
+    }
+
+    if (XPR_IS_FALSE(sLoaded))
+    {
+        if (gOpt->mConfig.mFileListSaveFolderLayout == SAVE_FOLDER_LAYOUT_EACH_FOLDER)
+        {
+            // get key of folder layout
+            xpr::string sKey;
+            getFolderLayoutKey(aExplorerCtrl, gOpt->mConfig.mFileListSaveFolderLayout, sKey);
+
+            // load folder layout
+            FolderLayoutManager &sFolderLayoutManager = SingletonManager::get<FolderLayoutManager>();
+            sLoaded = sFolderLayoutManager.load(sKey, aFolderLayout);
+        }
+    }
+
+    return sLoaded;
+}
+
+void ExplorerPane::onSaveFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, xpr_sint_t aSaveFolderLayout, const FolderLayout &aFolderLayout)
+{
+    if (gOpt->mConfig.mFileListSaveFolderLayout == SAVE_FOLDER_LAYOUT_EACH_FOLDER)
+    {
+        // get key of folder layout
+        xpr::string sKey;
+        getFolderLayoutKey(aExplorerCtrl, aSaveFolderLayout, sKey);
+
+        // save folder layout
+        FolderLayoutManager &sFolderLayoutManager = SingletonManager::get<FolderLayoutManager>();
+        xpr_bool_t sResult = sFolderLayoutManager.save(sKey, aFolderLayout);
+    }
+}
+
+void ExplorerPane::getFolderLayoutKey(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aSaveFolderLayout, xpr::string &aKey) const
+{
+    LPTVITEMDATA sTvItemData = aExplorerCtrl.getFolderData();
+    GetName(sTvItemData->mShellFolder, sTvItemData->mPidl, SHGDN_FORPARSING, aKey);
+}
+
 void ExplorerPane::onUpdateStatus(ExplorerCtrl &aExplorerCtrl, xpr_size_t aRealSelCount)
 {
     if (aRealSelCount == 0)
@@ -1456,91 +1518,11 @@ void ExplorerPane::onExecError(ExplorerCtrl &aExplorerCtrl, const xpr_tchar_t *a
     }
 }
 
-void ExplorerPane::onSetViewStyle(ExplorerCtrl &aExplorerCtrl, xpr_sint_t aStyle, xpr_bool_t aRefresh)
+void ExplorerPane::onFolderLayoutChange(ExplorerCtrl &aExplorerCtrl, const FolderLayoutChange &aFolderLayoutChange)
 {
-    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
+    if (XPR_IS_NOT_NULL(mExplorerPaneObserver))
     {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            // TODO: tab
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->setViewStyle(aStyle, aRefresh, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerPane::onUseColumn(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId)
-{
-    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            // TODO: tab
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->useColumn(aColumnId, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerPane::onSortItems(ExplorerCtrl &aExplorerCtrl, ColumnId *aColumnId, xpr_bool_t aAscending)
-{
-    if (gOpt->mConfig.mFileListSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
-    {
-        xpr_sint_t i;
-        xpr_sint_t sViewCount = gFrame->getViewCount();
-        ExplorerCtrl *sExplorerCtrl;
-
-        for (i = 0; i < sViewCount; ++i)
-        {
-            // TODO: tab
-            sExplorerCtrl = gFrame->getExplorerCtrl(i);
-            if (XPR_IS_NOT_NULL(sExplorerCtrl))
-            {
-                if (&aExplorerCtrl != sExplorerCtrl)
-                {
-                    sExplorerCtrl->sortItems(aColumnId, aAscending, XPR_FALSE);
-                }
-            }
-        }
-    }
-}
-
-void ExplorerPane::onSetColumnWidth(ExplorerCtrl &aExplorerCtrl, xpr_sint_t sColumnIndex, xpr_sint_t sWidth)
-{
-    xpr_sint_t i;
-    xpr_sint_t sViewCount = gFrame->getViewCount();
-    ExplorerCtrl *sExplorerCtrl;
-
-    for (i = 0; i < sViewCount; ++i)
-    {
-        sExplorerCtrl = gFrame->getExplorerCtrl(i);
-        if (XPR_IS_NOT_NULL(sExplorerCtrl))
-        {
-            if (&aExplorerCtrl != sExplorerCtrl)
-            {
-                sExplorerCtrl->SetColumnWidth(sColumnIndex, sWidth);
-            }
-        }
+        mExplorerPaneObserver->onFolderLayoutChange(aExplorerCtrl, aFolderLayoutChange);
     }
 }
 

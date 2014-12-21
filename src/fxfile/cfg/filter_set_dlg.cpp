@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "filter_set_dlg.h"
 
-#include "../sys_img_list.h"
+#include "../img_list_manager.h"
 
 #include "resource.h"
 
@@ -57,10 +57,10 @@ xpr_bool_t FilterSetDlg::OnInitDialog(void)
 {
     super::OnInitDialog();
 
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
     mIconListCtrl.setIconOffset(ICON_OFFSET);
-    mIconListCtrl.setImageList(&sSysImgListMgr.mCusImgList32, &sSysImgListMgr.mCusImgList16);
+    mIconListCtrl.setImageList(&sImgListManager.mCustomImgList32, &sImgListManager.mCustomImgList16);
     mIconListCtrl.SetCurSel(mFilterItem.mIconIndex - ICON_OFFSET);
 
     ((CEdit *)GetDlgItem(IDC_FILTER_SET_NAME))->LimitText(MAX_FILTER_NAME);

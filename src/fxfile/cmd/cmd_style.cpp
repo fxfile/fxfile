@@ -12,6 +12,7 @@
 
 #include "resource.h"
 #include "explorer_ctrl.h"
+#include "option.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,30 +30,26 @@ xpr_sint_t ViewStyleCommand::canExecute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        DWORD sViewStyle = sExplorerCtrl->getViewStyle();
+        xpr_bool_t sChecked = XPR_FALSE;
+        xpr_sint_t sViewStyle = sExplorerCtrl->getViewStyle();
 
-        if (sCommandId == ID_VIEW_LINEUP)
+        sState |= StateEnable;
+
+        switch (sCommandId)
         {
-            if (sViewStyle == LVS_ICON || sViewStyle == LVS_SMALLICON)
-                sState |= StateEnable;
+        case ID_VIEW_STYLE_EXTRA_LARGE_ICONS: sChecked = (sViewStyle == VIEW_STYLE_EXTRA_LARGE_ICONS); break;
+        case ID_VIEW_STYLE_LARGE_ICONS:       sChecked = (sViewStyle == VIEW_STYLE_LARGE_ICONS);       break;
+        case ID_VIEW_STYLE_MEDIUM_ICONS:      sChecked = (sViewStyle == VIEW_STYLE_MEDIUM_ICONS);      break;
+        case ID_VIEW_STYLE_SMALL_ICONS:       sChecked = (sViewStyle == VIEW_STYLE_SMALL_ICONS);       break;
+        case ID_VIEW_STYLE_LIST:              sChecked = (sViewStyle == VIEW_STYLE_LIST);              break;
+        case ID_VIEW_STYLE_DETAILS:           sChecked = (sViewStyle == VIEW_STYLE_DETAILS);           break;
+        case ID_VIEW_STYLE_THUMBNAIL:         sChecked = (sViewStyle == VIEW_STYLE_THUMBNAIL);         break;
+        default:                              sChecked = XPR_FALSE;                                    break;
         }
-        else
+
+        if (XPR_IS_TRUE(sChecked))
         {
-            sState |= StateEnable;
-
-            xpr_bool_t sChecked = XPR_FALSE;
-            switch (sCommandId)
-            {
-            case ID_VIEW_STYLE_DETAILS:    sChecked = (sViewStyle == LVS_REPORT);    break;
-            case ID_VIEW_STYLE_SMALLICONS: sChecked = (sViewStyle == LVS_SMALLICON); break;
-            case ID_VIEW_STYLE_LARGEICONS: sChecked = (sViewStyle == LVS_ICON);      break;
-            case ID_VIEW_STYLE_LIST:       sChecked = (sViewStyle == LVS_LIST);      break;
-            case ID_VIEW_STYLE_THUMBNAIL:  sChecked = (sViewStyle == LVS_THUMBNAIL); break;
-            default:                       sChecked = XPR_FALSE;                     break;
-            }
-
-            if (XPR_IS_TRUE(sChecked))
-                sState |= StateRadio;
+            sState |= StateRadio;
         }
     }
 
@@ -65,21 +62,22 @@ void ViewStyleCommand::execute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        DWORD sViewStyle = -1;
+        xpr_sint_t sViewStyle = -1;
 
         switch (sCommandId)
         {
-        case ID_VIEW_LINEUP:           sExplorerCtrl->Arrange(LVA_SNAPTOGRID); break;
-        case ID_VIEW_STYLE_DETAILS:    sViewStyle = LVS_REPORT;                break;
-        case ID_VIEW_STYLE_SMALLICONS: sViewStyle = LVS_SMALLICON;             break;
-        case ID_VIEW_STYLE_LARGEICONS: sViewStyle = LVS_ICON;                  break;
-        case ID_VIEW_STYLE_LIST:       sViewStyle = LVS_LIST;                  break;
-        case ID_VIEW_STYLE_THUMBNAIL:  sViewStyle = LVS_THUMBNAIL;             break;
+        case ID_VIEW_STYLE_EXTRA_LARGE_ICONS: sViewStyle = VIEW_STYLE_EXTRA_LARGE_ICONS; break;
+        case ID_VIEW_STYLE_LARGE_ICONS:       sViewStyle = VIEW_STYLE_LARGE_ICONS;       break;
+        case ID_VIEW_STYLE_MEDIUM_ICONS:      sViewStyle = VIEW_STYLE_MEDIUM_ICONS;      break;
+        case ID_VIEW_STYLE_SMALL_ICONS:       sViewStyle = VIEW_STYLE_SMALL_ICONS;       break;
+        case ID_VIEW_STYLE_LIST:              sViewStyle = VIEW_STYLE_LIST;              break;
+        case ID_VIEW_STYLE_DETAILS:           sViewStyle = VIEW_STYLE_DETAILS;           break;
+        case ID_VIEW_STYLE_THUMBNAIL:         sViewStyle = VIEW_STYLE_THUMBNAIL;         break;
         }
 
         if (sViewStyle != -1)
         {
-            xpr_bool_t sRefesh = (sViewStyle == LVS_THUMBNAIL) ? XPR_TRUE : XPR_FALSE;
+            xpr_bool_t sRefesh = (sViewStyle == VIEW_STYLE_THUMBNAIL) ? XPR_TRUE : XPR_FALSE;
             sExplorerCtrl->setViewStyle(sViewStyle, sRefesh);
         }
     }

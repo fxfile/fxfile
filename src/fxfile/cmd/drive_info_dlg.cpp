@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "drive_info_dlg.h"
 
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "resource.h"
 
 #ifdef _DEBUG
@@ -70,7 +70,7 @@ void DriveInfoDlg::setDriveCount(xpr_sint_t aCount)
     mDetailDlgs = new DriveDetailDlg[aCount];
     mTreeItems = new HTREEITEM[aCount];
 
-    mTreeCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, TVSIL_NORMAL);
+    mTreeCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mSysImgList16, TVSIL_NORMAL);
 
     xpr_tchar_t sDrives[XPR_MAX_PATH + 1] = {0};
     GetDriveStrings(sDrives);

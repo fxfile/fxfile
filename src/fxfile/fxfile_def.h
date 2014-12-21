@@ -49,8 +49,6 @@ namespace fxfile
 
 #define MAX_FONT_TEXT             (0xff)
 
-#define MAX_CUSTOM_ICON           (2)
-
 #define MIN_THUMB_SIZE            (50)
 #define DEF_THUMB_SIZE            (100)
 #define MAX_THUMB_SIZE            (300)
@@ -75,6 +73,13 @@ namespace fxfile
 #define UPDATE_CHECK_TIME_MIN     (1)
 #define UPDATE_CHECK_TIME_DEF     (24)
 #define UPDATE_CHECK_TIME_MAX     (365 * 24)
+
+enum FolderType
+{
+    FOLDER_DEFAULT = 0,
+    FOLDER_COMPUTER,
+    FOLDER_VIRTUAL,
+};
 
 enum
 {
@@ -156,19 +161,22 @@ enum
 
 enum
 {
-    SAVE_VIEW_SET_NONE = 0,
-    SAVE_VIEW_SET_DEFAULT,
-    SAVE_VIEW_SET_ALL_OF_SAME,
-    SAVE_VIEW_SET_EACH_FOLDER,
+    SAVE_FOLDER_LAYOUT_NONE = 0,
+    SAVE_FOLDER_LAYOUT_DEFAULT,
+    SAVE_FOLDER_LAYOUT_EACH_FOLDER,
 };
 
 enum
 {
-    VIEW_STYLE_ICON = 0,
-    VIEW_STYLE_SMALL_ICON,
+    VIEW_STYLE_DETAILS = 0,
     VIEW_STYLE_LIST,
-    VIEW_STYLE_REPORT,
+    VIEW_STYLE_TILES,
+    VIEW_STYLE_CONTENT,
     VIEW_STYLE_THUMBNAIL,
+    VIEW_STYLE_SMALL_ICONS = 20,
+    VIEW_STYLE_MEDIUM_ICONS,
+    VIEW_STYLE_LARGE_ICONS,
+    VIEW_STYLE_EXTRA_LARGE_ICONS,
 };
 
 enum

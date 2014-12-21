@@ -16,6 +16,7 @@
 
 #include "folder_pane_observer.h"
 #include "tab_pane_observer.h"
+#include "explorer_pane_observer.h"
 #include "splitter.h"
 #include "tab_type.h"
 
@@ -41,6 +42,7 @@ class ExplorerView
     , public SplitterObserver
     , public FolderPaneObserver
     , public TabPaneObserver
+    , public ExplorerPaneObserver
 {
     typedef CView super;
 
@@ -215,6 +217,10 @@ protected:
     virtual xpr_bool_t onOpenFolder(TabPane &aTabPane, LPCITEMIDLIST aFullPidl);
     virtual void onSetFocus(TabPane &aTabPane);
     virtual void onMoveFocus(TabPane &aTabPane, xpr_sint_t aCurWnd);
+
+    // from ExplorerPaneObserver
+    virtual xpr_bool_t onLoadFolderLayout(ExplorerCtrl &aExplorerCtrl, FolderType aFolderType, FolderLayout &aFolderLayout);
+    virtual void onFolderLayoutChange(ExplorerCtrl &aExplorerCtrl, const FolderLayoutChange &aFolderLayoutChange);
 
 protected:
     DECLARE_MESSAGE_MAP()

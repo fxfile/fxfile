@@ -15,6 +15,8 @@
 #include "size_format.h"
 #include "thumbnail.h"
 #include "history.h"
+#include "folder_layout.h"
+#include "folder_layout_manager.h"
 
 #include "app_ver.h"
 
@@ -29,19 +31,18 @@ namespace fxfile
 {
 namespace
 {
-const xpr_tchar_t kMainSection    [] = XPR_STRING_LITERAL("main");
-const xpr_tchar_t kConfigSection  [] = XPR_STRING_LITERAL("config");
+const xpr_tchar_t kMainSection               [] = XPR_STRING_LITERAL("main");
+const xpr_tchar_t kConfigSection             [] = XPR_STRING_LITERAL("config");
 
-const xpr_tchar_t kCurTabKey      [] = XPR_STRING_LITERAL("main.view%d.current_tab");
-const xpr_tchar_t kTabKey         [] = XPR_STRING_LITERAL("main.view%d.tab%d.path");
-const xpr_tchar_t kVersionKey     [] = XPR_STRING_LITERAL("version");
-
-const xpr_tchar_t kBackwardSection[] = XPR_STRING_LITERAL("backward");
-const xpr_tchar_t kBackwardKey    [] = XPR_STRING_LITERAL("backward.view%d.tab%d.item%d.path");
-const xpr_tchar_t kForwardSection [] = XPR_STRING_LITERAL("forward");
-const xpr_tchar_t kForwardKey     [] = XPR_STRING_LITERAL("forward.view%d.tab%d.item%d.path");
-const xpr_tchar_t kHistorySection [] = XPR_STRING_LITERAL("history");
-const xpr_tchar_t kHistoryKey     [] = XPR_STRING_LITERAL("history.view%d.tab%d.item%d.path");
+const xpr_tchar_t kVersionKey                [] = XPR_STRING_LITERAL("version");
+const xpr_tchar_t kCurTabKey                 [] = XPR_STRING_LITERAL("main.view%d.current_tab");
+const xpr_tchar_t kTabFolderLayoutDefaultKey [] = XPR_STRING_LITERAL("main.view%d.tab%d.folder_layout.default");
+const xpr_tchar_t kTabFolderLayoutComputerKey[] = XPR_STRING_LITERAL("main.view%d.tab%d.folder_layout.computer");
+const xpr_tchar_t kTabFolderLayoutVirtualKey [] = XPR_STRING_LITERAL("main.view%d.tab%d.folder_layout.virtual");
+const xpr_tchar_t kTabPathKey                [] = XPR_STRING_LITERAL("main.view%d.tab%d.path");
+const xpr_tchar_t kBackwardKey               [] = XPR_STRING_LITERAL("main.view%d.tab%d.backward.path%d");
+const xpr_tchar_t kForwardKey                [] = XPR_STRING_LITERAL("main.view%d.tab%d.forward.path%d");
+const xpr_tchar_t kHistoryKey                [] = XPR_STRING_LITERAL("main.view%d.tab%d.history.path%d");
 } // namespace anonymous
 
 struct OptionKey
@@ -104,12 +105,6 @@ static const OptionKey gMainOptionKeys[] =
     { XPR_STRING_LITERAL("main.view.size1"),                                   OptionKey::TypeInteger, &Option::mMain.mViewSplitSize[0],               (void *)0                              },
     { XPR_STRING_LITERAL("main.view.size2"),                                   OptionKey::TypeInteger, &Option::mMain.mViewSplitSize[1],               (void *)0                              },
     { XPR_STRING_LITERAL("main.view.size3"),                                   OptionKey::TypeInteger, &Option::mMain.mViewSplitSize[2],               (void *)0                              },
-    { XPR_STRING_LITERAL("main.view1.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[0],                   (void *)LVS_REPORT                     },
-    { XPR_STRING_LITERAL("main.view2.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[1],                   (void *)LVS_REPORT                     },
-    { XPR_STRING_LITERAL("main.view3.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[2],                   (void *)LVS_REPORT                     },
-    { XPR_STRING_LITERAL("main.view4.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[3],                   (void *)LVS_REPORT                     },
-    { XPR_STRING_LITERAL("main.view5.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[4],                   (void *)LVS_REPORT                     },
-    { XPR_STRING_LITERAL("main.view6.file_list.view_style"),                   OptionKey::TypeInteger, &Option::mMain.mViewStyle[5],                   (void *)LVS_REPORT                     },
     { XPR_STRING_LITERAL("main.working_folder.#1"),                            OptionKey::TypeString,   Option::mMain.mWorkingFolder[0],               (void *)XPR_STRING_LITERAL("")         },
     { XPR_STRING_LITERAL("main.working_folder.#2"),                            OptionKey::TypeString,   Option::mMain.mWorkingFolder[1],               (void *)XPR_STRING_LITERAL("")         },
     { XPR_STRING_LITERAL("main.working_folder.#3"),                            OptionKey::TypeString,   Option::mMain.mWorkingFolder[2],               (void *)XPR_STRING_LITERAL("")         },
@@ -281,18 +276,19 @@ static const OptionKey gConfigOptionKeys[] =
     { XPR_STRING_LITERAL("config.file_list.show_drive_item"),                  OptionKey::TypeBoolean, &Option::mConfig.mFileListShowDriveItem,        (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.show_drive_size"),                  OptionKey::TypeBoolean, &Option::mConfig.mFileListShowDriveSize,        (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.name_case_type"),                   OptionKey::TypeInteger, &Option::mConfig.mFileListNameCaseType,         (void *)NAME_CASE_TYPE_DEFAULT         },
-    { XPR_STRING_LITERAL("config.file_list.save_view_style"),                  OptionKey::TypeBoolean, &Option::mConfig.mFileListSaveViewStyle,        (void *)XPR_TRUE                       },
     { XPR_STRING_LITERAL("config.file_list.create_text_file_and_edit"),        OptionKey::TypeBoolean, &Option::mConfig.mFileListCreateAndEditText,    (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.custom_font"),                      OptionKey::TypeBoolean, &Option::mConfig.mCustomFont,                   (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.custom_font_name"),                 OptionKey::TypeString,   Option::mConfig.mCustomFontText,               (void *)XPR_STRING_LITERAL("")         },
     { XPR_STRING_LITERAL("config.file_list.auto_column_width"),                OptionKey::TypeBoolean, &Option::mConfig.mFileListAutoColumnWidth,      (void *)XPR_FALSE                      },
-    { XPR_STRING_LITERAL("config.file_list.default_view_style"),               OptionKey::TypeInteger, &Option::mConfig.mFileListDefaultViewStyle,     (void *)VIEW_STYLE_REPORT              },
+    { XPR_STRING_LITERAL("config.file_list.default_view_style"),               OptionKey::TypeInteger, &Option::mConfig.mFileListDefaultViewStyle,     (void *)VIEW_STYLE_DETAILS             },
     { XPR_STRING_LITERAL("config.file_list.default_sort"),                     OptionKey::TypeInteger, &Option::mConfig.mFileListDefaultSort,          (void *)XPR_FALSE                      },
     { XPR_STRING_LITERAL("config.file_list.default_sort_rrder"),               OptionKey::TypeInteger, &Option::mConfig.mFileListDefaultSortOrder,     (void *)1                              },
-    { XPR_STRING_LITERAL("config.file_list.save_view_set"),                    OptionKey::TypeBoolean, &Option::mConfig.mFileListSaveViewSet,          (void *)SAVE_VIEW_SET_DEFAULT          },
-    { XPR_STRING_LITERAL("config.file_list.verify_view_set_on_exit"),          OptionKey::TypeBoolean, &Option::mConfig.mFileListExitVerifyViewSet,    (void *)XPR_TRUE                       },
-    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_16"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile[0],    (void *)XPR_STRING_LITERAL("")         },
-    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_32"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile[1],    (void *)XPR_STRING_LITERAL("")         },
+    { XPR_STRING_LITERAL("config.file_list.save_folder_layout"),               OptionKey::TypeBoolean, &Option::mConfig.mFileListSaveFolderLayout,     (void *)SAVE_FOLDER_LAYOUT_DEFAULT     },
+    { XPR_STRING_LITERAL("config.file_list.verify_folder_layout_on_exit"),     OptionKey::TypeBoolean, &Option::mConfig.mFileListExitVerifyFolderLayout, (void *)XPR_TRUE                     },
+    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_16"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile16,     (void *)XPR_STRING_LITERAL("")         },
+    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_32"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile32,     (void *)XPR_STRING_LITERAL("")         },
+    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_48"),              OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile48,     (void *)XPR_STRING_LITERAL("")         },
+    { XPR_STRING_LITERAL("config.file_list.custom_icon_path_256"),             OptionKey::TypeString,   Option::mConfig.mFileListCustomIconFile256,    (void *)XPR_STRING_LITERAL("")         },
     { XPR_STRING_LITERAL("config.file_list.size_unit_single_selected"),        OptionKey::TypeInteger, &Option::mConfig.mSingleSelFileSizeUnit,        (void *)SIZE_UNIT_DEFAULT              },
     { XPR_STRING_LITERAL("config.file_list.size_unit_multiple_selected"),      OptionKey::TypeInteger, &Option::mConfig.mMultiSelFileSizeUnit,         (void *)SIZE_UNIT_DEFAULT              },
     { XPR_STRING_LITERAL("config.file_list.theme_style"),                      OptionKey::TypeBoolean, &Option::mConfig.mFileListClassicThemeStyle,    (void *)XPR_FALSE                      },
@@ -379,6 +375,18 @@ static const OptionKey gConfigOptionKeys[] =
 
 void Option::Main::clearView(void)
 {
+}
+
+Option::Main::Tab::Tab(void)
+    : mDefaultFolderLayout(XPR_NULL), mComputerFolderLayout(XPR_NULL), mVirtualFolderLayout(XPR_NULL)
+{
+}
+
+Option::Main::Tab::~Tab(void)
+{
+    XPR_SAFE_DELETE(mDefaultFolderLayout);
+    XPR_SAFE_DELETE(mComputerFolderLayout);
+    XPR_SAFE_DELETE(mVirtualFolderLayout);
 }
 
 Option::Main::View::View(void)
@@ -487,10 +495,8 @@ void Option::loadMainOption(fxfile::base::ConfFileEx &aConfFile)
 {
     xpr_sint_t         i, j, k;
     xpr_tchar_t        sKey[0xff] = {0};
+    xpr_tchar_t        sFolderLayoutKey[0xff] = {0};
     ConfFile::Section *sSection;
-    ConfFile::Section *sBackwardSection;
-    ConfFile::Section *sForwardSection;
-    ConfFile::Section *sHistorySection;
     const xpr_tchar_t *sValue;
     Main::Tab         *sTab;
 
@@ -505,10 +511,6 @@ void Option::loadMainOption(fxfile::base::ConfFileEx &aConfFile)
             _tcscat(mMain.mWorkingFolder[i], XPR_STRING_LITERAL("\\"));
     }
 
-    sBackwardSection = aConfFile.findSection(kBackwardSection);
-    sForwardSection  = aConfFile.findSection(kForwardSection);
-    sHistorySection  = aConfFile.findSection(kHistorySection);
-
     // last tab
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
@@ -518,55 +520,78 @@ void Option::loadMainOption(fxfile::base::ConfFileEx &aConfFile)
 
         for (j = 0; ; ++j)
         {
-            _stprintf(sKey, kTabKey, i + 1, j + 1);
+            _stprintf(sKey, kTabPathKey, i + 1, j + 1);
 
             sValue = aConfFile.getValueS(sSection, sKey, XPR_NULL);
             if (sValue == XPR_NULL)
                 break;
 
             sTab = new Main::Tab;
+
+            // path
             sTab->mPath = sValue;
 
-            if (XPR_IS_NOT_NULL(sBackwardSection))
+            // backward list
+            for (k = 0; ; ++k)
             {
-                for (k = 0; ; ++k)
-                {
-                    _stprintf(sKey, kBackwardKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kBackwardKey, i + 1, j + 1, k + 1);
 
-                    sValue = aConfFile.getValueS(sBackwardSection, sKey, XPR_NULL);
-                    if (XPR_IS_NULL(sValue))
-                        break;
+                sValue = aConfFile.getValueS(sSection, sKey, XPR_NULL);
+                if (XPR_IS_NULL(sValue))
+                    break;
 
-                    sTab->mBackwardList.push_back(sValue);
-                }
+                sTab->mBackwardList.push_back(sValue);
             }
 
-            if (XPR_IS_NOT_NULL(sForwardSection))
+            // forward list
+            for (k = 0; ; ++k)
             {
-                for (k = 0; ; ++k)
-                {
-                    _stprintf(sKey, kForwardKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kForwardKey, i + 1, j + 1, k + 1);
 
-                    sValue = aConfFile.getValueS(sForwardSection, sKey, XPR_NULL);
-                    if (XPR_IS_NULL(sValue))
-                        break;
+                sValue = aConfFile.getValueS(sSection, sKey, XPR_NULL);
+                if (XPR_IS_NULL(sValue))
+                    break;
 
-                    sTab->mForwardList.push_back(sValue);
-                }
+                sTab->mForwardList.push_back(sValue);
             }
 
-            if (XPR_IS_NOT_NULL(sHistorySection))
+            // history list
+            for (k = 0; ; ++k)
             {
-                for (k = 0; ; ++k)
-                {
-                    _stprintf(sKey, kHistoryKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kHistoryKey, i + 1, j + 1, k + 1);
 
-                    sValue = aConfFile.getValueS(sHistorySection, sKey, XPR_NULL);
-                    if (XPR_IS_NULL(sValue))
-                        break;
+                sValue = aConfFile.getValueS(sSection, sKey, XPR_NULL);
+                if (XPR_IS_NULL(sValue))
+                    break;
 
-                    sTab->mHistoryList.push_back(sValue);
-                }
+                sTab->mHistoryList.push_back(sValue);
+            }
+
+            // default folder layout
+            sTab->mDefaultFolderLayout = new FolderLayout;
+            _stprintf(sFolderLayoutKey, kTabFolderLayoutDefaultKey, i + 1, j + 1);
+
+            if (FolderLayoutManager::loadFromConfFile(*sTab->mDefaultFolderLayout, aConfFile, sSection, sFolderLayoutKey) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(sTab->mDefaultFolderLayout);
+            }
+
+            // computer folder layout
+            sTab->mComputerFolderLayout = new FolderLayout;
+            _stprintf(sFolderLayoutKey, kTabFolderLayoutComputerKey, i + 1, j + 1);
+
+            if (FolderLayoutManager::loadFromConfFile(*sTab->mComputerFolderLayout, aConfFile, sSection, sFolderLayoutKey) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(sTab->mComputerFolderLayout);
+            }
+
+            // virtual folder layout
+            sTab->mVirtualFolderLayout = new FolderLayout;
+            _stprintf(sFolderLayoutKey, kTabFolderLayoutVirtualKey, i + 1, j + 1);
+
+            if (FolderLayoutManager::loadFromConfFile(*sTab->mVirtualFolderLayout, aConfFile, sSection, sFolderLayoutKey) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(sTab->mVirtualFolderLayout);
             }
 
             mMain.mView[i].mTabDeque.push_back(sTab);
@@ -598,11 +623,17 @@ void Option::loadConfigOption(fxfile::base::ConfFileEx &aConfFile)
     if (mConfig.mFolderTreeSelDelayTime < MIN_FLD_SEL_DELAY_MSEC) mConfig.mFolderTreeSelDelayTime = DEF_FLD_SEL_DELAY_MSEC;
     if (mConfig.mFolderTreeSelDelayTime > MAX_FLD_SEL_DELAY_MSEC) mConfig.mFolderTreeSelDelayTime = DEF_FLD_SEL_DELAY_MSEC;
 
-    if (mConfig.mFileListCustomIconFile[0][0] == 0)
-        _tcscpy(mConfig.mFileListCustomIconFile[0], XPR_STRING_LITERAL("%fxfile%\\custom_image_list_16.bmp"));
+    if (mConfig.mFileListCustomIconFile16[0] == 0)
+        _tcscpy(mConfig.mFileListCustomIconFile16, XPR_STRING_LITERAL("%fxfile%\\custom_image_list_16.bmp"));
 
-    if (mConfig.mFileListCustomIconFile[1][0] == 0)
-        _tcscpy(mConfig.mFileListCustomIconFile[1], XPR_STRING_LITERAL("%fxfile%\\custom_image_list_32.bmp"));
+    if (mConfig.mFileListCustomIconFile32[0] == 0)
+        _tcscpy(mConfig.mFileListCustomIconFile32, XPR_STRING_LITERAL("%fxfile%\\custom_image_list_32.bmp"));
+
+    if (mConfig.mFileListCustomIconFile48[0] == 0)
+        _tcscpy(mConfig.mFileListCustomIconFile48, XPR_STRING_LITERAL("%fxfile%\\custom_image_list_48.bmp"));
+
+    if (mConfig.mFileListCustomIconFile256[0] == 0)
+        _tcscpy(mConfig.mFileListCustomIconFile256, XPR_STRING_LITERAL("%fxfile%\\custom_image_list_256.bmp"));
 
     SizeFormat::validSizeUnit(mConfig.mFileListSizeUnit);
 
@@ -641,10 +672,8 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
 {
     xpr_sint_t         i, j, k;
     xpr_tchar_t        sKey[0xff] = {0};
+    xpr_tchar_t        sFolderLayoutKey[0xff] = {0};
     ConfFile::Section *sSection;
-    ConfFile::Section *sBackwardSection;
-    ConfFile::Section *sForwardSection;
-    ConfFile::Section *sHistorySection;
     Main::Tab         *sTab;
     Main::TabDeque::const_iterator    sTabIterator;
     Main::HistoryList::const_iterator sHistoryIterator;
@@ -659,13 +688,6 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
 
     saveOptionKeys(aConfFile, sSection, gMainOptionKeys, XPR_COUNT_OF(gMainOptionKeys));
 
-    sBackwardSection = aConfFile.addSection(kBackwardSection);
-    sForwardSection  = aConfFile.addSection(kForwardSection);
-    sHistorySection  = aConfFile.addSection(kHistorySection);
-    XPR_ASSERT(sBackwardSection != XPR_NULL);
-    XPR_ASSERT(sForwardSection  != XPR_NULL);
-    XPR_ASSERT(sHistorySection  != XPR_NULL);
-
     for (i = 0; i < MAX_VIEW_SPLIT; ++i)
     {
         _stprintf(sKey, kCurTabKey, i + 1);
@@ -678,47 +700,59 @@ void Option::saveMainOption(fxfile::base::ConfFileEx &aConfFile) const
             sTab = *sTabIterator;
             XPR_ASSERT(sTab != XPR_NULL);
 
-            _stprintf(sKey, kTabKey, i + 1, j + 1);
+            _stprintf(sKey, kTabPathKey, i + 1, j + 1);
 
             aConfFile.setValueS(sSection, sKey, sTab->mPath);
 
-            if (XPR_IS_NOT_NULL(sBackwardSection))
+            sHistoryIterator = sTab->mBackwardList.begin();
+            for (k = 0; sHistoryIterator != sTab->mBackwardList.end(); ++sHistoryIterator, ++k)
             {
-                sHistoryIterator = sTab->mBackwardList.begin();
-                for (k = 0; sHistoryIterator != sTab->mBackwardList.end(); ++sHistoryIterator, ++k)
-                {
-                    const xpr::string &sTabPath = *sHistoryIterator;
+                const xpr::string &sTabPath = *sHistoryIterator;
 
-                    _stprintf(sKey, kBackwardKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kBackwardKey, i + 1, j + 1, k + 1);
 
-                    aConfFile.setValueS(sBackwardSection, sKey, sTabPath);
-                }
+                aConfFile.setValueS(sSection, sKey, sTabPath);
             }
 
-            if (XPR_IS_NOT_NULL(sForwardSection))
+            sHistoryIterator = sTab->mForwardList.begin();
+            for (k = 0; sHistoryIterator != sTab->mForwardList.end(); ++sHistoryIterator, ++k)
             {
-                sHistoryIterator = sTab->mForwardList.begin();
-                for (k = 0; sHistoryIterator != sTab->mForwardList.end(); ++sHistoryIterator, ++k)
-                {
-                    const xpr::string &sTabPath = *sHistoryIterator;
+                const xpr::string &sTabPath = *sHistoryIterator;
 
-                    _stprintf(sKey, kForwardKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kForwardKey, i + 1, j + 1, k + 1);
 
-                    aConfFile.setValueS(sForwardSection, sKey, sTabPath);
-                }
+                aConfFile.setValueS(sSection, sKey, sTabPath);
             }
 
-            if (XPR_IS_NOT_NULL(sHistorySection))
+            sHistoryIterator = sTab->mHistoryList.begin();
+            for (k = 0; sHistoryIterator != sTab->mHistoryList.end(); ++sHistoryIterator, ++k)
             {
-                sHistoryIterator = sTab->mHistoryList.begin();
-                for (k = 0; sHistoryIterator != sTab->mHistoryList.end(); ++sHistoryIterator, ++k)
-                {
-                    const xpr::string &sTabPath = *sHistoryIterator;
+                const xpr::string &sTabPath = *sHistoryIterator;
 
-                    _stprintf(sKey, kHistoryKey, i + 1, j + 1, k + 1);
+                _stprintf(sKey, kHistoryKey, i + 1, j + 1, k + 1);
 
-                    aConfFile.setValueS(sHistorySection, sKey, sTabPath);
-                }
+                aConfFile.setValueS(sSection, sKey, sTabPath);
+            }
+
+            if (XPR_IS_NOT_NULL(sTab->mDefaultFolderLayout))
+            {
+                _stprintf(sFolderLayoutKey, kTabFolderLayoutDefaultKey, i + 1, j + 1);
+
+                FolderLayoutManager::saveToConfFile(*sTab->mDefaultFolderLayout, aConfFile, sSection, sFolderLayoutKey);
+            }
+
+            if (XPR_IS_NOT_NULL(sTab->mComputerFolderLayout))
+            {
+                _stprintf(sFolderLayoutKey, kTabFolderLayoutComputerKey, i + 1, j + 1);
+
+                FolderLayoutManager::saveToConfFile(*sTab->mComputerFolderLayout, aConfFile, sSection, sFolderLayoutKey);
+            }
+
+            if (XPR_IS_NOT_NULL(sTab->mVirtualFolderLayout))
+            {
+                _stprintf(sFolderLayoutKey, kTabFolderLayoutVirtualKey, i + 1, j + 1);
+
+                FolderLayoutManager::saveToConfFile(*sTab->mVirtualFolderLayout, aConfFile, sSection, sFolderLayoutKey);
             }
         }
     }

@@ -12,7 +12,7 @@
 
 #include "bookmark.h"
 #include "size_format.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "option.h"
 #include "bookmark_set_wnd.h"
 
@@ -520,7 +520,7 @@ void ContentsWnd::setContentsFolder(LPTVITEMDATA aTvItemData)
     DESTROY_ICON(mFolderIcon);
 
     xpr_sint_t sIconIndex = GetItemIconIndex(aTvItemData->mFullPidl, XPR_FALSE);
-    mFolderIcon = SysImgListMgr::instance().mSysImgList32.ExtractIcon(sIconIndex);
+    mFolderIcon = SingletonManager::get<ImgListManager>().mSysImgList32.ExtractIcon(sIconIndex);
 
     mFolderName.clear();
     GetName(aTvItemData->mShellFolder, aTvItemData->mPidl, SHGDN_INFOLDER, mFolderName);

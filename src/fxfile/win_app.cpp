@@ -71,7 +71,8 @@ WinApp gApp;
 Option *gOpt;
 
 WinApp::WinApp(void)
-    : mLanguageTable(XPR_NULL), mStringTable(XPR_NULL), mFormatStringTable(XPR_NULL)
+    : mInitialized(XPR_FALSE)
+    , mLanguageTable(XPR_NULL), mStringTable(XPR_NULL), mFormatStringTable(XPR_NULL)
 {
 #if defined(XPR_CFG_BUILD_RELEASE)
 
@@ -281,6 +282,8 @@ xpr_bool_t WinApp::InitInstance(void)
         cmd::TipDlg sDlg;
         sDlg.DoModal();
     }
+
+    mInitialized = XPR_TRUE;
 
     // show main frame
     sMainFrame->ShowWindow(SW_SHOW);

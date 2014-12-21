@@ -11,8 +11,6 @@
 #define __FXFILE_SYS_IMG_LIST_H__ 1
 #pragma once
 
-#include "pattern.h"
-
 namespace fxfile
 {
 class SysImgList : public CImageList
@@ -36,27 +34,6 @@ public:
 
 protected:
     HIMAGELIST SHGetImageList(xpr_sint_t aImageSize);
-};
-
-class SysImgListMgr : public fxfile::base::Singleton<SysImgListMgr>
-{
-    friend class fxfile::base::Singleton<SysImgListMgr>;
-
-protected: SysImgListMgr(void);
-public:   ~SysImgListMgr(void);
-
-public:
-    void getSystemImgList(void);
-    void getCustomImgList(const xpr_tchar_t *aCustomImagePath16, const xpr_tchar_t *aCustomImagePath32);
-
-public:
-    // System Image List
-    SysImgList mSysImgList32;
-    SysImgList mSysImgList16;
-
-    // Custom Image List
-    SysImgList mCusImgList32;
-    SysImgList mCusImgList16;
 };
 } // namespace fxfile
 

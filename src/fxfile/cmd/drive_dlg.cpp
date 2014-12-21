@@ -11,7 +11,7 @@
 #include "drive_dlg.h"
 
 #include "context_menu.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "resource.h"
 #include "dlg_state.h"
 #include "dlg_state_manager.h"
@@ -130,7 +130,7 @@ xpr_bool_t DriveDlg::OnInitDialog(void)
     sTreeRect.top = sToolBarRect.Height();
     mTreeCtrl.MoveWindow(sTreeRect);
 
-    mTreeCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, TVSIL_NORMAL);
+    mTreeCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mSysImgList16, TVSIL_NORMAL);
 
     OnRefresh();
 

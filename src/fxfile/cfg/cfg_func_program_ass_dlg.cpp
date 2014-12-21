@@ -14,7 +14,7 @@
 #include "../shell.h"
 #include "../program_ass.h"
 #include "../filter.h"
-#include "../sys_img_list.h"
+#include "../img_list_manager.h"
 #include "../resource.h"
 
 #include "program_ass_set_dlg.h"
@@ -67,7 +67,7 @@ xpr_bool_t CfgFuncProgramAssDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(1, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.extension")), LVCFMT_LEFT, 100);
     mListCtrl.InsertColumn(2, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.list.column.program")),   LVCFMT_LEFT, 200);
 
-    mListCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, LVSIL_SMALL);
+    mListCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mSysImgList16, LVSIL_SMALL);
 
     xpr_tchar_t sText[0xff] = {0};
     _stprintf(sText, gApp.loadFormatString(XPR_STRING_LITERAL("popup.cfg.body.function.program_ass.label.limit_count"), XPR_STRING_LITERAL("%d")), MAX_PROGRAM_ASS);

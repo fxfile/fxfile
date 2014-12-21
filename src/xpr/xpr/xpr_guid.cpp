@@ -68,15 +68,12 @@ xpr_sint_t Guid::compare(const Guid &aGuid2) const
 
 xpr_bool_t Guid::test(const Guid &aGuid2) const
 {
-    return (xpr_memcmp(this, &aGuid2, sizeof(Guid)) == 0) ? XPR_TRUE : XPR_FALSE;
+    return (compare(aGuid2) == 0) ? XPR_TRUE : XPR_FALSE;
 }
 
 xpr_bool_t Guid::none(void) const
 {
-    Guid aNone;
-    aNone.clear();
-
-    return test(aNone);
+    return test(GuidNone);
 }
 
 xpr_bool_t Guid::toString(xpr::string &aString, xpr_bool_t aWithBrace) const
@@ -148,22 +145,6 @@ xpr_bool_t Guid::fromString(const xpr::string &aString)
     return XPR_TRUE;
 }
 
-void Guid::toGuid(Guid &aGuid) const
-{
-    aGuid.mData1 = mData1;
-    aGuid.mData2 = mData2;
-    aGuid.mData3 = mData3;
-    xpr_memcpy(aGuid.mData4, mData4, sizeof(mData4));
-}
-
-void Guid::fromGuid(const Guid &aGuid)
-{
-    mData1 = aGuid.mData1;
-    mData2 = aGuid.mData2;
-    mData3 = aGuid.mData3;
-    xpr_memcpy(mData4, aGuid.mData4, sizeof(mData4));
-}
-
 xpr_size_t Guid::getBufferSize(void) const
 {
     xpr_size_t sBufferSize = sizeof(mData1) + sizeof(mData2) + sizeof(mData3) + sizeof(mData4);
@@ -204,25 +185,5 @@ Guid& Guid::operator = (const Guid &aGuid)
     xpr_memcpy(mData4, aGuid.mData4, sizeof(mData4));
 
     return *this;
-}
-
-bool Guid::operator < (const Guid &aGuid) const
-{
-    return (compare(aGuid) < 0) ? true : false;
-}
-
-bool Guid::operator > (const Guid &aGuid) const
-{
-    return (compare(aGuid) > 0) ? true : false;
-}
-
-bool Guid::operator == (const Guid &aGuid) const
-{
-    return (test(aGuid) == XPR_TRUE) ? true : false;
-}
-
-bool Guid::operator != (const Guid &aGuid) const
-{
-    return (test(aGuid) == XPR_FALSE) ? true : false;
 }
 } // namespace xpr

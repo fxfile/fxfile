@@ -111,46 +111,4 @@ void SysImgList::release(void)
 {
     Detach();
 }
-
-SysImgListMgr::SysImgListMgr(void)
-{
-}
-
-SysImgListMgr::~SysImgListMgr(void)
-{
-}
-
-void SysImgListMgr::getSystemImgList(void)
-{
-    mSysImgList32.init(SysImgList::ImgSizeLarge);
-    mSysImgList16.init(SysImgList::ImgSizeSmall);
-}
-
-void SysImgListMgr::getCustomImgList(const xpr_tchar_t *aCustomImagePath16, const xpr_tchar_t *aCustomImagePath32)
-{
-    CImageList *sImgList[] = { &mCusImgList16, &mCusImgList32, XPR_NULL };
-    const xpr_tchar_t *sImagePath[] = { aCustomImagePath16, aCustomImagePath32, XPR_NULL };
-    CSize sIconSize[] = { CSize(16,16), CSize(32,32), CSize(0,0) };
-
-    xpr_sint_t i;
-    xpr::string sPath;
-
-    for (i = 0; sImgList[i]; ++i)
-    {
-        sPath.clear();
-
-        if (XPR_IS_NOT_NULL(sImagePath[i]))
-        {
-            sPath = sImagePath[i];
-
-            if (sPath.empty() == XPR_FALSE && sPath[0] == XPR_STRING_LITERAL('%'))
-            {
-                sPath.clear();
-                GetEnvRealPath(sImagePath[i], sPath);
-            }
-        }
-
-        LoadImgList(sImgList[i], sPath.c_str(), sIconSize[i], 3);
-    }
-}
 } // namespace fxfile

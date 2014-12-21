@@ -21,7 +21,7 @@
 #include "cfg_appearance_font_dlg.h"
 #include "cfg_appearance_color_dlg.h"
 #include "cfg_appearance_file_list_dlg.h"
-#include "cfg_appearance_view_set_dlg.h"
+#include "cfg_appearance_folder_layout_dlg.h"
 #include "cfg_appearance_filtering_dlg.h"
 #include "cfg_appearance_thumbnail_dlg.h"
 #include "cfg_appearance_history_dlg.h"
@@ -97,32 +97,32 @@ xpr_bool_t CfgMainDlg::OnInitDialog(void)
 
     // initialize configuration dialog
     xpr_sint_t sIndex;
-    sIndex = addCfgItem( 0,     -1, new CfgGeneralDlg,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general")));
-    /*    */ addCfgItem(31, sIndex, new CfgGeneralStartupDlg,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general.startup")));
-    sIndex = addCfgItem(18,     -1, new CfgAppearanceDlg,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance")));
-    /*    */ addCfgItem(29, sIndex, new CfgAppearanceLayoutDlg,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.layout")));
-    /*    */ addCfgItem(30, sIndex, new CfgAppearanceFontDlg,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.font")));
-    /*    */ addCfgItem(28, sIndex, new CfgAppearanceColorDlg,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.color")));
-    /*    */ addCfgItem(12, sIndex, new CfgAppearanceFileListDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.file_list")));
-    /*    */ addCfgItem(20, sIndex, new CfgAppearanceViewSetDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.view_set")));
-    /*    */ addCfgItem(11, sIndex, new CfgAppearanceFilteringDlg,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.filtering")));
-    /*    */ addCfgItem( 5, sIndex, new CfgAppearanceThumbnailDlg,  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.thumbnail")));
-    /*    */ addCfgItem(25, sIndex, new CfgAppearanceHistoryDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.history")));
-    /*    */ addCfgItem(22, sIndex, new CfgAppearanceSizeFormatDlg, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.size_format")));
-    /*    */ addCfgItem( 3, sIndex, new CfgAppearanceFolderTreeDlg, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.folder_tree")));
-    /*    */ addCfgItem(32, sIndex, new CfgAppearanceTabDlg,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.tab")));
-    /*    */ addCfgItem(27, sIndex, new CfgAppearanceLanguageDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.language")));
-    sIndex = addCfgItem(17,     -1, new CfgFuncDlg,                 gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function")));
-    /*    */ addCfgItem(13, sIndex, new CfgFuncBookmarkDlg,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.bookmark")));
-    /*    */ addCfgItem( 7, sIndex, new CfgFuncRenameDlg,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.rename")));
-    /*    */ addCfgItem(14, sIndex, new CfgFuncRefreshDlg,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.refresh")));
-    /*    */ addCfgItem( 8, sIndex, new CfgFuncDragDlg,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.drag_drop")));
-    /*    */ addCfgItem(21, sIndex, new CfgFuncProgramAssDlg,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.program_ass")));
-    /*    */ addCfgItem(16, sIndex, new CfgFuncFileScrapDlg,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_scrap")));
-    /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_operation")));
-    sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,                  gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
-    /*    */ addCfgItem(23, sIndex, new CfgAdvConfDirDlg,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.conf_dir")));
-    /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
+    sIndex = addCfgItem( 0,     -1, new CfgGeneralDlg,                gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general")));
+    /*    */ addCfgItem(31, sIndex, new CfgGeneralStartupDlg,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.general.startup")));
+    sIndex = addCfgItem(18,     -1, new CfgAppearanceDlg,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance")));
+    /*    */ addCfgItem(29, sIndex, new CfgAppearanceLayoutDlg,       gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.layout")));
+    /*    */ addCfgItem(30, sIndex, new CfgAppearanceFontDlg,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.font")));
+    /*    */ addCfgItem(28, sIndex, new CfgAppearanceColorDlg,        gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.color")));
+    /*    */ addCfgItem(12, sIndex, new CfgAppearanceFileListDlg,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.file_list")));
+    /*    */ addCfgItem(20, sIndex, new CfgAppearanceFolderLayoutDlg, gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.folder_layout")));
+    /*    */ addCfgItem(11, sIndex, new CfgAppearanceFilteringDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.filtering")));
+    /*    */ addCfgItem( 5, sIndex, new CfgAppearanceThumbnailDlg,    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.thumbnail")));
+    /*    */ addCfgItem(25, sIndex, new CfgAppearanceHistoryDlg,      gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.history")));
+    /*    */ addCfgItem(22, sIndex, new CfgAppearanceSizeFormatDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.size_format")));
+    /*    */ addCfgItem( 3, sIndex, new CfgAppearanceFolderTreeDlg,   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.folder_tree")));
+    /*    */ addCfgItem(32, sIndex, new CfgAppearanceTabDlg,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.tab")));
+    /*    */ addCfgItem(27, sIndex, new CfgAppearanceLanguageDlg,     gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.appearance.language")));
+    sIndex = addCfgItem(17,     -1, new CfgFuncDlg,                   gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function")));
+    /*    */ addCfgItem(13, sIndex, new CfgFuncBookmarkDlg,           gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.bookmark")));
+    /*    */ addCfgItem( 7, sIndex, new CfgFuncRenameDlg,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.rename")));
+    /*    */ addCfgItem(14, sIndex, new CfgFuncRefreshDlg,            gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.refresh")));
+    /*    */ addCfgItem( 8, sIndex, new CfgFuncDragDlg,               gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.drag_drop")));
+    /*    */ addCfgItem(21, sIndex, new CfgFuncProgramAssDlg,         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.program_ass")));
+    /*    */ addCfgItem(16, sIndex, new CfgFuncFileScrapDlg,          gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_scrap")));
+    /*    */ addCfgItem(26, sIndex, new CfgFuncFileOpDlg,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.function.file_operation")));
+    sIndex = addCfgItem( 6,     -1, new CfgAdvDlg,                    gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced")));
+    /*    */ addCfgItem(23, sIndex, new CfgAdvConfDirDlg,             gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.conf_dir")));
+    /*    */ addCfgItem(24, sIndex, new CfgAdvHotKeyDlg,              gApp.loadString(XPR_STRING_LITERAL("popup.cfg.tree.advanced.global_hotkey")));
 
     if (!FXFILE_STL_IS_INDEXABLE(mInitShowCfg, mCfgDeque))
         mInitShowCfg = 0;

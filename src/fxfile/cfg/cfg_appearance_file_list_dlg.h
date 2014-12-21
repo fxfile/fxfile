@@ -37,8 +37,10 @@ protected:
 protected:
     DECLARE_MESSAGE_MAP()
     virtual xpr_bool_t OnInitDialog(void);
-    afx_msg void OnCustomIcon16x16Browse(void);
-    afx_msg void OnCustomIcon32x32Browse(void);
+    afx_msg void OnCustomIcon16Browse(void);
+    afx_msg void OnCustomIcon32Browse(void);
+    afx_msg void OnCustomIcon48Browse(void);
+    afx_msg void OnCustomIcon256Browse(void);
 };
 } // namespace cfg
 } // namespace fxfile

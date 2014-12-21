@@ -312,7 +312,7 @@ void CommandMap::map(CommandExecutor &aExecutor)
 
     aExecutor.bindCommand(ID_VIEW_STYLE,                       new cmd::ViewStyleToolBarCommand);
     aExecutor.bindCommand(
-        ID_VIEW_STYLE_LARGEICONS, ID_VIEW_STYLE_THUMBNAIL,     new cmd::ViewStyleCommand);
+        ID_VIEW_STYLE_EXTRA_LARGE_ICONS, ID_VIEW_STYLE_THUMBNAIL, new cmd::ViewStyleCommand);
 
     aExecutor.bindCommand(
         ID_VIEW_ARRAY_NAME, ID_VIEW_ARRAY_ATTR,                new cmd::SortCommand);

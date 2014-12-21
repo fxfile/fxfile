@@ -11,7 +11,7 @@
 #include "folder_sync_dlg.h"
 
 #include "sync_dirs.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "option.h"
 #include "resource.h"
 #include "dlg_state.h"
@@ -132,7 +132,7 @@ xpr_bool_t FolderSyncDlg::OnInitDialog(void)
     mListCtrl.InsertColumn(5, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.size")),    LVCFMT_RIGHT,   65);
     mListCtrl.InsertColumn(6, gApp.loadString(XPR_STRING_LITERAL("popup.folder_sync.list.column.name")),    LVCFMT_LEFT,   100);
 
-    mListCtrl.SetImageList(&SysImgListMgr::instance().mSysImgList16, LVSIL_SMALL);
+    mListCtrl.SetImageList(&SingletonManager::get<ImgListManager>().mSysImgList16, LVSIL_SMALL);
 
     CBitmap sBitmap;
     sBitmap.LoadBitmap(IDB_SYNC_IMAGES);

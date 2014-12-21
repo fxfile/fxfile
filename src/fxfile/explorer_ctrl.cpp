@@ -18,19 +18,20 @@
 #include "drive_shcn.h"
 #include "rename_helper.h"
 #include "filter.h"
-#include "shell_column.h"
+#include "shell_column_manager.h"
 #include "file_change_watcher.h"
 #include "adv_file_change_watcher.h"
 #include "shell_icon.h"
 #include "size_format.h"
 #include "clip_format.h"
-#include "sys_img_list.h"
+#include "img_list_manager.h"
 #include "clipboard.h"
 #include "app_ver.h"
 #include "main_frame.h"
 #include "picture_viewer.h"
 #include "shell_enumerator.h"
 #include "fnmatch.h"
+#include "folder_layout.h"
 
 #include "gui/gdi.h"
 #include "gui/FlatHeaderCtrl.h"
@@ -118,29 +119,14 @@ enum
     WM_FILE_CHANGE_NOTIFY        = WM_USER + 1501,
     WM_ADV_FILE_CHANGE_NOTIFY    = WM_USER + 1502,
 };
-
-const xpr_tchar_t kViewSetComputerFolder[] = XPR_STRING_LITERAL("::{20D04FE0-3AEA-1069-A2D8-08002B30309D}");
-const xpr_tchar_t kViewSetVirtualFolder [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0001-000000000000}");
-const xpr_tchar_t kViewSetDefault       [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-0000%08x}");
-const xpr_tchar_t kViewSetAllOfSame     [] = XPR_STRING_LITERAL("::{00000000-0000-0000-0000-000000000000}");
 } // namespace anonymous
-
-//
-// folder type
-//
-enum ExplorerCtrl::FolderType
-{
-    FOLDER_DEFAULT = 0,
-    FOLDER_COMPUTER,
-    FOLDER_VIRTUAL,
-};
 
 //
 // default column information
 //
 struct ExplorerCtrl::DefColumnInfo
 {
-    GUID               mFormatId;     // column foramt id
+    xpr::Guid          mFormatId;     // column foramt id
     xpr_sint_t         mPropertyId;   // column property id
     const xpr_tchar_t *mNameStringId; // column name
     xpr_sint_t         mFormat;       // column format
@@ -167,15 +153,13 @@ ExplorerCtrl::ExplorerCtrl(void)
     mRealSelFolderCount = 0;
     mRealSelFileCount   = 0;
 
-    // Thumbnail
-    mThumbnail          = XPR_FALSE;
-
     // Code
     mCode               = 0;
     mSignature          = 0;
     mSorted             = XPR_FALSE;
     mUpdated            = XPR_FALSE;
     mVisible            = XPR_FALSE;
+    mFirstExplore       = XPR_TRUE;
 
     // Drag & Drop
     mDropIndex          = -1;
@@ -191,13 +175,18 @@ ExplorerCtrl::ExplorerCtrl(void)
     mMouseEdit          = XPR_TRUE;
     mRenameResorting    = XPR_FALSE;
 
-    // Column
-    mColumnSortData.mColumnSortInfo.mFormatId   = GUID_NULL;
-    mColumnSortData.mColumnSortInfo.mPropertyId = 0;
-    mColumnSortData.mColumnSortInfo.mAscending  = XPR_TRUE;
-    mColumnSortData.mColumn                     = -1;
-    mDefColumnInfo                              = XPR_NULL;
-    mDefColumnCount                             = 0;
+    // folder layout
+    mViewStyle            = VIEW_STYLE_DETAILS;
+    mFolderLayout         = XPR_NULL;
+    mDefaultFolderLayout  = XPR_NULL;
+    mComputerFolderLayout = XPR_NULL;
+    mVirtualFolderLayout  = XPR_NULL;
+
+    mSortColumnId.mPropertyId = 0;
+    mSortAscending            = XPR_TRUE;
+    mSortColumn               = -1;
+    mDefColumnInfo            = XPR_NULL;
+    mDefColumnCount           = 0;
 
     // history
     mGo                 = XPR_TRUE;
@@ -206,7 +195,10 @@ ExplorerCtrl::ExplorerCtrl(void)
 
     // icon & font
     mShellIcon          = XPR_NULL;
+    mExtraLargeImgList  = XPR_NULL;
     mLargeImgList       = XPR_NULL;
+    mMediumImgList      = XPR_NULL;
+    mNormalImgList      = XPR_NULL;
     mSmallImgList       = XPR_NULL;
     mCustomFont         = XPR_NULL;
 
@@ -237,6 +229,11 @@ ExplorerCtrl::~ExplorerCtrl(void)
     XPR_SAFE_DELETE(mHistory);
     XPR_SAFE_DELETE(mTvItemData);
 
+    XPR_SAFE_DELETE(mDefaultFolderLayout);
+    XPR_SAFE_DELETE(mComputerFolderLayout);
+    XPR_SAFE_DELETE(mVirtualFolderLayout);
+    mFolderLayout = XPR_NULL;
+
     XPR_SAFE_DELETE(mRenameHelper);
     XPR_SAFE_DELETE(mShellIcon);
 
@@ -245,28 +242,28 @@ ExplorerCtrl::~ExplorerCtrl(void)
 
 ExplorerCtrl::DefColumnInfo ExplorerCtrl::mDefColumnDefault[] = 
 {
-    { GUID_NULL, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
-    { GUID_NULL, 1, XPR_STRING_LITERAL("explorer_window.column.size"),             LVCFMT_RIGHT,  80, XPR_TRUE  },
-    { GUID_NULL, 2, XPR_STRING_LITERAL("explorer_window.column.type"),             LVCFMT_LEFT,  150, XPR_TRUE  },
-    { GUID_NULL, 3, XPR_STRING_LITERAL("explorer_window.column.modified_time"),    LVCFMT_LEFT,  140, XPR_TRUE  },
-    { GUID_NULL, 4, XPR_STRING_LITERAL("explorer_window.column.attributes"),       LVCFMT_LEFT,   80, XPR_FALSE },
-    { GUID_NULL, 5, XPR_STRING_LITERAL("explorer_window.column.extension"),        LVCFMT_LEFT,   80, XPR_FALSE },
+    { xpr::GuidNone, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
+    { xpr::GuidNone, 1, XPR_STRING_LITERAL("explorer_window.column.size"),             LVCFMT_RIGHT,  80, XPR_TRUE  },
+    { xpr::GuidNone, 2, XPR_STRING_LITERAL("explorer_window.column.type"),             LVCFMT_LEFT,  150, XPR_TRUE  },
+    { xpr::GuidNone, 3, XPR_STRING_LITERAL("explorer_window.column.modified_time"),    LVCFMT_LEFT,  140, XPR_TRUE  },
+    { xpr::GuidNone, 4, XPR_STRING_LITERAL("explorer_window.column.attributes"),       LVCFMT_LEFT,   80, XPR_FALSE },
+    { xpr::GuidNone, 5, XPR_STRING_LITERAL("explorer_window.column.extension"),        LVCFMT_LEFT,   80, XPR_FALSE },
 };
 
-ExplorerCtrl::DefColumnInfo ExplorerCtrl::mDefColumnMyComputer[] = 
+ExplorerCtrl::DefColumnInfo ExplorerCtrl::mDefColumnComputer[] = 
 {
-    { GUID_NULL, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
-    { GUID_NULL, 1, XPR_STRING_LITERAL("explorer_window.column.type"),             LVCFMT_LEFT,  150, XPR_TRUE  },
-    { GUID_NULL, 2, XPR_STRING_LITERAL("explorer_window.column.total_size"),       LVCFMT_RIGHT, 100, XPR_TRUE  },
-    { GUID_NULL, 3, XPR_STRING_LITERAL("explorer_window.column.free_size"),        LVCFMT_RIGHT, 100, XPR_TRUE  },
-    { GUID_NULL, 4, XPR_STRING_LITERAL("explorer_window.column.file_system"),      LVCFMT_RIGHT, 100, XPR_FALSE },
-    { GUID_NULL, 5, XPR_STRING_LITERAL("explorer_window.column.description"),      LVCFMT_RIGHT, 100, XPR_FALSE },
+    { xpr::GuidNone, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
+    { xpr::GuidNone, 1, XPR_STRING_LITERAL("explorer_window.column.type"),             LVCFMT_LEFT,  150, XPR_TRUE  },
+    { xpr::GuidNone, 2, XPR_STRING_LITERAL("explorer_window.column.total_size"),       LVCFMT_RIGHT, 100, XPR_TRUE  },
+    { xpr::GuidNone, 3, XPR_STRING_LITERAL("explorer_window.column.free_size"),        LVCFMT_RIGHT, 100, XPR_TRUE  },
+    { xpr::GuidNone, 4, XPR_STRING_LITERAL("explorer_window.column.file_system"),      LVCFMT_RIGHT, 100, XPR_FALSE },
+    { xpr::GuidNone, 5, XPR_STRING_LITERAL("explorer_window.column.description"),      LVCFMT_RIGHT, 100, XPR_FALSE },
 };
 
 ExplorerCtrl::DefColumnInfo ExplorerCtrl::mDefColumnVirtual[] = 
 {
-    { GUID_NULL, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
-    { GUID_NULL, 1, XPR_STRING_LITERAL("explorer_window.column.description"),      LVCFMT_LEFT,  300, XPR_TRUE  },
+    { xpr::GuidNone, 0, XPR_STRING_LITERAL("explorer_window.column.name"),             LVCFMT_LEFT,  150, XPR_TRUE  },
+    { xpr::GuidNone, 1, XPR_STRING_LITERAL("explorer_window.column.description"),      LVCFMT_LEFT,  300, XPR_TRUE  },
 };
 
 BEGIN_MESSAGE_MAP(ExplorerCtrl, super)
@@ -412,23 +409,51 @@ void ExplorerCtrl::setOption(Option &aOption)
     *mNewOption = aOption;
 }
 
-void ExplorerCtrl::setImageList(CImageList *aLargeImgList, CImageList *aSmallImgList)
+void ExplorerCtrl::setImageList(CImageList *aSmallImgList,
+                                CImageList *aMediumImgList,
+                                CImageList *aLargeImgList,
+                                CImageList *aExtraLargeImgList)
 {
-    mLargeImgList = aLargeImgList;
-    mSmallImgList = aSmallImgList;
+    xpr_sint_t sViewStyle = getViewStyle();
 
-    super::SetImageList(mLargeImgList, LVSIL_NORMAL);
-    super::SetImageList(mSmallImgList, LVSIL_SMALL);
+    mExtraLargeImgList = aExtraLargeImgList;
+    mLargeImgList      = aLargeImgList;
+    mMediumImgList     = aMediumImgList;
+    mSmallImgList      = aSmallImgList;
 
-    if (isThumbnail() == XPR_TRUE)
+    if (sViewStyle == VIEW_STYLE_THUMBNAIL)
     {
-        setViewStyle(LVS_THUMBNAIL, XPR_FALSE);
+        setViewStyle(VIEW_STYLE_THUMBNAIL, XPR_FALSE);
     }
+    else
+    {
+        switch (sViewStyle)
+        {
+        case VIEW_STYLE_EXTRA_LARGE_ICONS:
+            mNormalImgList = mExtraLargeImgList;
+            break;
+
+        case VIEW_STYLE_LARGE_ICONS:
+            mNormalImgList = mLargeImgList;
+            break;
+
+        case VIEW_STYLE_MEDIUM_ICONS:
+            mNormalImgList = mMediumImgList;
+            break;
+
+        default:
+            mNormalImgList = mMediumImgList;
+            break;
+        }
+    }
+
+    super::SetImageList(mNormalImgList, LVSIL_NORMAL);
+    super::SetImageList(mSmallImgList,  LVSIL_SMALL);
 }
 
-CImageList *ExplorerCtrl::getImageList(xpr_bool_t aLarge) const
+CImageList *ExplorerCtrl::getImageList(xpr_bool_t aNormal) const
 {
-    return XPR_IS_TRUE(aLarge) ? mLargeImgList : mSmallImgList;
+    return XPR_IS_TRUE(aNormal) ? mNormalImgList : mSmallImgList;
 }
 
 void ExplorerCtrl::loadHistory(HistoryDeque *aBackwardDeque, HistoryDeque *aForwardDeque, HistoryDeque *aHistoryDeque)
@@ -436,12 +461,6 @@ void ExplorerCtrl::loadHistory(HistoryDeque *aBackwardDeque, HistoryDeque *aForw
     mHistory->setBackwardDeque(aBackwardDeque);
     mHistory->setForwardDeque(aForwardDeque);
     mHistory->setHistoryDeque(aHistoryDeque);
-}
-
-void ExplorerCtrl::saveOption(void)
-{
-    // save column data
-    saveColumn();
 }
 
 void ExplorerCtrl::OnDestroy(void)
@@ -458,8 +477,8 @@ void ExplorerCtrl::OnDestroy(void)
     AdvFileChangeWatcher::instance().unregisterWatch(mAdvWatchId);
     mAdvWatchId = AdvFileChangeWatcher::InvalidAdvWatchId;
 
-    // save column
-    saveColumn();
+    // save folder layout
+    saveFolderLayout();
     deleteAllColumns();
 
     // delete all items
@@ -551,20 +570,14 @@ void ExplorerCtrl::verifyItemData(LPLVITEMDATA *aLvItemData)
         *aLvItemData = XPR_NULL;
 }
 
-DWORD ExplorerCtrl::getViewStyle(void) const
+xpr_sint_t ExplorerCtrl::getViewStyle(void) const
 {
-    DWORD sStyle = super::GetStyle() & LVS_TYPEMASK;
-    if (XPR_IS_TRUE(mThumbnail))
-        sStyle = LVS_THUMBNAIL;
-
-    return sStyle;
+    return mViewStyle;
 }
 
-void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aOtherApply)
+void ExplorerCtrl::setViewStyle(xpr_sint_t aViewStyle, xpr_bool_t aRefresh, xpr_bool_t aNotifyToObserver)
 {
-    DWORD sOrgStyle = aStyle;
-
-    if (aStyle == LVS_THUMBNAIL)
+    if (aViewStyle == VIEW_STYLE_THUMBNAIL)
     {
         Thumbnail &sThumbnail = Thumbnail::instance();
 
@@ -591,11 +604,10 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
         sThumbSize.cy += 40;
 
         SetIconSpacing(sThumbSize);
+        mNormalImgList = mMediumImgList;
         super::SetImageList(sThumbnail.getThumbImgList()->getImageList(), LVSIL_NORMAL);
 
-        mThumbnail = XPR_TRUE;
-        aStyle = LVS_ICON;
-        ModifyStyle(LVS_TYPEMASK, aStyle);
+        ModifyStyle(LVS_TYPEMASK, LVS_ICON);
 
         if (XPR_IS_TRUE(sVisible))
         {
@@ -618,12 +630,43 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
             SetRedraw(XPR_FALSE);
         }
 
-        SetIconSpacing(CSize(78,75));
-        super::SetImageList(mLargeImgList, LVSIL_NORMAL);
-        mThumbnail = XPR_FALSE;
+        SetIconSpacing(-1, -1);
 
-        ModifyStyle(LVS_TYPEMASK, aStyle);
-        if (aStyle == LVS_ICON)
+        DWORD sStyle = LVS_ICON;
+        switch (aViewStyle)
+        {
+        case VIEW_STYLE_EXTRA_LARGE_ICONS:
+            mNormalImgList = mExtraLargeImgList;
+            sStyle = LVS_ICON;
+            break;
+
+        case VIEW_STYLE_LARGE_ICONS:
+            mNormalImgList = mLargeImgList;
+            sStyle = LVS_ICON;
+            break;
+
+        case VIEW_STYLE_MEDIUM_ICONS:
+            mNormalImgList = mMediumImgList;
+            sStyle = LVS_ICON;
+            break;
+
+        default:
+            mNormalImgList = mMediumImgList;
+            switch (aViewStyle)
+            {
+            case VIEW_STYLE_SMALL_ICONS: sStyle = LVS_SMALLICON; break;
+            case VIEW_STYLE_LIST:        sStyle = LVS_LIST;      break;
+
+            case VIEW_STYLE_DETAILS:
+            default:                     sStyle = LVS_REPORT;    break;
+            }
+            break;
+        }
+
+        super::SetImageList(mNormalImgList, LVSIL_NORMAL);
+
+        ModifyStyle(LVS_TYPEMASK, sStyle);
+        if (sStyle == LVS_ICON)
         {
             Arrange(LVA_DEFAULT);
         }
@@ -640,15 +683,20 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
             refresh();
         }
 
-        if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && aStyle == LVS_REPORT)
+        if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && sStyle == LVS_REPORT)
             SetColumnWidth(0, LVSCW_AUTOSIZE);
     }
 
     // insert at before drive item when view style is icon, small icon and thumbnail
     if (XPR_IS_FALSE(aRefresh))
     {
-        if ((aStyle == LVS_ICON || aStyle == LVS_SMALLICON) &&
-            (mOption.mShowDrive == XPR_TRUE || mOption.mShowDriveItem == XPR_TRUE))
+        xpr_bool_t sIconsViewStyle = (aViewStyle == VIEW_STYLE_EXTRA_LARGE_ICONS ||
+                                      aViewStyle == VIEW_STYLE_LARGE_ICONS       ||
+                                      aViewStyle == VIEW_STYLE_MEDIUM_ICONS      ||
+                                      aViewStyle == VIEW_STYLE_SMALL_ICONS       ||
+                                      aViewStyle == VIEW_STYLE_THUMBNAIL);
+
+        if (XPR_IS_TRUE(sIconsViewStyle) && (mOption.mShowDrive == XPR_TRUE || mOption.mShowDriveItem == XPR_TRUE))
         {
             CPoint sPoint(0,0);
             xpr_sint_t sLastInsertIndex = getLastInsertIndex();
@@ -661,10 +709,19 @@ void ExplorerCtrl::setViewStyle(DWORD aStyle, xpr_bool_t aRefresh, xpr_bool_t aO
         }
     }
 
-    if (XPR_IS_TRUE(aOtherApply))
+    mViewStyle = aViewStyle;
+
+    if (XPR_IS_TRUE(aNotifyToObserver))
     {
         if (XPR_IS_NOT_NULL(mObserver))
-            mObserver->onSetViewStyle(*this, sOrgStyle, aRefresh);
+        {
+            FolderLayoutChange sFolderLayoutChange;
+            sFolderLayoutChange.mChangeMode = FolderLayoutChange::ChangeModeViewStyle;
+            sFolderLayoutChange.mViewStyle  = aViewStyle;
+            sFolderLayoutChange.mRefresh    = aRefresh;
+
+            mObserver->onFolderLayoutChange(*this, sFolderLayoutChange);
+        }
     }
 }
 
@@ -897,7 +954,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
     {
         aLvItem.pszText[0] = XPR_STRING_LITERAL('\0');
 
-        if (sColumnId->mFormatId == GUID_NULL)
+        if (XPR_IS_TRUE(sColumnId->mFormatId.none()))
         {
             switch (mFolderType)
             {
@@ -917,11 +974,11 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
 
             if (XPR_IS_NOT_NULL(sShellFolder2))
             {
-                ShellColumn &sShellColumn = ShellColumn::instance();
+                ShellColumnManager &sShellColumn = ShellColumnManager::instance();
 
                 if (sShellColumn.isAsyncColumn(sShellFolder2, *sColumnId) == XPR_TRUE)
                 {
-                    ShellColumn::AsyncInfo *sAsyncInfo = new ShellColumn::AsyncInfo;
+                    ShellColumnManager::AsyncInfo *sAsyncInfo = new ShellColumnManager::AsyncInfo;
                     sAsyncInfo->mCode         = mCode;
                     sAsyncInfo->mHwnd         = m_hWnd;
                     sAsyncInfo->mMsg          = WM_SHELL_COLUMN_PROC;
@@ -934,7 +991,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
                     sAsyncInfo->mOldText      = XPR_NULL;
                     sAsyncInfo->mText         = new xpr_tchar_t[aLvItem.cchTextMax+1];
                     sAsyncInfo->mMaxLen       = aLvItem.cchTextMax;
-                    sAsyncInfo->mFlags        = ShellColumn::FlagsNone;
+                    sAsyncInfo->mFlags        = ShellColumnManager::FlagsNone;
                     sAsyncInfo->mShellFolder2->AddRef();
                     sAsyncInfo->mText[0] = XPR_STRING_LITERAL('\0');
 
@@ -1005,7 +1062,7 @@ xpr_bool_t ExplorerCtrl::OnGetdispinfoShellItem(LVITEM &aLvItem, LPLVITEMDATA aL
         }
 
         // The thumbnail function process through thread.
-        if (isThumbnail() == XPR_TRUE)
+        if (getViewStyle() == VIEW_STYLE_THUMBNAIL)
         {
             if (XPR_TEST_BITS(aLvItemData->mShellAttributes, SFGAO_FILESYSTEM))
             {
@@ -1156,7 +1213,7 @@ LRESULT ExplorerCtrl::OnShellAsyncIcon(WPARAM wParam, LPARAM lParam)
 
 LRESULT ExplorerCtrl::OnShellColumnProc(WPARAM wParam, LPARAM lParam)
 {
-    ShellColumn::AsyncInfo *sAsyncInfo = (ShellColumn::AsyncInfo *)wParam;
+    ShellColumnManager::AsyncInfo *sAsyncInfo = (ShellColumnManager::AsyncInfo *)wParam;
     if (XPR_IS_NULL(sAsyncInfo))
         return 0;
 
@@ -1901,7 +1958,7 @@ xpr_sint_t ExplorerCtrl::addColumn(ColumnId *aColumnId, xpr_sint_t aInsert)
     LVCOLUMN sLvColumn = {0};
     sLvColumn.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT;
 
-    if (aColumnId->mFormatId == GUID_NULL)
+    if (XPR_IS_TRUE(aColumnId->mFormatId.none()))
     {
         if (aColumnId->mPropertyId >= mDefColumnCount)
             return -1;
@@ -1912,13 +1969,13 @@ xpr_sint_t ExplorerCtrl::addColumn(ColumnId *aColumnId, xpr_sint_t aInsert)
     }
     else
     {
-        ColumnInfo *sColumnInfo = ShellColumn::instance().getColumnInfo(*aColumnId);
+        ColumnInfo *sColumnInfo = ShellColumnManager::instance().getColumnInfo(*aColumnId);
         if (XPR_IS_NULL(sColumnInfo))
             return -1;
 
         sLvColumn.pszText = (xpr_tchar_t *)sColumnInfo->mName.c_str();
         sLvColumn.fmt     = sColumnInfo->mAlign;
-        sLvColumn.cx      = sColumnInfo->mWidth * ShellColumn::instance().getAvgCharWidth(this);
+        sLvColumn.cx      = sColumnInfo->mWidth * ShellColumnManager::instance().getAvgCharWidth(this);
     }
 
     InsertColumn(sIndex, &sLvColumn);
@@ -1960,7 +2017,7 @@ xpr_bool_t ExplorerCtrl::deleteColumn(ColumnId *aColumnId, xpr_sint_t *aIndex)
     return DeleteColumn(sIndex);
 }
 
-void ExplorerCtrl::useColumn(ColumnId *aColumnId, xpr_bool_t aOtherApply)
+void ExplorerCtrl::useColumn(ColumnId *aColumnId, xpr_bool_t aNotifyToObserver)
 {
     if (XPR_IS_NULL(aColumnId))
         return;
@@ -1979,7 +2036,7 @@ void ExplorerCtrl::useColumn(ColumnId *aColumnId, xpr_bool_t aOtherApply)
         if (deleteColumn(aColumnId, &sIndex) == XPR_FALSE)
             return;
 
-        if (mColumnSortData.mColumnSortInfo == *aColumnId)
+        if (mSortColumnId == *aColumnId)
         {
             sIndex--;
 
@@ -2003,12 +2060,18 @@ void ExplorerCtrl::useColumn(ColumnId *aColumnId, xpr_bool_t aOtherApply)
         resortItems();
     }
 
-    releaseColumn(XPR_FALSE);
+    saveFolderLayout();
 
-    if (XPR_IS_TRUE(aOtherApply))
+    if (XPR_IS_TRUE(aNotifyToObserver))
     {
         if (XPR_IS_NOT_NULL(mObserver))
-            mObserver->onUseColumn(*this, aColumnId);
+        {
+            FolderLayoutChange sFolderLayoutChange;
+            sFolderLayoutChange.mChangeMode = FolderLayoutChange::ChangeModeColumnUse;
+            sFolderLayoutChange.mColumnId   = aColumnId;
+
+            mObserver->onFolderLayoutChange(*this, sFolderLayoutChange);
+        }
     }
 }
 
@@ -2044,79 +2107,92 @@ xpr_bool_t ExplorerCtrl::isUseColumn(ColumnId *aColumnId) const
     return XPR_FALSE;
 }
 
-void ExplorerCtrl::getViewSetKey(xpr_tchar_t *aKey) const
+void ExplorerCtrl::loadFolderLayout(xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo)
 {
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_EACH_FOLDER)
-    {
-        GetName(mTvItemData->mShellFolder, mTvItemData->mPidl, SHGDN_FORPARSING, aKey);
-        return;
-    }
+    xpr_sint_t i;
+    xpr_bool_t sLoadDefault = XPR_TRUE;
+    xpr_bool_t sNeedLoad = XPR_FALSE;
 
-    FolderType sFolderType = mFolderType;
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
+    if (XPR_IS_TRUE(mFirstExplore))
     {
-        sFolderType = FOLDER_DEFAULT;
-    }
-
-    switch (mFolderType)
-    {
-    case FOLDER_COMPUTER: _tcscpy(aKey, kViewSetComputerFolder); break;
-    case FOLDER_VIRTUAL:  _tcscpy(aKey, kViewSetVirtualFolder);  break;
-
-    default:
-    case FOLDER_DEFAULT:
+        if (XPR_IS_NOT_NULL(mObserver))
         {
-            if (mOption.mSaveViewSet == SAVE_VIEW_SET_DEFAULT)
-                _stprintf(aKey, kViewSetDefault, mViewIndex + 1);
-            else
-                _tcscpy(aKey, kViewSetAllOfSame);
-            break;
+            mDefaultFolderLayout = new FolderLayout;
+
+            if (mObserver->onLoadFolderLayout(const_cast<ExplorerCtrl &>(*this), FOLDER_DEFAULT, *mDefaultFolderLayout) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(mDefaultFolderLayout);
+            }
+
+            mComputerFolderLayout = new FolderLayout;
+
+            if (mObserver->onLoadFolderLayout(const_cast<ExplorerCtrl &>(*this), FOLDER_COMPUTER, *mComputerFolderLayout) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(mComputerFolderLayout);
+            }
+
+            mVirtualFolderLayout = new FolderLayout;
+
+            if (mObserver->onLoadFolderLayout(const_cast<ExplorerCtrl &>(*this), FOLDER_VIRTUAL, *mVirtualFolderLayout) == XPR_FALSE)
+            {
+                XPR_SAFE_DELETE(mVirtualFolderLayout);
+            }
         }
     }
-}
 
-ExplorerCtrl::DefColumnInfo *ExplorerCtrl::getDefColumnInfo(xpr_sint_t *aDefColumnCount) const
-{
-    if (XPR_IS_NOT_NULL(aDefColumnCount))
-        *aDefColumnCount = mDefColumnCount;
-
-    return mDefColumnInfo;
-}
-
-xpr_bool_t ExplorerCtrl::getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const
-{
-    // Default Column Info
-    aDefColumnCount = 0;
-    switch (mFolderType)
+    // load folder layout
+    mFolderLayout = getFolderLayout();
+    if (XPR_IS_NULL(mFolderLayout))
     {
-    case FOLDER_COMPUTER:
-        aDefColumnCount = sizeof(mDefColumnMyComputer) / sizeof(DefColumnInfo);
-        *aDefColumnInfo = mDefColumnMyComputer;
-        break;
+        sNeedLoad = XPR_TRUE;
+        mFolderLayout = newFolderLayout();
 
-    case FOLDER_VIRTUAL:
-        aDefColumnCount = sizeof(mDefColumnVirtual) / sizeof(DefColumnInfo);
-        *aDefColumnInfo = mDefColumnVirtual;
-        break;
-
-    default:
-    case FOLDER_DEFAULT:
-        aDefColumnCount = sizeof(mDefColumnDefault) / sizeof(DefColumnInfo);
-        *aDefColumnInfo = mDefColumnDefault;
-        break;
+        XPR_ASSERT(mFolderLayout != XPR_NULL);
     }
 
-    // Get Registry Column Info
-    xpr_sint_t i;
-    xpr_tchar_t sKey[XPR_MAX_PATH * 2 + 1] = {0};
-    getViewSetKey(sKey);
+    if (XPR_IS_TRUE(sNeedLoad) || mOption.mSaveFolderLayout == SAVE_FOLDER_LAYOUT_EACH_FOLDER)
+    {
+        if (XPR_IS_NOT_NULL(mObserver))
+        {
+            if (mObserver->onLoadFolderLayout(const_cast<ExplorerCtrl &>(*this), mFolderType, *mFolderLayout) == XPR_TRUE)
+            {
+                sLoadDefault = XPR_FALSE;
+            }
+        }
+    }
+    else
+    {
+        sLoadDefault = XPR_FALSE;
+    }
 
-    xpr_bool_t sLoaded = XPR_FALSE;
-    if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
-        sLoaded = ViewSetMgr::instance().getViewSet(sKey, aFolderViewSet);
+    // get default column info
+    getDefColumnInfo(aDefColumnCount, aDefColumnInfo);
 
-    // Fill in the Result Column Info
-    if (XPR_IS_FALSE(sLoaded))
+    // load default folder layout
+    if (XPR_IS_TRUE(sLoadDefault))
+    {
+        mFolderLayout->mAllSubApply = XPR_FALSE;
+
+        if (mFolderType == FOLDER_COMPUTER)
+        {
+            mFolderLayout->mViewStyle = VIEW_STYLE_DETAILS;
+
+            mFolderLayout->mSortColumnId.mFormatId.clear();
+            mFolderLayout->mSortColumnId.mPropertyId = 0;
+            mFolderLayout->mSortAscending            = XPR_TRUE;
+        }
+        else
+        {
+            mFolderLayout->mViewStyle   = mOption.mDefaultViewStyle;
+            mFolderLayout->mAllSubApply = XPR_FALSE;
+
+            mFolderLayout->mSortColumnId.mFormatId.clear();
+            mFolderLayout->mSortColumnId.mPropertyId = mOption.mDefaultSort;
+            mFolderLayout->mSortAscending            = XPR_IS_TRUE(mOption.mDefaultSortOrder) ? XPR_TRUE : XPR_FALSE;
+        }
+    }
+
+    if (XPR_IS_TRUE(sLoadDefault) || mFolderLayout->mColumnCount == 0)
     {
         xpr_sint_t sColumnCount = 0;
         for (i = 0; i < aDefColumnCount; ++i)
@@ -2125,35 +2201,8 @@ xpr_bool_t ExplorerCtrl::getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &a
                 ++sColumnCount;
         }
 
-        xpr_uint_t sDefaultViewStyle = LVS_REPORT;
-        switch (mOption.mDefaultViewStyle)
-        {
-        case VIEW_STYLE_ICON:       sDefaultViewStyle = LVS_ICON;      break;
-        case VIEW_STYLE_SMALL_ICON: sDefaultViewStyle = LVS_SMALLICON; break;
-        case VIEW_STYLE_LIST:       sDefaultViewStyle = LVS_LIST;      break;
-        case VIEW_STYLE_THUMBNAIL:  sDefaultViewStyle = LVS_THUMBNAIL; break;
-
-        case VIEW_STYLE_REPORT:
-        default:                    sDefaultViewStyle = LVS_REPORT;    break;
-        }
-
-        aFolderViewSet->mViewStyle   = sDefaultViewStyle;//getViewStyle();
-        aFolderViewSet->mColumnCount = sColumnCount;
-        aFolderViewSet->mColumnItem  = new ColumnItem[sColumnCount];
-        aFolderViewSet->mAllSubApply = XPR_FALSE;
-
-        aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
-        aFolderViewSet->mColumnSortInfo.mPropertyId = mOption.mDefaultSort;
-        aFolderViewSet->mColumnSortInfo.mAscending  = XPR_IS_TRUE(mOption.mDefaultSortOrder) ? XPR_TRUE : XPR_FALSE;
-
-        if (mFolderType == FOLDER_COMPUTER)
-        {
-            aFolderViewSet->mViewStyle = LVS_REPORT;
-
-            aFolderViewSet->mColumnSortInfo.mFormatId   = GUID_NULL;
-            aFolderViewSet->mColumnSortInfo.mPropertyId = 0;
-            aFolderViewSet->mColumnSortInfo.mAscending  = XPR_TRUE;
-        }
+        mFolderLayout->mColumnCount = sColumnCount;
+        mFolderLayout->mColumnItem  = new FolderLayout::ColumnItem[sColumnCount];
 
         xpr_sint_t j;
         for (i = 0, j = 0; i < aDefColumnCount; ++i)
@@ -2161,112 +2210,79 @@ xpr_bool_t ExplorerCtrl::getViewSet(FolderViewSet *aFolderViewSet, xpr_sint_t &a
             if (XPR_IS_FALSE((*aDefColumnInfo)[i].mDefault))
                 continue;
 
-            aFolderViewSet->mColumnItem[j].mWidth      = (*aDefColumnInfo)[i].mWidth;
-            aFolderViewSet->mColumnItem[j].mFormatId   = (*aDefColumnInfo)[i].mFormatId;
-            aFolderViewSet->mColumnItem[j].mPropertyId = (*aDefColumnInfo)[i].mPropertyId;
+            mFolderLayout->mColumnItem[j].mWidth      = (*aDefColumnInfo)[i].mWidth;
+            mFolderLayout->mColumnItem[j].mFormatId   = (*aDefColumnInfo)[i].mFormatId;
+            mFolderLayout->mColumnItem[j].mPropertyId = (*aDefColumnInfo)[i].mPropertyId;
             j++;
         }
     }
 
-    for (i = 0; i < aFolderViewSet->mColumnCount; ++i)
+    // validate column width
+    for (i = 0; i < mFolderLayout->mColumnCount; ++i)
     {
-        if (aFolderViewSet->mColumnItem[i].mWidth < 0)
+        if (mFolderLayout->mColumnItem[i].mWidth <= 0) // auto column width is 0
         {
             if (i < aDefColumnCount)
-                aFolderViewSet->mColumnItem[i].mWidth = (*aDefColumnInfo)[i].mWidth;
+                mFolderLayout->mColumnItem[i].mWidth = (*aDefColumnInfo)[i].mWidth;
+            else
+                mFolderLayout->mColumnItem[i].mWidth = DEF_COLUMN_SIZE;
         }
+
+        if (mFolderLayout->mColumnItem[i].mWidth > MAX_COLUMN_SIZE)
+            mFolderLayout->mColumnItem[i].mWidth = MAX_COLUMN_SIZE;
     }
 
-    // column #0
-    if (aFolderViewSet->mColumnItem[0].mFormatId   != (*aDefColumnInfo)[0].mFormatId ||
-        aFolderViewSet->mColumnItem[0].mPropertyId != (*aDefColumnInfo)[0].mPropertyId)
+    // first column should be 'name' column
+    if (mFolderLayout->mColumnItem[0].mFormatId   != (*aDefColumnInfo)[0].mFormatId ||
+        mFolderLayout->mColumnItem[0].mPropertyId != (*aDefColumnInfo)[0].mPropertyId)
     {
-        aFolderViewSet->mColumnItem[0].mWidth      = (*aDefColumnInfo)[0].mWidth;
-        aFolderViewSet->mColumnItem[0].mFormatId   = (*aDefColumnInfo)[0].mFormatId;
-        aFolderViewSet->mColumnItem[0].mPropertyId = (*aDefColumnInfo)[0].mPropertyId;
+        mFolderLayout->mColumnItem[0].mWidth      = (*aDefColumnInfo)[0].mWidth;
+        mFolderLayout->mColumnItem[0].mFormatId   = (*aDefColumnInfo)[0].mFormatId;
+        mFolderLayout->mColumnItem[0].mPropertyId = (*aDefColumnInfo)[0].mPropertyId;
     }
-
-    return sLoaded;
 }
 
-xpr_bool_t ExplorerCtrl::setViewSet(const FolderViewSet *aFolderViewSet)
-{
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_NONE)
-        return XPR_TRUE;
-
-    xpr_tchar_t sKey[XPR_MAX_PATH * 2 + 1] = {0};
-    getViewSetKey(sKey);
-
-    if (mOption.mAutoColumnWidth == XPR_TRUE)
-        aFolderViewSet->mColumnItem[0].mWidth = 0;
-
-    ViewSetMgr &sViewSetMgr = ViewSetMgr::instance();
-    return sViewSetMgr.setViewSet(sKey, aFolderViewSet);
-}
-
-void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
+void ExplorerCtrl::loadFolderLayout(void)
 {
     CHeaderCtrl *sHeaderCtrl = GetHeaderCtrl();
     if (XPR_IS_NULL(sHeaderCtrl))
         return;
 
-    xpr_sint_t sColumnCount = sHeaderCtrl->GetItemCount();
-    if (XPR_IS_FALSE(aForcelyInit) && sColumnCount > 0)
-        return;
+    // delete all columns
+    deleteAllColumns();
 
-    // Delete Column
-    xpr_sint_t i;
-    ColumnId *sColumnId2;
+    // load folder layout
+    loadFolderLayout(mDefColumnCount, &mDefColumnInfo);
 
-    HDITEM sHdItem = {0};
-    sHdItem.mask = HDI_LPARAM;
+    // set view style
+    setViewStyle(mFolderLayout->mViewStyle, XPR_FALSE, XPR_FALSE);
 
-    for (i = sColumnCount - 1; i >= 0; --i)
-    {
-        sHeaderCtrl->GetItem(i, &sHdItem);
+    // set sort column
+    mSortColumnId  = mFolderLayout->mSortColumnId;
+    mSortAscending = mFolderLayout->mSortAscending;
+    mSortColumn    = -1;
 
-        sColumnId2 = (ColumnId *)sHdItem.lParam;
-        XPR_SAFE_DELETE(sColumnId2);
-
-        DeleteColumn(i);
-    }
-
-    FolderViewSet sFolderViewSet;
-    getViewSet(&sFolderViewSet, mDefColumnCount, &mDefColumnInfo);
-
-    if (mOption.mSaveViewSet != SAVE_VIEW_SET_NONE)
-        setViewStyle(sFolderViewSet.mViewStyle, XPR_FALSE, XPR_FALSE);
-
-    mColumnSortData.mColumnSortInfo = sFolderViewSet.mColumnSortInfo;
-    mColumnSortData.mColumn         = -1;
-
-    ShellColumn &sShellColum = ShellColumn::instance();
-
-    xpr_sint_t sIndex = 0;
-    LVCOLUMN sLvColumn = {0};
-    ColumnId *sColumnId;
+    // insert columns
+    xpr_sint_t  i;
+    xpr_sint_t  sIndex = 0;
+    HDITEM      sHdItem = {0};
+    LVCOLUMN    sLvColumn = {0};
+    ColumnId   *sColumnId;
     ColumnInfo *sColumnInfo;
+    ShellColumnManager &sShellColum = ShellColumnManager::instance();
 
-    for (i = 0; i < sFolderViewSet.mColumnCount; ++i)
+    for (i = 0; i < mFolderLayout->mColumnCount; ++i)
     {
-        // minimum column size
-        if (sFolderViewSet.mColumnItem[i].mWidth <= 0)
-            sFolderViewSet.mColumnItem[i].mWidth = DEF_COLUMN_SIZE;
-
-        // maximum column size
-        if (sFolderViewSet.mColumnItem[i].mWidth > MAX_COLUMN_SIZE)
-            sFolderViewSet.mColumnItem[i].mWidth = MAX_COLUMN_SIZE;
-
-        if (sFolderViewSet.mColumnItem[i].mPropertyId != -1)
+        if (mFolderLayout->mColumnItem[i].mPropertyId != -1)
         {
             sColumnId = new ColumnId;
-            sColumnId->mFormatId   = sFolderViewSet.mColumnItem[i].mFormatId;
-            sColumnId->mPropertyId = sFolderViewSet.mColumnItem[i].mPropertyId;
+            sColumnId->mFormatId   = mFolderLayout->mColumnItem[i].mFormatId;
+            sColumnId->mPropertyId = mFolderLayout->mColumnItem[i].mPropertyId;
 
             sLvColumn.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT;
-            sLvColumn.cx   = sFolderViewSet.mColumnItem[i].mWidth;
+            sLvColumn.cx   = mFolderLayout->mColumnItem[i].mWidth;
 
-            if (sColumnId->mFormatId == GUID_NULL)
+            if (XPR_IS_TRUE(sColumnId->mFormatId.none()))
             {
                 if (i >= mDefColumnCount)
                 {
@@ -2274,8 +2290,8 @@ void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
                     continue;
                 }
 
-                sLvColumn.pszText = (xpr_tchar_t *)gApp.loadString(mDefColumnInfo[sFolderViewSet.mColumnItem[i].mPropertyId].mNameStringId);
-                sLvColumn.fmt     = mDefColumnInfo[sFolderViewSet.mColumnItem[i].mPropertyId].mFormat;
+                sLvColumn.pszText = (xpr_tchar_t *)gApp.loadString(mDefColumnInfo[mFolderLayout->mColumnItem[i].mPropertyId].mNameStringId);
+                sLvColumn.fmt     = mDefColumnInfo[mFolderLayout->mColumnItem[i].mPropertyId].mFormat;
             }
             else
             {
@@ -2301,36 +2317,53 @@ void ExplorerCtrl::initColumn(xpr_bool_t aForcelyInit)
     }
 }
 
-void ExplorerCtrl::releaseColumn(xpr_bool_t aDeleteColumn)
+void ExplorerCtrl::saveFolderLayout(void)
 {
-    saveColumn();
-
-    if (XPR_IS_TRUE(aDeleteColumn))
-        deleteAllColumns();
+    saveFolderLayout(mOption.mSaveFolderLayout);
 }
 
-void ExplorerCtrl::saveColumn(void)
+void ExplorerCtrl::saveFolderLayout(xpr_sint_t aSaveFolderLayout)
 {
-    CHeaderCtrl *sHeaderCtrl = GetHeaderCtrl();
-    if (XPR_IS_NULL(sHeaderCtrl))
+    if (aSaveFolderLayout == SAVE_FOLDER_LAYOUT_NONE)
         return;
 
-    xpr_sint_t sColumnCount = sHeaderCtrl->GetItemCount();
-    if (sColumnCount > 0)
+    // skip, if first explored
+    if (XPR_IS_TRUE(mFirstExplore))
+        return;
+
+    saveToFolderLayout(*mFolderLayout);
+
+    if (XPR_IS_NOT_NULL(mObserver))
     {
-        FolderViewSet sFolderViewSet;
+        mObserver->onSaveFolderLayout(*this, mFolderType, aSaveFolderLayout, *mFolderLayout);
+    }
+}
 
-        sFolderViewSet.mViewStyle      = getViewStyle();
-        sFolderViewSet.mColumnSortInfo = mColumnSortData.mColumnSortInfo;
-        sFolderViewSet.mColumnCount    = sColumnCount;
-        sFolderViewSet.mColumnItem     = new ColumnItem[sColumnCount];
-        sFolderViewSet.mAllSubApply    = XPR_FALSE;
+void ExplorerCtrl::saveToFolderLayout(FolderLayout &aFolderLayout) const
+{
+    aFolderLayout.clear();
+    aFolderLayout.mViewStyle     = getViewStyle();
+    aFolderLayout.mSortColumnId  = mSortColumnId;
+    aFolderLayout.mSortAscending = mSortAscending;
+    aFolderLayout.mColumnCount   = 0;
+    aFolderLayout.mColumnItem    = XPR_NULL;
+    aFolderLayout.mAllSubApply   = XPR_FALSE;
 
-        // Column Data
+    CHeaderCtrl *sHeaderCtrl = GetHeaderCtrl();
+    if (XPR_IS_NOT_NULL(sHeaderCtrl))
+    {
+        aFolderLayout.mColumnCount = sHeaderCtrl->GetItemCount();
+    }
+
+    if (aFolderLayout.mColumnCount > 0)
+    {
         xpr_sint_t i;
         ColumnId *sColumnId;
         LVCOLUMN sLvColumn = {0};
-        for (i = 0; i < sColumnCount; ++i)
+
+        aFolderLayout.mColumnItem = new FolderLayout::ColumnItem[aFolderLayout.mColumnCount];
+
+        for (i = 0; i < aFolderLayout.mColumnCount; ++i)
         {
             if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && i == 0)
                 continue;
@@ -2339,12 +2372,112 @@ void ExplorerCtrl::saveColumn(void)
             GetColumn(i, &sLvColumn);
 
             sColumnId = getColumnId(i);
-            sFolderViewSet.mColumnItem[i].mWidth      = sLvColumn.cx;
-            sFolderViewSet.mColumnItem[i].mFormatId   = sColumnId->mFormatId;
-            sFolderViewSet.mColumnItem[i].mPropertyId = sColumnId->mPropertyId;
+            aFolderLayout.mColumnItem[i].mWidth      = sLvColumn.cx;
+            aFolderLayout.mColumnItem[i].mFormatId   = sColumnId->mFormatId;
+            aFolderLayout.mColumnItem[i].mPropertyId = sColumnId->mPropertyId;
         }
 
-        setViewSet(&sFolderViewSet);
+        if (mOption.mAutoColumnWidth == XPR_TRUE)
+        {
+            aFolderLayout.mColumnItem[0].mWidth = 0;
+        }
+    }
+}
+
+void ExplorerCtrl::syncFolderLayout(void)
+{
+    if (XPR_IS_TRUE(mFirstExplore))
+        return;
+
+    mFolderLayout = getFolderLayout();
+    if (XPR_IS_NULL(mFolderLayout))
+    {
+        mFolderLayout = newFolderLayout();
+
+        XPR_ASSERT(mFolderLayout != XPR_NULL);
+    }
+
+    saveToFolderLayout(*mFolderLayout);
+}
+
+FolderLayout *ExplorerCtrl::getFolderLayout(FolderType aFolderType) const
+{
+    switch (aFolderType)
+    {
+    case FOLDER_DEFAULT:  return mDefaultFolderLayout;
+    case FOLDER_COMPUTER: return mComputerFolderLayout;
+    case FOLDER_VIRTUAL:  return mVirtualFolderLayout;
+
+    default:
+        XPR_ASSERT(0);
+        break;
+    }
+
+    return XPR_NULL;
+}
+
+FolderLayout *ExplorerCtrl::getFolderLayout(void) const
+{
+    return getFolderLayout(mFolderType);
+}
+
+FolderLayout *ExplorerCtrl::newFolderLayout(FolderType aFolderType)
+{
+    FolderLayout *sFolderLayout = XPR_NULL;
+
+    switch (aFolderType)
+    {
+    case FOLDER_DEFAULT:
+        XPR_SAFE_DELETE(mDefaultFolderLayout);
+        sFolderLayout = mDefaultFolderLayout = new FolderLayout;
+        break;
+
+    case FOLDER_COMPUTER:
+        XPR_SAFE_DELETE(mComputerFolderLayout);
+        sFolderLayout = mComputerFolderLayout = new FolderLayout;
+        break;
+
+    case FOLDER_VIRTUAL:
+        XPR_SAFE_DELETE(mVirtualFolderLayout);
+        sFolderLayout = mVirtualFolderLayout = new FolderLayout;
+
+    default:
+        XPR_ASSERT(0);
+        break;
+    }
+
+    return sFolderLayout;
+}
+
+FolderLayout *ExplorerCtrl::newFolderLayout(void)
+{
+    return newFolderLayout(mFolderType);
+}
+
+void ExplorerCtrl::getDefColumnInfo(xpr_sint_t &aDefColumnCount, DefColumnInfo **aDefColumnInfo) const
+{
+    aDefColumnCount = 0;
+
+    switch (mFolderType)
+    {
+    case FOLDER_DEFAULT:
+        aDefColumnCount = sizeof(mDefColumnDefault) / sizeof(DefColumnInfo);
+        *aDefColumnInfo = mDefColumnDefault;
+        break;
+
+    case FOLDER_COMPUTER:
+        aDefColumnCount = sizeof(mDefColumnComputer) / sizeof(DefColumnInfo);
+        *aDefColumnInfo = mDefColumnComputer;
+        break;
+
+    case FOLDER_VIRTUAL:
+        aDefColumnCount = sizeof(mDefColumnVirtual) / sizeof(DefColumnInfo);
+        *aDefColumnInfo = mDefColumnVirtual;
+        break;
+
+    default:
+        XPR_ASSERT(0);
+        break;
     }
 }
 
@@ -2402,13 +2535,14 @@ void ExplorerCtrl::getColumnDataList(LPSHELLFOLDER2 &aShellFolder2, ColumnDataLi
     ColumnInfo *sColumnInfo;
     DefColumnInfo *sDefColumnInfo;
 
-    sDefColumnInfo = getDefColumnInfo(&sDefColumnCount);
+    sDefColumnInfo  = mDefColumnInfo;
+    sDefColumnCount = mDefColumnCount;
+
     if (XPR_IS_NOT_NULL(sDefColumnInfo))
     {
         for (i = 0; i < sDefColumnCount; ++i)
         {
             ColumnId sColumnId;
-            sColumnId.mFormatId   = GUID_NULL;
             sColumnId.mPropertyId = i;
 
             sColumnInfo = new ColumnInfo;
@@ -2518,12 +2652,11 @@ void ExplorerCtrl::setColumnDataList(ColumnDataList &aUseColumnList)
     {
         sColumnId = (ColumnId *)sHdiItem.lParam;
         if (sColumnId)
-            sExistNameColumn = (sColumnId->mFormatId == GUID_NULL && sColumnId->mPropertyId == 0) ? XPR_TRUE : XPR_FALSE;
+            sExistNameColumn = (XPR_IS_TRUE(sColumnId->mFormatId.none()) && sColumnId->mPropertyId == 0) ? XPR_TRUE : XPR_FALSE;
     }
 
-    sSortColumn = XPR_FALSE;
-    sSortColumnId.mFormatId   = getSortInfo()->mFormatId;
-    sSortColumnId.mPropertyId = getSortInfo()->mPropertyId;
+    sSortColumn   = XPR_FALSE;
+    sSortColumnId = mSortColumnId;
 
     ColumnDataList::const_iterator sIterator = aUseColumnList.begin();
     for (i = 0; sIterator != aUseColumnList.end(); ++sIterator, ++i)
@@ -2537,7 +2670,7 @@ void ExplorerCtrl::setColumnDataList(ColumnDataList &aUseColumnList)
 
         if (sExistNameColumn == XPR_TRUE)
         {
-            if (sColumnItemData->mFormatId == GUID_NULL && sColumnItemData->mPropertyId == 0)
+            if (XPR_IS_TRUE(sColumnItemData->mFormatId.none()) && sColumnItemData->mPropertyId == 0)
                 continue;
         }
 
@@ -2559,15 +2692,37 @@ void ExplorerCtrl::setColumnDataList(ColumnDataList &aUseColumnList)
             sSortColumn = XPR_TRUE;
     }
 
-    if ((sSortColumn == XPR_TRUE) || (sSortColumnId.mFormatId == GUID_NULL && sSortColumnId.mPropertyId == 0))
+    if ((sSortColumn == XPR_TRUE) || (XPR_IS_TRUE(sSortColumnId.mFormatId.none()) && sSortColumnId.mPropertyId == 0))
         resortItems();
     else
         sortItems(getColumnId(0), XPR_TRUE);
 
-    releaseColumn(XPR_FALSE);
+    saveFolderLayout();
 }
 
-ExplorerCtrl::FolderType ExplorerCtrl::getFolderType(void) const
+void ExplorerCtrl::setViewStyleChange(const FolderLayoutChange &aFolderLayoutChange)
+{
+    switch (aFolderLayoutChange.mChangeMode)
+    {
+    case FolderLayoutChange::ChangeModeViewStyle:
+        setViewStyle(aFolderLayoutChange.mViewStyle, aFolderLayoutChange.mRefresh, XPR_FALSE);
+        break;
+
+    case FolderLayoutChange::ChangeModeColumnUse:
+        useColumn(aFolderLayoutChange.mColumnId, XPR_FALSE);
+        break;
+
+    case FolderLayoutChange::ChangeModeColumnSize:
+        SetColumnWidth(aFolderLayoutChange.mColumnIndex, aFolderLayoutChange.mColumnWidth);
+        break;
+
+    case FolderLayoutChange::ChangeModeSortItems:
+        sortItems(aFolderLayoutChange.mColumnId, aFolderLayoutChange.mSortAscending, XPR_FALSE);
+        break;
+    }
+}
+
+FolderType ExplorerCtrl::getFolderType(void) const
 {
     return mFolderType;
 }
@@ -2618,14 +2773,9 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
         sExStyle &= ~LVS_EX_TRACKSELECT;
     }
 
-    if (XPR_IS_TRUE(aNewOption.mTooltip))       sExStyle |= LVS_EX_INFOTIP;
-    else                                        sExStyle &= ~LVS_EX_INFOTIP;
-
-    if (XPR_IS_TRUE(aNewOption.mGridLines))     sExStyle |= LVS_EX_GRIDLINES;
-    else                                        sExStyle &= ~LVS_EX_GRIDLINES;
-
-    if (XPR_IS_TRUE(aNewOption.mFullRowSelect)) sExStyle |= LVS_EX_FULLROWSELECT;
-    else                                        sExStyle &= ~LVS_EX_FULLROWSELECT;
+    XPR_SET_OR_CLR_BITS(sExStyle, LVS_EX_INFOTIP,       aNewOption.mTooltip);
+    XPR_SET_OR_CLR_BITS(sExStyle, LVS_EX_GRIDLINES,     aNewOption.mGridLines);
+    XPR_SET_OR_CLR_BITS(sExStyle, LVS_EX_FULLROWSELECT, aNewOption.mFullRowSelect);
 
     SetExtendedStyle(sExStyle);
 
@@ -2638,7 +2788,7 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
     // set custom text color, text background color, background color and background image
     if (XPR_IS_TRUE(aNewOption.mBkgndImage))
     {
-        SetBkImage((xpr_tchar_t *)(const xpr_tchar_t *)aNewOption.mBkgndImagePath);
+        SetBkImage(aNewOption.mBkgndImagePath);
     }
     else
     {
@@ -2666,14 +2816,27 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
     }
 
     // set system image list or custom image list
-    SysImgListMgr &sSysImgListMgr = SysImgListMgr::instance();
+    ImgListManager &sImgListManager = SingletonManager::get<ImgListManager>();
 
-    sSysImgListMgr.getCustomImgList(aNewOption.mCustomIconFile[0], aNewOption.mCustomIconFile[1]);
+    sImgListManager.loadCustomImgList(aNewOption.mCustomIconFile16,
+                                      aNewOption.mCustomIconFile32,
+                                      aNewOption.mCustomIconFile48,
+                                      aNewOption.mCustomIconFile256);
 
     if (XPR_IS_TRUE(aNewOption.mCustomIcon))
-        setImageList(&sSysImgListMgr.mCusImgList32, &sSysImgListMgr.mCusImgList16);
+    {
+        setImageList(&sImgListManager.mCustomImgList16,
+                     &sImgListManager.mCustomImgList32,
+                     &sImgListManager.mCustomImgList48,
+                     &sImgListManager.mCustomImgList256);
+    }
     else
-        setImageList(&sSysImgListMgr.mSysImgList32, &sSysImgListMgr.mSysImgList16);
+    {
+        setImageList(&sImgListManager.mSysImgList16,
+                     &sImgListManager.mSysImgList32,
+                     &sImgListManager.mSysImgList48,
+                     &sImgListManager.mSysImgList256);
+    }
 
     // set custom font
     setCustomFont(aNewOption.mCustomFont, aNewOption.mCustomFontText);
@@ -2685,6 +2848,16 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
     // set contents display while dragging
     setDragContents(!aNewOption.mDragNoContents);
 
+    if (mOption.mSaveFolderLayout != aNewOption.mSaveFolderLayout)
+    {
+        // save current folder layout
+        saveFolderLayout();
+    }
+    else
+    {
+        // save when refreshes
+    }
+
     // set new option
     mOption = aNewOption;
 
@@ -2695,8 +2868,8 @@ void ExplorerCtrl::applyOption(Option &aNewOption)
     sThumbnail.setThumbPriority(aNewOption.mThumbnailPriority);
 
     //  update view style, if one is thumbnail
-    if (getViewStyle() == LVS_THUMBNAIL)
-        setViewStyle(LVS_THUMBNAIL, XPR_TRUE);
+    if (getViewStyle() == VIEW_STYLE_THUMBNAIL)
+        setViewStyle(VIEW_STYLE_THUMBNAIL, XPR_TRUE);
 }
 
 xpr_bool_t ExplorerCtrl::explore(LPITEMIDLIST aFullPidl, xpr_bool_t aUpdateBuddy)
@@ -2810,11 +2983,16 @@ void ExplorerCtrl::preEnumeration(LPTVITEMDATA aNewTvItemData)
     xpr_bool_t sEqualFolder = XPR_FALSE;
     if (XPR_IS_NOT_NULL(mTvItemData))
     {
-        sEqualFolder = fxfile::base::Pidl::compare(aNewTvItemData->mFullPidl, mTvItemData->mFullPidl) ? XPR_FALSE : XPR_TRUE;
+        sEqualFolder = (fxfile::base::Pidl::compare(aNewTvItemData->mFullPidl, mTvItemData->mFullPidl) == 0) ? XPR_TRUE : XPR_FALSE;
     }
 
-    // release column
-    releaseColumn(!sEqualFolder);
+    // save folder layout
+    saveFolderLayout();
+
+    if (XPR_IS_FALSE(sEqualFolder))
+    {
+        deleteAllColumns();
+    }
 
     // free old TVITEMDATA
     if (XPR_IS_NOT_NULL(mTvItemData))
@@ -2855,7 +3033,7 @@ void ExplorerCtrl::preEnumeration(LPTVITEMDATA aNewTvItemData)
 
     //-------------------------------------------------------------------------
 
-    ShellColumn::instance().clearAsyncColumn(mCode);
+    ShellColumnManager::instance().clearAsyncColumn(mCode);
 
     mCodeMgr++;
     if (mCodeMgr == 0)
@@ -2890,8 +3068,13 @@ void ExplorerCtrl::preEnumeration(LPTVITEMDATA aNewTvItemData)
     // delete all old items
     DeleteAllItems();
 
-    // init column
-    initColumn();
+    if (XPR_IS_FALSE(sEqualFolder))
+    {
+        // load folder layout
+        loadFolderLayout();
+    }
+
+    mFirstExplore = XPR_FALSE;
 }
 
 xpr_bool_t ExplorerCtrl::insertPidlItem(LPSHELLFOLDER aShellFolder, LPITEMIDLIST aPidl, xpr_sint_t aIndex)
@@ -2983,7 +3166,7 @@ void ExplorerCtrl::postEnumeration(xpr_bool_t aUpdateBuddy)
     mUpdated = XPR_TRUE;
 
     // adjust automatic column width
-    if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && getViewStyle() == LVS_REPORT)
+    if (XPR_IS_TRUE(mOption.mAutoColumnWidth) && getViewStyle() == VIEW_STYLE_DETAILS)
     {
         SetColumnWidth(0, LVSCW_AUTOSIZE);
     }
@@ -3271,71 +3454,88 @@ void ExplorerCtrl::OnColumnclick(NMHDR *aNmHdr, LRESULT *aResult)
 
 void ExplorerCtrl::resortItems(void)
 {
-    sortItems(&mColumnSortData.mColumnSortInfo, mColumnSortData.mColumnSortInfo.mAscending, XPR_FALSE);
+    ColumnId   sSortColumnId  = mSortColumnId;
+    xpr_bool_t sSortAscending = mSortAscending;
+
+    sortItems(&sSortColumnId, sSortAscending, XPR_FALSE);
 }
 
 void ExplorerCtrl::sortItems(ColumnId *aColumnId)
 {
     xpr_bool_t sAscending = XPR_TRUE;
-    if (mColumnSortData.mColumnSortInfo == *aColumnId)
-        sAscending = !mColumnSortData.mColumnSortInfo.mAscending;
+    if (mSortColumnId == *aColumnId)
+        sAscending = !mSortAscending;
 
     sortItems(aColumnId, sAscending);
 }
 
-void ExplorerCtrl::sortItems(ColumnId *aColumnId, xpr_bool_t aAscending, xpr_bool_t aOtherApply)
+struct ExplorerCtrl::SortData
+{
+    ColumnId   mColumnId;
+    xpr_bool_t mAscending;
+    xpr_sint_t mColumn;
+};
+
+void ExplorerCtrl::sortItems(ColumnId *aColumnId, xpr_bool_t aAscending, xpr_bool_t aNotifyToObserver)
 {
     if (mOption.mNoSort == XPR_TRUE)
         return;
 
     if (XPR_IS_NULL(aColumnId))
     {
-        mColumnSortData.mColumnSortInfo.mFormatId   = GUID_NULL;
-        mColumnSortData.mColumnSortInfo.mPropertyId = 0;
-        mColumnSortData.mColumnSortInfo.mAscending  = XPR_TRUE;
-        mColumnSortData.mColumn                     = -1;
+        mSortColumnId.mFormatId.clear();
+        mSortColumnId.mPropertyId = 0;
+        mSortAscending            = XPR_TRUE;
+        mSortColumn               = -1;
     }
     else
     {
-        mColumnSortData.mColumnSortInfo.mFormatId   = aColumnId->mFormatId;
-        mColumnSortData.mColumnSortInfo.mPropertyId = aColumnId->mPropertyId;
-        mColumnSortData.mColumnSortInfo.mAscending  = aAscending;
-        mColumnSortData.mColumn                     = -1;
+        mSortColumnId  = *aColumnId;
+        mSortAscending = aAscending;
+        mSortColumn    = -1;
     }
 
-    if (mColumnSortData.mColumn == -1)
+    if (mSortColumn == -1)
     {
-        if (mColumnSortData.mColumnSortInfo.mFormatId == GUID_NULL)
-            mColumnSortData.mColumn = mColumnSortData.mColumnSortInfo.mPropertyId;
+        if (XPR_IS_TRUE(mSortColumnId.mFormatId.none()))
+            mSortColumn = mSortColumnId.mPropertyId;
         else
         {
-            ColumnId sColumnId;
-            sColumnId.mFormatId   = mColumnSortData.mColumnSortInfo.mFormatId;
-            sColumnId.mPropertyId = mColumnSortData.mColumnSortInfo.mPropertyId;
-
-            mColumnSortData.mColumn = ShellColumn::instance().getDetailColumn(sColumnId);
+            mSortColumn = ShellColumnManager::instance().getDetailColumn(mSortColumnId);
         }
     }
 
-    SortItems(DefaultItemCompareProc, (DWORD_PTR)getSortData());
+    SortData sSortData;
+    sSortData.mColumnId  = mSortColumnId;
+    sSortData.mAscending = mSortAscending;
+    sSortData.mColumn    = mSortColumn;
 
-    setSortImage(getColumnFromId(&mColumnSortData.mColumnSortInfo), mColumnSortData.mColumnSortInfo.mAscending);
+    SortItems(DefaultItemCompareProc, (DWORD_PTR)&sSortData);
 
-    if (XPR_IS_TRUE(aOtherApply))
+    setSortImage(getColumnFromId(&mSortColumnId), mSortAscending);
+
+    if (XPR_IS_TRUE(aNotifyToObserver))
     {
         if (XPR_IS_NOT_NULL(mObserver))
-            mObserver->onSortItems(*this, aColumnId, aAscending);
+        {
+            FolderLayoutChange sFolderLayoutChange;
+            sFolderLayoutChange.mChangeMode    = FolderLayoutChange::ChangeModeSortItems;
+            sFolderLayoutChange.mColumnId      = aColumnId;
+            sFolderLayoutChange.mSortAscending = aAscending;
+
+            mObserver->onFolderLayoutChange(*this, sFolderLayoutChange);
+        }
     }
 }
 
-ColumnSortInfo *ExplorerCtrl::getSortInfo(void) const
+const ColumnId &ExplorerCtrl::getSortColumnId(void) const
 {
-    return const_cast<ColumnSortInfo *>(&mColumnSortData.mColumnSortInfo);
+    return mSortColumnId;
 }
 
-ColumnSortData *ExplorerCtrl::getSortData(void) const
+xpr_bool_t ExplorerCtrl::getSortAscending(void) const
 {
-    return const_cast<ColumnSortData *>(&mColumnSortData);
+    return mSortAscending;
 }
 
 xpr_sint_t CALLBACK ExplorerCtrl::DefaultItemCompareProc(LPARAM aLParam1, LPARAM aLParam2, LPARAM aLParamSort)
@@ -3344,14 +3544,14 @@ xpr_sint_t CALLBACK ExplorerCtrl::DefaultItemCompareProc(LPARAM aLParam1, LPARAM
     static LPLVITEMDATA sLvItemData2;
     static xpr_bool_t sAscending;
     static HRESULT sHResult;
-    static ColumnSortData *sColumnSortData;
+    static SortData *sSortData;
 
     sLvItemData1 = (LPLVITEMDATA)aLParam1;
     sLvItemData2 = (LPLVITEMDATA)aLParam2;
-    sColumnSortData = (ColumnSortData *)aLParamSort;
+    sSortData    = (SortData   *)aLParamSort;
 
-    sAscending = sColumnSortData->mColumnSortInfo.mAscending;
-    aLParamSort = sColumnSortData->mColumn;
+    sAscending  = sSortData->mAscending;
+    aLParamSort = sSortData->mColumn;
 
     if (XPR_IS_NULL(sLvItemData1)) return -1;
     if (XPR_IS_NULL(sLvItemData2)) return 1;
@@ -3373,7 +3573,7 @@ xpr_sint_t CALLBACK ExplorerCtrl::DefaultItemCompareProc(LPARAM aLParam1, LPARAM
     if (XPR_IS_NULL(sLvItemData1)) return -1;
     if (XPR_IS_NULL(sLvItemData2)) return 1;
 
-    if (sColumnSortData->mColumnSortInfo.mFormatId == GUID_NULL)
+    if (XPR_IS_TRUE(sSortData->mColumnId.mFormatId.none()))
     {
         if (aLParamSort == 4)
         {
@@ -4791,7 +4991,6 @@ DROPEFFECT ExplorerCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeySt
                     sCopy = XPR_FALSE;
 
                 ::GlobalUnlock(sStgMedium.hGlobal);
-                //::GlobalFree(sStgMedium.hGlobal);
 
                 if (XPR_IS_NOT_NULL(sStgMedium.pUnkForRelease))
                 {
@@ -5128,7 +5327,7 @@ void ExplorerCtrl::OnDragScroll(DWORD aKeyState, CPoint aPoint)
         }
     }
 
-    if ((getViewStyle() != LVS_REPORT) && (sHorzMinPos != 0 || sHorzMaxPos != 100))
+    if ((getViewStyle() != VIEW_STYLE_DETAILS) && (sHorzMinPos != 0 || sHorzMaxPos != 100))
     {
         //TRACE(XPR_STRING_LITERAL("** Horz\n"));
         if (sHorzCurPos != sHorzMinPos && sRect.left+40 > aPoint.x)
@@ -5825,8 +6024,14 @@ void ExplorerCtrl::OnInsertitem(NMHDR *aNmHdr, LRESULT *aResult)
     {
         if (mOption.mShowDrive == XPR_TRUE || mOption.mShowDriveItem == XPR_TRUE)
         {
-            DWORD sStyle = getViewStyle();
-            if ((sStyle == LVS_ICON) || (sStyle == LVS_SMALLICON) || (sStyle == LVS_THUMBNAIL))
+            xpr_sint_t sViewStyle = getViewStyle();
+            xpr_bool_t sIconsViewStyle = (sViewStyle == VIEW_STYLE_EXTRA_LARGE_ICONS ||
+                                          sViewStyle == VIEW_STYLE_LARGE_ICONS       ||
+                                          sViewStyle == VIEW_STYLE_MEDIUM_ICONS      ||
+                                          sViewStyle == VIEW_STYLE_SMALL_ICONS       ||
+                                          sViewStyle == VIEW_STYLE_THUMBNAIL);
+
+            if (XPR_IS_TRUE(sIconsViewStyle))
             {
                 CPoint sPoint(0,0);
                 if (GetItemPosition(sIndex - 1, &sPoint))
@@ -6501,7 +6706,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
         }
 
         // Only if view style is thumbnail, it draw all of things (image, icon, text and so on...).
-        if (XPR_IS_FALSE(mThumbnail))
+        if (getViewStyle() != VIEW_STYLE_THUMBNAIL)
         {
             *aResult = XPR_IS_TRUE(mOption.mParentFolder) ? CDRF_NOTIFYPOSTPAINT : CDRF_DODEFAULT;//CDRF_NOTIFYITEMDRAW;//CDRF_DODEFAULT;
         }
@@ -6524,7 +6729,13 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
                 GetItemRect(sItemIndex, &sIconRect, LVIR_ICON);
 
                 CPoint sIconPoint;
-                if (getViewStyle() == LVS_ICON)
+                xpr_sint_t sViewStyle = getViewStyle();
+                xpr_bool_t sLargeIcon = (sViewStyle == VIEW_STYLE_EXTRA_LARGE_ICONS ||
+                                         sViewStyle == VIEW_STYLE_LARGE_ICONS       ||
+                                         sViewStyle == VIEW_STYLE_MEDIUM_ICONS      ||
+                                         sViewStyle == VIEW_STYLE_THUMBNAIL);
+
+                if (XPR_IS_TRUE(sLargeIcon))
                 {
                     sIconPoint.x = sIconRect.left + ((sIconRect.Width()  - 32) / 2);
                     sIconPoint.y = sIconRect.top  + ((sIconRect.Height() - 32) / 2);
@@ -6536,7 +6747,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
                 }
 
                 HICON sIcon = AfxGetApp()->LoadIcon(IDI_GO_UP);
-                if (getViewStyle() == LVS_ICON)
+                if (XPR_IS_TRUE(sLargeIcon))
                     DrawIconEx(sDC->m_hDC, sIconPoint.x, sIconPoint.y, sIcon, 32, 32, 0, XPR_NULL, DI_NORMAL);
                 else
                     DrawIconEx(sDC->m_hDC, sIconPoint.x, sIconPoint.y, sIcon, 16, 16, 0, XPR_NULL, DI_NORMAL);
@@ -6612,7 +6823,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
                 sOldBitmap = sTempDC.SelectObject(&sBitmap);
                 sTempDC.FillSolidRect(0,0,32,32,::GetSysColor(COLOR_WINDOW));
 
-                mLargeImgList->DrawIndirect(&sTempDC, sLvItem.iImage, CPoint(0,0), CSize(32,32), CPoint(0,0), ILD_NORMAL, SRCCOPY);
+                mNormalImgList->DrawIndirect(&sTempDC, sLvItem.iImage, CPoint(0,0), CSize(32,32), CPoint(0,0), ILD_NORMAL, SRCCOPY);
                 BLENDFUNCTION sBlendFunc = { AC_SRC_OVER, 0, 128, 0 };
                 ::AlphaBlend(sDC->m_hDC, sIconPoint.x, sIconPoint.y, 32, 32, sTempDC.m_hDC, 0, 0, 32, 32, sBlendFunc);
 
@@ -6620,7 +6831,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
                 sBitmap.DeleteObject();
             }
             else
-                mLargeImgList->Draw(sDC, sLvItem.iImage, sIconPoint, sFormat);
+                mNormalImgList->Draw(sDC, sLvItem.iImage, sIconPoint, sFormat);
         }
         else
         {
@@ -6667,7 +6878,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
                 sBitmap.CreateCompatibleBitmap(sDC, 32, 32);
                 sOldBitmap = sTempDC.SelectObject(&sBitmap);
 
-                mLargeImgList->DrawIndirect(&sTempDC, sLvItem.iImage, CPoint(0,0), CSize(32,32), CPoint(0,0), ILD_NORMAL, SRCCOPY);
+                mNormalImgList->DrawIndirect(&sTempDC, sLvItem.iImage, CPoint(0,0), CSize(32,32), CPoint(0,0), ILD_NORMAL, SRCCOPY);
                 BLENDFUNCTION sBlendFunc = {AC_SRC_OVER, 0, 128, 0};
                 AlphaBlend(sDC->m_hDC, sIconPoint.x, sIconPoint.y, 32, 32, sTempDC.m_hDC, 0, 0, 32, 32, sBlendFunc);
 
@@ -6676,7 +6887,7 @@ void ExplorerCtrl::OnCustomdrawThumbnail(LPNMLVCUSTOMDRAW aNmLvCustomDraw)
             }
             else
             {
-                mLargeImgList->Draw(sDC, sLvItem.iImage, sIconPoint, sFormat);
+                mNormalImgList->Draw(sDC, sLvItem.iImage, sIconPoint, sFormat);
             }
         }
     }
@@ -7876,11 +8087,6 @@ xpr_bool_t ExplorerCtrl::OnShcnUpdateDir(Shcn *aShcn)
     return XPR_FALSE;
 }
 
-xpr_bool_t ExplorerCtrl::isThumbnail(void) const
-{
-    return mThumbnail;
-}
-
 xpr_uint_t ExplorerCtrl::getThumbImageId(const xpr_tchar_t *aPath)
 {
     if (XPR_IS_NULL(aPath))
@@ -8116,7 +8322,7 @@ xpr_bool_t ExplorerCtrl::OnShcnDeleteItem(Shcn *aShcn, const xpr_tchar_t *aPath)
             // [2008/02/17] bug patched
             // When dwg/docx file execute, program execute and after temp files is created.
             // Focus move problem on next item, when that program close and delete that temp files.
-            if (getViewStyle() == LVS_LIST)
+            if (getViewStyle() == VIEW_STYLE_LIST)
                 EnsureVisible(sIndex-1, XPR_FALSE);
         }
     }
@@ -8540,7 +8746,9 @@ void ExplorerCtrl::OnSysColorChange(void)
     super::OnSysColorChange();
 
     COLORREF sWindowColor = ::GetSysColor(COLOR_WINDOW);
+    mExtraLargeImgList->SetBkColor(sWindowColor);
     mLargeImgList->SetBkColor(sWindowColor);
+    mMediumImgList->SetBkColor(sWindowColor);
     mSmallImgList->SetBkColor(sWindowColor);
 
     if (mOption.mBkgndColorType != COLOR_TYPE_CUSTOM)
@@ -8598,21 +8806,23 @@ void ExplorerCtrl::OnHdnItemChanged(NMHDR *aNmHdr)
 
     NMHEADER *sNmHeader = (NMHEADER *)aNmHdr;
 
-    if (mOption.mSaveViewSet == SAVE_VIEW_SET_ALL_OF_SAME)
+    if (XPR_TEST_BITS(sNmHeader->pitem->mask, HDI_WIDTH))
     {
-        if (XPR_TEST_BITS(sNmHeader->pitem->mask, HDI_WIDTH))
+        if (XPR_IS_NOT_NULL(mObserver))
         {
-            if (XPR_IS_NOT_NULL(mObserver))
-            {
-                xpr_sint_t sColumnIndex = sNmHeader->iItem;
-                xpr_sint_t sWidth = GetColumnWidth(sColumnIndex);
+            xpr_sint_t sColumnIndex = sNmHeader->iItem;
+            xpr_sint_t sWidth = GetColumnWidth(sColumnIndex);
 
-                sSetColumnWidth = XPR_TRUE;
+            sSetColumnWidth = XPR_TRUE;
 
-                mObserver->onSetColumnWidth(*this, sColumnIndex, sWidth);
+            FolderLayoutChange sFolderLayoutChange;
+            sFolderLayoutChange.mChangeMode  = FolderLayoutChange::ChangeModeColumnSize;
+            sFolderLayoutChange.mColumnIndex = sColumnIndex;
+            sFolderLayoutChange.mColumnWidth = sWidth;
 
-                sSetColumnWidth = XPR_FALSE;
-            }
+            mObserver->onFolderLayoutChange(*this, sFolderLayoutChange);
+
+            sSetColumnWidth = XPR_FALSE;
         }
     }
 }
@@ -8714,7 +8924,7 @@ void ExplorerCtrl::OnVScroll(xpr_uint_t aSbCode, xpr_uint_t aPos, CScrollBar *aS
 
     // [2009/02/17] bug patched
     // If view style is detail and grid line option enable, window painting is broken.
-    if (getViewStyle() == LVS_REPORT)
+    if (getViewStyle() == VIEW_STYLE_DETAILS)
     {
         if (XPR_TEST_BITS(GetExtendedStyle(), LVS_EX_GRIDLINES))
         {

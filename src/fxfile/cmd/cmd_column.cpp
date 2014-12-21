@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "cmd_column.h"
 
-#include "shell_column.h"
+#include "shell_column_manager.h"
 #include "functors.h"
 
 #include "column_set_dlg.h"
@@ -38,7 +38,7 @@ xpr_sint_t ColumnCommand::canExecute(CommandContext &aContext)
             if (sCommandId != ID_VIEW_COLUMN_NAME)
                 sState |= StateEnable;
 
-            ColumnId sColumnId = {0};
+            ColumnId sColumnId;
             switch (sCommandId)
             {
             case ID_VIEW_COLUMN_NAME: sColumnId.mPropertyId = 0; break;
@@ -63,7 +63,7 @@ void ColumnCommand::execute(CommandContext &aContext)
 
     if (sExplorerCtrl != XPR_NULL)
     {
-        ColumnId sColumnId = {0};
+        ColumnId sColumnId;
         switch (sCommandId)
         {
         case ID_VIEW_COLUMN_NAME: sColumnId.mPropertyId = 0; break;
@@ -93,11 +93,11 @@ void ColumnSetCommand::execute(CommandContext &aContext)
         ColumnDataList sColumnList;
         sExplorerCtrl->getColumnDataList(sShellFolder2, sColumnList);
 
-        xpr_sint_t cxAvgChar = ShellColumn::instance().getAvgCharWidth(sExplorerCtrl);
+        xpr_sint_t sAvgCharWidth = ShellColumnManager::getAvgCharWidth(sExplorerCtrl);
 
         ColumnSetDlg sDlg;
         sDlg.setShellFolder2(sShellFolder2);
-        sDlg.setAvgCharWidth(cxAvgChar);
+        sDlg.setAvgCharWidth(sAvgCharWidth);
         sDlg.setColumnList(sColumnList);
         xpr_sintptr_t sId = sDlg.DoModal();
         if (sId == IDOK)
