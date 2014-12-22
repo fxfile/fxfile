@@ -1689,7 +1689,7 @@
             <String ID="popup.cfg.body.advanced.check.single_process">fxfile 하나만 띄우기(&amp;S)</String>
             <String ID="popup.cfg.body.advanced.check.confirm_to_exit">종료시 확인 후 종료하기(&amp;X)</String>
             <String ID="popup.cfg.body.advanced.check.use_recent_file_list">최근 실행된 파일 목록 사용하기(&amp;R)</String>
-            <String ID="popup.cfg.body.advanced.check.register_to_shell_context_menu">윈도우 탐색기에 &#8216;flyExplorrer로 열기&#8217; 등록(&amp;M)</String>
+            <String ID="popup.cfg.body.advanced.check.register_to_shell_context_menu">윈도우 탐색기에 &#8216;fxfile로 열기&#8217; 등록(&amp;M)</String>
             <String ID="popup.cfg.body.advanced.group.system_tray">시스템 트레이(&amp;T)</String>
             <String ID="popup.cfg.body.advanced.radio.system_tray_none">시스템 트레이에 표시 안함(&amp;N)</String>
             <String ID="popup.cfg.body.advanced.radio.system_tray_show">시스템 트레이에 표시(&amp;W)</String>
