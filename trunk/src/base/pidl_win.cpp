@@ -752,6 +752,8 @@ xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD 
                 xpr_size_t sOutputBytes = sStringLength * sizeof(xpr_tchar_t);
                 XPR_UTF16_TO_MBS(sStrRet.pOleStr, &sInputBytes, sName, &sOutputBytes);
                 sName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                aName.update();
 #endif
                 sResult = XPR_TRUE;
                 break;
@@ -787,6 +789,8 @@ xpr_bool_t Pidl::getName(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl, DWORD 
                 xpr_size_t sOutputBytes = sStringLength * sizeof(xpr_tchar_t);
                 XPR_MBS_TO_TCS(sStrRet.pOleStr, &sInputBytes, sName, &sOutputBytes);
                 sName[sOutputBytes / sizeof(xpr_tchar_t)] = 0;
+
+                aName.update();
 
                 sResult = XPR_TRUE;
                 break;
