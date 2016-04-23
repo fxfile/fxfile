@@ -1,0 +1,1 @@
+'fxfile' is a free, open source and professional file manager software for Microsoft Windows platform. The old name is 'flyExplorer'.
