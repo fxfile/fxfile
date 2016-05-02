@@ -767,7 +767,7 @@ void CColourPickerXP::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 	ASSERT(lpDrawItemStruct);
 
 	CDC*    pDC      = CDC::FromHandle(lpDrawItemStruct->hDC);
-	CMemDC  dcMem(pDC);
+	MemDC   dcMem(pDC);
 	UINT    state    = lpDrawItemStruct->itemState;
     CRect   rDraw    = lpDrawItemStruct->rcItem;
 	CRect	rArrow;

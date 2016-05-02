@@ -52,7 +52,7 @@ namespace
 {
 const xpr_tchar_t kClassName[] = XPR_STRING_LITERAL("ExplorerPane");
 
-#define MAX_CONTENS_SHOW_SEL_ITEMS       17
+#define MAX_CONTENTS_SHOW_SEL_ITEMS      17
 #define CONTENTS_EXPLORER_STYLE_WIDTH   200
 #define CONTENTS_BASIC_STYLE_HEIGHT      36
 
@@ -368,7 +368,7 @@ void ExplorerPane::OnPaint(void)
     CRect sClientRect;
     GetClientRect(&sClientRect);
 
-    CMemDC sMemDC(&sDC);
+    MemDC sMemDC(&sDC);
     sMemDC.FillSolidRect(&sClientRect, ::GetSysColor(COLOR_WINDOW));
 }
 
@@ -1692,7 +1692,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
         return;
 
     static xpr_tchar_t sSize[XPR_MAX_PATH + 1];
-    static xpr_tchar_t sText[XPR_MAX_PATH * MAX_CONTENS_SHOW_SEL_ITEMS + 1];
+    static xpr_tchar_t sText[XPR_MAX_PATH * MAX_CONTENTS_SHOW_SEL_ITEMS + 1];
     sSize[0] = sText[0] = XPR_STRING_LITERAL('\0');
     xpr_uint64_t sSelFileSize = 0ui64;
 
@@ -1726,7 +1726,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
 
     if (XPR_IS_TRUE(sVisibleContentsWnd))
     {
-        if (sRealSelCount < MAX_CONTENS_SHOW_SEL_ITEMS)
+        if (sRealSelCount < MAX_CONTENTS_SHOW_SEL_ITEMS)
         {
             xpr_sint_t sIndex;
 
@@ -1736,7 +1736,7 @@ void ExplorerPane::OnExpSelMultiItem(void)
                 sIndex = sExplorerCtrl->GetNextSelectedItem(sPosition);
 
                 if (sExplorerCtrl->GetItemData(sIndex) != XPR_NULL)
-                    _stprintf(sText+_tcslen(sText), XPR_STRING_LITERAL("\n%s"), sExplorerCtrl->GetItemText(sIndex, 0));
+                    _stprintf(sText+_tcslen(sText), XPR_STRING_LITERAL("\n%s"), (const xpr_tchar_t *)sExplorerCtrl->GetItemText(sIndex, 0));
             }
         }
 

@@ -489,7 +489,7 @@ void FileScrapDropDlg::OnDrop(COleDataObject *aOleDataObject, DROPEFFECT aDropEf
     }
 
     STGMEDIUM sStgMedium = {0};
-    FORMATETC sFormatEtc = {mShellIDListClipFormat, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+    FORMATETC sFormatEtc = {(CLIPFORMAT)mShellIDListClipFormat, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
     if (sOleDataObject->GetData(mShellIDListClipFormat, &sStgMedium, &sFormatEtc) == XPR_FALSE)
         return;
 

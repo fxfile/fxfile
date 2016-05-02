@@ -18,7 +18,7 @@
 #include "file_op_undo.h"     // for Undo
 #include "drive_shcn.h"
 #include "program_opts.h"
-#include "filter.h"
+#include "file_filter.h"
 #include "size_format.h"
 #include "winapi_ex.h"
 
@@ -49,6 +49,7 @@ namespace fxfile
 {
 namespace
 {
+#if (XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER < 1700)
 // reference: https://svn.boost.org/trac/boost/ticket/5582
 void freeTypeinfoMemory(void)
 {
@@ -62,6 +63,7 @@ void freeTypeinfoMemory(void)
       delete sNode;
    }
 }
+#endif // XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER < 1700
 
 const xpr_tchar_t kPreviewSection[] = XPR_STRING_LITERAL("Settings");
 const xpr_tchar_t kPreviewEntry[]   = XPR_STRING_LITERAL("PreviewPages");
@@ -95,8 +97,10 @@ WinApp::WinApp(void)
 
 WinApp::~WinApp(void)
 {
+#if (XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER < 1700)
     // clean RTTI memory leak
     freeTypeinfoMemory();
+#endif // XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER < 1700
 }
 
 BEGIN_MESSAGE_MAP(WinApp, super)
@@ -387,7 +391,7 @@ xpr_bool_t WinApp::loadLanguage(const xpr_tchar_t *aLanguage)
     mStringTable = mLanguageTable->getStringTable();
     mFormatStringTable = mLanguageTable->getFormatStringTable();
 
-    Filter::setString(
+    FileFilter::setString(
         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.folder")),
         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.general_file")),
         gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.filter.default_filter_name.executable_file")),

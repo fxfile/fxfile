@@ -141,7 +141,7 @@ COLORREF ActivateBar::getBackColor(void) const
 void ActivateBar::OnPaint(void)
 {
     CPaintDC sDC(this);
-    CMemDC sMemDC(&sDC);
+    MemDC sMemDC(&sDC);
 
     CRect sClientRect;
     GetClientRect(&sClientRect);

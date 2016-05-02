@@ -11,10 +11,10 @@
 #define __FXFILE_MEM_DC_H__
 #pragma once
 
-class CMemDC : public CDC
+class MemDC : public CDC
 {
 public:
-    CMemDC(CDC *aDC)
+    MemDC(CDC *aDC)
         : CDC()
     {
         XPR_ASSERT(aDC != XPR_NULL);
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    virtual ~CMemDC(void)
+    virtual ~MemDC(void)
     {
         if (XPR_IS_TRUE(mAlphaBlend))
         {
@@ -92,9 +92,9 @@ public:
         mAlpha      = aAlpha;
     }
 
-    CMemDC *operator->() { return this; }
+    MemDC *operator->() { return this; }
 
-    operator CMemDC*() { return this; }
+    operator MemDC*() { return this; }
 
 protected:
     CDC       *mDC;

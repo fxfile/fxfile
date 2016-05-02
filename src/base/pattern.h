@@ -10,6 +10,7 @@
 
 #include "xpr_types.h"
 #include "xpr_mutex.h"
+#include <xmemory>
 
 namespace fxfile
 {

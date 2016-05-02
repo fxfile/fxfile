@@ -2260,10 +2260,11 @@ void BCMenu::SynchronizeMenu(void)
 	BCMenuData *mdata;
 	CString string;
 	UINT_PTR submenu;
-	UINT nID=0, state, j;
+	UINT nID = 0, state, j;
+
 	
 	InitializeMenuList(0);
-	for (j=0;j<GetMenuItemCount();++j)
+	for (j=0;j<(UINT)GetMenuItemCount();++j)
 	{
 		mdata = NULL;
 		state = GetMenuState(j, MF_BYPOSITION);

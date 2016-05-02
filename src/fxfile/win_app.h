@@ -37,10 +37,10 @@ extern MainFrame *gFrame;
 extern Option    *gOpt;
 
 class WinApp
-    : public CWinAppEx
+    : public WinAppEx
     , public OptionObserver
 {
-    typedef CWinAppEx super;
+    typedef WinAppEx super;
 
 public:
     WinApp(void);

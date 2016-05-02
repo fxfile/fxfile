@@ -16,13 +16,16 @@
 
 namespace fxfile
 {
-PBITMAPINFO CreateBitmapInfoStruct(HBITMAP aBitmap)
+// reference : https://msdn.microsoft.com/ko-kr/library/windows/desktop/dd145119%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+BITMAPINFO *CreateBitmapInfoStruct(HBITMAP aBitmap)
 {
     BITMAP sBitmapHeader = {0};
     if (GetObject(aBitmap, sizeof(BITMAP), (xpr_char_t *)&sBitmapHeader) == XPR_FALSE)
         return XPR_NULL;
 
-    WORD sColorBits = (WORD)(sBitmapHeader.bmPlanes * sBitmapHeader.bmBitsPixel);
+    BITMAPINFO *sBitmapInfo = XPR_NULL;
+    xpr_sint_t sColorBits = sBitmapHeader.bmPlanes * sBitmapHeader.bmBitsPixel;
+
     if (sColorBits == 1)       sColorBits = 1;
     else if (sColorBits <= 4)  sColorBits = 4;
     else if (sColorBits <= 8)  sColorBits = 8;
@@ -30,12 +33,10 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP aBitmap)
     else if (sColorBits <= 24) sColorBits = 24;
     else                       sColorBits = 32;
 
-    PBITMAPINFO sBitmapInfo = XPR_NULL;
-
-    if (sColorBits != 24)
-        sBitmapInfo = (PBITMAPINFO) LocalAlloc(LPTR, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * ((xpr_sint_t)1 << (xpr_sint_t)sColorBits));
+    if (sColorBits < 24)
+        sBitmapInfo = (BITMAPINFO *)malloc(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * (xpr_sint_t)(1 << sColorBits));
     else
-        sBitmapInfo = (PBITMAPINFO) LocalAlloc(LPTR, sizeof(BITMAPINFOHEADER));
+        sBitmapInfo = (BITMAPINFO *)malloc(sizeof(BITMAPINFOHEADER));
 
     if (XPR_IS_NULL(sBitmapInfo))
         return XPR_NULL;
@@ -55,12 +56,12 @@ PBITMAPINFO CreateBitmapInfoStruct(HBITMAP aBitmap)
     return sBitmapInfo;
 }
 
-xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo)
+xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, BITMAPINFO *aBitmapInfo)
 {
     if (XPR_IS_NULL(aFile) || XPR_IS_NULL(aBitmapInfo))
         return XPR_FALSE;
 
-    PBITMAPINFOHEADER sBitmapInfoHeader = (PBITMAPINFOHEADER)aBitmapInfo;
+    BITMAPINFOHEADER *sBitmapInfoHeader = (BITMAPINFOHEADER *)aBitmapInfo;
     xpr_byte_t *sBits = (xpr_byte_t *)aBitmapInfo + sizeof(BITMAPINFOHEADER) + (sizeof(RGBQUAD) * sBitmapInfoHeader->biClrUsed);
 
     xpr_bool_t sResult = XPR_FALSE;
@@ -105,12 +106,12 @@ xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo)
     return sResult;
 }
 
-xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo, HBITMAP aBitmap, HDC aDC)
+xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, BITMAPINFO *aBitmapInfo, HBITMAP aBitmap, HDC aDC)
 {
     if (XPR_IS_NULL(aFile) || XPR_IS_NULL(aBitmapInfo) || XPR_IS_NULL(aBitmap) || XPR_IS_NULL(aDC))
         return XPR_FALSE;
 
-    PBITMAPINFOHEADER sBitmapInfoHeader = (PBITMAPINFOHEADER)aBitmapInfo;
+    BITMAPINFOHEADER *sBitmapInfoHeader = (BITMAPINFOHEADER *)aBitmapInfo;
     xpr_byte_t *sBits = (xpr_byte_t *)GlobalAlloc(GMEM_FIXED, sBitmapInfoHeader->biSizeImage);
     if (XPR_IS_NULL(sBits))
         return XPR_FALSE;
@@ -168,12 +169,12 @@ xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, HBITMAP aBitmap, HDC aDC)
 
     xpr_bool_t sResult = XPR_FALSE;
 
-    PBITMAPINFO aBitmapInfo = CreateBitmapInfoStruct(aBitmap);
-    if (XPR_IS_NOT_NULL(aBitmapInfo))
+    BITMAPINFO *sBitmapInfo = CreateBitmapInfoStruct(aBitmap);
+    if (XPR_IS_NOT_NULL(sBitmapInfo))
     {
-        sResult = WriteBitmapFile(aFile, aBitmapInfo, aBitmap, aDC);
+        sResult = WriteBitmapFile(aFile, sBitmapInfo, aBitmap, aDC);
 
-        ::LocalFree(aBitmapInfo);
+        free(sBitmapInfo);
     }
 
     return XPR_TRUE;

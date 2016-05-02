@@ -175,7 +175,7 @@ void PathBar::OnPaint(void)
 {
     CPaintDC sDC(this); // device context for painting
 
-    CMemDC sMemDC(&sDC);
+    MemDC sMemDC(&sDC);
 
     CRect sClientRect;
     GetClientRect(&sClientRect);

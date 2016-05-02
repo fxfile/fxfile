@@ -92,7 +92,7 @@ BOOL SystemInfoUtils::GetFsFileName( LPCTSTR lpDeviceFileName, CString& fsFileNa
 			{
 				//Mapped network drive 
 
-				char cDriveLetter;
+				TCHAR cDriveLetter;
 				DWORD dwParam;
 
 				TCHAR lpSharedName[0x1000];
@@ -154,7 +154,7 @@ BOOL SystemInfoUtils::GetDeviceFileName( LPCTSTR lpFsFileName, CString& deviceFi
 		{
 			//Mapped network drive 
 
-			char cDriveLetter;
+			TCHAR cDriveLetter;
 			DWORD dwParam;
 
 			TCHAR lpSharedName[0x1000];

@@ -11,8 +11,8 @@ fxfile is a free, open source, professional file manager for Microsoft Windows p
 
 Requirements to Build
 ----------------------
-1. Check out gyp.
-   svn co -r 1541 http://gyp.googlecode.com/svn/trunk tools/gyp
+1. Clone customized gyp of fxfile.
+   git clone https://github.com/fxfile/gyp tools/gyp
 
 2. Check out python.
    svn co -r 89111 http://src.chromium.org/svn/trunk/tools/third_party/python_26 tools/python_26
@@ -20,8 +20,10 @@ Requirements to Build
 
 Build on Windows
 ----------------
-1. Run 'build.bat'.
+1. Run 'build.bat' batch file to generate MSVS solution file.
    build.bat [msvs_version] [target_arch]
+   e.g.) build.bat 2015 x64
+         build.bat 2008 x86
 
 2. Build 'fxfile.sln'.
    Run 'devenv.exe' and build

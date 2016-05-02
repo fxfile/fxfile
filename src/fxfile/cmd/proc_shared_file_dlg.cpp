@@ -111,7 +111,7 @@ xpr_sint_t ProcSharedFileDlg::setPath(const xpr_tchar_t *aPath)
             sLvItem.iSubItem = 1;
             mListCtrl.SetItem(&sLvItem);
 
-            _stprintf(sText, XPR_STRING_LITERAL("%s"), sProcessName);
+            _stprintf(sText, XPR_STRING_LITERAL("%s"), (const xpr_tchar_t *)sProcessName);
             sLvItem.iSubItem = 2;
             mListCtrl.SetItem(&sLvItem);
 

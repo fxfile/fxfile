@@ -15,7 +15,7 @@
 
 #include "context_menu.h"
 #include "file_op_thread.h"
-#include "filter.h"
+#include "file_filter.h"
 #include "program_ass.h"
 #include "file_scrap.h"
 #include "shell_icon.h"

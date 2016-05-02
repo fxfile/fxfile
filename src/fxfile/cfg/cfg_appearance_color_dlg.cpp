@@ -443,11 +443,16 @@ void CfgAppearanceColorDlg::saveViewColor(void)
 
 void CfgAppearanceColorDlg::OnFileListBkgndImageBrowse(void)
 {
+#pragma warning(push)
+#pragma warning(disable:4474)
+
     xpr_tchar_t sFilter[0x1ff] = {0};
     _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.bmp; *.jpg; *.gif)\0*.bmp; *.jpg; *.gif\0%s (*.bmp)\0*.bmp\0%s (*.jpg)\0*.jpg\0%s (*.gif)\0*.gif\0\0"),
         gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all_formats")), 
         gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.bitmap_files")), 
         gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.jpeg_files")));
+
+#pragma warning(pop)
 
     CFileDialogST sFileDialog(XPR_TRUE, XPR_NULL, XPR_NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, sFilter, this);
     if (sFileDialog.DoModal() == IDOK)

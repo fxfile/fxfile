@@ -11,7 +11,7 @@
 #define __FXFILE_SEL_FILTER_DLG_H__ 1
 #pragma once
 
-#include "filter.h"
+#include "file_filter.h"
 
 namespace fxfile
 {

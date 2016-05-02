@@ -13,9 +13,9 @@
 
 namespace fxfile
 {
-PBITMAPINFO CreateBitmapInfoStruct(HBITMAP aBitmap);
-xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo);
-xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, PBITMAPINFO aBitmapInfo, HBITMAP aBitmap, HDC aDC);
+BITMAPINFO *CreateBitmapInfoStruct(HBITMAP aBitmap);
+xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, BITMAPINFO *aBitmapInfo);
+xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, BITMAPINFO *aBitmapInfo, HBITMAP aBitmap, HDC aDC);
 xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, HBITMAP aBitmap, HDC aDC);
 xpr_bool_t WriteBitmapFile(const xpr_tchar_t *aFile, HDC aDC, LPCRECT aRect);
 } // namespace fxfile

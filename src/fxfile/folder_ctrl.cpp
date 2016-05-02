@@ -2905,7 +2905,7 @@ DROPEFFECT FolderCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeyStat
         if (aOleDataObject->IsDataAvailable(sClipFormat.mShellIDList) == XPR_TRUE)
         {
             STGMEDIUM sStgMedium = {0};
-            FORMATETC sFormatEtc = {sClipFormat.mShellIDList, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+            FORMATETC sFormatEtc = {(CLIPFORMAT)sClipFormat.mShellIDList, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
 
             if (aOleDataObject->GetData(sClipFormat.mShellIDList, &sStgMedium, &sFormatEtc) == XPR_TRUE)
             {

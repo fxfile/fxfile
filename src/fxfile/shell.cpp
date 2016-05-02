@@ -1629,7 +1629,7 @@ xpr_bool_t IsLibrariesSubFolder(LPSHELLFOLDER aShellFolder, LPCITEMIDLIST aPidl)
     return sLibrariesSubFolder;
 }
 
-static HRESULT SHCreateItemFromIDList(LPCITEMIDLIST aFullPidl, REFIID riid, void **ppv)
+static HRESULT SH_CreateItemFromIDList(LPCITEMIDLIST aFullPidl, REFIID riid, void **ppv)
 {
     HRESULT sComResult = E_FAIL;
 
@@ -1679,7 +1679,7 @@ xpr_bool_t getDefaultSaveFolderOfLibraryFolder(LPCITEMIDLIST aFullPidl, xpr_tcha
     IShellItem    *sShellItem    = XPR_NULL;
     IShellLibrary *sShellLibrary = XPR_NULL;
 
-    sComResult = SHCreateItemFromIDList(aFullPidl, IID_IShellItem, (void **)&sShellItem);
+    sComResult = SH_CreateItemFromIDList(aFullPidl, IID_IShellItem, (void **)&sShellItem);
     if (SUCCEEDED(sComResult))
     {
         sComResult = CoCreateInstance(CLSID_ShellLibrary, XPR_NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&sShellLibrary));

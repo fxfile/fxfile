@@ -84,7 +84,13 @@ static xpr_bool_t WINAPI EnumerateFunc(LPNETRESOURCE lpnr2, LPNETRESOURCE aNetRe
 
                 gethostname(sHostName, (xpr_sint_t)strlen(sHostName));
 
+#pragma warning(push)
+#pragma warning(disable:4996)
+
                 HOSTENT *sHostEnt = gethostbyname(sAnsiFullName);
+
+#pragma warning(pop)
+
                 if (XPR_IS_NOT_NULL(sHostEnt))
                 {
                     struct in_addr *sInAddr = (struct in_addr *)sHostEnt->h_addr_list[0];

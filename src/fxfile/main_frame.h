@@ -47,14 +47,14 @@ class CommandParameters;
 } // namespace cmd
 
 class MainFrame
-    : public CFrameWndEx
+    : public FrameWndEx
     , public SplitterObserver
     , public FolderViewObserver
     , public ExplorerViewObserver
     , public RemovableDeviceObserver
     , public SearchDlgObserver
 {
-    typedef CFrameWndEx super;
+    typedef FrameWndEx super;
 
     DECLARE_DYNCREATE(MainFrame)
 

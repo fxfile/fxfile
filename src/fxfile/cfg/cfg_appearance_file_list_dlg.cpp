@@ -160,8 +160,14 @@ xpr_bool_t CfgAppearanceFileListDlg::loadImage(xpr_sint_t aWidth, xpr_sint_t aHe
 {
     aSatisfied = XPR_FALSE;
 
+#pragma warning(push)
+#pragma warning(disable:4474)
+
     xpr_tchar_t sFilter[0xff] = {0};
     _stprintf(sFilter, XPR_STRING_LITERAL("%s (*.bmp)\0*.bmp\0%s (*.*)\0*.*\0\0"), gApp.loadString(XPR_STRING_LITERAL("popup.cfg.body.appearance.file_list.file_dialog.filter.16bit_bitmap_file")), gApp.loadString(XPR_STRING_LITERAL("popup.common.file_dialog.filter.all")));
+
+#pragma warning(pop)
+
     CFileDialogST sFileDialog(XPR_TRUE, XPR_STRING_LITERAL("*.bmp"), XPR_NULL, OFN_HIDEREADONLY, sFilter, this);
     if (sFileDialog.DoModal() != IDOK)
         return XPR_FALSE;

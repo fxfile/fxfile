@@ -67,7 +67,7 @@ xpr_bool_t FolderView::PreCreateWindow(CREATESTRUCT &aCreateStruct)
 
     CBrush sBrush(::GetSysColor(COLOR_WINDOW));
 
-    HCURSOR sCursor = ::LoadCursor(XPR_NULL, MAKEINTRESOURCE(IDC_ARROW));
+    HCURSOR sCursor = ::LoadCursor(XPR_NULL, (const xpr_tchar_t *)IDC_ARROW);
     aCreateStruct.lpszClass = AfxRegisterWndClass(0, sCursor, sBrush);
     if (XPR_IS_NOT_NULL(sCursor)) ::DestroyCursor(sCursor);
 
@@ -291,7 +291,7 @@ void FolderView::OnPaint(void)
     CRect sClientRect;
     GetClientRect(&sClientRect);
 
-    CMemDC sMemDC(&sDC);
+    MemDC sMemDC(&sDC);
     sMemDC.FillSolidRect(&sClientRect, ::GetSysColor(COLOR_WINDOW));
 }
 

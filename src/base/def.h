@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <string>
 #include <cctype>
+#include <xmemory>
 
 #define FXFILE_STL_FOR_EACH(aIterator, aContainer) \
     for ((aIterator) = (aContainer).begin(); (aIterator) != (aContainer).end(); ++(aIterator))

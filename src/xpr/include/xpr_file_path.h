@@ -280,41 +280,40 @@ XPR_INLINE bool operator>= (const FilePath &aFilePath1, const xpr_tchar_t *aFile
 } // namespace xpr
 
 #if defined(XPR_CFG_STL_TR1)
-namespace std
+XPR_NAMESPACE_STD_TR1_BEGIN
+
+template <>
+struct hash<xpr::FilePath> : public unary_function<xpr::FilePath, xpr_size_t>
 {
-namespace tr1
-{
-    template <>
-    struct hash<xpr::FilePath> : public unary_function<xpr::FilePath, xpr_size_t>
+    xpr_size_t operator()(const xpr::FilePath &aValue) const
     {
-        xpr_size_t operator()(const xpr::FilePath &aValue) const
+        // hash _Keyval to size_t value by pseudorandomizing transform
+        xpr_size_t sHashValue = 2166136261U;
+        xpr_size_t sFirst = 0;
+        xpr_size_t sLast = aValue.size();
+        xpr_size_t sStride = 1 + sLast / 10;
+
+        const xpr::string &sValue1 = aValue.getPath();
+        xpr_size_t         sValue2 = aValue.getPathType();
+
+        if (sStride < sLast)
         {
-            // hash _Keyval to size_t value by pseudorandomizing transform
-            xpr_size_t sHashValue = 2166136261U;
-            xpr_size_t sFirst     = 0;
-            xpr_size_t sLast      = aValue.size();
-            xpr_size_t sStride    = 1 + sLast / 10;
-
-            const xpr::string &sValue1 = aValue.getPath();
-            xpr_size_t         sValue2 = aValue.getPathType();
-
-            if (sStride < sLast)
-            {
-                sLast -= sStride;
-            }
-
-            for (; sFirst < sLast; sFirst += sStride)
-            {
-                sHashValue = 16777619U * sHashValue ^ (xpr_size_t)sValue1[sFirst];
-            }
-
-            sHashValue = 16777619U * sHashValue ^ (xpr_size_t)sValue2;
-
-            return sHashValue;
+            sLast -= sStride;
         }
-    };
-} // namespace tr1
-} // namespace std
+
+        for (; sFirst < sLast; sFirst += sStride)
+        {
+            sHashValue = 16777619U * sHashValue ^ (xpr_size_t)sValue1[sFirst];
+        }
+
+        sHashValue = 16777619U * sHashValue ^ (xpr_size_t)sValue2;
+
+        return sHashValue;
+    }
+};
+
+XPR_NAMESPACE_STD_TR1_END
+
 #endif // XPR_CFG_STL_TR
 
 #endif // __XPR_FILE_PATH_H__

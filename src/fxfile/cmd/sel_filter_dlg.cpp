@@ -86,17 +86,17 @@ xpr_bool_t SelFilterDlg::OnInitDialog(void)
 
     ((CButton *)GetDlgItem(IDC_SEL_FILTER_SEL_ONLY))->SetCheck(sOnlySel);
 
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     xpr_sint_t i;
     xpr_sint_t sIndex;
     xpr_sint_t sCount;
     FilterItem *sFilterItem;
 
-    sCount = sFilterMgr.getCount();
+    sCount = sFileFilterMgr.getCount();
     for (i = 0; i < sCount; ++i)
     {
-        sFilterItem = sFilterMgr.getFilter(i);
+        sFilterItem = sFileFilterMgr.getFilter(i);
         if (sFilterItem == XPR_NULL)
             continue;
 

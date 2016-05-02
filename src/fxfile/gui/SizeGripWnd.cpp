@@ -40,7 +40,7 @@ xpr_bool_t SizeGripWnd::Create(CWnd *aParentWnd, CRect aRect, xpr_uint_t aId)
 
 xpr_bool_t SizeGripWnd::OnSetCursor(CWnd *aWnd, xpr_uint_t aHitTest, xpr_uint_t aMessage)
 {
-    HCURSOR sCursor = AfxGetApp()->LoadStandardCursor(MAKEINTRESOURCE(IDC_SIZENWSE));
+    HCURSOR sCursor = AfxGetApp()->LoadStandardCursor((const xpr_tchar_t *)IDC_SIZENWSE);
     SetCursor(sCursor);
     return XPR_TRUE;
 }

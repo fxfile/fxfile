@@ -115,7 +115,7 @@ CSize CMenuBarButton::GetButtonSize()
 {
     // Sys-menu icon and caption buttons are all inside
     // a rectangle of the following size:
-    const NONCLIENTMETRICS& info = CWinAppEx::GetInstance()->GetNonClientMetrics();
+    const NONCLIENTMETRICS& info = WinAppEx::GetInstance()->GetNonClientMetrics();
     return CSize(
         info.iMenuWidth,     //::GetSystemMetrics( SM_CXMENUSIZE ),
         info.iMenuHeight );  //::GetSystemMetrics( SM_CYMENUSIZE ) );
@@ -580,7 +580,7 @@ void CMenuBar::UpdateMenuBar()
         VERIFY( m_fontMenu.DeleteObject() );
     }
 
-    VERIFY( m_fontMenu.CreateFontIndirect( &CWinAppEx::GetInstance()->GetNonClientMetrics().lfMenuFont ) );
+    VERIFY( m_fontMenu.CreateFontIndirect( &WinAppEx::GetInstance()->GetNonClientMetrics().lfMenuFont ) );
     SetFont( &m_fontMenu, TRUE );
 
     CToolBarCtrl& tbCtrl = GetToolBarCtrl();
@@ -695,7 +695,7 @@ void CMenuBar::TrackChevronMenu( CRect& rcChevron, int nItem )
 
     if ( m_pMenu != 0 )
     {
-        CWinAppEx* pApp = CWinAppEx::GetInstance();
+        WinAppEx* pApp = WinAppEx::GetInstance();
 
         // Create new popup menu
         CMenu menu;
@@ -809,7 +809,7 @@ void CMenuBar::TrackChevronMenu( CRect& rcChevron, int nItem )
         tpm.cbSize    = sizeof( tpm );
         tpm.rcExclude = rcChevron;
 
-        CWinAppEx::TrackPopupMenuEx( menu.m_hMenu,
+        WinAppEx::TrackPopupMenuEx( menu.m_hMenu,
             TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL | ( pApp->IsWin50() ? TPM_VERPOSANIMATION : 0 ),
             rcChevron.left, rcChevron.bottom, GetParentFrame(), &tpm );
 
@@ -823,7 +823,7 @@ void CMenuBar::TrackPopupMenu()
 {
     ASSERT( m_pMenu != 0 );
 
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     UINT nMenuAnimation = TPM_VERPOSANIMATION;
     for ( int nItem = m_nItem; m_bContinue; nItem = m_nItem )
     {
@@ -991,7 +991,7 @@ void CMenuBar::OnUpdateCmdUI( CFrameWnd* pTarget, BOOL bDisableIfNoHndler )
         }
     }
 
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     if ( pApp->IsWin2K() && !m_bItemTracking )
     {
         BOOL bAltDown = ( ::GetKeyState( VK_MENU ) & 0x8000 );
@@ -1010,7 +1010,7 @@ INT_PTR CMenuBar::OnToolHitTest( CPoint point, TOOLINFO* pTI ) const
 {
     UINT nTipID = ( UINT )-1;
 
-    if ( CWinAppEx::GetInstance()->IsWin50() ) // W98/W2K specific
+    if (WinAppEx::GetInstance()->IsWin50() ) // W98/W2K specific
     {
         // If mouse is over any of sys-buttons, show corresponding tooltip
         for ( int nIndex = 0; nIndex <= m_aMenuBarButtons.GetUpperBound(); nIndex++ )
@@ -1091,7 +1091,7 @@ int CMenuBar::OnCreate( LPCREATESTRUCT lpCreateStruct )
         return -1;
     }
 
-    if ( CWinAppEx::GetInstance()->IsWinXP() )
+    if (WinAppEx::GetInstance()->IsWinXP() )
     {
         OpenTheme();
 
@@ -1557,7 +1557,7 @@ void CMenuBar::OnCustomDraw( NMHDR* pNMHDR, LRESULT* pResult )
             }
             else
             {
-                CWinAppEx* pApp = CWinAppEx::GetInstance();
+                WinAppEx* pApp = WinAppEx::GetInstance();
                 if ( pApp->IsWin50() )
                 {
                     if ( pApp->IsWinXP() && pApp->GetFlatMenu() )

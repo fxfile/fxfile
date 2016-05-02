@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "program_ass_set_dlg.h"
 
-#include "../filter.h"
+#include "../file_filter.h"
 #include "../resource.h"
 
 #include "gui/FileDialogST.h"
@@ -58,17 +58,17 @@ xpr_bool_t ProgramAssSetDlg::OnInitDialog(void)
     ((CEdit *)GetDlgItem(IDC_PROGRAM_ASS_SET_EXTS))->LimitText(MAX_PROGRAM_ASS_EXTS);
     ((CEdit *)GetDlgItem(IDC_PROGRAM_ASS_SET_PROGRAM))->LimitText(XPR_MAX_PATH);
 
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     xpr_sint_t i;
     xpr_sint_t sIndex;
     xpr_sint_t sCount;
     FilterItem *sFilterItem;
 
-    sCount = sFilterMgr.getCount();
+    sCount = sFileFilterMgr.getCount();
     for (i = 0; i < sCount; ++i)
     {
-        sFilterItem = sFilterMgr.getFilter(i);
+        sFilterItem = sFileFilterMgr.getFilter(i);
         if (XPR_IS_NULL(sFilterItem))
             continue;
 
@@ -287,7 +287,7 @@ void ProgramAssSetDlg::OnCbnSelchangeFilter(void)
     mFilterComboBox.GetLBText(sIndex, sFilterName);
 
     FilterItem *sFilterItem;
-    sFilterItem = FilterMgr::instance().getFilterFromName(sFilterName);
+    sFilterItem = FileFilterMgr::instance().getFilterFromName(sFilterName);
 
     if (XPR_IS_NULL(sFilterItem))
         return;

@@ -399,7 +399,7 @@ xpr_bool_t ConfFile::save(xpr::CharSet aCharSet) const
 
             if (sSection->mMaxNameLen > 0)
             {
-                _stprintf(sFormat, XPR_STRING_LITERAL("%%-%ds = %%s"), sSection->mMaxNameLen);
+                _stprintf(sFormat, XPR_STRING_LITERAL("%%-%zds = %%s"), sSection->mMaxNameLen);
             }
             else
             {

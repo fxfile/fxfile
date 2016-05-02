@@ -30,7 +30,8 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/dbg-x86-unicode',
-                    'OutputDirectory': '../../bin/x86-unicode',
+                    'OutputDirectory':       '../../bin/x86-unicode',
+                    'TargetName':            'lib$(ProjectName)w_dbg',
                 },
                 
                 'msvs_settings':
@@ -46,7 +47,15 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/libxml2/lib',
-                        ]
+                        ],
+                        'AdditionalDependencies':
+                        [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
             },
@@ -58,7 +67,8 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/rel-x86-unicode',
-                    'OutputDirectory': '../../bin/x86-unicode',
+                    'OutputDirectory':       '../../bin/x86-unicode',
+                    'TargetName':            'lib$(ProjectName)w',
                 },
                 
                 'msvs_settings':
@@ -74,7 +84,15 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/libxml2/lib',
-                        ]
+                        ],
+                        'AdditionalDependencies':
+                        [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
             },
@@ -86,7 +104,8 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/dbg-x86-multibyte',
-                    'OutputDirectory': '../../bin/x86-multibyte',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'TargetName':            'lib$(ProjectName)_dbg',
                 },
                 
                 'msvs_settings':
@@ -102,7 +121,15 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/libxml2/lib',
-                        ]
+                        ],
+                        'AdditionalDependencies':
+                        [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
 
@@ -117,7 +144,8 @@
                 'msvs_configuration_attributes':
                 {
                     'IntermediateDirectory': '../../obj/xpr/rel-x86-multibyte',
-                    'OutputDirectory': '../../bin/x86-multibyte',
+                    'OutputDirectory':       '../../bin/x86-multibyte',
+                    'TargetName':            'lib$(ProjectName)',
                 },
                 
                 'msvs_settings':
@@ -133,7 +161,15 @@
                         'AdditionalLibraryDirectories':
                         [
                             '../../lib/libxml2/lib',
-                        ]
+                        ],
+                        'AdditionalDependencies':
+                        [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
 
@@ -152,7 +188,8 @@
                             'msvs_configuration_attributes':
                             {
                                 'IntermediateDirectory': '../../obj/xpr/dbg-x64',
-                                'OutputDirectory': '../../bin/x64',
+                                'OutputDirectory':       '../../bin/x64',
+                                'TargetName':            'lib$(ProjectName)w_dbg',
                             },
                             
                             'msvs_settings':
@@ -168,7 +205,15 @@
                                     'AdditionalLibraryDirectories':
                                     [
                                         '../../lib/libxml2/lib64',
-                                    ]
+                                    ],
+                                    'AdditionalDependencies':
+                                    [
+                                    ],
+                                    'conditions':
+                                    [
+                                        [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                                        [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                                    ],
                                 },
                             },
                         },
@@ -180,7 +225,8 @@
                             'msvs_configuration_attributes':
                             {
                                 'IntermediateDirectory': '../../obj/xpr/rel-x64',
-                                'OutputDirectory': '../../bin/x64',
+                                'OutputDirectory':       '../../bin/x64',
+                                'TargetName':            'lib$(ProjectName)w',
                             },
                             
                             'msvs_settings':
@@ -196,7 +242,15 @@
                                     'AdditionalLibraryDirectories':
                                     [
                                         '../../lib/libxml2/lib64',
-                                    ]
+                                    ],
+                                    'AdditionalDependencies':
+                                    [
+                                    ],
+                                    'conditions':
+                                    [
+                                        [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                                        [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                                    ],
                                 },
                             },
                         },
@@ -236,7 +290,7 @@
                 {
                     'AdditionalLibraryDirectories':
                     [
-                    ]
+                    ],
                 },
             },
             

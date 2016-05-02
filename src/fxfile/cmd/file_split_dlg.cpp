@@ -560,7 +560,7 @@ void FileSplitDlg::OnUpdateSplitSize(void)
     }
 
     xpr_tchar_t sSplitCountText[XPR_MAX_PATH + 1] = {0};
-    _stprintf(sSplitCountText, XPR_STRING_LITERAL("%d"), sSplitCount);
+    _stprintf(sSplitCountText, XPR_STRING_LITERAL("%zd"), sSplitCount);
 
     mSetSplitCoutMode = XPR_TRUE;
     SetDlgItemText(IDC_FILE_SPLIT_COUNT, sSplitCountText);

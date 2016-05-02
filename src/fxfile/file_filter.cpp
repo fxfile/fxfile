@@ -8,7 +8,7 @@
 // found in the LICENSE file.
 
 #include "stdafx.h"
-#include "filter.h"
+#include "file_filter.h"
 
 #include "conf_file_ex.h"
 
@@ -23,46 +23,46 @@ namespace fxfile
 {
 namespace
 {
-const xpr_tchar_t kFilterSection[] = XPR_STRING_LITERAL("filter");
-const xpr_tchar_t kNameKey      [] = XPR_STRING_LITERAL("filter.item%d_name");
-const xpr_tchar_t kExtensionKey [] = XPR_STRING_LITERAL("filter.item%d_extension");
-const xpr_tchar_t kColorKey     [] = XPR_STRING_LITERAL("filter.item%d_color");
-const xpr_tchar_t kIconIndexKey [] = XPR_STRING_LITERAL("filter.item%d_icon_index");
+const xpr_tchar_t kFilterSection[] = XPR_STRING_LITERAL("FileFilter");
+const xpr_tchar_t kNameKey      [] = XPR_STRING_LITERAL("FileFilter.item%d_name");
+const xpr_tchar_t kExtensionKey [] = XPR_STRING_LITERAL("FileFilter.item%d_extension");
+const xpr_tchar_t kColorKey     [] = XPR_STRING_LITERAL("FileFilter.item%d_color");
+const xpr_tchar_t kIconIndexKey [] = XPR_STRING_LITERAL("FileFilter.item%d_icon_index");
 } // namespace anonymous
 
-const xpr_tchar_t *Filter::mFolderString          = XPR_NULL;
-const xpr_tchar_t *Filter::mGeneralFileString     = XPR_NULL;
-const xpr_tchar_t *Filter::mExecutableFileString  = XPR_NULL;
-const xpr_tchar_t *Filter::mCompressedFileString  = XPR_NULL;
-const xpr_tchar_t *Filter::mDocumentFileString    = XPR_NULL;
-const xpr_tchar_t *Filter::mImageFileString       = XPR_NULL;
-const xpr_tchar_t *Filter::mSoundFileString       = XPR_NULL;
-const xpr_tchar_t *Filter::mMovieFileString       = XPR_NULL;
-const xpr_tchar_t *Filter::mWebFileString         = XPR_NULL;
-const xpr_tchar_t *Filter::mProgrammingFileString = XPR_NULL;
-const xpr_tchar_t *Filter::mTemporaryFileString   = XPR_NULL;
+const xpr_tchar_t *FileFilter::mFolderString          = XPR_NULL;
+const xpr_tchar_t *FileFilter::mGeneralFileString     = XPR_NULL;
+const xpr_tchar_t *FileFilter::mExecutableFileString  = XPR_NULL;
+const xpr_tchar_t *FileFilter::mCompressedFileString  = XPR_NULL;
+const xpr_tchar_t *FileFilter::mDocumentFileString    = XPR_NULL;
+const xpr_tchar_t *FileFilter::mImageFileString       = XPR_NULL;
+const xpr_tchar_t *FileFilter::mSoundFileString       = XPR_NULL;
+const xpr_tchar_t *FileFilter::mMovieFileString       = XPR_NULL;
+const xpr_tchar_t *FileFilter::mWebFileString         = XPR_NULL;
+const xpr_tchar_t *FileFilter::mProgrammingFileString = XPR_NULL;
+const xpr_tchar_t *FileFilter::mTemporaryFileString   = XPR_NULL;
 
-Filter::Filter(void)
+FileFilter::FileFilter(void)
 {
 }
 
-Filter::~Filter(void)
+FileFilter::~FileFilter(void)
 {
     clear();
 }
 
-void Filter::addFilter(FilterItem *aFilterItem)
+void FileFilter::addFilter(FilterItem *aFilterItem)
 {
     if (XPR_IS_NOT_NULL(aFilterItem))
         mFilterDeque.push_back(aFilterItem);
 }
 
-xpr_sint_t Filter::getCount(void)
+xpr_sint_t FileFilter::getCount(void)
 {
     return (xpr_sint_t)mFilterDeque.size();
 }
 
-FilterItem *Filter::getFilter(xpr_sint_t aIndex)
+FilterItem *FileFilter::getFilter(xpr_sint_t aIndex)
 {
     if (!FXFILE_STL_IS_INDEXABLE(aIndex, mFilterDeque))
         return XPR_NULL;
@@ -70,7 +70,7 @@ FilterItem *Filter::getFilter(xpr_sint_t aIndex)
     return mFilterDeque[aIndex];
 }
 
-FilterItem *Filter::getFilterFromName(const xpr_tchar_t *aName)
+FilterItem *FileFilter::getFilterFromName(const xpr_tchar_t *aName)
 {
     if (XPR_IS_NULL(aName))
         return XPR_NULL;
@@ -92,12 +92,12 @@ FilterItem *Filter::getFilterFromName(const xpr_tchar_t *aName)
     return XPR_NULL;
 }
 
-FilterItem *Filter::getFilterFromName(const xpr::string &aName)
+FilterItem *FileFilter::getFilterFromName(const xpr::string &aName)
 {
     return getFilterFromName(aName.c_str());
 }
 
-xpr_sint_t Filter::getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
+xpr_sint_t FileFilter::getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
 {
     FilterItem *sFilterItem;
     FilterDeque::iterator sIterator;
@@ -161,7 +161,7 @@ xpr_sint_t Filter::getIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
     return -1;
 }
 
-COLORREF Filter::getColor(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
+COLORREF FileFilter::getColor(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
 {
     xpr_sint_t sIndex = getIndex(aPath, aFolder);
 
@@ -172,7 +172,7 @@ COLORREF Filter::getColor(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
     return sFilterItem->mColor;
 }
 
-xpr_sint_t Filter::getIconIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
+xpr_sint_t FileFilter::getIconIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
 {
     xpr_sint_t sIndex = getIndex(aPath, aFolder);
 
@@ -183,7 +183,7 @@ xpr_sint_t Filter::getIconIndex(const xpr_tchar_t *aPath, xpr_bool_t aFolder)
     return sFilterItem->mIconIndex;
 }
 
-xpr_bool_t Filter::initDefault(void)
+xpr_bool_t FileFilter::initDefault(void)
 {
     // Default Filtering Type based on Extension
     // +------+--------------+---------------+-------+
@@ -286,7 +286,7 @@ xpr_bool_t Filter::initDefault(void)
     return XPR_TRUE;
 }
 
-void Filter::clear(void)
+void FileFilter::clear(void)
 {
     FilterItem *sFilterItem;
     FilterDeque::iterator sIterator;
@@ -301,7 +301,7 @@ void Filter::clear(void)
     mFilterDeque.clear();
 }
 
-xpr_bool_t Filter::load(fxfile::base::ConfFileEx &aConfFile)
+xpr_bool_t FileFilter::load(fxfile::base::ConfFileEx &aConfFile)
 {
     xpr_size_t         i;
     xpr_tchar_t        sKey[0xff];
@@ -341,7 +341,7 @@ xpr_bool_t Filter::load(fxfile::base::ConfFileEx &aConfFile)
     return XPR_TRUE;
 }
 
-void Filter::save(fxfile::base::ConfFileEx &aConfFile) const
+void FileFilter::save(fxfile::base::ConfFileEx &aConfFile) const
 {
     xpr_sint_t         i;
     xpr_tchar_t        sKey[0xff];
@@ -372,7 +372,7 @@ void Filter::save(fxfile::base::ConfFileEx &aConfFile) const
     }
 }
 
-void Filter::setString(const xpr_tchar_t *aFolderString,
+void FileFilter::setString(const xpr_tchar_t *aFolderString,
                        const xpr_tchar_t *aGeneralFileString,
                        const xpr_tchar_t *aExecutableFileString,
                        const xpr_tchar_t *aCompressedFileString,
@@ -397,11 +397,11 @@ void Filter::setString(const xpr_tchar_t *aFolderString,
     mTemporaryFileString   = aTemporaryFileString;
 }
 
-FilterMgr::FilterMgr(void)
+FileFilterMgr::FileFilterMgr(void)
 {
 }
 
-FilterMgr::~FilterMgr(void)
+FileFilterMgr::~FileFilterMgr(void)
 {
 }
 } // namespace fxfile

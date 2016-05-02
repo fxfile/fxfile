@@ -133,7 +133,7 @@ BOOL CFrameWndBase::OnNcActivate( BOOL bActive )
 
 void CFrameWndBase::OnSettingChange( UINT uFlags, LPCTSTR lpszSection )
 {
-    CWinAppEx::GetInstance()->UpdateSystemParameters();    // reload cached metrics
+    WinAppEx::GetInstance()->UpdateSystemParameters();    // reload cached metrics
 
     CFrameWnd::OnSettingChange( uFlags, lpszSection );
 }
@@ -168,22 +168,22 @@ void CFrameWndBase::OnLoadString( int nIndex, CString &strText )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CFrameWndEx
+// FrameWndEx
 
-IMPLEMENT_DYNCREATE( CFrameWndEx, CFrameWnd )
+IMPLEMENT_DYNCREATE(FrameWndEx, CFrameWnd )
 
-CFrameWndEx::CFrameWndEx()
+FrameWndEx::FrameWndEx()
 {
 }
 
-CFrameWndEx::~CFrameWndEx()
+FrameWndEx::~FrameWndEx()
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Overrides
 
-void CFrameWndEx::DelayUpdateFrameMenu( HMENU hMenuAlt )
+void FrameWndEx::DelayUpdateFrameMenu( HMENU hMenuAlt )
 {
     // This function seems to be called by the framework only two times
     // when in-place activation begins and ends.
@@ -198,7 +198,7 @@ void CFrameWndEx::DelayUpdateFrameMenu( HMENU hMenuAlt )
     CFrameWnd::DelayUpdateFrameMenu( hMenuAlt );
 }
 
-void CFrameWndEx::OnUpdateFrameMenu( HMENU hMenuAlt )
+void FrameWndEx::OnUpdateFrameMenu( HMENU hMenuAlt )
 {
     CFrameWndBase::OnUpdateFrameMenu( hMenuAlt );
 
@@ -229,7 +229,7 @@ void CFrameWndEx::OnUpdateFrameMenu( HMENU hMenuAlt )
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CFrameWndEx message handlers
+// FrameWndEx message handlers
 
 BEGIN_MESSAGE_MAP(CFrameWndBase, CFrameWnd)
     //{{AFX_MSG_MAP(CFrameWndBase)

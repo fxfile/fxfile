@@ -144,7 +144,7 @@ void TextProgressCtrl::OnPaint(void)
 {
     CPaintDC sPaintDC(this);
 
-    CMemDC sMemDC(&sPaintDC);
+    MemDC sMemDC(&sPaintDC);
 
     CRect sClientRect;
     GetClientRect(sClientRect);

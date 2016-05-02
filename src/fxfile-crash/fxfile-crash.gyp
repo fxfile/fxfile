@@ -31,6 +31,7 @@
                 {
                     'OutputDirectory':       '../../bin/x86-unicode',
                     'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x86-unicode',
+                    'TargetName':            '$(ProjectName)_dbg',
                 },
                 
                 'msvs_settings':
@@ -43,6 +44,11 @@
                         ],
                         'AdditionalDependencies':
                         [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
                         ],
                     },
                 },
@@ -56,6 +62,7 @@
                 {
                     'OutputDirectory':       '../../bin/x86-unicode',
                     'IntermediateDirectory': '../../obj/fxfile-crash/rel-x86-unicode',
+                    'TargetName':            '$(ProjectName)',
                 },
                 
                 'msvs_settings':
@@ -68,6 +75,11 @@
                         ],
                         'AdditionalDependencies':
                         [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
                         ],
                     },
                 },
@@ -81,6 +93,7 @@
                 {
                     'OutputDirectory':       '../../bin/x86-multibyte',
                     'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x86-multibyte',
+                    'TargetName':            '$(ProjectName)_dbg',
                 },
                 
                 'msvs_settings':
@@ -94,6 +107,11 @@
                         'AdditionalDependencies':
                         [
                         ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
             },
@@ -106,6 +124,7 @@
                 {
                     'OutputDirectory':       '../../bin/x86-multibyte',
                     'IntermediateDirectory': '../../obj/fxfile-crash/rel-x86-multibyte',
+                    'TargetName':            '$(ProjectName)',
                 },
                 
                 'msvs_settings':
@@ -118,6 +137,11 @@
                         ],
                         'AdditionalDependencies':
                         [
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
                         ],
                     },
                 },
@@ -135,6 +159,7 @@
                             {
                                 'OutputDirectory':       '../../bin/x64',
                                 'IntermediateDirectory': '../../obj/fxfile-crash/dbg-x64',
+                                'TargetName':            '$(ProjectName)_dbg',
                             },
                             
                             'msvs_settings':
@@ -148,6 +173,11 @@
                                     'AdditionalDependencies':
                                     [
                                     ],
+                                    'conditions':
+                                    [
+                                        [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                                        [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                                    ],
                                 },
                             },
                         },
@@ -160,6 +190,7 @@
                             {
                                 'OutputDirectory':       '../../bin/x64',
                                 'IntermediateDirectory': '../../obj/fxfile-crash/rel-x64',
+                                'TargetName':            '$(ProjectName)',
                             },
                             
                             'msvs_settings':
@@ -172,6 +203,11 @@
                                     ],
                                     'AdditionalDependencies':
                                     [
+                                    ],
+                                    'conditions':
+                                    [
+                                        [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                                        [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
                                     ],
                                 },
                             },

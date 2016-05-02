@@ -7,11 +7,12 @@
 // Use of this source code is governed by a GPLv3 license that can be
 // found in the LICENSE file.
 
-#ifndef __FXFILE_FILTER_H__
-#define __FXFILE_FILTER_H__ 1
+#ifndef __FXFILE_FILE_FILTER_H__
+#define __FXFILE_FILE_FILTER_H__ 1
 #pragma once
 
 #include "pattern.h"
+#include <deque>
 
 namespace fxfile
 {
@@ -61,11 +62,11 @@ public:
     xpr_sint_t  mIconIndex;
 };
 
-class Filter
+class FileFilter
 {
 public:
-    Filter(void);
-    virtual ~Filter(void);
+    FileFilter(void);
+    virtual ~FileFilter(void);
 
 public:
     void addFilter(FilterItem *aFilterItem);
@@ -114,13 +115,13 @@ protected:
     static const xpr_tchar_t *mTemporaryFileString;
 };
 
-class FilterMgr : public Filter, public fxfile::base::Singleton<FilterMgr>
+class FileFilterMgr : public FileFilter, public fxfile::base::Singleton<FileFilterMgr>
 {
-    friend class fxfile::base::Singleton<FilterMgr>;
+    friend class fxfile::base::Singleton<FileFilterMgr>;
 
-protected: FilterMgr(void);
-public:   ~FilterMgr(void);
+protected: FileFilterMgr(void);
+public:   ~FileFilterMgr(void);
 };
 } // namespace fxfile
 
-#endif // __FXFILE_FILTER_H__
+#endif // __FXFILE_FILE_FILTER_H__

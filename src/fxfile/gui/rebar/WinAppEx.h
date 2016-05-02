@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// WinAppEx.h: interface for the CWinAppEx class.
+// WinAppEx.h: interface for the WinAppEx class.
 //
 /////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2001-2002 by Nikolay Denisov. All rights reserved.
@@ -30,13 +30,13 @@
 #include "GlobalData.h" // CMapUIntToInt and CMapIntToInt
 
 /////////////////////////////////////////////////////////////////////////////
-// CWinAppEx
+// WinAppEx
 
 const CSize szMenuIcon( 16, 16 );
 
-class CWinAppEx : public CWinApp
+class WinAppEx : public CWinApp
 {
-    DECLARE_DYNAMIC( CWinAppEx );
+    DECLARE_DYNAMIC(WinAppEx);
 
 // Enums
 public:
@@ -52,12 +52,12 @@ public:
 
 // Construction
 public:
-	CWinAppEx( LPCTSTR lpszAppName = 0 );
-	~CWinAppEx();
+    WinAppEx( LPCTSTR lpszAppName = 0 );
+    ~WinAppEx();
 
 // Operations
 public:
-    static CWinAppEx* GetInstance();
+    static WinAppEx* GetInstance();
     static BOOL TrackPopupMenuEx( HMENU hMenu, UINT nFlags,
         int x, int y, CWnd* pWnd, LPTPMPARAMS lptpm = 0 );
 
@@ -112,21 +112,21 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CWinAppEx inline functions
+// WinAppEx inline functions
 
-inline CWinAppEx* CWinAppEx::GetInstance()
-    { return STATIC_DOWNCAST( CWinAppEx, AfxGetApp() ); }
-inline CWinAppEx::EOs CWinAppEx::GetOs() const
+inline WinAppEx* WinAppEx::GetInstance()
+    { return STATIC_DOWNCAST(WinAppEx, AfxGetApp() ); }
+inline WinAppEx::EOs WinAppEx::GetOs() const
     { return m_eOs; }
-inline bool CWinAppEx::IsWin50() const
+inline bool WinAppEx::IsWin50() const
     { return ( m_eOs == osWin98 || m_eOs == osWin2K || m_eOs == osWinXP ); }
-inline bool CWinAppEx::IsWinNT() const
+inline bool WinAppEx::IsWinNT() const
     { return ( m_eOs == osWinNT || m_eOs == osWin2K || m_eOs == osWinXP ); }
-inline bool CWinAppEx::IsWin2K() const
+inline bool WinAppEx::IsWin2K() const
     { return ( m_eOs == osWin2K || m_eOs == osWinXP ); }
-inline bool CWinAppEx::IsWinXP() const
+inline bool WinAppEx::IsWinXP() const
     { return ( m_eOs == osWinXP ); }
-inline const NONCLIENTMETRICS& CWinAppEx::GetNonClientMetrics() const
+inline const NONCLIENTMETRICS& WinAppEx::GetNonClientMetrics() const
     { return m_info; }
 
 /////////////////////////////////////////////////////////////////////////////

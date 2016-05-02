@@ -34,8 +34,12 @@
 #include "main_coolbar.h"
 #include "main_menubar.h"
 
+#ifndef AFX_IDW_SIZABLEREBAR
 #define AFX_IDW_SIZABLEREBAR (AFX_IDW_CONTROLBAR_FIRST + 4)
+#endif
+#ifndef AFX_IDW_MENUBAR
 #define AFX_IDW_MENUBAR      (AFX_IDW_CONTROLBAR_FIRST + 6)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CFrameWndBase
@@ -74,7 +78,7 @@ protected:
 
 // Generated message map functions
 protected:
-    //{{AFX_MSG(CFrameWndEx)
+    //{{AFX_MSG(FrameWndEx)
     //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 
@@ -91,16 +95,16 @@ protected:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CFrameWndEx frame
+// FrameWndEx frame
 
-class CFrameWndEx : public CFrameWndBase
+class FrameWndEx : public CFrameWndBase
 {
-    DECLARE_DYNCREATE( CFrameWndEx )
+    DECLARE_DYNCREATE(FrameWndEx)
 
 // Constructors
 public:
-    CFrameWndEx();
-    ~CFrameWndEx();
+    FrameWndEx();
+    ~FrameWndEx();
 
 // Overrides
 protected:
@@ -109,7 +113,7 @@ protected:
 
 // Generated message map functions
 protected:
-    //{{AFX_MSG(CFrameWndEx)
+    //{{AFX_MSG(FrameWndEx)
     //}}AFX_MSG
 };
 

@@ -152,7 +152,7 @@ xpr_bool_t FormatNumber::write(base::XmlWriter &aXmlWriter) const
 
     if (aXmlWriter.beginElement(kXmlFormatNumberElement) == XPR_TRUE)
     {
-        FXFILE_XML_WRITE_ATTRIBUTE_SINT32(aXmlWriter, kXmlDigitAttribute,      mDigit);
+        FXFILE_XML_WRITE_ATTRIBUTE_SIZE  (aXmlWriter, kXmlDigitAttribute,      mDigit);
         FXFILE_XML_WRITE_ATTRIBUTE_SINT32(aXmlWriter, kXmlZeroFilledAttribute, mZeroFilled);
 
         FXFILE_XML_WRITE_ELEMENT_ENTITY_SINT32(aXmlWriter, kXmlNumberElement, mStart);

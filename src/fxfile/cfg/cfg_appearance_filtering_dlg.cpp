@@ -89,7 +89,7 @@ void CfgAppearanceFilteringDlg::OnDestroy(void)
 
 void CfgAppearanceFilteringDlg::onInit(const Option::Config &aConfig)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     FilterItem *sFilterItem;
     FilterItem *sFilterItem2;
@@ -101,10 +101,10 @@ void CfgAppearanceFilteringDlg::onInit(const Option::Config &aConfig)
 
     sIndex = 0;
 
-    sCount = sFilterMgr.getCount();
+    sCount = sFileFilterMgr.getCount();
     for (i = 0; i < sCount; ++i)
     {
-        sFilterItem = sFilterMgr.getFilter(i);
+        sFilterItem = sFileFilterMgr.getFilter(i);
         if (sFilterItem == XPR_NULL)
             continue;
 
@@ -119,14 +119,14 @@ void CfgAppearanceFilteringDlg::onInit(const Option::Config &aConfig)
 
 void CfgAppearanceFilteringDlg::onApply(Option::Config &aConfig)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     xpr_sint_t i;
     xpr_sint_t sCount;
     FilterItem *sFilterItem;
     FilterItem *sFilterItem2;
 
-    sFilterMgr.clear();
+    sFileFilterMgr.clear();
 
     sCount = mListCtrl.GetItemCount();
     for (i = 0; i < sCount; ++i)
@@ -138,7 +138,7 @@ void CfgAppearanceFilteringDlg::onApply(Option::Config &aConfig)
         sFilterItem2 = new FilterItem;
         *sFilterItem2 = *sFilterItem;
 
-        sFilterMgr.addFilter(sFilterItem2);
+        sFileFilterMgr.addFilter(sFilterItem2);
     }
 }
 
@@ -448,17 +448,17 @@ void CfgAppearanceFilteringDlg::OnDefault(void)
 
     mListCtrl.DeleteAllItems();
 
-    Filter sFilter;
-    sFilter.initDefault();
+    FileFilter sFileFilter;
+    sFileFilter.initDefault();
 
     xpr_sint_t i, sCount;
     FilterItem *sFilterItem;
     FilterItem *sFilterItem2;
 
-    sCount = sFilter.getCount();
+    sCount = sFileFilter.getCount();
     for (i = 0; i < sCount; ++i)
     {
-        sFilterItem = sFilter.getFilter(i);
+        sFilterItem = sFileFilter.getFilter(i);
 
         sFilterItem2 = new FilterItem;
         *sFilterItem2 = *sFilterItem;

@@ -134,7 +134,7 @@ void ContentsWnd::OnPaint(void)
     CRect sClientRect;
     GetClientRect(sClientRect);
 
-    CMemDC sMemDc(&sPaintDc);
+    MemDC sMemDc(&sPaintDc);
 
     if (gOpt->mConfig.mContentsStyle == CONTENTS_NONE)
         sMemDc.FillSolidRect(&sClientRect, ::GetSysColor(COLOR_WINDOW));

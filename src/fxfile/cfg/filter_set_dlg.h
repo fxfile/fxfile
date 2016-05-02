@@ -11,7 +11,7 @@
 #define __FXFILE_FILTER_SET_DLG_H__ 1
 #pragma once
 
-#include "../filter.h"
+#include "../file_filter.h"
 #include "gui/ColourPickerXP.h"
 #include "gui/IconList.h"
 

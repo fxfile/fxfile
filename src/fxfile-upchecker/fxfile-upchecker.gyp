@@ -36,6 +36,7 @@
                 {
                     'OutputDirectory':       '../../bin',
                     'IntermediateDirectory': '../../obj/fxfile-upchecker/dbg-x86',
+                    'TargetName':            '$(ProjectName)_dbg',
                 },
                 
                 'msvs_settings':
@@ -50,6 +51,11 @@
                         [
                             'libxpr_dbg.lib',
                         ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
+                        ],
                     },
                 },
             },
@@ -62,6 +68,7 @@
                 {
                     'OutputDirectory':       '../../bin',
                     'IntermediateDirectory': '../../obj/fxfile-upchecker/rel-x86',
+                    'TargetName':            '$(ProjectName)',
                 },
                 
                 'msvs_settings':
@@ -75,6 +82,11 @@
                         'AdditionalDependencies':
                         [
                             'libxpr.lib',
+                        ],
+                        'conditions':
+                        [
+                            [ 'msvs_version == 2008', { 'AdditionalDependencies' : [ '$(INHERIT)', ], }, ],
+                            [ 'msvs_version != 2008', { 'AdditionalDependencies' : [ '%(AdditionalDependencies)', ], }, ],
                         ],
                     },
                 },

@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// WinAppEx.cpp: implementation of the CWinAppEx class.
+// WinAppEx.cpp: implementation of the WinAppEx class.
 //
 /////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2001-2002 by Nikolay Denisov. All rights reserved.
@@ -47,11 +47,11 @@ public:
 };
 
 /////////////////////////////////////////////////////////////////////////////
-// CWinAppEx
+// WinAppEx
 
-IMPLEMENT_DYNAMIC( CWinAppEx, CWinApp )
+IMPLEMENT_DYNAMIC(WinAppEx, CWinApp )
 
-CWinAppEx::CWinAppEx( LPCTSTR lpszAppName /*=0*/ ) : CWinApp( lpszAppName )
+WinAppEx::WinAppEx( LPCTSTR lpszAppName /*=0*/ ) : CWinApp( lpszAppName )
 {
     // Determine system type
     OSVERSIONINFO osvi;
@@ -101,14 +101,14 @@ CWinAppEx::CWinAppEx( LPCTSTR lpszAppName /*=0*/ ) : CWinApp( lpszAppName )
     UpdateSystemParameters();
 }
 
-CWinAppEx::~CWinAppEx()
+WinAppEx::~WinAppEx()
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Operations
 
-BOOL CWinAppEx::TrackPopupMenuEx( HMENU hMenu, UINT nFlags, int x, int y,
+BOOL WinAppEx::TrackPopupMenuEx( HMENU hMenu, UINT nFlags, int x, int y,
                                   CWnd* pWnd, LPTPMPARAMS lptpm /*=0*/ )
 {
     _AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
@@ -125,7 +125,7 @@ BOOL CWinAppEx::TrackPopupMenuEx( HMENU hMenu, UINT nFlags, int x, int y,
     return bOK;
 }
 
-void CWinAppEx::LoadStdProfileSettings( UINT nMaxMRU /*=_AFX_MRU_COUNT*/ )
+void WinAppEx::LoadStdProfileSettings( UINT nMaxMRU /*=_AFX_MRU_COUNT*/ )
 {
     CWinApp::LoadStdProfileSettings( nMaxMRU );
 
@@ -134,7 +134,7 @@ void CWinAppEx::LoadStdProfileSettings( UINT nMaxMRU /*=_AFX_MRU_COUNT*/ )
     delete pRecentFileList;
 }
 
-void CWinAppEx::UpdateSystemParameters()
+void WinAppEx::UpdateSystemParameters()
 {
     m_info.cbSize = sizeof( NONCLIENTMETRICS );
     VERIFY( ::SystemParametersInfo( SPI_GETNONCLIENTMETRICS, sizeof( m_info ), &m_info, 0 ) );
@@ -157,42 +157,42 @@ void CWinAppEx::UpdateSystemParameters()
     }
 }
 
-bool CWinAppEx::GetMenuAnimation() const
+bool WinAppEx::GetMenuAnimation() const
 {
     ASSERT( IsWin50() );
     return ( ( !IsWin2K() || m_bUIEffects ) && m_bMenuAnimation );
 }
 
-bool CWinAppEx::GetMenuUnderlines() const
+bool WinAppEx::GetMenuUnderlines() const
 {
     ASSERT( IsWin2K() );
     return ( m_bUIEffects && m_bMenuUnderlines );
 }
 
-bool CWinAppEx::GetMenuFade() const
+bool WinAppEx::GetMenuFade() const
 {
     ASSERT( IsWin2K() );
     return ( m_bUIEffects && m_bMenuFade );
 }
 
-bool CWinAppEx::GetFlatMenu() const
+bool WinAppEx::GetFlatMenu() const
 {
     ASSERT( IsWinXP() );
     return ( m_bUIEffects && m_bFlatMenu );
 }
 
-void CWinAppEx::SetBitmappedMenus( bool bBitmappedMenus )
+void WinAppEx::SetBitmappedMenus( bool bBitmappedMenus )
 {
     ASSERT( !bBitmappedMenus || IsWin50() );
     m_bBitmappedMenus = bBitmappedMenus;
 }
 
-bool CWinAppEx::GetBitmappedMenus() const
+bool WinAppEx::GetBitmappedMenus() const
 {
     return m_bBitmappedMenus;
 }
 
-void CWinAppEx::AddMenuIcon( CMapUIntToInt& mapIDToImage, UINT nBitmapID,
+void WinAppEx::AddMenuIcon( CMapUIntToInt& mapIDToImage, UINT nBitmapID,
                              COLORREF clrMask /*=RGB(255,0,255)*/ )
 {
     CBitmap bmp;
@@ -208,14 +208,14 @@ void CWinAppEx::AddMenuIcon( CMapUIntToInt& mapIDToImage, UINT nBitmapID,
     }
 }
 
-void CWinAppEx::AddMenuIcon( UINT nID, HICON hIcon )
+void WinAppEx::AddMenuIcon( UINT nID, HICON hIcon )
 {
     int nImage = GetMenuImageList()->Add( hIcon );
     ASSERT( nImage != -1 );
     m_mapIDToImage[ nID ] = nImage;
 }
 
-void CWinAppEx::AddMenuIcon( UINT nID, LPCTSTR lpszFileName )
+void WinAppEx::AddMenuIcon( UINT nID, LPCTSTR lpszFileName )
 {
     SHFILEINFO sfi;
     if ( ::SHGetFileInfo( lpszFileName, 0, &sfi, sizeof( sfi ),
@@ -239,7 +239,7 @@ void CWinAppEx::AddMenuIcon( UINT nID, LPCTSTR lpszFileName )
     }
 }
 
-void CWinAppEx::ReplaceMenuIcon( UINT nID, HICON hIcon )
+void WinAppEx::ReplaceMenuIcon( UINT nID, HICON hIcon )
 {
     int nImage = -1;
     if ( m_mapIDToImage.Lookup( nID, nImage ) )
@@ -254,12 +254,12 @@ void CWinAppEx::ReplaceMenuIcon( UINT nID, HICON hIcon )
     }
 }
 
-void CWinAppEx::RemoveMenuIcon( UINT nID )
+void WinAppEx::RemoveMenuIcon( UINT nID )
 {
     m_mapIDToImage.RemoveKey( nID );
 }
 
-void CWinAppEx::SetMenuIcons( CMenu* pMenu, bool bSubmenus /*=false*/ )
+void WinAppEx::SetMenuIcons( CMenu* pMenu, bool bSubmenus /*=false*/ )
 {
     if ( GetBitmappedMenus() && ( pMenu != 0 ) )
     {
@@ -320,7 +320,7 @@ void CWinAppEx::SetMenuIcons( CMenu* pMenu, bool bSubmenus /*=false*/ )
     }
 }
 
-CImageList* CWinAppEx::GetMenuImageList()
+CImageList* WinAppEx::GetMenuImageList()
 {
     if ( m_imageList.m_hImageList == 0 )
     {
@@ -331,7 +331,7 @@ CImageList* CWinAppEx::GetMenuImageList()
     return &m_imageList;
 }
 
-int CWinAppEx::GetMenuImage( UINT nID ) const
+int WinAppEx::GetMenuImage( UINT nID ) const
 {
     int nImage = -1;
     return m_mapIDToImage.Lookup( nID, nImage ) ? nImage : -1;
@@ -366,7 +366,7 @@ void CRecentFileListEx::UpdateMenu( CCmdUI* pCmdUI )
     UINT nID = pCmdUI->m_nID;   // ID_FILE_MRU_FIRST
     CRecentFileList::UpdateMenu( pCmdUI );
 
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     for ( int nMRU = 0; ( nMRU < m_nSize ) && !m_arrNames[ nMRU ].IsEmpty(); nMRU++, nID++ )
     {
         pApp->AddMenuIcon( nID, m_arrNames[ nMRU ] );

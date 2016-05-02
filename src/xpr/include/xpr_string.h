@@ -472,36 +472,35 @@ XPR_INLINE bool operator>= (const String &aString1, const xpr_wchar_t *aString2)
 } // namespace xpr
 
 #if defined(XPR_CFG_STL_TR1)
-namespace std
+XPR_NAMESPACE_STD_TR1_BEGIN
+
+template <>
+struct hash<xpr::String> : public unary_function<xpr::String, xpr_size_t>
 {
-namespace tr1
-{
-    template <>
-    struct hash<xpr::String> : public unary_function<xpr::String, xpr_size_t>
+    xpr_size_t operator()(const xpr::String &aValue) const
     {
-        xpr_size_t operator()(const xpr::String &aValue) const
+        // hash _Keyval to size_t value by pseudorandomizing transform
+        xpr_size_t sHashValue = 2166136261U;
+        xpr_size_t sFirst     = 0;
+        xpr_size_t sLast      = aValue.size();
+        xpr_size_t sStride    = 1 + sLast / 10;
+
+        if (sStride < sLast)
         {
-            // hash _Keyval to size_t value by pseudorandomizing transform
-            xpr_size_t sHashValue = 2166136261U;
-            xpr_size_t sFirst     = 0;
-            xpr_size_t sLast      = aValue.size();
-            xpr_size_t sStride    = 1 + sLast / 10;
-
-            if (sStride < sLast)
-            {
-                sLast -= sStride;
-            }
-
-            for (; sFirst < sLast; sFirst += sStride)
-            {
-                sHashValue = 16777619U * sHashValue ^ (xpr_size_t)aValue[sFirst];
-            }
-
-            return sHashValue;
+            sLast -= sStride;
         }
-    };
-} // namespace tr1
-} // namespace std
+
+        for (; sFirst < sLast; sFirst += sStride)
+        {
+            sHashValue = 16777619U * sHashValue ^ (xpr_size_t)aValue[sFirst];
+        }
+
+        return sHashValue;
+    }
+};
+
+XPR_NAMESPACE_STD_TR1_END
+
 #endif // XPR_CFG_STL_TR1
 
 #endif // __XPR_STRING_H__

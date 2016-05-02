@@ -13,7 +13,7 @@
 #include "../path.h"
 #include "../shell.h"
 #include "../program_ass.h"
-#include "../filter.h"
+#include "../file_filter.h"
 #include "../img_list_manager.h"
 #include "../resource.h"
 
@@ -347,11 +347,11 @@ void CfgFuncProgramAssDlg::OnGetdispinfoList(NMHDR* pNMHDR, LRESULT* pResult)
             {
                 if (sProgramAssItem->mMethod == ProgramAssMethodFilter)
                 {
-                    FilterItem *lpFilterItem;
-                    lpFilterItem = FilterMgr::instance().getFilterFromName(sProgramAssItem->mFilterName);
+                    FilterItem *sFilterItem;
+                    sFilterItem = FileFilterMgr::instance().getFilterFromName(sProgramAssItem->mFilterName);
 
-                    if (lpFilterItem)
-                        _tcscpy(sLvItem.pszText, lpFilterItem->mExts.c_str());
+                    if (XPR_IS_NOT_NULL(sFilterItem))
+                        _tcscpy(sLvItem.pszText, sFilterItem->mExts.c_str());
                 }
                 else
                 {

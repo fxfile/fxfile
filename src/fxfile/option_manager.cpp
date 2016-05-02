@@ -11,7 +11,7 @@
 #include "option_manager.h"
 
 #include "conf_file_ex.h"
-#include "filter.h"
+#include "file_filter.h"
 #include "program_ass.h"
 #include "thumbnail.h"
 #include "size_format.h"
@@ -49,12 +49,12 @@ OptionManager::~OptionManager(void)
 
 void OptionManager::initDefault(void)
 {
-    FilterMgr     &sFilterMgr     = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
     ProgramAssMgr &sProgramAssMgr = ProgramAssMgr::instance();
     SizeFormat    &sSizeFormat    = SizeFormat::instance();
     ConfDir       &sConfDir       = ConfDir::instance();
 
-    sFilterMgr.initDefault();
+    sFileFilterMgr.initDefault();
     sProgramAssMgr.initDefault();
     sSizeFormat.initDefault();
     mOption->initDefault();
@@ -81,11 +81,11 @@ void OptionManager::initDefault(void)
 
 void OptionManager::initDefaultConfigOption(void)
 {
-    FilterMgr     &sFilterMgr     = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
     ProgramAssMgr &sProgramAssMgr = ProgramAssMgr::instance();
     SizeFormat    &sSizeFormat    = SizeFormat::instance();
 
-    sFilterMgr.initDefault();
+    sFileFilterMgr.initDefault();
     sProgramAssMgr.initDefault();
     sSizeFormat.initDefault();
     mOption->initDefaultConfigOption();
@@ -217,20 +217,20 @@ xpr_bool_t OptionManager::saveConfigOption(void)
 
 void OptionManager::loadFilter(fxfile::base::ConfFileEx &aConfFile)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
-    xpr_bool_t sResult = sFilterMgr.load(aConfFile);
+    xpr_bool_t sResult = sFileFilterMgr.load(aConfFile);
     if (XPR_IS_FALSE(sResult))
     {
-        sFilterMgr.initDefault();
+        sFileFilterMgr.initDefault();
     }
 }
 
 void OptionManager::saveFilter(fxfile::base::ConfFileEx &aConfFile)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
-    sFilterMgr.save(aConfFile);
+    sFileFilterMgr.save(aConfFile);
 }
 
 void OptionManager::loadProgramAss(fxfile::base::ConfFileEx &aConfFile)

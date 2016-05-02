@@ -4,7 +4,12 @@
 #pragma once
 
 #include <uxtheme.h>
+
+#if (XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER < 1700)
 #include <tmschema.h>
+#else
+#include <vsstyle.h>
+#endif
 //#include <vssym32.h>
 
 #ifndef WM_THEMECHANGED

@@ -248,7 +248,7 @@ void FlatHeaderCtrl::drawItem(CDC *aDC, CRect aItemRect, xpr_uint_t aState, xpr_
 void FlatHeaderCtrl::OnPaint(void)
 {
     CPaintDC sPaintDC(this);
-    CMemDC sMemDC(&sPaintDC);
+    MemDC sMemDC(&sPaintDC);
 
     CRect sClientClient;
     GetClientRect(&sClientClient);

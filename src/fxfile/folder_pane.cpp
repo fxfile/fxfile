@@ -18,7 +18,7 @@
 #include "main_frame.h"
 #include "folder_ctrl.h"
 #include "option.h"
-#include "filter.h"
+#include "file_filter.h"
 
 #include "cmd/router/cmd_parameters.h"
 #include "cmd/router/cmd_parameter_define.h"
@@ -155,7 +155,7 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
 {
     XPR_ASSERT(aFolderCtrl != XPR_NULL);
 
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     FolderCtrl::Option sOption;
 
@@ -178,7 +178,7 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
     if (sOption.mBkgndColorType == COLOR_TYPE_FILTERING)
     {
         sOption.mBkgndColorType       = COLOR_TYPE_CUSTOM;
-        sOption.mBkgndColor           = sFilterMgr.getColor(XPR_NULL, XPR_TRUE);
+        sOption.mBkgndColor           = sFileFilterMgr.getColor(XPR_NULL, XPR_TRUE);
     }
 
     if (aOption.mConfig.mFolderTreeTextColorType[mViewIndex] == COLOR_TYPE_FILE_LIST)
@@ -195,7 +195,7 @@ void FolderPane::setFolderOption(FolderCtrl *aFolderCtrl, Option &aOption)
     if (sOption.mTextColorType == COLOR_TYPE_FILTERING)
     {
         sOption.mTextColorType        = COLOR_TYPE_CUSTOM;
-        sOption.mTextColor            = sFilterMgr.getColor(XPR_NULL, XPR_TRUE);
+        sOption.mTextColor            = sFileFilterMgr.getColor(XPR_NULL, XPR_TRUE);
     }
 
     if (XPR_IS_TRUE(aOption.mConfig.mFolderTreeCustomFont))

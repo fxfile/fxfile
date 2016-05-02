@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "program_ass.h"
-#include "filter.h"
+#include "file_filter.h"
 
 #include "conf_file_ex.h"
 
@@ -84,7 +84,7 @@ ProgramAssItem *ProgramAss::getItemFromPath(const xpr_tchar_t *aPath, xpr_uint_t
 
 xpr_size_t ProgramAss::indexFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     const xpr_tchar_t *sExts;
     FilterItem *sFilterItem;
@@ -106,7 +106,7 @@ xpr_size_t ProgramAss::indexFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType)
             sExts = sProgramAssItem->mExts.c_str();
             if (sProgramAssItem->mMethod == ProgramAssMethodFilter)
             {
-                sFilterItem = sFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
+                sFilterItem = sFileFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
                 if (XPR_IS_NOT_NULL(sFilterItem))
                     sExts = sFilterItem->mExts.c_str();
             }
@@ -132,7 +132,7 @@ xpr_size_t ProgramAss::indexFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType)
         sExts = sProgramAssItem->mExts.c_str();
         if (sProgramAssItem->mMethod == ProgramAssMethodFilter)
         {
-            sFilterItem = sFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
+            sFilterItem = sFileFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
             if (XPR_IS_NOT_NULL(sFilterItem))
                 sExts = sFilterItem->mExts.c_str();
         }
@@ -161,7 +161,7 @@ xpr_size_t ProgramAss::indexFromPath(const xpr_tchar_t *aPath, xpr_uint_t aType)
 
 xpr_bool_t ProgramAss::getItemFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType, ProgramAssDeque &aProgramAssDeque)
 {
-    FilterMgr &sFilterMgr = FilterMgr::instance();
+    FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
     const xpr_tchar_t *sExts;
     FilterItem *sFilterItem;
@@ -181,7 +181,7 @@ xpr_bool_t ProgramAss::getItemFromExt(const xpr_tchar_t *aExt, xpr_uint_t aType,
         sExts = sProgramAssItem->mExts.c_str();
         if (sProgramAssItem->mMethod == ProgramAssMethodFilter)
         {
-            sFilterItem = sFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
+            sFilterItem = sFileFilterMgr.getFilterFromName(sProgramAssItem->mFilterName);
             if (XPR_IS_NOT_NULL(sFilterItem))
                 sExts = sFilterItem->mExts.c_str();
         }

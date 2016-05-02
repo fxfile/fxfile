@@ -17,7 +17,7 @@
 #include "file_op_undo.h"
 #include "drive_shcn.h"
 #include "rename_helper.h"
-#include "filter.h"
+#include "file_filter.h"
 #include "shell_column_manager.h"
 #include "file_change_watcher.h"
 #include "adv_file_change_watcher.h"
@@ -1414,7 +1414,7 @@ xpr_sint_t ExplorerCtrl::getFileIconIndex(LPLVITEMDATA aLvItemData, const xpr_tc
         }
 
         if (sIconIndex == -1)
-            sIconIndex = FilterMgr::instance().getIconIndex(aPath, aLvItemData->mShellAttributes & SFGAO_FOLDER);
+            sIconIndex = FileFilterMgr::instance().getIconIndex(aPath, aLvItemData->mShellAttributes & SFGAO_FOLDER);
 
         if (sIconIndex <= 0)
             sIconIndex = (aLvItemData->mShellAttributes & SFGAO_FOLDER) ? 6 : 7;
@@ -4976,7 +4976,7 @@ DROPEFFECT ExplorerCtrl::OnDragOver(COleDataObject *aOleDataObject, DWORD aKeySt
         if (aOleDataObject->IsDataAvailable(sClipFormat.mShellIDList) == XPR_TRUE)
         {
             STGMEDIUM sStgMedium = {0};
-            FORMATETC sFormatEtc = {sClipFormat.mShellIDList, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
+            FORMATETC sFormatEtc = {(CLIPFORMAT)sClipFormat.mShellIDList, XPR_NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL};
 
             if (aOleDataObject->GetData(sClipFormat.mShellIDList, &sStgMedium, &sFormatEtc) == XPR_TRUE)
             {
@@ -6689,7 +6689,7 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
             verifyItemData(&sLvItemData);
             if (XPR_IS_NOT_NULL(sLvItemData))
             {
-                FilterMgr &sFilterMgr = FilterMgr::instance();
+                FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
                 static xpr_tchar_t sParsing[XPR_MAX_PATH + 1];
                 sParsing[0] = XPR_STRING_LITERAL('\0');
@@ -6698,10 +6698,10 @@ void ExplorerCtrl::OnCustomdraw(NMHDR *aNmHdr, LRESULT *aResult)
                     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sParsing);
 
                 if (mOption.mTextColorType == COLOR_TYPE_FILTERING)
-                    sNmLvCustomDraw->clrText = sFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
+                    sNmLvCustomDraw->clrText = sFileFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
 
                 if (mOption.mBkgndColorType == COLOR_TYPE_FILTERING)
-                    sNmLvCustomDraw->clrTextBk = sFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
+                    sNmLvCustomDraw->clrTextBk = sFileFilterMgr.getColor(sParsing, sLvItemData->mShellAttributes & SFGAO_FOLDER);
             }
         }
 

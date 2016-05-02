@@ -130,7 +130,7 @@ void BookmarkSetWnd::OnPaint(void)
     CRect sClientRect;
     GetClientRect(sClientRect);
 
-    CMemDC sMemDc(&sPaintDc);
+    MemDC sMemDc(&sPaintDc);
     sMemDc.FillSolidRect(&sClientRect, RGB(255,255,255));
 }
 

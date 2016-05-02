@@ -263,14 +263,17 @@ xpr_bool_t StringToLogFont(const xpr_tchar_t *aFontText, LOGFONT &aLogFont)
     if (XPR_IS_NULL(aFontText))
         return XPR_FALSE;
 
-    xpr_tchar_t sFontText[0xff] = {0};
+    xpr_sint_t i;
+    xpr_sint_t sNumber;
+    xpr_tchar_t *sSplit;
+    xpr_tchar_t *sSplit2;
+    xpr_tchar_t sFontText[0xff] = { 0, };
+
     _tcscpy(sFontText, aFontText);
+    sSplit = sFontText;
 
     memset(&aLogFont, 0, sizeof(LOGFONT));
 
-    xpr_sint_t i;
-    xpr_tchar_t *sSplit = sFontText;
-    xpr_tchar_t *sSplit2;
     for (i = 0; i <= 5; ++i)
     {
         if (*sSplit == XPR_STRING_LITERAL('\0'))
@@ -282,12 +285,12 @@ xpr_bool_t StringToLogFont(const xpr_tchar_t *aFontText, LOGFONT &aLogFont)
 
         switch (i)
         {
-        case 0: _tcscpy(aLogFont.lfFaceName, sSplit);                               break;
-        case 1: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfHeight);     break;
-        case 2: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfWeight);     break;
-        case 3: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfItalic);     break;
-        case 4: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfStrikeOut);  break;
-        case 5: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfUnderline);  break;
+        case 0: _tcscpy(aLogFont.lfFaceName, sSplit);                                                       break;
+        case 1: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfHeight);                             break;
+        case 2: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &aLogFont.lfWeight);                             break;
+        case 3: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &sNumber); aLogFont.lfItalic    = (BYTE)sNumber; break;
+        case 4: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &sNumber); aLogFont.lfStrikeOut = (BYTE)sNumber; break;
+        case 5: _stscanf(sSplit, XPR_STRING_LITERAL("%d"), &sNumber); aLogFont.lfUnderline = (BYTE)sNumber; break;
         }
 
         sSplit += _tcslen(sSplit) + 1;

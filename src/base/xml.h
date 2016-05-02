@@ -105,7 +105,7 @@ protected:
         xpr_tchar_t sValue[0xff] = {0}; \
         if (aXmlReader.getAttribute(aAttribute, aName, aMaxNameLength, sValue, 0xfe) == XPR_TRUE) \
         { \
-            _stscanf(sValue, XPR_STRING_LITERAL("%u"), &aValue); \
+            _stscanf(sValue, XPR_STRING_LITERAL("%zu"), &aValue); \
         } \
     } while (false)
 
@@ -163,7 +163,7 @@ protected:
     do \
     { \
         xpr_tchar_t sValue[0xff] = {0}; \
-        _stprintf(sValue, XPR_STRING_LITERAL("%u"), aValue); \
+        _stprintf(sValue, XPR_STRING_LITERAL("%zu"), aValue); \
         aXmlWriter.writeElementEntity(aElement, sValue); \
     } while (false)
 
@@ -225,7 +225,7 @@ protected:
     do \
     { \
         xpr_tchar_t sValue[0xff] = {0}; \
-        _stprintf(sValue, XPR_STRING_LITERAL("%u"), aValue); \
+        _stprintf(sValue, XPR_STRING_LITERAL("%zu"), aValue); \
         aXmlWriter.writeEntity(aElement, sValue); \
     } while (false)
 
@@ -287,7 +287,7 @@ protected:
     do \
     { \
         xpr_tchar_t sValue[0xff] = {0}; \
-        _stprintf(sValue, XPR_STRING_LITERAL("%u"), aValue); \
+        _stprintf(sValue, XPR_STRING_LITERAL("%zu"), aValue); \
         aXmlWriter.writeAttribute(aAttribute, sValue); \
     } while (false)
 

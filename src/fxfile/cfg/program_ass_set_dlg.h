@@ -11,7 +11,7 @@
 #define __FXFILE_PROGRAM_ASS_SET_DLG_H__ 1
 #pragma once
 
-#include "../filter.h"
+#include "../file_filter.h"
 #include "../program_ass.h"
 
 namespace fxfile

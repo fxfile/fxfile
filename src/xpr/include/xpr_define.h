@@ -51,7 +51,7 @@ namespace xpr
 #define XPR_STDCALL  __stdcall
 #define XPR_FASTCALL __fastcall
 #define XPR_CDECL    __cdecl
-#elif ((XPR_CFG_COMPILER_MAJOR > 3) || ((XPR_CFG_COMPILER_MAJOR == 3) && (XPR_CFG_COMPILER_MINOR > 0)))
+#elif ((XPR_CFG_COMPILER_VER > 3) || ((XPR_CFG_COMPILER_VER == 3) && (XPR_CFG_COMPILER_VER_MINOR > 0)))
 #define XPR_INLINE   static __inline__ __attribute__((always_inline))
 #define XPR_STDCALL  __attribute__(stdcall)
 #define XPR_FASTCALL __attribute__(fastcall)
@@ -73,6 +73,20 @@ namespace xpr
 #define XPR_FASTCALL __fastcall
 #define XPR_CDECL    __cdecl
 #endif
+
+#if defined(XPR_CFG_STL_TR1_NAMESPACE)
+#define XPR_NAMESPACE_STD_TR1_BEGIN \
+namespace std { \
+namespace tr1 {
+#define XPR_NAMESPACE_STD_TR1_END \
+} /* namespace tr1 */ \
+} /* namespace std */
+#else // XPR_CFG_STL_TR1_NAMESPACE
+#define XPR_NAMESPACE_STD_TR1_BEGIN \
+namespace std {
+#define XPR_NAMESPACE_STD_TR1_END \
+} /* namespace std */
+#endif // XPR_CFG_STL_TR1_NAMESPACE
 
 #define DISALLOW_COPY_AND_ASSIGN(ClassName) \
     ClassName(const ClassName&); \

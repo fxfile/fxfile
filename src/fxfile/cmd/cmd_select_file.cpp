@@ -236,7 +236,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
 
         if (!XPR_TEST_BITS(sSrItemData->mFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
         {
-            FilterMgr &sFilterMgr = FilterMgr::instance();
+            FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             sSrItemData->getPath(sPath);
@@ -244,7 +244,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
             xpr_sint_t sFilter;
             xpr_sint_t sSelFilter;
 
-            sSelFilter = sFilterMgr.getIndex(sPath, XPR_FALSE);
+            sSelFilter = sFileFilterMgr.getIndex(sPath, XPR_FALSE);
 
             sCount = sSearchResultCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
@@ -257,7 +257,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
                 {
                     sSrItemData->getPath(sPath);
 
-                    sFilter = sFilterMgr.getIndex(sPath, XPR_FALSE);
+                    sFilter = sFileFilterMgr.getIndex(sPath, XPR_FALSE);
                     if (sFilter == sSelFilter)
                         sSearchResultCtrl->SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
                 }
@@ -297,7 +297,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
         if ( XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FILESYSTEM) &&
             !XPR_TEST_BITS(sLvItemData->mShellAttributes, SFGAO_FOLDER))
         {
-            FilterMgr &sFilterMgr = FilterMgr::instance();
+            FileFilterMgr &sFileFilterMgr = FileFilterMgr::instance();
 
             xpr_tchar_t sPath[XPR_MAX_PATH + 1];
             GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
@@ -305,7 +305,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
             xpr_sint_t sFilter;
             xpr_sint_t sSelFilter;
 
-            sSelFilter = sFilterMgr.getIndex(sPath, XPR_FALSE);
+            sSelFilter = sFileFilterMgr.getIndex(sPath, XPR_FALSE);
 
             sCount = sExplorerCtrl->GetItemCount();
             for (i = 0; i < sCount; ++i)
@@ -319,7 +319,7 @@ void SelectSameFilterCommand::execute(CommandContext &aContext)
                 {
                     GetName(sLvItemData->mShellFolder, sLvItemData->mPidl, SHGDN_FORPARSING, sPath);
 
-                    sFilter = sFilterMgr.getIndex(sPath, XPR_FALSE);
+                    sFilter = sFileFilterMgr.getIndex(sPath, XPR_FALSE);
                     if (sFilter == sSelFilter)
                         sExplorerCtrl->SetItemState(i, LVIS_SELECTED, LVIS_SELECTED);
                 }

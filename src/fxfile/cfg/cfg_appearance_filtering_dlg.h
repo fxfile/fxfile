@@ -11,7 +11,7 @@
 #define __FXFILE_CFG_APPEARANCE_FILTERING_H__ 1
 #pragma once
 
-#include "../filter.h"
+#include "../file_filter.h"
 
 #include "cfg_dlg.h"
 

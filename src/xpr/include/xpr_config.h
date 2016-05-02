@@ -93,11 +93,18 @@ namespace xpr
 //
 #if defined(__GNUC__)
 #define XPR_CFG_COMPILER_GCC 1
-#define XPR_CFG_COMPILER_MAJOR __GNUC__
-#define XPR_CFG_COMPILER_MINOR __GNUC__MINOR__
+#define XPR_CFG_COMPILER_VER __GNUC__
+#define XPR_CFG_COMPILER_VER_MINOR __GNUC__MINOR__
 #elif defined(_MSC_VER)
 #define XPR_CFG_COMPILER_MSVC 1
-#define XPR_CFG_COMPILER_MAJOR _MSC_VER
+#define XPR_CFG_COMPILER_VER _MSC_VER
+// _MSC_VER | MS C/C++ Version | Visual Studio Version
+// ---------+------------------+----------------------
+//   1900   |             14.0 | Visual Studio 2015
+//   1800   |             12.0 | Visual Studio 2013
+//   1700   |             11.0 | Visual Studio 2012
+//   1600   |             10.0 | Visual Studio 2010
+//   1500   |              9.0 | Visual Studio 2008
 #elif defined(__WATCOMC__)
 #define XPR_CFG_COMPILER_WATCOMC 1
 #elif defined(__BORLANDC__)
@@ -141,6 +148,9 @@ namespace xpr
 #define XPR_CFG_STL 1
 #if defined(XPR_CFG_STL)
 #define XPR_CFG_STL_TR1 1
+#if (XPR_CFG_COMPILER_MSVC && XPR_CFG_COMPILER_VER <= 1500)
+#define XPR_CFG_STL_TR1_NAMESPACE 1
+#endif // XPR_CFG_COMPILER_VER
 #endif // XPR_CFG_STL
 
 //

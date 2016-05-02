@@ -527,7 +527,7 @@ LRESULT CToolBarEx::OnReBarChevronPushed( WPARAM wParam, LPARAM /*lParam*/ )
 
     CToolBarPopup menu( this );
     menu.ShowPopup( TPM_LEFTALIGN | TPM_VERTICAL |
-            ( CWinAppEx::GetInstance()->IsWin50() ? TPM_VERPOSANIMATION : 0 ),
+            (WinAppEx::GetInstance()->IsWin50() ? TPM_VERPOSANIMATION : 0 ),
         CPoint( rcChevron.left, rcChevron.bottom ), rcChevron );
 
     return 0L;
@@ -744,7 +744,7 @@ CToolBarPopup::CToolBarPopup( CToolBarEx* pToolBar )
     m_bOverTbCtrl = false;
     m_bTextLabels = false;
 
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     m_bFlatMenu = ( pApp->IsWinXP() && pApp->GetFlatMenu() );
 }
 
@@ -757,7 +757,7 @@ CToolBarPopup::~CToolBarPopup()
 
 bool CToolBarPopup::ShowPopup( UINT nFlags, CPoint pt, CRect& rcExclude )
 {
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     CString strWndClass = AfxRegisterWndClass( CS_SAVEBITS | ( pApp->IsWinXP() ? CS_DROPSHADOW : 0 ),
         ::LoadCursor( 0, IDC_ARROW ), ( HBRUSH )( COLOR_MENU + 1 ), 0 );
 
@@ -905,7 +905,7 @@ void CToolBarPopup::Show( UINT nFlags, const CRect& rc )
     SetWindowPos( &wndTopMost, rc.left, rc.top, rc.Width(), rc.Height(),
         SWP_NOACTIVATE );
 
-    CWinAppEx* pApp = CWinAppEx::GetInstance();
+    WinAppEx* pApp = WinAppEx::GetInstance();
     if ( pApp->IsWin50() && !( nFlags & TPM_NOANIMATION ) ) // W98/W2K specific (menu animation)
     {
         if ( pApp->GetMenuAnimation() )
@@ -1059,7 +1059,7 @@ BOOL CToolBarPopup::OnNotify( WPARAM wParam, LPARAM lParam, LRESULT* pResult )
 
             case NM_CUSTOMDRAW:
             {
-                CWinAppEx* pApp = CWinAppEx::GetInstance();
+                WinAppEx* pApp = WinAppEx::GetInstance();
                 if ( pApp->IsWinXP() )
                 {
                     LPNMTBCUSTOMDRAW lpNMCustomDraw = ( LPNMTBCUSTOMDRAW )pNMHDR;
@@ -1251,7 +1251,7 @@ int CToolBarPopup::OnCreate( LPCREATESTRUCT lpCreateStruct )
     m_tbCtrl.SetExtendedStyle( TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_MIXEDBUTTONS );
     VERIFY( m_tbCtrl.GetToolTips()->ModifyStyle( 0, TTS_ALWAYSTIP ) );
 
-    if ( CWinAppEx::GetInstance()->IsWinXP() )
+    if (WinAppEx::GetInstance()->IsWinXP() )
     {
         HRESULT hr = ::SetWindowThemeXP( m_tbCtrl.m_hWnd, L"", L"" );
         ASSERT( SUCCEEDED( hr ) );

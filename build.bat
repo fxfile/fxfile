@@ -8,8 +8,10 @@
 :: found in the LICENSE file.
 @echo off
 
-set msvs_version=2008
-set target_arch=x86
+set PATH=%~dp0tools\python_274;%PATH%
+
+set msvs_version=2015
+set target_arch=x64
 
 if not %1/==/ set msvs_version=%1
 if not %2/==/ set target_arch=%2
@@ -18,4 +20,4 @@ if not %2/==/ set target_arch=%2
 @echo target_arch = %target_arch%
 @echo ----------
 
-tools\python_26\python.exe tools\gyp\gyp fxfile.gyp --depth=. -G msvs_version=%msvs_version% -D target_arch=%target_arch%
+call tools\gyp\gyp.bat fxfile.gyp --depth=. -G msvs_version=%msvs_version% -D target_arch=%target_arch% -D msvs_version=%msvs_version%

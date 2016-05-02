@@ -276,7 +276,7 @@ void HistoryDlg::updateStatus(void)
         sCount = sHistoryDisp->mHistoryDeque->size();
 
     xpr_tchar_t sWindowText[0xff] = {0};
-    _stprintf(sWindowText, XPR_STRING_LITERAL("%s (%d)"), sHistoryDisp->mTitleText, sCount);
+    _stprintf(sWindowText, XPR_STRING_LITERAL("%s (%zd)"), sHistoryDisp->mTitleText, sCount);
     SetWindowText(sWindowText);
 }
 
