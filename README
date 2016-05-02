@@ -15,7 +15,7 @@ Requirements to Build
    git clone https://github.com/fxfile/gyp tools/gyp
 
 2. Check out python.
-   svn co -r 89111 http://src.chromium.org/svn/trunk/tools/third_party/python_26 tools/python_26
+   svn co https://src.chromium.org/svn/trunk/tools/third_party/python_274 tools/python_274
 
 
 Build on Windows
